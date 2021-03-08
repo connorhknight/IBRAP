@@ -3,6 +3,15 @@
 
 ## Tutorial
 
+single sample tutorial:
+
+```
+pancrease <- createIBRAPobject(counts = pancreas.counts, 
+                           original.project = 'pancreas', 
+                           method.name = 'RAW', 
+                           meta.data = pancreas.metadata, 
+                           min.cells = 3)                           
+```
 
 Our current repertoire of tools are outlined in the following table:
 
