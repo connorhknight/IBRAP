@@ -1,6 +1,18 @@
 # IBRAP
  **I**ntegrated **B**enchmarking single-cell **R**NA-sequencing **A**utomated **P**ipeline endeavours to make optimal bioinformatic pipelines preconstructed into an ease-of-use tool, alongside providing gold-standard metrics to assess their effectiveness. 
 
+## Tutorial
+
+single sample tutorial:
+
+```
+pancrease <- createIBRAPobject(counts = pancreas.counts, 
+                           original.project = 'pancreas', 
+                           method.name = 'RAW', 
+                           meta.data = pancreas.metadata, 
+                           min.cells = 3)                           
+```
+
 Our current repertoire of tools are outlined in the following table:
 
 #### IBRAP repertoire
