@@ -3,7 +3,7 @@
 
 ## Tutorial
 
-Quality Control & Pre-processing for droplet-based technology:
+### Pre-processing for droplet-based technology:
 
 Since droplet-based technology is becoming the majorly used technology in scRNA-seq we have adopted 2 novel methods that aim to rectify their specific problems. WARNING: Do not use these methods if you are not using a drople-based method.  
 
@@ -12,11 +12,11 @@ Method one:
 Droplets are designed to capture a singular cell. However, infrequently (a small number in a sample) 2 or more cells are captured by a single droplet and thus, do not represet a true cell; therefore requiring their omission. We have incorporated scrublet, a python-based module that identifies multiplets/doublets by simualting multiplets through combining singlets from our sample and finding similar profiles in our observations.
 
 ```
-panc <- perform.scrublet(object = panc, 
-                         assay = 'RAW', 
-                         slot = 'counts',
-                         split.by = 'sample', 
-                         expected_doublet_rate = 0.025)
+pancreas.data <- perform.scrublet(object = panc, 
+                                  assay = 'RAW', 
+                                  slot = 'counts',
+                                  split.by = 'sample', 
+                                  expected_doublet_rate = 0.025)
 ```
 
 A simple graph is displayed when scrublet is performed - left corresponds with observed doublet scores and right displays simulated scores. A large number of highly scored doublets in the observed graph indicates a higher number of doublets in the sample.
@@ -35,6 +35,36 @@ pancreas.data <- perform.decontX(counts = pancreas.data)
 A UMAP projection of the data is produced to display contamination scores across cells, this is displayed in a graph during decontamination. 
 
 ![decontX_fig](/figures/decontx_umap.png)
+
+### IBRAP object creation: 
+
+Now we have reduced the technical effects of droplet-based platforms we can proceed with producing our IBRAP class object. Remember, if you are not using droplet-based technology this should be the first component of your pipeline. 
+
+```
+panc <- createIBRAPobject(counts = pancreas.data,
+                          original.project = 'pancreas_celseq', 
+                          method.name = 'RAW',
+                          min.cells = 3,
+                          min.features = 200)
+```
+Initial filtering of the count matrix is important, cells with little information are likely incomplete, cells that are not spread across more than a few cells will also not add value to the analysis. Therefore, we remove them upon initiation. 
+
+### Quality Control and further filtering: 
+
+A common conudnrum shared across all platforms of scRNA-seq are mitochondrial RNA counts. During cell preparation, cell lysis can cause the mitochondria to leak mitochondrial RNA, which is not a true representation of the cells transcriptome and can influence downstream analyses. Thus, it is important to quanitify the amount of mitochondrial RNA in a cell. This can also be applied to ribosomal RNA. 
+
+```
+panc <- find_percentage_genes(object = panc, pattern = '^MT-', 
+                              assay = 'RAW', slot = 'counts',
+                              column.name = 'RAW_percent.mt')
+panc <- find_percentage_genes(object = panc, pattern = 'RPL', 
+                              assay = 'RAW', slot = 'counts',
+                              column.name = 'RAW_percent.rp')
+```
+We can now visualise important metadata such as total counts per cell, total features per cell and metadata that we just generated: percentage mitochondrial RNA.
+
+
+
 
 Our current repertoire of tools are outlined in the following table:
 
