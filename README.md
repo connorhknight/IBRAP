@@ -12,10 +12,7 @@ Method one:
 Droplets are designed to capture a singular cell. However, infrequently (a small number in a sample) 2 or more cells are captured by a single droplet and thus, do not represet a true cell; therefore requiring their omission. We have incorporated scrublet, a python-based module that identifies multiplets/doublets by simualting multiplets through combining singlets from our sample and finding similar profiles in our observations.
 
 ```
-pancreas.data <- perform.scrublet(object = panc, 
-                                  assay = 'RAW', 
-                                  slot = 'counts',
-                                  split.by = 'sample', 
+pancreas.data <- perform.scrublet(counts = pancreas.data, 
                                   expected_doublet_rate = 0.025)
 ```
 
@@ -63,8 +60,56 @@ panc <- find_percentage_genes(object = panc, pattern = 'RPL',
 ```
 We can now visualise important metadata such as total counts per cell, total features per cell and metadata that we just generated: percentage mitochondrial RNA.
 
+Violin plots enable us to see proportion distribution:
 
+![vln_qc](/figures/QC.png)
 
+Scatter plots allow us to visualise any correlations between the metadata: 
+
+![scatter_qc](/figures/scatter_QC.png)
+
+Finally, we remove any troublesome cells from our data object. 
+
+```
+sd.value <- sd(panc$RAW_total.features)
+med.value <- median(panc$RAW_total.features)
+max.features <- (sd.value*3)+med.value
+```
+The above calculation we have provided is commonly used to determine maximum number of features to retain, in this example we multiple SD by 3, however this can range between 2 for more stringent and 3 for more lenient. 
+
+panc <- filter_IBRAP(object = panc, RAW_total.features < max.features & RAW_percent.mt < 8)
+
+percentage mitochondrial is biologically specific, i.e cells in the lungs contain a higher percentage of mitochondrial counts than other tissues. 
+
+Another common effect witnessed in scRNA-seq is the cell cycle effect where clustering captures the cell cycle which in most cases, is not desirable. Therefore, we can quanitify this effect to be regressed out later on. However, this is not always required in an analysis. 
+
+```
+panc <- add.cell.cycle(object = panc, assay = 'RAW', slot = 'counts', transform = TRUE)
+```
+
+Now that we have performed QC and filtration we can move on to pre-processing. 
+
+### Pre-processing: 
+
+Uneven sequencing depth is typically witnessed between cells inter-/intra-sample. Therefore, we have adopted 4 techniques to account for this: Scanpy (CPM), Scran, SCTransform for 3' and 5' end-bias transcripts, and TPM for full-length transcripts. The difference between the end-bias and full-length transcript methods are distinctly that TPM accounts for the length of the genes whereas the others are focussed purely on solving inequeal depth. 
+Next, to reduce computational time and improve the accuracy of downstream analyses, we must identify highly variable genes within our sample. Each normalisation has it's own discovery method except TPM, which we have adopted Seurats method.
+Finally, as a pre-requisite for Principal Component Analysis (PCA), we must scale and centre our data. Alongside this, we enable the regression of confounding factors in our data that we previously quanitifed (i.e. cell cycle score, mitochondrial RNA percentage, and more.). WARNING: this regression step is not designed to tackle batch effects, this will be dealt with at a different point. 
+
+You may either use a single normalisation technique or compare multiple, since each method will be stored in a different method assay within our IBRAP object.
+
+```
+panc <- perform.scanpy.normalisation(object = panc, vars.to.regress = 'RAW_total.counts')
+
+panc <- perform.scran.normalisation(object = panc, assay = 'RAW', slot = 'counts', 
+                                    vars.to.regress = 'RAW_total.counts')
+
+panc <- perform.sct.normalisation(object = panc, assay = 'RAW', slot = 'counts')
+
+panc <- perform.tpm.normalisation(object = panc, assay = 'RAW', slot = 'counts', 
+                                  vars.to.regress = 'RAW_total.counts')
+```
+
+Once your normalisation has been performed, the next step is to reduce our dataset dimension to a more manageable quantitiy, here we have adopted either PCA or diffusion-based Manifold Approximation and Projection (dbMAP). These methods differ slightly, where PCA requires our data that has been scaled, whereas dbMAP functions well with either counts or normalised counts, but works poorly with scaled data. 
 
 Our current repertoire of tools are outlined in the following table:
 
