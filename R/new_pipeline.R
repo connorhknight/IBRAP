@@ -39,7 +39,7 @@ Read10X_output <- function(directory,
       cat(crayon::cyan('Non-unique features identified\n'))
       genes_ensembl$V2 <- make.unique(genes_ensembl$V2)
     }
-
+    
   }
   rownames(mm) <- genes_ensembl$V2
   colnames(mm) <- barcodes$V1
@@ -52,6 +52,8 @@ marrow_E <- Read10X_output(directory = '/Users/knight05/Raw_Data/Database_sample
 
 # Metadata generator
 
+library(Matrix)
+
 cell_metadata <- function(assay, 
                           col.prefix) {
   total.counts <- colSums(assay)
@@ -63,12 +65,11 @@ cell_metadata <- function(assay,
   return(df)
 }
 
-feature_metadata <- function(assay) {
-  assay <- as.data.frame(assay)
+feature_metadata <- function(assay, col.prefix) {
   df <- as.data.frame(as.numeric(rowSums(assay)))
   rownames(df) <- rownames(assay)
-  colnames(df) <- 'total.counts'
-  df$total.cells <- rowSums(assay > 0)
+  df$temp <- rowSums(assay > 0)
+  colnames(df) <- c(paste0(col.prefix,'_total.counts'), paste0(col.prefix,'_total.cells'))
   return(df)
 }
 
@@ -128,13 +129,13 @@ subset_IBRAP <- function(object,
     sub <- object@methods[[x]]
     
     if(length(as.matrix(sub@counts)) != 0){
-
+      
       .counts <- sub@counts[features,cells]
-
+      
     } else {
-
+      
       .counts <- sub@counts
-
+      
     }
     
     if(length(as.matrix(sub@normalised)) != 0) {
@@ -173,7 +174,7 @@ subset_IBRAP <- function(object,
       
       for(comp in names(sub@computational_reductions))
         
-      .computational_reductions[[comp]] <- sub@computational_reductions[[comp]][cells,]
+        .computational_reductions[[comp]] <- sub@computational_reductions[[comp]][cells,]
       
     } else {
       
@@ -208,36 +209,35 @@ subset_IBRAP <- function(object,
     }
     
     list.methods[[x]] <- new(Class = 'method', 
-                            counts = .counts, 
-                            normalised = .normalised, 
-                            norm.scaled = .norm.scaled,
-                            highly.variable.genes = sub@highly.variable.genes,
-                            feature_metadata = .feature_metadata,
-                            graphs = sub@graphs,
-                            computational_reductions = .computational_reductions,
-                            visualisation_reductions = .visualisation_reductions,
-                            cluster_assignments = .cluster_assignments,
-                            benchmark_results = sub@benchmark_results,
-                            alt_objects = sub@alt_objects,
-                            method.name = sub@method.name)
+                             counts = .counts, 
+                             normalised = .normalised, 
+                             norm.scaled = .norm.scaled,
+                             highly.variable.genes = sub@highly.variable.genes,
+                             feature_metadata = .feature_metadata,
+                             graphs = sub@graphs,
+                             computational_reductions = .computational_reductions,
+                             visualisation_reductions = .visualisation_reductions,
+                             cluster_assignments = .cluster_assignments,
+                             benchmark_results = sub@benchmark_results,
+                             alt_objects = sub@alt_objects,
+                             method.name = sub@method.name)
     
   }
   
   ibrap <- new(Class = 'IBRAP', 
-      methods = list.methods, 
-      sample_metadata = .sample_metadata,
-      pipelines = object@pipelines, 
-      active.variable = object@active.variable,
-      doublet.barcodes = object@doublet.barcodes,
-      active.method = object@active.method
-      )
+               methods = list.methods, 
+               sample_metadata = .sample_metadata,
+               pipelines = object@pipelines, 
+               active.variable = object@active.variable,
+               doublet.barcodes = object@doublet.barcodes,
+               active.method = object@active.method
+  )
   
   print(ibrap)
   return(ibrap)
 }
 
-filter_IBRAP <- function(object, 
-                         ...) {
+filter_cell_IBRAP <- function(object, assay, slot, min.features) {
   
   if(!is(object = object, class2 = 'IBRAP')) {
     
@@ -246,11 +246,35 @@ filter_IBRAP <- function(object,
     
   }
   
-  cell.meta <- object@sample_metadata
+  counts <- object@methods[[assay]][[slot]]
   
-  filt.barcodes <- rownames(subset(cell.meta, ...))
+  nfeatures <- Matrix::colSums(x = counts > 0)
+  counts <- counts[, which(x = nfeatures >= min.features)]
   
-  object <- object[,filt.barcodes]
+  object <- object[,colnames(counts)]
+  
+  return(object)
+  
+}
+
+filter_feature_IBRAP <- function(object, assay, slot, min.cells,
+                                 ...) {
+  
+  if(!is(object = object, class2 = 'IBRAP')) {
+    
+    cat(crayon::cyan('Object must be class IBRAP'))
+    return(NULL)
+    
+  }
+  
+  counts <- object@methods[[assay]][[slot]]
+  
+  num.cells <- Matrix::rowSums(x = counts > 0)
+  counts <- counts[which(x = num.cells >= min.cells), ]
+  
+  object <- object[rownames(counts),]
+  
+  return(object)
   
 }
 
@@ -285,7 +309,20 @@ setMethod(f = 'show', signature = 'IBRAP', definition = function(object) {
   cat(crayon::white(paste0('  ', 'Active method:', 
                            object@active.method, ' (features:', nrow(object@methods[[object@active.method]]@counts), 
                            ', samples:', paste0(ncol(object@methods[[object@active.method]]@counts),')'), '\n')))
-  cat(crayon::white(paste0('  Available methods:', names(object@methods), '\n')))
+  
+  lol <- names(object@methods)[1]
+  
+  if(length(names(object@methods)) > 1) {
+    
+    for(x in names(object@methods)[2:length(names(object@methods))]) {
+      
+      lol <- paste0(lol, ', ', x)
+      
+    }
+    
+  }
+  
+  cat(crayon::white(paste0('  Available methods: ', lol, '\n')))
   
 })
 
@@ -352,25 +389,25 @@ setMethod(f = '[[<-', signature = 'IBRAP',
                    value) {
             x@sample_metadata[[i]] <- value
             return(x)
-            })
+          })
 
 setMethod(f = 'as.list', signature = 'methods',
           function(x) {
             
             new.list <- list(counts = x@counts, 
-                 decontaminated = x@decontaminated,
-                 normalised = x@normalised, 
-                 norm.scaled = x@norm.scaled,
-                 highly.variable.genes = x@highly.variable.genes,
-                 feature_metadata = x@feature_metadata,
-                 graphs = x@graphs,
-                 computational_reductions = x@computational_reductions,
-                 integration_reductions = x@integration_reductions,
-                 visualisation_reductions = x@visualisation_reductions,
-                 cluster_assignments = x@cluster_assignments,
-                 benchmark_results = x@benchmark_results,
-                 alt_objects = x@alt_objects,
-                 method.name = x@method.name)
+                             decontaminated = x@decontaminated,
+                             normalised = x@normalised, 
+                             norm.scaled = x@norm.scaled,
+                             highly.variable.genes = x@highly.variable.genes,
+                             feature_metadata = x@feature_metadata,
+                             graphs = x@graphs,
+                             computational_reductions = x@computational_reductions,
+                             integration_reductions = x@integration_reductions,
+                             visualisation_reductions = x@visualisation_reductions,
+                             cluster_assignments = x@cluster_assignments,
+                             benchmark_results = x@benchmark_results,
+                             alt_objects = x@alt_objects,
+                             method.name = x@method.name)
             return(new.list)
             
           })
@@ -469,7 +506,7 @@ setMethod(f = '[[<-', signature = 'methods',
 setMethod(f = '$', signature = 'IBRAP',
           function(x, 
                    name){
-
+            
             x@sample_metadata[[name]]
             
           })
@@ -501,7 +538,7 @@ setMethod(f = '[', signature = 'IBRAP',
               }
               
               .sample_metadata <- x@sample_metadata
-            
+              
               list.methods <- list()
               
               for(p in names(x@methods)) {
@@ -600,12 +637,12 @@ setMethod(f = '[', signature = 'IBRAP',
               .active.method <- x@active.method
               
               return(new(Class = 'IBRAP', 
-                  methods = list.methods, 
-                  sample_metadata = .sample_metadata,
-                  pipelines = .pipelines, 
-                  active.variable = .active.variable,
-                  doublet.barcodes = .doublet.barcodes,
-                  active.method = .active.method))
+                         methods = list.methods, 
+                         sample_metadata = .sample_metadata,
+                         pipelines = .pipelines, 
+                         active.variable = .active.variable,
+                         doublet.barcodes = .doublet.barcodes,
+                         active.method = .active.method))
               
             } 
             
@@ -720,7 +757,7 @@ setMethod(f = '[', signature = 'IBRAP',
                 .feature_metadata <- x@methods[[p]]@feature_metadata
                 
                 .graphs <- x@methods[[p]]@graphs
-
+                
                 .benchmark_results <- x@methods[[p]]@benchmark_results
                 
                 .alt_objects <- x@methods[[p]]@alt_objects
@@ -753,12 +790,12 @@ setMethod(f = '[', signature = 'IBRAP',
               .active.method <- x@active.method
               
               return(new(Class = 'IBRAP', 
-                  methods = list.methods, 
-                  sample_metadata = .sample_metadata,
-                  pipelines = .pipelines, 
-                  active.variable = .active.variable,
-                  doublet.barcodes = .doublet.barcodes,
-                  active.method = .active.method))
+                         methods = list.methods, 
+                         sample_metadata = .sample_metadata,
+                         pipelines = .pipelines, 
+                         active.variable = .active.variable,
+                         doublet.barcodes = .doublet.barcodes,
+                         active.method = .active.method))
               
             }
             
@@ -924,12 +961,12 @@ setMethod(f = '[', signature = 'IBRAP',
               .active.method <- x@active.method
               
               return(new(Class = 'IBRAP', 
-                  methods = list.methods, 
-                  sample_metadata = .sample_metadata,
-                  pipelines = .pipelines, 
-                  active.variable = .active.variable,
-                  doublet.barcodes = .doublet.barcodes,
-                  active.method = .active.method))
+                         methods = list.methods, 
+                         sample_metadata = .sample_metadata,
+                         pipelines = .pipelines, 
+                         active.variable = .active.variable,
+                         doublet.barcodes = .doublet.barcodes,
+                         active.method = .active.method))
             }
           })
 
@@ -959,7 +996,7 @@ setMethod(f = 'merge', signature = 'IBRAP',
               column.names[[i]] <- colnames(items[[i]]@methods[[1]]@counts)
               counts.list[[i]] <- as.matrix(items[[i]]@methods[[1]]@counts)
               sample.list[[i]] <- as.data.frame(items[[i]]@sample_metadata)
-                
+              
             }
             
             column.names <- unlist(column.names)
@@ -976,7 +1013,7 @@ setMethod(f = 'merge', signature = 'IBRAP',
             .counts <- counts.list[[1]]
             .sample_metadata <- sample.list[[1]]
             .feature_metadata <- as.data.frame(items[[1]]@methods[[1]]@feature_metadata)
-
+            
             for(t in 2:length(items)) {
               
               .counts <- merge(x = .counts, y = counts.list[[t]], by = 'row.names', all = T)
@@ -1007,10 +1044,10 @@ setMethod(f = 'merge', signature = 'IBRAP',
             new.method <- list()
             
             new.method[[names(x@methods)[1]]] <- new(Class = 'methods',
-                                       counts = .counts,
-                                       feature_metadata = .feature_metadata,
-                                       method.name = names(x@methods)[1]
-                                       )
+                                                     counts = .counts,
+                                                     feature_metadata = .feature_metadata,
+                                                     method.name = names(x@methods)[1]
+            )
             
             ibrap <- new(Class = 'IBRAP',
                          methods = new.method, 
@@ -1021,6 +1058,158 @@ setMethod(f = 'merge', signature = 'IBRAP',
             
           })
 
+pancreas.data <- readRDS(file = "~/Raw_Data/pancreas_v3_files/pancreas_expression_matrix.rds")
+metadata <- readRDS('~/Raw_Data/pancreas_v3_files/pancreas_metadata.rds')
+pancreas.data <- as.matrix(pancreas.data)
+pancreas.data <- round(pancreas.data)
+
+### removing scrublets
+
+perform.scrublet <- function(counts,
+                             total_counts = NULL, 
+                             sim_doublet_ratio = 2.0, 
+                             n_neighbors = NULL, 
+                             expected_doublet_rate = 0.075, 
+                             stdev_doublet_rate = 0.02, 
+                             random_state = 0L,
+                             synthetic_doublet_umi_subsampling = 1.0,
+                             use_approx_neighbors = TRUE,
+                             distance_metric = 'euclidean',
+                             get_doublet_neighbor_parents = FALSE,
+                             min_counts = 3L,
+                             min_cells = 3L,
+                             min_gene_variability_pctl = 85L,
+                             log_transform = FALSE,
+                             mean_center = TRUE, 
+                             normalize_variance = TRUE,
+                             n_prin_comps = 30L,
+                             svd_solver = 'arpack') {
+  
+  cat(crayon::cyan('Initialising scrublet\n'))
+  scrublet <- reticulate::import('scrublet', convert = FALSE)
+  cat(crayon::cyan('Python modules loaded\n'))
+  
+  scrub1 <- scrublet$Scrublet(counts_matrix = t(as.data.frame(as.matrix(counts))), 
+                              total_counts = total_counts, 
+                              sim_doublet_ratio = sim_doublet_ratio, 
+                              n_neighbors = n_neighbors, 
+                              expected_doublet_rate = expected_doublet_rate, 
+                              stdev_doublet_rate = stdev_doublet_rate, 
+                              random_state = random_state)
+  
+  cat(crayon::cyan('scrublet object created\n'))
+  
+  res1 <- reticulate::py_to_r(scrub1$scrub_doublets(synthetic_doublet_umi_subsampling = synthetic_doublet_umi_subsampling,
+                                                    use_approx_neighbors = use_approx_neighbors, 
+                                                    distance_metric = distance_metric, 
+                                                    get_doublet_neighbor_parents = get_doublet_neighbor_parents, 
+                                                    min_counts = min_counts,
+                                                    min_cells = min_cells, 
+                                                    min_gene_variability_pctl = min_gene_variability_pctl,
+                                                    log_transform = log_transform,
+                                                    mean_center = mean_center,
+                                                    normalize_variance = normalize_variance,
+                                                    n_prin_comps = n_prin_comps,
+                                                    svd_solver = svd_solver,
+                                                    verbose = TRUE))
+  
+  sim.plot <- ggplot2::qplot(as.vector(reticulate::py_to_r(scrub1$doublet_scores_sim_)), 
+                             geom = 'histogram') + 
+    ggplot2::stat_bin(bins = 100) + 
+    ggplot2::xlab('doublet scores') + 
+    ggplot2::ylab('frequency') + 
+    ggplot2::ggtitle(paste0('simulated_doublets')) + 
+    ggplot2::theme_classic() + 
+    ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5))
+  
+  obs.plot <- ggplot2::qplot(as.vector(res1)[[1]], 
+                             geom = 'histogram') + 
+    ggplot2::stat_bin(bins = 80) + 
+    ggplot2::xlab('doublet scores') + 
+    ggplot2::ylab('frequency') + 
+    ggplot2::ggtitle(paste0('observed doublets')) + 
+    ggplot2::theme_classic() + 
+    ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5))
+  
+  comb.plot <- cowplot::plot_grid(sim.plot, obs.plot, ncol = 2, nrow = 1)
+  print(comb.plot)
+  
+  cat(crayon::cyan('doublets detected\n'))
+  counts <- counts[,!res1[[2]] == TRUE]
+  cat(crayon::cyan('matrix scrubbed\n'))
+  
+  return(counts)
+}
+
+pancreas.data <- perform.scrublet(counts = pancreas.data)
+
+# decontamination
+
+perform.decontX <- function(counts,
+                            z = NULL,
+                            batch = NULL,
+                            maxIter = 500,
+                            delta = c(10, 10),
+                            estimateDelta = TRUE,
+                            convergence = 0.001,
+                            iterLogLik = 10,
+                            varGenes = 5000,
+                            dbscanEps = 1,
+                            seed = 12345,
+                            logfile = NULL,
+                            verbose = TRUE) {
+  
+  if(is.null(batch)) {
+    
+    d <- celda::decontX(x = counts,
+                        z = z,
+                        batch = NULL,
+                        maxIter = maxIter,
+                        delta = delta,
+                        estimateDelta = estimateDelta,
+                        convergence = convergence,
+                        iterLogLik = iterLogLik,
+                        varGenes = varGenes,
+                        dbscanEps = dbscanEps,
+                        seed = seed,
+                        logfile = logfile,
+                        verbose = verbose)
+    
+  } else {
+    
+    d <- celda::decontX(x = counts,
+                        z = z,
+                        batch = object@sample_metadata[,batch],
+                        maxIter = maxIter,
+                        delta = delta,
+                        estimateDelta = estimateDelta,
+                        convergence = convergence,
+                        iterLogLik = iterLogLik,
+                        varGenes = varGenes,
+                        dbscanEps = dbscanEps,
+                        seed = seed,
+                        logfile = logfile,
+                        verbose = verbose)
+    
+  }
+  
+  cat(crayon::cyan('Decontamination comlpleted\n'))
+  
+  cat(crayon::cyan(paste0(formatC(sum(d$contamination)/length(d$contamination), 
+                                  digits = 2), 
+                          '% average contamination\n')))
+  
+  clean.matrix <- d$decontXcounts
+  cat(crayon::cyan('Matrix isolated\n'))
+  clean.matrix <- round(clean.matrix)
+  zero.samples <- colSums(clean.matrix) > 0
+  clean.matrix <- clean.matrix[,zero.samples]
+  cat(crayon::cyan('converted to integer\n'))
+  return(clean.matrix)
+  
+}
+
+pancreas.data <- perform.decontX(counts = pancreas.data)
 
 # IBRAP object
 
@@ -1028,29 +1217,38 @@ createIBRAPobject <- function(counts,
                               original.project, 
                               method.name = 'RAW', 
                               meta.data = NULL,
-                              min.cells = 3) {
+                              min.cells=NULL,
+                              min.features=NULL) {
   
   if(!is.character(original.project)) {
+    
     cat(crayon::cyan('original.project must be a character string\n'))
     return(NULL)
+    
   }
   
   if(!is.character(method.name)) {
+    
     cat(crayon::cyan('method.name must be a character string\n'))
     return(NULL)
+    
   }
   
   if(class(counts)[1] != 'dgCMatrix') {
+    
     cat(crayon::cyan('Converting counts input into sparse matrix\n'))
     counts <- Matrix::Matrix(counts, sparse = T)
+
   }
   
   cat(crayon::cyan(paste0('Adding ', original.project, ' as barcode prefix\n')))
+  
   if(!is.null(meta.data)) {
     
     if(!rownames(meta.data) %in% colnames(counts)) {
       
       cat(crayon::cyan('meta.data rownames must be the same as counts colnames'))
+      
       return(NULL)
       
     } else {
@@ -1058,41 +1256,59 @@ createIBRAPobject <- function(counts,
       rownames(meta.data) <- paste0(original.project, '_', rownames(meta.data))
       
     }
-      
+    
   }
   
   colnames(counts) <- paste0(original.project, '_', colnames(counts))
-
+  
+  if(!is.null(min.features)) {
+    
+    nfeatures <- Matrix::colSums(x = counts > 0)
+    
+    counts <- counts[, which(x = nfeatures >= min.features)]
+    
+  }
+  
+  if(!is.null(min.cells)) { 
+    
+    num.cells <- Matrix::rowSums(x = counts > 0)
+    
+    counts <- counts[which(x = num.cells >= min.cells), ]
+    
+  }
   
   meta <- as.data.frame(replicate(n = length(colnames(counts)), expr = original.project))
+  
   colnames(meta) <- 'original.project'
+  
   meta.2 <- cell_metadata(assay = counts, col.prefix = method.name)
+  
   meta <- cbind(meta, meta.2)
+  
   rownames(meta) <- colnames(counts)
   
-  f.metadata <- feature_metadata(assay = counts)
-  
-  #f.metadata <- f.metadata[f.metadata$total.cells >= min.cells,]
-  
-  #counts <- as.data.frame(counts)
-  #counts <- counts[rownames(f.metadata),]
-  #counts <- Matrix::Matrix(as.matrix(counts), sparse = T)
+  f.metadata <- feature_metadata(assay = counts, col.prefix = method.name)
   
   if(!is.null(meta.data)) {
     
     cat(crayon::cyan('Concatenating metadata\n'))
+    
     l1 <- colnames(meta)
+    
     l2 <- colnames(meta.data)
     
     if(isFALSE(isUnique(c(l1,l2)))) {
       
       cat(crayon::cyan('Column names from meta.data cannot be named:', 'original.project, counts_total.counts or counts_total.features\n'))
+      
       return(NULL)
       
     }
     
     meta <- meta[match(rownames(meta.data), rownames(meta)),]
+    
     meta <- cbind(meta, meta.data)
+    
     meta <- meta[match(colnames(counts), rownames(meta)),]
     
   }
@@ -1102,9 +1318,9 @@ createIBRAPobject <- function(counts,
   ##########################################################
   
   first.method <- new('methods', 
-                     counts = counts,
-                     feature_metadata = f.metadata,
-                     method.name = method.name)
+                      counts = counts,
+                      feature_metadata = f.metadata,
+                      method.name = method.name)
   
   methods <- list()
   
@@ -1117,48 +1333,37 @@ createIBRAPobject <- function(counts,
   
   return(IBRAP.obj)
   
-  ##########################################################
 }
 
 # Load practice data
 
-data.kumar <- readRDS('/Users/knight05/Results/scRNA-seq/Benchmarking_datasets/sce_full/sce_full_Kumar.rds')
-mat.kumar <- assay(data.kumar,'counts')
-mat.kumar <- round(mat.kumar)
-extmeta.kumar <- as.data.frame(data.kumar$phenoid)
-colnames(extmeta.kumar) <- 'celltype'
+# data.kumar <- readRDS('/Users/knight05/Results/scRNA-seq/Benchmarking_datasets/sce_full/sce_full_Kumar.rds')
+# mat.kumar <- assay(data.kumar,'counts')
+# mat.kumar <- round(mat.kumar)
+# extmeta.kumar <- as.data.frame(data.kumar$phenoid)
+# colnames(extmeta.kumar) <- 'celltype'
 
-kumar <- createIBRAPobject(counts = mat.kumar, 
-                           original.project = 'kumar', 
-                           method.name = 'RAW', 
-                           meta.data = extmeta.kumar, 
-                           min.cells = 3)
+# kumar <- createIBRAPobject(counts = mat.kumar, 
+#                            original.project = 'kumar', 
+#                            method.name = 'RAW', 
+#                            meta.data = extmeta.kumar, 
+#                            min.cells = 3)
+# 
+# data.obj <- readRDS('/Users/knight05/Results/scRNA-seq/Benchmarking_datasets/sce_full/sce_full_Koh.rds')
+# mat <- assay(data.obj,'counts')
+# mat <- round(mat)
+# extmeta <- as.data.frame(data.obj$phenoid)
+# colnames(extmeta) <- 'celltype'
+# 
+# koh <- createIBRAPobject(counts = mat, 
+#                            original.project = 'koh', 
+#                            method.name = 'RAW', 
+#                            meta.data = extmeta, 
+#                            min.cells = 3)
 
-data.obj <- readRDS('/Users/knight05/Results/scRNA-seq/Benchmarking_datasets/sce_full/sce_full_Koh.rds')
-mat <- assay(data.obj,'counts')
-mat <- round(mat)
-extmeta <- as.data.frame(data.obj$phenoid)
-colnames(extmeta) <- 'celltype'
-
-koh <- createIBRAPobject(counts = mat, 
-                           original.project = 'koh', 
-                           method.name = 'RAW', 
-                           meta.data = extmeta, 
-                           min.cells = 3)
-
-
-bmmc <- createIBRAPobject(counts = marrow_E, original.project = 'bmmc', method.name = 'RAW', meta.data = NULL, min.cells = 3)
-
-pancreas.data <- readRDS(file = "~/Raw_Data/pancreas_v3_files/pancreas_expression_matrix.rds")
-metadata <- readRDS('~/Raw_Data/pancreas_v3_files/pancreas_metadata.rds')
-pancreas.data <- as.matrix(pancreas.data)
-pancreas.data <- round(pancreas.data)
-
-panc <- createIBRAPobject(counts = pancreas.data,
-                          original.project = 'pancreas_celseq2', 
-                          method.name = 'RAW', 
-                          meta.data = metadata, 
-                          min.cells = 3)
+panc <- createIBRAPobject(counts = FL1,
+                          original.project = 'marrow_Ck', 
+                          method.name = 'RAW')
 
 panc <- panc[,panc$tech == 'celseq2']
 
@@ -1217,7 +1422,7 @@ plot.QC.vln <- function(object,
     new.metadata$sample <- as.factor(colnames(object))
     new.metadata$variable <- object[[o]]
     plots.list[[o]] <- ggplot2::ggplot(data = new.metadata, 
-                    mapping = ggplot2::aes(x=variable, y=project, fill=project)) + 
+                                       mapping = ggplot2::aes(x=variable, y=project, fill=project)) + 
       ggplot2::geom_violin() + ggplot2::coord_flip() + ggplot2::ggtitle(o) + 
       ggplot2::xlab('') + ggplot2::ylab('project') + ggplot2::theme_classic() + 
       ggplot2::theme(axis.text.x = ggplot2::element_text(face = 'bold', angle = 45, vjust = 1, hjust=1), 
@@ -1278,160 +1483,26 @@ plot.QC.scatter <- function(object,
 
 plot.QC.scatter(object = panc, x = 'RAW_total.counts', y = 'RAW_total.features', split.by = 'original.project')
 
-perform.scrublet <- function(object, 
-                             assay='RAW',
-                             slot = 'counts',
-                             split.by,
-                             total_counts = NULL, 
-                             sim_doublet_ratio = 2.0, 
-                             n_neighbors = NULL, 
-                             expected_doublet_rate = 0.075, 
-                             stdev_doublet_rate = 0.02, 
-                             random_state = 0L) {
-  
-  cat(crayon::cyan('Initialising scrublet\n'))
-  scrublet <- reticulate::import('scrublet', convert = FALSE)
-  cat(crayon::cyan('Python modules loaded\n'))
-  if(is(object = object, class2 = 'IBRAP') == FALSE) {
-    cat(crayon::cyan('Only an object of class S4 can be used\n'))
-  } else {
-    raw_counts_list <- list()
-    seperator <- unique(object[[split.by]])
-    doublet.list <- list()
-    counter <- 1
-    for(l in seperator) {
-      cat(crayon::cyan('###############################\n'))
-      cat(crayon::cyan(paste0('scrublet analysing: ', l, '\n')))
-      isolated <- object[,object[[split.by]]==l]
-      isolated.2 <- as.matrix(isolated@methods[[assay]]@counts)
-      raw_counts <- t(as.data.frame(isolated.2))
-      scrub1 <- scrublet$Scrublet(counts_matrix = reticulate::r_to_py(raw_counts))
-      cat(crayon::cyan('scrublet object created\n'))
-      res1 <- scrub1$scrub_doublets(min_counts = 1, 
-                                    min_cells = 1, 
-                                    min_gene_variability_pctl = 85, 
-                                    verbose = TRUE)
-      
-      sim.plot <- ggplot2::qplot(as.vector(reticulate::py_to_r(scrub1$doublet_scores_sim_)), 
-                                 geom = 'histogram') + 
-        ggplot2::stat_bin(bins = 100) + 
-        ggplot2::xlab('doublet scores') + 
-        ggplot2::ylab('frequency') + 
-        ggplot2::ggtitle(paste0(l, '_simulated_doublets')) + 
-        ggplot2::theme_classic() + 
-        ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5))
-      
-      obs.plot <- ggplot2::qplot(as.vector(reticulate::py_to_r(res1)[[1]]), 
-                                 geom = 'histogram') + 
-        ggplot2::stat_bin(bins = 80) + 
-        ggplot2::xlab('doublet scores') + 
-        ggplot2::ylab('frequency') + 
-        ggplot2::ggtitle(paste0(l, '_observed doublets')) + 
-        ggplot2::theme_classic() + 
-        ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5))
-      
-      comb.plot <- cowplot::plot_grid(sim.plot, obs.plot, ncol = 2, nrow = 1)
-      print(comb.plot)
-      
-      cat(crayon::cyan('doublets detected\n'))
-      raw_counts <- t(as.data.frame(raw_counts))
-      doublet.list[[l]] <- colnames(raw_counts)[reticulate::py_to_r(res1)[[2]] == TRUE]
-      raw_counts <- raw_counts[,!reticulate::py_to_r(res1)[[2]] == TRUE]
-      cat(crayon::cyan('matrix scrubbed\n'))
-      raw_counts_list[[l]] <- raw_counts
-    }
-    
-    raw_counts <- do.call('cbind', raw_counts_list)
-    object <- object[,colnames(raw_counts)]
-    object@methods[[assay]][[slot]] <- Matrix::Matrix(data = raw_counts, sparse = T)
-    object@doublet.barcodes <- unlist(doublet.list)
-    return(object)
-    rm(obj, raw_counts, scrub1, res1, scrubbed)
-  }
-}
-
-panc <- perform.scrublet(object = panc, assay = 'RAW', slot = 'counts',
-                             split.by = 'original.project', 
-                             expected_doublet_rate = 0.025)
-
-# decontamination
-
-perform.decontX <- function(object,
-                            assay = 'RAW',
-                            slot = 'counts',
-                            z = NULL,
-                            batch = NULL,
-                            maxIter = 500,
-                            delta = c(10, 10),
-                            estimateDelta = TRUE,
-                            convergence = 0.001,
-                            iterLogLik = 10,
-                            varGenes = 5000,
-                            dbscanEps = 1,
-                            seed = 12345,
-                            logfile = NULL,
-                            verbose = TRUE) {
-  
-  if(is.null(batch)) {
-    
-    d <- celda::decontX(x = as.matrix(object@methods[[assay]][[slot]]),
-                        z = z,
-                        batch = NULL,
-                        maxIter = maxIter,
-                        delta = delta,
-                        estimateDelta = estimateDelta,
-                        convergence = convergence,
-                        iterLogLik = iterLogLik,
-                        varGenes = varGenes,
-                        dbscanEps = dbscanEps,
-                        seed = seed,
-                        logfile = logfile,
-                        verbose = verbose)
-    
-  } else {
-    
-    d <- celda::decontX(x = as.matrix(object@methods[[assay]][[slot]]),
-                        z = z,
-                        batch = object@sample_metadata[,batch],
-                        maxIter = maxIter,
-                        delta = delta,
-                        estimateDelta = estimateDelta,
-                        convergence = convergence,
-                        iterLogLik = iterLogLik,
-                        varGenes = varGenes,
-                        dbscanEps = dbscanEps,
-                        seed = seed,
-                        logfile = logfile,
-                        verbose = verbose)
-    
-  }
-  
-  cat(crayon::cyan('Decontamination comlpleted\n'))
-  
-  cat(crayon::cyan(paste0(formatC(sum(d$contamination)/length(d$contamination), 
-                                  digits = 2), 
-                          '% average contamination\n')))
-  
-  clean.matrix <- d$decontXcounts
-  cat(crayon::cyan('Matrix isolated\n'))
-  clean.matrix <- round(clean.matrix)
-  zero.samples <- colSums(clean.matrix) > 0
-  object <- object[,zero.samples]
-  clean.matrix <- clean.matrix[,zero.samples]
-  cat(crayon::cyan('converted to integer\n'))
-  object@methods[[assay]][['decontaminated']] <- clean.matrix
-  cat(crayon::cyan('Added matrix\n'))
-  met <- cell_metadata(assay = clean.matrix, col.prefix = 'decontaminated')
-  object@sample_metadata <- cbind(object@sample_metadata, met)
-  cat(crayon::cyan('Finished\n'))
-  return(object)
-}
-
 panc <- perform.decontX(object = panc)
+
+
+panc <- filter_cell_IBRAP(object = panc, assay = 'RAW', slot = 'counts', min.features = 200)
+panc <- filter_feature_IBRAP(object = panc, assay = 'RAW', slot = 'counts', min.cells = 3)
+
+cell_metadata()
+
+panc <- find_percentage_genes(object = panc, pattern = '^MT-', 
+                              assay = 'RAW', slot = 'decontaminated',
+                              column.name = 'decontaminated_percent.mt')
+panc <- find_percentage_genes(object = panc, pattern = 'RPL', 
+                              assay = 'RAW', slot = 'decontaminated',
+                              column.name = 'decontaminated_percent.rp')
 
 sd.value <- sd(panc$decontaminated_total.features)
 med.value <- median(panc$decontaminated_total.features)
 max.features <- (sd.value*3)+med.value
+
+panc <- filter_cell_IBRAP(object = panc, decontaminated_total.features < max.features)
 
 add.cell.cycle <- function(object, 
                            assay,
@@ -1446,6 +1517,16 @@ add.cell.cycle <- function(object,
     cat(crayon::cyan('Data transformed\n'))
     seuobj <- Seurat::CellCycleScoring(object = seuobj, s.features = r[55:97,3], g2m.features = r[1:54,3], ...)
     cat(crayon::cyan('Cell cycle scores identified\n'))
+    for(o in names(seuobj@meta.data)) {
+      
+      if(o %in% names(object@sample_metadata)) {
+        
+        cat(crayon::cyan(paste0('found duplicated column name: ',o, 'removing old column names.\n')))
+        object@sample_metadata[,o] <- NULL
+        
+      }
+      
+    }
     object@sample_metadata <- cbind(object@sample_metadata, seuobj@meta.data[, sum(length(colnames(seuobj@meta.data))-2):length(colnames(seuobj@meta.data))])
     cat(crayon::cyan('New metadata added\n'))
   } else {
@@ -1454,8 +1535,21 @@ add.cell.cycle <- function(object,
     cat(crayon::cyan('Converted to Seurat object\n'))
     seuobj <- Seurat::CellCycleScoring(object = seuobj, s.features = r[55:97,3], g2m.features = r[1:54,3], ...)
     cat(crayon::cyan('Data transformed\n'))
+    
+    for(o in names(seuobj@meta.data)) {
+      
+      if(o %in% names(object@sample_metadata)) {
+        
+        cat(crayon::cyan(paste0('found duplicated column name: ',o, 'removing old column names.\n')))
+        object@sample_metadata[,o] <- NULL
+        
+      }
+      
+    }
+    
     object@sample_metadata <- cbind(object@sample_metadata, seuobj@meta.data[, sum(length(colnames(seuobj@meta.data))-2):length(colnames(seuobj@meta.data))])
     cat(crayon::cyan('New metadata added\n'))
+    
   }
   return(object)
 }
@@ -1478,6 +1572,16 @@ add.feature.score <- function(object,
     cat(crayon::cyan('Data transformed\n'))
     seuobj <- Seurat::AddModuleScore(object = seuobj, features = genes, ...)
     cat(crayon::cyan('Seurat gene score calculated\n'))
+    for(o in names(seuobj@meta.data)) {
+      
+      if(o %in% names(object@sample_metadata)) {
+        
+        cat(crayon::cyan(paste0('found duplicated column name: ',o, 'removing old column names.\n')))
+        object@sample_metadata[,o] <- NULL
+        
+      }
+      
+    }
     object@sample_metadata[[column.name]] <- seuobj@meta.data[, length(colnames(seuobj@meta.data))]
     cat(crayon::cyan('New metadata added\n'))
   } else {
@@ -1486,106 +1590,162 @@ add.feature.score <- function(object,
     cat(crayon::cyan('Converted to Seurat object\n'))
     seuobj <- Seurat::AddModuleScore(object = seuobj, features = features, ...)
     cat(crayon::cyan('Seurat gene score calculated\n'))
+    for(o in names(seuobj@meta.data)) {
+      
+      if(o %in% names(object@sample_metadata)) {
+        
+        cat(crayon::cyan(paste0('found duplicated column name: ',o, 'removing old column names.\n')))
+        object@sample_metadata[,o] <- NULL
+        
+      }
+      
+    }
     object@sample_metadata[[column.name]] <- seuobj@meta.data[, length(colnames(seuobj@meta.data))]
     cat(crayon::cyan('New metadata added\n'))
   }
   return(object)
 }
 
-test <- add.feature.score(object = panc, 
-                              assay = 'RAW', 
-                              slot = 'counts',
-                              transform = TRUE, 
-                              features = c('BAG3', 'BLOC1S5-TXNDC5', 'CALU', 'DNAJB1', 'DUSP1', 'EGR1', 
-                                           'FOS', 'FOSB', 'HIF1A', 'HSP90AA1', 'HSP90AB1', 'HSP90AB2P', 
-                                           'HSP90AB3P', 'HSP90B1', 'HSPA1A', 'HSPA1B', 'HSPA6', 'HSPB1', 
-                                           'HSPH1', 'IER2', 'JUN', 'JUNB', 'NFKBIA', 'NFKBIZ', 'RGS2', 
-                                           'SLC2A3', 'SOCS3', 'UBC', 'ZFAND2A', 'ZFP36', 'ZFP36L1'), 
-                              column.name = 'StressScore')
-
-library(Seurat)
-library(sctransform)
+panc <- add.feature.score(object = panc, 
+                          assay = 'RAW', 
+                          slot = 'decontaminated',
+                          transform = TRUE, 
+                          features = c('BAG3', 'BLOC1S5-TXNDC5', 'CALU', 'DNAJB1', 'DUSP1', 'EGR1', 
+                                       'FOS', 'FOSB', 'HIF1A', 'HSP90AA1', 'HSP90AB1', 'HSP90AB2P', 
+                                       'HSP90AB3P', 'HSP90B1', 'HSPA1A', 'HSPA1B', 'HSPA6', 'HSPB1', 
+                                       'HSPH1', 'IER2', 'JUN', 'JUNB', 'NFKBIA', 'NFKBIZ', 'RGS2', 
+                                       'SLC2A3', 'SOCS3', 'UBC', 'ZFAND2A', 'ZFP36', 'ZFP36L1'), 
+                          column.name = 'StressScore')
 
 perform.sct.normalisation <- function(object, 
-                                      which.assay, 
+                                      assay,
+                                      slot,
+                                      new.assay.name = 'SCT',
                                       prefix = 'sctransform',
                                       do.scale = TRUE,
                                       do.center = TRUE,
                                       min_cells = 3,
+                                      save.seuratobject = TRUE,
                                       ...) {
   
   cat(crayon::cyan('Converting to Seurat object\n'))
-  seuratobj <- Seurat::CreateSeuratObject(counts = assay(object, which.assay), project = 'NA')
+  seuratobj <- Seurat::CreateSeuratObject(counts = object@methods[[assay]][[slot]], project = 'NA')
   cat(crayon::cyan('Initiating SCTransform\n'))
   seuratobj <- Seurat::SCTransform(object = seuratobj, do.scale = do.scale, do.center = do.center, min_cells = min_cells, ...)
   cat(crayon::cyan('SCTransform completed!\n'))
-  genes <- intersect(rownames(object), rownames(as.matrix(seuratobj@assays$SCT@data)))
-  object <- object[genes,]
-  metadata(object)$HVGs <- seuratobj@assays$SCT@var.features
-  assay(object, paste0(prefix, '_counts')) <- as.matrix(seuratobj@assays$SCT@counts)[genes,]
-  assay(object, paste0(prefix, '_data')) <- as.matrix(seuratobj@assays$SCT@data)[genes,]
-  reducedDim(object, paste0(prefix, '_scaled')) <- as.matrix(t(seuratobj@assays$SCT@scale.data))
-  cat(crayon::cyan('Populated SCE\n'))
+  .highly.variable.genes <- as.character(seuratobj@assays$SCT@var.features)
+  .counts <- as(object = as.matrix(seuratobj@assays$SCT@counts), Class = 'dgCMatrix')
+  .normalised <- as(as.matrix(seuratobj@assays$SCT@data), Class = 'dgCMatrix')
+  .norm.scaled <- as.matrix(seuratobj@assays$SCT@scale.data)
+  feat.meta <- feature_metadata(assay = .counts, col.prefix = new.assay.name)
+  object@methods[[new.assay.name]] <- new(Class = 'methods',
+                                          counts = .counts, 
+                                          normalised = .normalised, 
+                                          norm.scaled = .norm.scaled,
+                                          highly.variable.genes = .highly.variable.genes,
+                                          feature_metadata = feat.meta,
+                                          method.name = as.character(new.assay.name))
+  if(isTRUE(save.seuratobject)) {
+    
+    object@methods[[new.assay.name]]@alt_objects[['seurat']] <- seuratobj
+    
+  }
+  cat(crayon::cyan('Populated IBRAP object\n'))
   return(object)
-  
 }
 
-pancreas.tmp <- perform.sct.normalisation(object = pancreas, 
-                                          which.assay = 'counts')
-
-library(scran)
-library(scater)
+panc <- perform.sct.normalisation(object = panc, assay = 'RAW', slot = 'counts')
 
 perform.scran.normalisation <- function(object, 
-                                        new.assay = 'scran', 
-                                        max.cluster.size = 1000, 
-                                        scaling=NULL,
-                                        do.log=TRUE, 
-                                        center_size_factors=TRUE,
-                                        split.by) {
+                                        assay = 'RAW',
+                                        slot = 'decontaminated',
+                                        batch=NULL,
+                                        vars.to.regress=NULL,
+                                        do.scale=TRUE,
+                                        do.center=TRUE,
+                                        new.assay.name = 'SCRAN',
+                                        n.genes=1500,
+                                        max.cluster.size = 1000,
+                                        center_size_factors=TRUE) {
   
-  t <-unique(colData(object)[[split.by]])
-  list.matrix <- list()
+  assay.list <- list()
+  mat <- object@methods[[assay]][[slot]]
+  assay.list[[slot]] <- mat
+  sce <- SingleCellExperiment::SingleCellExperiment(assay.list)
   
-  for(o in t) {
-    cat(crayon::cyan(paste0('analysing sample: ', o, '\n')))
-    sub <- object[,colData(object)[[split.by]] == o]
-    cat(crayon::cyan('initialisaing quickCluster\n'))
-    clusters <- quickCluster(sub)
-    cat(crayon::cyan('initialisaing computeSumFactors\n'))
-    sce.scran <- computeSumFactors(sub, clusters=clusters, max.cluster.size=max.cluster.size, scaling=scaling)
-    cat(crayon::cyan('initialisaing LogNormCounts\n'))
-    log <- logNormCounts(x = sce.scran, log = do.log, center_size_factors=center_size_factors, exprs_values='counts')
-    cat(crayon::cyan('Adding matrix\n'))
-    y <- object
-    altExp(y) <- NULL
-    list.matrix[[o]] <- logcounts(log)
+  clusters <- scran::quickCluster(mat)
+  
+  cat(crayon::cyan('quickCluster completed\n'))
+  sce <- scran::computeSumFactors(sce, clusters=clusters, max.cluster.size=max.cluster.size, assay.type=slot)
+  sce <- scuttle::logNormCounts(x = sce, log = F, center.size.factors=center_size_factors, exprs_values=slot)
+  assay(sce, 'non-logged') <- assay(sce, 'normcounts')
+  sce <- scuttle::logNormCounts(x = sce, log = T, center.size.factors=center_size_factors, exprs_values=slot)
+  .counts <- assay(sce, 'non-logged')
+  .normalised <- assay(sce, 'normcounts')
+  cat(crayon::cyan('normalisation completed\n'))
+  feat.meta <- feature_metadata(assay = .counts, col.prefix = new.assay.name)
+  if(!is.null(batch)) {
+    
+    dec <- scran::modelGeneVar(sce, assay.type='normcounts', block=object@sample_metadata[[batch]])
+    
+  } else {
+    
+    dec <- scran::modelGeneVar(sce, assay.type='normcounts')
+    
   }
-  cat(crayon::cyan('Binding matrices\n'))
-  f <- do.call('cbind', list.matrix)
-  f <- as.matrix(as.data.frame(f))
-  new <- assay(object, 'counts') 
-  new <- new[rownames(f),]
-  cat(crayon::cyan('New matrix created\n'))
-  for(x in colnames(new)){
-    new[,x] <- f[,x]
+  
+  top.hvgs <- scran::getTopHVGs(stats = dec, n = n.genes)
+  
+  cat(crayon::cyan('HVGs identified\n'))
+  
+  seuobj <- Seurat::CreateSeuratObject(counts = object@methods[[assay]]@counts)
+  
+  if(!is.null(vars.to.regress)) {
+    
+    vars.to.regress.df <- as.data.frame(object@sample_metadata[,vars.to.regress])
+    colnames(vars.to.regress.df) <- vars.to.regress
+    rownames(vars.to.regress.df) <- colnames(object)
+    
+    vars.to.regress.df <- vars.to.regress.df[match(rownames(seuobj@meta.data), rownames(vars.to.regress.df)),]
+    seuobj@meta.data <- cbind(seuobj@meta.data,vars.to.regress.df)
+    
+    colnames(seuobj@meta.data) <- c(names(seuobj@meta.data)[1:sum(length(names(seuobj@meta.data))-length(vars.to.regress))], vars.to.regress)
+    
+    seuobj@assays$RNA@data <- .normalised[top.hvgs,]
+    seuobj <- Seurat::ScaleData(object = seuobj, vars.to.regress=vars.to.regress, do.scale=do.scale, do.center=do.center)
+    
+  } else {
+    
+    seuobj <- Seurat::ScaleData(object = seuobj, do.scale=do.scale, do.center=do.center)
+    
   }
-  cat(crayon::cyan('Matrix populated\n'))
-  empty <- object
-  assay(empty, new.assay) <- new
-  cat(crayon::cyan('Added to object\n'))
-  return(empty)
+  
+  .norm.scaled <- seuobj@assays$RNA@scale.data
+  
+  object@methods[[new.assay.name]] <- new(Class = 'methods',
+                                          counts = as(.counts, 'dgCMatrix'), 
+                                          normalised = as(.normalised, 'dgCMatrix'), 
+                                          norm.scaled = as.matrix(.norm.scaled),
+                                          highly.variable.genes = top.hvgs,
+                                          feature_metadata = feat.meta,
+                                          method.name = as.character(new.assay.name))
+  cat(crayon::cyan('Done\n'))
+  return(object)
 }
 
-
-
+library(SingleCellExperiment)
+panc <- perform.scran.normalisation(object = panc, assay = 'RAW', slot = 'counts', vars.to.regress = 'RAW_total.counts')
 
 perform.tpm.normalisation <- function(object, 
-                                      which.assay, 
-                                      new.assay = 'tpm', 
-                                      log.transform) {
+                                      assay, 
+                                      slot,
+                                      n.genes,
+                                      do.scale,
+                                      do.center,
+                                      vars.to.regress,
+                                      new.assay.name = 'TPM') {
   
-  r <- read.csv('/Users/knight05/Results/scRNA-seq/IBRAP_development/IBRAP/mart_export.csv', header = TRUE, sep = ',')
+  r <- read.csv('/Users/knight05/Results/scRNA-seq/IBRAP_development/IBRAP/data/mart_export.csv', header = TRUE, sep = ',')
   r$Gene.length <- r$Gene.end..bp. - r$Gene.start..bp.
   
   subset <- r[r$Gene.name %in% rownames(object),]
@@ -1596,69 +1756,112 @@ perform.tpm.normalisation <- function(object,
   
   cat(crayon::cyan('Rownames added\n'))
   
-  meta <- rowData(object)[intersect(rownames(rowData(object)), rownames(subset)),]
+  meta <- object@methods[[assay]]@feature_metadata[intersect(rownames((object@methods[[assay]]@feature_metadata)), rownames(subset)),]
   
   cat(crayon::cyan('Gene names interesected\n'))
   
-  object <- object[intersect(rownames(rowData(object)), rownames(subset)),]
+  mat <- as.matrix(object@methods[[assay]][[slot]])
   
-  ordered <- subset[match(rownames(rowData(object)), rownames(subset)),]
+  mat <- mat[intersect(rownames(mat), rownames(subset)),]
+  
+  ordered <- subset[match(rownames(mat), rownames(subset)),]
   
   cat(crayon::cyan('Matrices ordered\n'))
   
-  rowData(object)$length <- ordered$Gene.length
-  
-  mat <- assay(object, which.assay)
-  
   cat(crayon::cyan('Calculated counts/feature length\n'))
   
-  calc <- sweep(mat, 1, as.numeric(rowData(object)$length), `/`)
+  calc <- sweep(mat, 1, as.numeric(ordered$Gene.length), `/`)
   
   scale.factor <- colSums(calc)/1000000
   
-  calc2 <- sweep(calc, 2, as.numeric(scale.factor), `/`)
+  .counts <- sweep(calc, 2, as.numeric(scale.factor), `/`)
   
   cat(crayon::cyan('Calculations completed\n'))
   
-  if(log.transform == TRUE) {
-    cat(crayon::cyan('log(x+1) transforming\n'))
-    mat <- log(calc2+1)
-    cat(crayon::cyan('Transformation completed\n'))
+  cat(crayon::cyan('log2(x+1) transforming\n'))
+  .normalised <- log2(.counts+1)
+  cat(crayon::cyan('Transformation completed\n'))
+  
+  dec <- scran::modelGeneVar(x = .normalised)
+  .highly.variable.genes <- scran::getTopHVGs(stats = dec, n=n.genes)
+  seuobj <- Seurat::CreateSeuratObject(counts = mat)
+  seuobj@assays$RNA@data <- .normalised[.highly.variable.genes,]
+  
+  if(!is.null(vars.to.regress)) {
+    
+    vars.to.regress.df <- as.data.frame(object@sample_metadata[,vars.to.regress])
+    colnames(vars.to.regress.df) <- vars.to.regress
+    rownames(vars.to.regress.df) <- colnames(object)
+    
+    vars.to.regress.df <- vars.to.regress.df[match(rownames(seuobj@meta.data), 
+                                                   rownames(vars.to.regress.df)),]
+    seuobj@meta.data <- cbind(seuobj@meta.data,vars.to.regress.df)
+    
+    colnames(seuobj@meta.data) <- c(names(seuobj@meta.data)[1:sum(length(names(seuobj@meta.data))-length(vars.to.regress))], vars.to.regress)
+    
+    seuobj <- Seurat::ScaleData(object = seuobj, do.scale=do.scale, do.center=do.center,vars.to.regress=vars.to.regress)
+    
+  } else {
+    
+    seuobj <- Seurat::ScaleData(object = seuobj, do.scale=do.scale, do.center=do.center)
+    
   }
   
-  assay(object, new.assay) <- mat
+  .norm.scaled <- seuobj@assays$RNA@scale.data
+  
+  object@methods[[new.assay.name]] <- new(Class = 'methods',
+                                          counts = as(.counts, 'dgCMatrix'), 
+                                          normalised = as(.normalised, 'dgCMatrix'), 
+                                          norm.scaled = as.matrix(.norm.scaled),
+                                          highly.variable.genes = .highly.variable.genes,
+                                          feature_metadata = feature_metadata(assay = .counts, col.prefix = new.assay.name),
+                                          method.name = as.character(new.assay.name))
   
   cat(crayon::cyan('Completed!\n'))
   
   return(object)
 }
 
-processed.scrublet.decontx.mt.filter.tpm <- perform.tpm(object = processed.scrublet.decontx.mt.filter, 
-                                                        which.assay = 'decontXcounts', 
-                                                        log.transform = TRUE)
+panc <- perform.tpm.normalisation(object = panc, assay = 'RAW', slot = 'counts', n.genes = 1500, 
+                                  do.scale = T, do.center = T, vars.to.regress = 'RAW_total.counts')
 
-# scobj <- sc$AnnData(X = t(assay(pancreas.test, 'decontXcounts')), obs = as.data.frame(colData(pancreas.test)))
-# scobj$obs_names <- colnames(pancreas.test)
-# scobj$var_names <- rownames(pancreas.test)
-# sc$pp$normalize_total(scobj, target_sum = 1e6)
-# sc$pp$log1p(scobj)
-# sc$pp$highly_variable_genes(adata = scobj, min_mean=0.0125, max_mean=6, min_disp=0.5)
-# varfeat <- rownames(scobj$var[scobj$var$highly_variable == TRUE,])
-# scobj <- sc$AnnData(X = t(assay(pancreas.test, 'decontXcounts')[varfeat,]), obs = as.data.frame(colData(pancreas.test)))
-# sc$pp$regress_out(adata = scobj, keys = c('decontXcounts_total.counts', 'decontXcounts_percent.mt'))
-# sc$pp$scale(scobj)
-# sc$tl$pca(scobj)
-# sc$pp$neighbors(scobj)
-# sc$tl$umap(scobj)
-# sc$pl$umap(scobj, color = c('tech'))
-
-perform.scanpy.normalisation <- function(object, assay, new.assay='scanpy', 
-                                         target_sum = 1e6, exclude_highly_expressed = FALSE,  
-                                         max_fraction = 0.05, key_added = 'scanpy_norm_factor') {
+perform.scanpy.normalisation <- function(object, 
+                                         assay='RAW', 
+                                         slot='counts', 
+                                         new.assay.name='SCANPY', 
+                                         target_sum = 1e6, 
+                                         exclude_highly_expressed = FALSE,  
+                                         max_fraction = 0.05, 
+                                         key_added = 'scanpy_norm_factor',
+                                         
+                                         n_top_genes = 1500, 
+                                         max_mean = 6, 
+                                         min_mean = 0.0125, 
+                                         min_disp = 0.5, 
+                                         span = 0.3, 
+                                         n_bins = 20, 
+                                         flavor = 'seurat', 
+                                         batch_key = NULL,
+                                         
+                                         do.scale=TRUE,
+                                         vars.to.regress=NULL, 
+                                         n_jobs = NULL, 
+                                         zero_center = TRUE, 
+                                         max_value = NULL, 
+                                         obsm = NULL,
+                                         
+                                         save.anndata = TRUE
+                                         ) {
   sc <- reticulate::import('scanpy')
-  scobj <- sc$AnnData(X = t(assay(object, assay)))
+  scobj <- sc$AnnData(X = t(as.matrix(object@methods[[assay]][[slot]])))
   scobj$obs_names <- as.factor(colnames(object))
   scobj$var_names <- as.factor(rownames(object))
+  
+  if(length(names(object@sample_metadata)) >= 1) {
+    scobj$obs <- object@sample_metadata
+  }
+  
+  cat(crayon::cyan('Normalising counts\n'))
   
   if(!is.null(target_sum) & !is.null(key_added)) {
     sc$pp$normalize_total(adata = scobj, target_sum = as.integer(target_sum), 
@@ -1676,25 +1879,21 @@ perform.scanpy.normalisation <- function(object, assay, new.assay='scanpy',
     sc$pp$normalize_total(adata = scobj)
   }
   
+  .counts <- t(scobj$X)
+  rownames(.counts) <- rownames(object)
+  colnames(.counts) <- colnames(object)
+  
+  feat.metadata <- feature_metadata(assay = .counts, col.prefix = 'SCANPY')
+  
+  cat(crayon::cyan('Logging data\n'))
+  
   sc$pp$log1p(scobj)
   
-  mat <- t(scobj$X)
-  rownames(mat) <- rownames(object)
-  colnames(mat) <- colnames(object)
+  .normalised <- t(scobj$X)
+  rownames(.normalised) <- rownames(object)
+  colnames(.normalised) <- colnames(object)
   
-  assay(object, new.assay) <- mat
-  return(object)
-}
-
-perform.scanpy.hvg <- function(object, assay, n_top_genes = 1000, 
-                               max_mean = 6, min_mean = 0.0125, 
-                               min_disp = 0.5, span = 0.3, 
-                               n_bins = 20, flavor = 'seurat', batch_key = NULL) {
-  
-  sc <- reticulate::import('scanpy')
-  scobj <- sc$AnnData(X = t(assay(object, assay)))
-  scobj$obs_names <- as.factor(colnames(object))
-  scobj$var_names <- as.factor(rownames(object))
+  cat(crayon::cyan('Computing highly variable genes\n'))
   
   if (!is.null(n_top_genes) & !is.null(batch_key)) {
     
@@ -1727,8 +1926,7 @@ perform.scanpy.hvg <- function(object, assay, n_top_genes = 1000,
                                 min_disp = as.integer(min_disp), 
                                 span = as.integer(span),
                                 n_bins = as.integer(n_bins), 
-                                flavor = as.character(flavor), 
-                                batch_key = as.character(batch_key))
+                                flavor = as.character(flavor))
     
   } else {
     
@@ -1742,59 +1940,66 @@ perform.scanpy.hvg <- function(object, assay, n_top_genes = 1000,
     
   }
   
-  vargenes <- rownames(scobj$var[scobj$var$highly_variable == TRUE,])
-  cat(crayon::cyan(paste0('Discovered variable features: ', vargenes)))
-  metadata(object)$HVGs <- vargenes
+  .highly.variable.genes <- rownames(object)[scobj$var[['highly_variable']]]
+  
+  scobj2 <- sc$AnnData(X = t(.normalised[.highly.variable.genes,]))
+  
+    if(length(names(object@sample_metadata)) >= 1) {
+      scobj2$obs <- object@sample_metadata
+    }
+    
+  if(!is.null(do.scale)) {
+    
+    if(!is.null(vars.to.regress)) {
+      if(!is.null(n_jobs)) {
+        sc$pp$regress_out(adata = scobj2, keys = vars.to.regress, n_jobs = as.integer(n_jobs))
+      } else {
+        sc$pp$regress_out(adata = scobj2, keys = vars.to.regress)
+      }
+    }
+
+    if(!is.null(max_value) & !is.null(obsm)) {
+      sc$pp$scale(scobj2, zero_center = as.logical(zero_center), max_value = as.integer(max_value), obsm = as.character(obsm))
+    } else if(!is.null(max_value)) {
+      sc$pp$scale(scobj2, zero_center = as.logical(zero_center), max_value = as.integer(max_value))
+    } else if(!is.null(obsm)) {
+      sc$pp$scale(scobj2, zero_center = as.logical(zero_center), obsm = as.character(obsm))
+    } else {
+      sc$pp$scale(scobj2)
+    }
+    
+    .norm.scaled <- t(scobj2$X)
+    colnames(.norm.scaled) <- colnames(object)
+    rownames(.norm.scaled) <- rownames(object)[rownames(object) %in% .highly.variable.genes]
+    
+  } else {
+    
+    .norm.scaled <- .normalised[.highly.variable.genes,]
+    colnames(.norm.scaled) <- colnames(object)
+    rownames(.norm.scaled) <- rownames(object)[rownames(object) %in% .highly.variable.genes]
+    
+  }
+  
+  object@methods[[new.assay.name]] <- new(Class = 'methods',
+                                          counts = as(.counts, 'dgCMatrix'), 
+                                          normalised = as(.normalised, 'dgCMatrix'), 
+                                          norm.scaled = as.matrix(.norm.scaled),
+                                          highly.variable.genes = .highly.variable.genes,
+                                          feature_metadata = feat.metadata,
+                                          method.name = as.character(new.assay.name))
+  
+  if(isTRUE(save.anndata)) {
+    
+    object@methods[[new.assay.name]]@alt_objects$anndata
+    
+  }
+  
+  
   
   return(object)
-  
 }
 
-perform.scanpy.scale <- function(object, 
-                                 assay,
-                                 assay.name = 'scanpy_HVGs_scaled',
-                                 var.to.regress, 
-                                 n_jobs = NULL, 
-                                 zero_center = TRUE, 
-                                 max_value = NULL, 
-                                 obsm = NULL) {
-  
-  sc <- reticulate::import('scanpy')
-  scobj <- sc$AnnData(X = t(assay(object, assay))[,metadata(object)$HVGs])
-  scobj$obs_names <- as.factor(colnames(object))
-  scobj$var_names <- as.factor(metadata(object)$HVGs)
-  
-  if(as.data.frame(colData(object)) >= 1) {
-    scobj$obs <- as.data.frame(colData(object))
-  }
-  
-  if(!is.null(var.to.regress)) {
-    if(!is.null(n_jobs)) {
-      sc$pp$regress_out(adata = scobj, keys = var.to.regress, n_jobs = as.integer(n_jobs))
-    } else {
-      sc$pp$regress_out(adata = scobj, keys = var.to.regress)
-    }
-  }
-  
-  if(!is.null(max_value) & !is.null(obsm)) {
-    sc$pp$scale(scobj, zero_center = as.logical(zero_center), max_value = as.integer(max_value), obsm = as.character(obsm))
-  } else if(!is.null(max_value)) {
-    sc$pp$scale(scobj, zero_center = as.logical(zero_center), max_value = as.integer(max_value))
-  } else if(!is.null(obsm)) {
-    sc$pp$scale(scobj, zero_center = as.logical(zero_center), obsm = as.character(obsm))
-  } else {
-    sc$pp$scale(scobj)
-  }
-  
-  mat <- scobj$X
-  
-  colnames(mat) <- metadata(object)$HVGs
-  rownames(mat) <- colnames(object)
-  
-  reducedDim(object, assay.name) <- mat
-  
-  return(object)
-}
+panc <- perform.scanpy.normalisation(object = panc, vars.to.regress = 'RAW_total.counts')
 
 perform.bbknn <- function(object, 
                           reduction,
@@ -1873,213 +2078,277 @@ test <- perform.bbknn(object = pancreas.test,
                       graph.name = 'dbmap_bbknn', 
                       column.correct = 'tech')
 
-perform.seurat.hvg <- function(object, 
-                               assay, 
-                               nfeatures=1500, 
-                               feat.to.omit=NULL, 
-                               ...) {
-  if(typeof(object) != 'S4') {
-    cat(crayon::cyan('Must be an S4 SCE object\n'))
-    return(NULL)
-  } else {
-    tmp <- suppressWarnings(Seurat::as.Seurat(object, counts = NULL, data = assay))
-    cat(crayon::cyan('SCE converted to seurat object\n'))
-    f <- Seurat::FindVariableFeatures(object = tmp[!(rownames(tmp) %in% feat.to.omit)], nfeatures = nfeatures, ...)
-    tmp <- f@assays$RNA@var.features[f@assays$RNA@var.features %in% feat.to.omit]
-    cat(crayon::cyan('Variable features identified\n'))
-    metadata(object)$HVGs <- tmp
-    cat(crayon::cyan('HVGs added to object\n'))
-  }
-  return(object)
-}
-
-pancreas.test.1 <- perform.seurat.hvg(object = pancreas.test.1, assay = 'sctransform', nfeatures = 1500)
-
-perform.scran.hvg <- function(object, 
-                              assay.name, 
-                              nfeatures = 1500, 
-                              method = 'fish', 
-                              unwanted.variance = NULL) {
-  if(typeof(object) != 'S4') {
-    cat(crayon::cyan('Must be an S4 SCE object\n'))
-    return(NULL)
-  } else {
-    matrix <- assay(object, assay.name)
-    cat(crayon::cyan('Matrix isolated\n'))
-  }
-  dec <- scran::modelGeneVar(x = matrix)
-  top.hvgs <- scran::getTopHVGs(dec, n=nfeatures)
-  cat(crayon::cyan('Variable features identified\n'))
-  metadata(object)$HVGs <- top.hvgs
-  cat(crayon::cyan('HVGs added to object\n'))
-  return(object)
-}
-
-pancreas.scran <- perform.scran.hvg(object = pancreas, assay.name = 'sctransform')
-
-perform.seurat.scale <- function(object, 
-                                 use.assay, 
-                                 unwanted.variance = NULL, 
-                                 scale, 
-                                 centre, 
-                                 ...) {
-  y <- object
-  tmp <- suppressWarnings(Seurat::as.Seurat(y, counts = NULL, data = use.assay))
-  cat(crayon::cyan('SCE converted to seurat object\n'))
-  tmp <- Seurat::ScaleData(tmp, vars.to.regress = unwanted.variance, do.scale = scale, do.center = scale, ...)
-  cat(crayon::cyan('Data scaled\n'))
-  reducedDim(y, 'HVGs_scaled') <- t(as.matrix(tmp@assays$RNA@scale.data))
-  cat(crayon::cyan('Scaled matrix attached to object\n'))
-  return(y)
-}
-
-pancreas.test.1 <- perform.seurat.scale(object = pancreas.test.1, use.assay = 'sctransform', unwanted.variance = c('percent.mt'), scale = TRUE, centre = TRUE)
-
 perform.pca <- function(object, 
-                        reduced.dim = 'HVGs_scaled', 
+                        assay,
+                        slot='norm.scaled',
+                        n.pcs,
                         reduction.save='pca', 
                         ...) {
-  cat(crayon::cyan('Initialising PCA\n'))
-  a <- PCAtools::pca(mat = t(reducedDim(object, reduced.dim)), center = FALSE, scale = FALSE, ...)
-  reducedDim(object, reduction.save) <- as.matrix(a$rotated[,1:50])
-  cat(crayon::cyan('PCA completed\n'))
+  for(t in assay) {
+    
+    mat <- object@methods[[t]][[slot]]
+    cat(crayon::cyan('Initialising PCA for assay:', t, '\n'))
+    a <- PCAtools::pca(mat = mat, center = F, scale = F)
+    b <- PCAtools::findElbowPoint(a$variance)
+    
+    p <- PCAtools::screeplot(pcaobj = a, components = 1:sum(as.numeric(b)+10), 
+                        title = paste0(assay,'_PCA_variance'), vline = b) +
+      geom_label(aes(x = b, y = 50,
+                     label = 'Elbow point', vjust = -1, size = 8)) +
+      ggtitle(paste0(t,'_screeplot'))
+    
+    print(p)
+    
+    cat(crayon::cyan('PCA completed\n'))
+    
+    object@methods[[t]]@computational_reductions[[reduction.save]] <- as.matrix(a$rotated[,n.pcs])
+    
+  }
+  
   return(object)
+  
 }
 
-pancreas <- perform.pca(object = pancreas, reduction.save)
-
-plot.red.sd <- function(object, 
-                        reduction, 
-                        n.dim, 
-                        cex.names = 0.6) {
-  gg <- apply(X = reducedDim(object, as.character(reduction))[,n.dim], MARGIN = 2, FUN = sd)
-  barplot(gg, cex.names = cex.names, las = 2, main = paste0(reduction, '_var'))
-}
-
-plot.red.sd(object = pancreas.scran, reduction = 'uncorrected_pca', n.dim = 1:25)
+panc <- perform.pca(object = panc, assay = c('SCT', 'SCRAN', 'TPM', 'SCANPY'), n.pcs = 1:50, reduction.save = 'pca')
 
 perform.dbmap <- function(object, 
                           assay, 
+                          slot='normalised',
                           n_components = 100, 
                           n_neighbors = 15, 
-                          reduction.save='dbmap') {
+                          reduction.save='dbmap',
+                          save.object = TRUE) {
+  
   scipy.sparse <- reticulate::import('scipy.sparse', convert = FALSE)
-  print('.')
+  
   dbmap <- reticulate::import('dbmap', convert = FALSE)
-  print('.')
-  cellnames <- colnames(assay)
-  print('.')
-  data <- scipy.sparse$csr_matrix(reticulate::r_to_py(t(assay)))
-  print('.')
-  diff <- dbmap$diffusion$Diffusor(n_components = as.integer(n_components), n_neighbors = as.integer(n_neighbors),
-                                   transitions = as.logical(F),
-                                   norm = as.logical(F), ann_dist = as.character('cosine'),
-                                   n_jobs = as.integer(10), kernel_use = as.character('simple'))$fit(data)
-  print('.')
-  dbmap_components <- reticulate::py_to_r(diff$transform(data))
-  print('.')
-  res <- diff$return_dict()
-  print(plot(reticulate::py_to_r(res$EigenValues)))
-  print(barplot(reticulate::py_to_r(res$EigenValues)))
-  print('.')
-  rownames(dbmap_components) <- cellnames
-  print('.')
-  dim.names <- list()
-  for(t in 1:length(colnames(dbmap_components))) {
-    dim.names[[t]] <- paste0('dbmap_', t)
+  
+  for(o in assay) {
+    
+    cat(crayon::cyan(paste0('calculating dbmap for assay: ', o,'\n')))
+    
+    cellnames <- colnames(object@methods[[o]][[slot]])
+    
+    data <- scipy.sparse$csr_matrix(reticulate::r_to_py(t(object@methods[[o]][[slot]][object@methods[[o]]@highly.variable.genes,])))
+    
+    if(!is.null(n_components)) {
+      
+      diff <- dbmap$diffusion$Diffusor(n_components = as.integer(n_components), n_neighbors = as.integer(n_neighbors),
+                                       transitions = as.logical(F),
+                                       norm = as.logical(F), ann_dist = as.character('cosine'),
+                                       n_jobs = as.integer(10), kernel_use = as.character('simple'))$fit(data)
+      
+    } else {
+      
+      diff <- dbmap$diffusion$Diffusor(n_neighbors = as.integer(n_neighbors),
+                                       transitions = as.logical(F),
+                                       norm = as.logical(F), ann_dist = as.character('cosine'),
+                                       n_jobs = as.integer(10), kernel_use = as.character('simple'))$fit(data)
+      
+    }
+    
+    dbmap_components <- reticulate::py_to_r(diff$transform(data))
+    
+    res <- diff$return_dict()
+
+    rownames(dbmap_components) <- cellnames
+    
+    dim.names <- list()
+    for(t in 1:length(colnames(dbmap_components))) {
+      dim.names[[t]] <- paste0('dbmap_', t)
+    }
+    colnames(dbmap_components) <- unlist(dim.names)
+    
+    object@methods[[o]]@computational_reductions[[reduction.save]] <- as.matrix(dbmap_components)
+    
+    if(isTRUE(save.object)) {
+      
+      object@methods[[o]]@alt_objects[[reduction.save]] <- diff
+      
+    }
+    
   }
-  colnames(dbmap_components) <- unlist(dim.names)
-  reducedDim(object, reduction.save) <- as.matrix(dbmap_components)
+  
   return(object)
+  
 }
 
-pancreas <- perform.dbmap(object = pancreas, assay = assay(pancreas, 'sctransform')[metadata(pancreas)$HVGs,], reduction.save = 'uncorrected_dbmap')
+panc <- perform.dbmap(object = panc, assay = c('SCT', 'SCRAN', 'TPM', 'SCANPY'),  reduction.save = 'dbmap')
 
 perform.umap <- function(object, 
+                         assay,
                          reduction='pca',
-                         graph = NULL,
-                         reduction.save,
-                         n.dim, 
+                         reduction.save='umap',
+                         n.dim=NULL, 
                          n_components = 3, 
                          ...) {
   
-  c <- uwot::umap(X = reducedDim(object, reduction)[,n.dim], n_components = n_components, verbose = TRUE, ...)
-  dim.names <- list()
-  for(l in 1:n_components) {
-    dim.names[[l]] <- paste0('umap_', l)
+  for(u in assay) {
+    
+    cat(crayon::cyan('Processing', reduction, 'for assay:', u,'\n'))
+    if(!is.null(n.dim)) {
+      
+      c <- uwot::umap(X = object@methods[[u]]@computational_reductions[[reduction]][,n.dim], n_components = n_components, verbose = TRUE, ...)
+      
+    } else {
+      
+      c <- uwot::umap(X = object@methods[[u]]@computational_reductions[[reduction]], n_components = n_components, verbose = TRUE, ...)
+      
+    }
+    dim.names <- list()
+    for(l in 1:n_components) {
+      dim.names[[l]] <- paste0('umap_', l)
+    }
+    colnames(c) <- unlist(dim.names)
+    object@methods[[u]]@visualisation_reductions[[reduction.save]] <- c
+    
   }
-  colnames(c) <- unlist(dim.names)
-  reducedDim(object, reduction.save) <- c
   
   return(object)
 }
 
-pancreas <- perform.umap(object = pancreas, 
-                         reduction.save = 'scanorama_reduced_umap', 
-                         reduction = 'scanorama_reduced', 
-                         n.dim = 1:50)
-pancreas <- perform.umap(object = pancreas, 
-                         reduction.save = 'uncorrected_pca_umap', 
-                         reduction = 'uncorrected_pca', 
-                         n.dim = 1:12)
+panc <- perform.umap(object = panc, assay = c('SCT', 'SCRAN', 'TPM', 'SCANPY'), reduction = 'pca', reduction.save = 'pca_umap', n.dim = 1:42, n_components = 3)
+panc <- perform.umap(object = panc, assay = c('SCT', 'SCRAN', 'TPM', 'SCANPY'), reduction = 'dbmap', reduction.save = 'dbmap_umap', n_components = 3)
 
 perform.tsne <- function(object, 
+                         assay,
                          reduction, 
                          reduction.save, 
-                         n.dim,
+                         n.dim=NULL,
                          n_components = 3, 
                          ...) {
-  if(isS4(object) == FALSE) {
-    cat(crayon::cyan('Must be S4 class object\n'))
+  if(is(object = object, class2 = 'IBRAP') == FALSE) {
+    cat(crayon::cyan('Must be IBRAP class object\n'))
   }
   if(is.null(assay)) {
     cat(crayon::cyan(paste0('Please provide assay\n')))
   }
-  cat(crayon::cyan('t-SNE reduction initialising\n'))
-  c <- ProjectionBasedClustering::tSNE(DataOrDistances = as.matrix(reducedDim(object, reduction))[,n.dim], 
-                                       OutputDimension = n_components, Iterations = 1000, ...)$ProjectedPoints
-  cat(crayon::cyan('t-SNE reduction completed\n'))
-  dim.names <- list()
-  for(t in 1:n_components) {
-    dim.names[[t]] <- paste0('tsne_', t)
+  
+  for(g in assay) {
+    
+    cat(crayon::cyan('t-SNE reduction initialising for assay:', g, '\n'))
+    
+    if(!is.null(n.dim)) {
+      
+      c <- ProjectionBasedClustering::tSNE(DataOrDistances = object@methods[[g]]@computational_reductions[[reduction]][,n.dim], 
+                                           OutputDimension = n_components, Iterations = 1000, ...)$ProjectedPoints
+      
+    } else {
+      
+      c <- ProjectionBasedClustering::tSNE(DataOrDistances = object@methods[[g]]@computational_reductions[[reduction]], 
+                                           OutputDimension = n_components, Iterations = 1000, ...)$ProjectedPoints
+      
+    }
+    
+    cat(crayon::cyan('t-SNE reduction completed\n'))
+    dim.names <- list()
+    for(t in 1:n_components) {
+      dim.names[[t]] <- paste0('tsne_', t)
+    }
+    colnames(c) <- unlist(dim.names)
+    rownames(c) <- colnames(object)
+    object@methods[[g]]@visualisation_reductions[[reduction.save]] <- c
+    
+    cat(crayon::cyan('t-SNE data added\n'))
+    
   }
-  colnames(c) <- unlist(dim.names)
-  reducedDim(object, reduction.save) <- c
-  cat(crayon::cyan('t-SNE data added\n'))
+
   return(object)
 }
 
-pancreas <- perform.tsne(object = pancreas, 
-                         reduction.save = 'uncorrected_dbmap_tsne', 
-                         reduction = 'uncorrected_dbmap', 
-                         n.dim = 1:104)
-pancreas <- perform.tsne(object = pancreas, 
-                         reduction.save = 'uncorrected_pca_tsne', 
-                         reduction = 'uncorrected_pca', 
-                         n.dim = 1:12)
+panc <- perform.tsne(object = panc, assay = c('SCT', 'SCRAN', 'TPM', 'SCANPY'), reduction = 'pca', reduction.save = 'pca_tsne', n.dim = 1:42, n_components = 3)
+panc <- perform.tsne(object = panc, assay = c('SCT', 'SCRAN', 'TPM', 'SCANPY'), reduction = 'dbmap', reduction.save = 'dbmap_tsne', n_components = 3)
 
 library(harmony)
 
-perform.harmony <- function(object, group.by.vars, reduction = 'pca', dims.use = NULL,
+perform.harmony <- function(object, assay, group.by.vars, reduction = 'pca', dims.use = NULL,
                             theta = NULL, lambda = NULL, sigma = 0.1, nclust = NULL,
                             tau = 0, block.size = 0.05, max.iter.harmony = 10,
                             max.iter.cluster = 20, epsilon.cluster = 1e-05,
                             epsilon.harmony = 1e-04, plot_convergence = FALSE, verbose = TRUE,
                             reference_values = NULL, reduction.save = "harmony", ...) {
-  mat <- reducedDim(object, reduction)
-  cat(crayon::cyan('Initialising harmony\n'))
-  harm <- harmony::HarmonyMatrix(data_mat = mat[,dims.use], meta_data = colData(object), vars_use = group.by.vars, do_pca = FALSE, 
-                                 theta = theta, lambda = lambda, sigma = sigma, nclust = nclust, tau = tau, 
-                                 block.size = block.size, max.iter.harmony = max.iter.harmony, max.iter.cluster = max.iter.cluster, 
-                                 epsilon.cluster = epsilon.cluster, epsilon.harmony = epsilon.harmony, plot_convergence = plot_convergence, 
-                                 return_object = FALSE, verbose = verbose, reference_values = reference_values)
-  reducedDim(object, reduction.save) <- harm
+  
+  for(p in assay) {
+    
+    reduction.list <- list()
+    red.names <- c(names(object@methods[[p]]@computational_reductions), 
+                   names(object@methods[[p]]@integration_reductions),
+                   names(object@methods[[p]]@visualisation_reductions))
+    
+    for(i in red.names) {
+      
+      if(i %in% names(object@methods[[p]]@computational_reductions)) {
+        
+        reduction.list[[i]] <- object@methods[[p]]@computational_reductions[[i]]
+        
+      }
+      
+      if(i %in% names(object@methods[[p]]@integration_reductions)) {
+        
+        reduction.list[[i]] <- object@methods[[p]]@integration_reductions[[i]]
+        
+      }
+      
+      if(i %in% names(object@methods[[p]]@visualisation_reductions)) {
+        
+        reduction.list[[i]] <- object@methods[[p]]@visualisation_reductions[[i]]
+        
+      }
+      
+    }
+    
+    for(r in reduction) {
+      
+      if(!r %in% names(reduction.list)) {
+        
+        cat(crayon::cyan('reductions could not be found\n'))
+        return(object)
+        
+      }
+      
+    }
+    
+    print('.')
+    
+    count <- 1
+    
+    for(g in reduction) {
+      
+      reduction.list <- reduction.list[[g]]
+      
+      red.save <- reduction.save[[count]]
+      
+      dims <- dims.use[[count]]
+      
+      if(is.null(dims)) {
+        
+        dims <- 1:length(colnames(reduction.list))
+        
+      }
+      
+      cat(crayon::cyan('Initialising harmony\n'))
+      
+      harm <- harmony::HarmonyMatrix(data_mat = reduction.list[,dims], meta_data = object@sample_metadata, vars_use = group.by.vars, do_pca = FALSE, 
+                                     theta = theta, lambda = lambda, sigma = sigma, nclust = nclust, tau = tau, 
+                                     block.size = block.size, max.iter.harmony = max.iter.harmony, max.iter.cluster = max.iter.cluster, 
+                                     epsilon.cluster = epsilon.cluster, epsilon.harmony = epsilon.harmony, plot_convergence = plot_convergence, 
+                                     return_object = FALSE, verbose = verbose, reference_values = reference_values)
+      
+      object@methods[[t]]@integration_reductions[[red.save]] <- harm
+      
+      count <- count + 1
+      
+    }
+    
+    
+    
+  }
+
   cat(crayon::cyan('Harmony completed\n'))
   return(object)
 }
 
-pancreas <- perform.harmony(object = pancreas, group.by.vars = c('tech'), dims.use = 1:12, max.iter.harmony = 100, reduction = 'uncorrected_pca', theta = 1, reduction.save = 'pca_harmony')
-pancreas <- perform.harmony(object = pancreas, group.by.vars = c('tech'), dims.use = 1:104, max.iter.harmony = 100, reduction = 'uncorrected_dbmap', theta = 1, reduction.save = 'dbmap_harmony')
+perform.harmony(object = panc, assay = c('SCRAN'), group.by.vars = 'celltype', reduction = c('pca', 'dbmap'))
 
 perform.scanorama <- function(object, 
                               assay, 
@@ -2178,8 +2447,6 @@ perform.scanorama <- function(object,
   
 }
 
-pancreas <- perform.scanorama(object = pancreas, assay = t(reducedDim(pancreas, 'sctransform_scaled')), split.by = 'tech', reduced.dim = TRUE, n.dims = 50, reduction.save = 'scanorama_reduced')
-
 perform.bbknn <- function(object, 
                           reduced.dim, 
                           dims, 
@@ -2208,125 +2475,185 @@ perform.bbknn <- function(object,
   return(object)
 }
 
-pancreas <- perform.bbknn(object = pancreas, reduced.dim = 'uncorrected_pca', dims = 1:12, split.by = 'tech', dim.save = 'pca_bbknn')
-pancreas <- perform.bbknn(object = pancreas.test, reduced.dim = 'uncorrected_dbmap', dims = 1:length(colnames(reducedDim(pancreas.test, 'uncorrected_dbmap'))), split.by = 'tech', graph.save = 'dbmap_bbknn')
-
-pancreas <- perform.tsne(object = pancreas, 
-                         reduction.save = 'pca_harmony_tsne', 
-                         reduction = 'pca_harmony', 
-                         n.dim = 1:12)
-pancreas <- perform.tsne(object = pancreas, 
-                         reduction.save = 'dbmap_harmony_tsne', 
-                         reduction = 'dbmap_harmony', 
-                         n.dim = 1:104)
-pancreas <- perform.tsne(object = pancreas, 
-                         reduction.save = 'pca_bbknn_tsne', 
-                         reduction = 'pca_bbknn', 
-                         n.dim = 1:12)
-pancreas <- perform.tsne(object = pancreas, 
-                         reduction.save = 'dbmap_bbknn_tsne', 
-                         reduction = 'dbmap_bbknn', 
-                         n.dim = 1:104)
-pancreas <- perform.tsne(object = pancreas, 
-                         reduction.save = 'scanorama_reduced_tsne', 
-                         reduction = 'scanorama_reduced', 
-                         n.dim = 1:50)
-
-pancreas <- perform.umap(object = pancreas, 
-                         reduction.save = 'pca_harmony_umap', 
-                         reduction = 'pca_harmony', 
-                         n.dim = 1:12)
-pancreas <- perform.umap(object = pancreas, 
-                         reduction.save = 'dbmap_harmony_umap', 
-                         reduction = 'dbmap_harmony', 
-                         n.dim = 1:104)
-pancreas <- perform.umap(object = pancreas, 
-                         reduction.save = 'pca_bbknn_umap', 
-                         reduction = 'pca_bbknn', 
-                         n.dim = 1:12)
-pancreas <- perform.umap(object = pancreas, 
-                         reduction.save = 'dbmap_bbknn_umap', 
-                         reduction = 'dbmap_bbknn', 
-                         n.dim = 1:104)
-pancreas <- perform.umap(object = pancreas, 
-                         reduction.save = 'scanorama_reduced_umap', 
-                         reduction = 'scanorama_reduced', 
-                         n.dim = 1:50)
-
 perform.seurat.cluster <- function(object, 
+                                   assay,
                                    reduction='pca', 
-                                   data_frame_name,
+                                   assignment.df.name='seurat',
                                    res=c(0.1,0.2,0.3,0.4,0.5,
                                          0.6,0.7,0.8,0.9,1,
                                          1.1,1.2,1.3,1.4,1.5), 
-                                   dims=1:34,
+                                   dims=NULL,
                                    prune.SNN=0, 
                                    nn.method='annoy', 
                                    annoy.metric='euclidean', 
                                    nn.eps=0.0, 
                                    ...) {
   
-  tmp <- suppressWarnings(Seurat::as.Seurat(x = object, counts='counts', data=NULL))
-  cat(crayon::cyan('Converted SCE to Seurat object\n'))
-  tmp <- Seurat::FindNeighbors(object = tmp, reduction = reduction, verbose = TRUE, dims = dims, compute.SNN = TRUE, prune.SNN = prune.SNN,
-                               nn.method = nn.method, annoy.metric = annoy.metric, nn.eps = nn.eps)
-  cat(crayon::cyan('Neighbours identified\n'))
-  tmp <- Seurat::FindClusters(object = tmp, resolution = res, ...)
-  cat(crayon::cyan('Clusters identified\n'))
-  temp <- object
-  orig.names <- colnames(colData(object))
-  new.names <- colnames(tmp@meta.data)
-  sep.names <- new.names[!(new.names %in% orig.names)]
-  sep.names <-sep.names[1:length(sep.names)-1]
-  new.clusters <- tmp@meta.data[,sep.names]
-  z <- list()
-  for(t in res) {
-    z[length(z)+1] <- paste0('Seurat_res_', t)
+  for(p in assay) {
+    
+    cat(crayon::cyan(paste0('Calculating Seurat clusters for assay: ', p, '\n')))
+    tmp <- Seurat::CreateSeuratObject(counts = object@methods[[p]]@counts)
+    tmp@reductions[[reduction]] <- Seurat::CreateDimReducObject(embeddings = object@methods[[p]]@computational_reductions[[reduction]], key = reduction)
+    orig.name <- names(tmp@meta.data)
+    if(!is.null(dims)) {
+      
+      tmp <- Seurat::FindNeighbors(object = tmp, reduction = reduction, verbose = TRUE, dims = dims, compute.SNN = TRUE, prune.SNN = prune.SNN,
+                                   nn.method = nn.method, annoy.metric = annoy.metric, nn.eps = nn.eps)
+      
+    } else {
+      
+      tmp <- Seurat::FindNeighbors(object = tmp, reduction = reduction, verbose = TRUE, dims = 1:length(colnames(object@methods[[p]]@computational_reductions[[reduction]])), compute.SNN = TRUE, prune.SNN = prune.SNN,
+                                   nn.method = nn.method, annoy.metric = annoy.metric, nn.eps = nn.eps)
+      
+    }
+    
+    cat(crayon::cyan('Neighbours identified\n'))
+    tmp <- Seurat::FindClusters(object = tmp, resolution = res, ...)
+    cat(crayon::cyan('Clusters identified\n'))
+    post.name <- names(tmp@meta.data)
+    
+    post.name <- post.name[!post.name %in% orig.name]
+    post.name <- post.name[1:length(post.name)-1]
+    new.clusters <- tmp@meta.data[,post.name]
+    new.clusters <- new.clusters[match(rownames(object@sample_metadata), rownames(new.clusters)),]
+    object@methods[[p]]@cluster_assignments[[assignment.df.name]] <- new.clusters
+    cat(crayon::cyan('Seurat clusters added\n'))
+    
   }
   
-  colnames(new.clusters) <- unlist(z)
-  metadata(temp)[['clustering']][[data_frame_name]] <- new.clusters
-  cat(crayon::cyan('Seurat clusters added\n'))
-  return(temp)
+  return(object)
+  
 }
 
-# pancreas <- perform.seurat.cluster(object = pancreas, reduction = 'uncorrected_dbmap', dims = 1:104, data_frame_name = 'seurat:uncorrected_dbmap')
-# pancreas <- perform.seurat.cluster(object = pancreas, reduction = 'uncorrected_pca', dims = 1:12, data_frame_name = 'seurat:uncorrected_pca')
-# pancreas <- perform.seurat.cluster(object = pancreas, reduction = 'dbmap_bbknn', dims = 1:104, data_frame_name = 'seurat:dbmap_bbknn')
-# pancreas <- perform.seurat.cluster(object = pancreas, reduction = 'pca_bbknn', dims = 1:12, data_frame_name = 'seurat:pca_bbknn')
-pancreas <- perform.seurat.cluster(object = pancreas, reduction = 'scanorama_reduced', dims = 1:50, data_frame_name = 'seurat:scanorama_reduced')
-# pancreas <- perform.seurat.cluster(object = pancreas, reduction = 'pca_harmony', dims = 1:12, data_frame_name = 'seurat:pca_harmony')
-# pancreas <- perform.seurat.cluster(object = pancreas, reduction = 'dbmap_harmony', dims = 1:104, data_frame_name = 'seurat:dbmap_harmony')
+panc <- perform.seurat.cluster(object = panc, assay = c('SCT', 'SCRAN', 'TPM', 'SCANPY'), reduction = 'pca', 
+                               assignment.df.name = 'pca_seurat', dims = 1:42)
 
+panc <- perform.seurat.cluster(object = panc, assay = c('SCT', 'SCRAN', 'TPM', 'SCANPY'), reduction = 'dbmap', 
+                               assignment.df.name = 'dbmap_seurat')
 
 library(SC3)
 
-perform.sc3.cluster <- function(object, 
-                                reduction, 
-                                dims, 
-                                data_frame_name,
+perform.sc3.reduction.cluster <- function(object, 
+                                assay,
+                                reduction,
+                                dims,
+                                assignment.df.name,
                                 ks, 
-                                n.core=3) {
+                                n.core = 3) {
+  
   cat(crayon::cyan('Initialising SC3 clustering\n'))
-  temp.2 <- object
-  temp.2 <- SingleCellExperiment(list('logcounts' = t(reducedDim(object, reduction))[dims,]))
-  rowData(temp.2)$feature_symbol <- rownames(temp.2)
-  temp.2 <- temp.2[!duplicated(rowData(temp.2)$feature_symbol), ]
-  temp.2 <- sc3_prepare(temp.2, gene_filter = FALSE, n_cores = n.core)
-  temp.2 <- sc3_calc_dists(temp.2)
-  temp.2 <- sc3_calc_transfs(temp.2)
-  temp.2 <- sc3_kmeans(temp.2, ks = ks)
-  temp.2 <- sc3_calc_consens(temp.2)
-  orig.names <- colnames(colData(object))
-  new.names <- colnames(colData(temp.2))
-  sep.names <- new.names[!(new.names %in% orig.names)]
-  new.clusters <- colData(temp.2)[,sep.names]
-  metadata(object)[['clustering']][[data_frame_name]] <- as.data.frame(new.clusters)
-  cat(crayon::cyan('SC3 clustering completed\n'))
+  
+  for(p in assay) {
+    
+    reduction.list <- list()
+    red.names <- c(names(object@methods[[p]]@computational_reductions), 
+                   names(object@methods[[p]]@integration_reductions),
+                   names(object@methods[[p]]@visualisation_reductions))
+    
+    for(i in red.names) {
+      
+      if(i %in% names(object@methods[[p]]@computational_reductions)) {
+        
+        reduction.list[[i]] <- object@methods[[p]]@computational_reductions[[i]]
+        
+      }
+      
+      if(i %in% names(object@methods[[p]]@integration_reductions)) {
+        
+        reduction.list[[i]] <- object@methods[[p]]@integration_reductions[[i]]
+        
+      }
+      
+      if(i %in% names(object@methods[[p]]@visualisation_reductions)) {
+        
+        reduction.list[[i]] <- object@methods[[p]]@visualisation_reductions[[i]]
+        
+      }
+      
+    }
+    
+    for(r in reduction) {
+      
+      if(!r %in% names(reduction.list)) {
+        
+        cat(crayon::cyan('reductions could not be found\n'))
+        return(object)
+        
+      }
+      
+    }
+  
+    reduction.list <- reduction.list[[reduction]]
+    
+    if(is.null(dims)) {
+      
+      dims <- 1:length(colnames(reduction.list))
+      
+    }
+    
+    print(t(reduction.list))
+    
+    temp.2 <- SingleCellExperiment(list('logcounts' = t(reduction.list)[dims,]))
+    rowData(temp.2)$feature_symbol <- rownames(temp.2)
+    temp.2 <- temp.2[!duplicated(rowData(temp.2)$feature_symbol), ]
+    temp.2 <- sc3_prepare(temp.2, gene_filter = FALSE, n_cores = n.core)
+    temp.2 <- sc3_calc_dists(temp.2)
+    temp.2 <- sc3_calc_transfs(temp.2)
+    temp.2 <- sc3_kmeans(temp.2, ks = ks)
+    temp.2 <- sc3_calc_consens(temp.2)
+    object@methods[[p]]@cluster_assignments[[assignment.df.name]] <- as.data.frame(colData(temp.2))
+    cat(crayon::cyan('SC3 clustering completed\n'))
+    
+  }
+
   return(object)
+  
 }
 
-processed.scrublet.decontx.mt.filter.tpm.hvgs.scale.pca.scanorama.seuratclust.sc3clust <- perform.sc3(object = processed.scrublet.decontx.mt.filter.tpm.hvgs.scale.pca.scanorama.seuratclust, reduction = 'scanorama', dims = 1:50, ks = 11:15, n.core = 3)
+test <- perform.sc3.reduction.cluster(object = panc, 
+                              assay = c('SCRAN'), 
+                              reduction = 'pca', 
+                              dims = 1:42, 
+                              assignment.df.name = 'pca_SC3', 
+                              ks = 10:16, 
+                              n.core = 3)
+
+perform.sc3.slot.cluster <- function(object, 
+                                          assay,
+                                          slot,
+                                          HVGs,
+                                          assignment.df.name,
+                                          ks, 
+                                          n.core = 3) {
+  
+  cat(crayon::cyan('Initialising SC3 clustering\n'))
+  
+  for(p in assay) {
+    
+    mat <- object@methods[[p]][[slot]]
+    
+    if(!is.null(HVGs)) {
+      
+      mat <- mat[object@methods[[p]]@highly.variable.genes,]
+      
+    }
+    
+    temp.2 <- SingleCellExperiment(list('logcounts' = mat))
+    rowData(temp.2)$feature_symbol <- rownames(temp.2)
+    temp.2 <- temp.2[!duplicated(rowData(temp.2)$feature_symbol), ]
+    temp.2 <- sc3_prepare(temp.2, gene_filter = FALSE, n_cores = n.core)
+    temp.2 <- sc3_calc_dists(temp.2)
+    temp.2 <- sc3_calc_transfs(temp.2)
+    temp.2 <- sc3_kmeans(temp.2, ks = ks)
+    temp.2 <- sc3_calc_consens(temp.2)
+    object@methods[[p]]@cluster_assignments[[assignment.df.name]] <- as.data.frame(colData(temp.2))
+    cat(crayon::cyan('SC3 clustering completed\n'))
+    
+  }
+  
+  return(object)
+  
+}
 
 perform.tsne.kmeans <- function(object, 
                                 reduction=NULL, 
@@ -2363,96 +2690,180 @@ perform.tsne.kmeans <- function(object,
   return(object)
 }
 
-pancreas <- perform.tsne.kmeans(object = pancreas, reduction = 'uncorrected_dbmap_tsne', k=10:16, data_frame_name = 'tsne_kmeans:uncorrected_dbmap')
-pancreas <- perform.tsne.kmeans(object = pancreas, reduction = 'uncorrected_pca_tsne', k=10:16, data_frame_name = 'tsne_kmeans:uncorrected_pca')
-pancreas <- perform.tsne.kmeans(object = pancreas, reduction = 'dbmap_bbknn_tsne', k=10:16, data_frame_name = 'tsne_kmeans:dbmap_bbknn')
-pancreas <- perform.tsne.kmeans(object = pancreas, reduction = 'pca_bbknn_tsne', k=10:16, data_frame_name = 'tsne_kmeans:pca_bbknn')
-pancreas <- perform.tsne.kmeans(object = pancreas, reduction = 'scanorama_reduced_tsne', k=10:16, data_frame_name = 'tsne_kmeans:scanorama_reduced')
-pancreas <- perform.tsne.kmeans(object = pancreas, reduction = 'pca_harmony_tsne', k=10:16, data_frame_name = 'tsne_kmeans:pca_harmony')
-pancreas <- perform.tsne.kmeans(object = pancreas, reduction = 'dbmap_harmony_tsne', k=10:16, data_frame_name = 'tsne_kmeans:dbmap_harmony')
-
-
-library(SingleCellExperiment)
-
 benchmark.clustering <- function(object, 
-                                 components, 
+                                 assay,
+                                 clustering,
                                  reduction, 
+                                 components, 
                                  dist.method='euclidean',
                                  ground.truth=NULL) {
   
-  for(x in names(metadata(object)[['clustering']])) {
-    print('.')
-    all.clusters <- metadata(object)[['clustering']][[x]]
-    print('.')
-    print(paste0(unlist(strsplit(x = x, split = ':'))[2], '_', reduction))
-    dims <- reducedDim(object, reduction)[,components]
-    print('.')
-    dist.matrix <- dist(x = dims, method = dist.method)
-    print('.')
-    sil.results <- data.frame(average_silhoeutte=NA)
-    print('.')
-    for (v in colnames(all.clusters)[1:length(colnames(all.clusters))]) {
-      print(paste0('Calculating silhouette for ', v))
-      tmp <- cluster::silhouette(x = as.numeric(x = as.factor(x = all.clusters[,v])), dist = dist.matrix)
-      average <- sum(tmp[,3])/length(tmp[,3])
-      sil.results[v,] <- average
-    }
-    sil.results <- sil.results[complete.cases(sil.results),]
-    max.AS <- max(sil.results)
-    print(max.AS)
+  for(l in assay) {
     
-    dunn.results <- data.frame(dunn.index=NA)
-    for (p in colnames(all.clusters)[1:length(colnames(all.clusters))]){
-      print(paste0('Calculating dunn index for ', p))
-      dunn.results[p,] <- clValid::dunn(distance = dist.matrix, clusters = as.numeric(x = as.factor(x = all.clusters[,p])))
-    }
-    dunn.results <- dunn.results[complete.cases(dunn.results),]
-    max.dunn <- max(dunn.results)
-    print(max.dunn)
+    print(l)
     
-    conn.results <- data.frame(connectivity=NA)
-    for (p in colnames(all.clusters)[1:length(colnames(all.clusters))]){
-      print(paste0('Calculating connectivity for ', p))
-      conn.results[p,] <- clValid::connectivity(distance = dist.matrix, clusters = all.clusters[,p])
-    }
-    conn.results <- conn.results[complete.cases(conn.results),]
-    max.conn <- max(conn.results)
-    print(max.conn)
+    reduction.list <- list()
+    red.names <- c(names(object@methods[[l]]@computational_reductions), 
+                   names(object@methods[[l]]@integration_reductions),
+                   names(object@methods[[l]]@visualisation_reductions))
     
-    if(!is.null(ground.truth)) {
-      ARI.results <- data.frame(ARI=NA)
-      for (p in colnames(all.clusters)[1:length(colnames(all.clusters))]){
-        print(paste0('Calculating ARI for ', p))
-        ARI.results[p,] <- mclust::adjustedRandIndex(x = all.clusters[,p], y = ground.truth)
+    for(i in red.names) {
+      
+      if(i %in% names(object@methods[[l]]@computational_reductions)) {
+        
+        reduction.list[[i]] <- object@methods[[l]]@computational_reductions[[i]]
+        
       }
-      ARI.results <- ARI.results[complete.cases(ARI.results),]
-      max.ARI <- max(ARI.results)
-      print(max.ARI)
-      NMI.results <- data.frame(NMI=NA)
-      for (p in colnames(all.clusters)[1:length(colnames(all.clusters))]) {
-        print(paste0('Calculating NMI for ', p))
-        NMI.results[p,] <- aricode::AMI(c1 = all.clusters[,p], c2 = ground.truth)
+      
+      if(i %in% names(object@methods[[l]]@integration_reductions)) {
+        
+        reduction.list[[i]] <- object@methods[[l]]@integration_reductions[[i]]
+        
       }
-      NMI.results <- NMI.results[complete.cases(NMI.results),]
-      results <- cbind(sil.results, dunn.results, conn.results, ARI.results, NMI.results)
-      rownames(results) <- colnames(all.clusters)
-      colnames(results) <- c(paste0(x, '_sil.results'), paste0(x, '_dunn.results'), paste0(x, '_conn.results'), paste0(x, '_ARI.results'), paste0(x, '_NMI.results'))
-      metadata(object)[['benchmarking_clustering']][[as.character(x)]] <- results
-    } else {
-      results <- cbind(sil.results, dunn.results, conn.results)
-      rownames(results) <- colnames(all.clusters)
-      colnames(results) <- c(paste0(x, '_sil.results'), paste0(x, '_dunn.results'), paste0(x, '_conn.results'))
-      metadata(object)[['benchmarking_clustering']][[as.character(x)]] <- results
+      
+      if(i %in% names(object@methods[[l]]@visualisation_reductions)) {
+        
+        reduction.list[[i]] <- object@methods[[l]]@visualisation_reductions[[i]]
+        
+      }
+      
+    }
+    
+    for(r in reduction) {
+      
+      if(!r %in% names(reduction.list)) {
+        
+        cat(crayon::cyan('reductions could not be found\n'))
+        return(object)
+        
+      }
+      
+    }
+    
+    count <- 1
+    
+    reduction.list <- reduction.list[reduction]
+    reduction.list <- reduction.list[match(reduction, names(reduction.list))]
+    
+    for(k in clustering) {
+      
+      reduction_sub <- reduction.list[[reduction[count]]][,1:3]
+      
+      count <- count + 1
+      
+      clusters <- object@methods[[l]]@cluster_assignments[[k]]
+      
+      for(p in colnames(clusters)) {
+        
+        if(length(unique(clusters[,p])) <= 1) {
+          
+          cat(crayon::cyan(paste0('cluster column: ', p, ' contains only 1 cluster group, omitting now\n')))
+          clusters[,p] <- NULL
+          
+        }
+        
+      }
+      
+      dist.matrix <- dist(x = reduction_sub, method = dist.method)
+      
+      sil.results <- data.frame(average_silhoeutte=NA)
+      
+      for (v in colnames(clusters)[1:length(colnames(clusters))]) {
+       
+        cat(crayon::cyan(paste0('Calculating silhouette for ', v, '\n')))
+        tmp <- cluster::silhouette(x = as.numeric(x = as.factor(x = clusters[,v])), dist = dist.matrix)
+        average <- sum(tmp[,3])/length(tmp[,3])
+        sil.results[v,] <- average
+        
+      }
+      
+      sil.results <- sil.results[complete.cases(sil.results),]
+      max.AS <- max(sil.results)
+      print(max.AS)
+      
+      dunn.results <- data.frame(dunn.index=NA)
+      for (p in colnames(clusters)[1:length(colnames(clusters))]){
+        
+        cat(crayon::cyan(paste0('Calculating dunn index for ', p, '\n')))
+        dunn.results[p,] <- clValid::dunn(distance = dist.matrix, 
+                                          clusters = as.numeric(x = as.factor(x = clusters[,p])))
+        
+      }
+      
+      dunn.results <- dunn.results[complete.cases(dunn.results),]
+      max.dunn <- max(dunn.results)
+      print(max.dunn)
+      
+      conn.results <- data.frame(connectivity=NA)
+      for (p in colnames(clusters)[1:length(colnames(clusters))]){
+        
+        cat(crayon::cyan(paste0('Calculating connectivity for ', p, '\n')))
+        conn.results[p,] <- clValid::connectivity(distance = dist.matrix, clusters = clusters[,p])
+        
+      }
+      
+      conn.results <- conn.results[complete.cases(conn.results),]
+      min.conn <- min(conn.results)
+      print(min.conn)
+      
+      if(!is.null(ground.truth)) {
+        
+        ARI.results <- data.frame(ARI=NA)
+        for (p in colnames(clusters)[1:length(colnames(clusters))]){
+          
+          cat(crayon::cyan(paste0('Calculating ARI for ', p, '\n')))
+          ARI.results[p,] <- mclust::adjustedRandIndex(x = clusters[,p], y = ground.truth)
+          
+        }
+        
+        ARI.results <- ARI.results[complete.cases(ARI.results),]
+        max.ARI <- max(ARI.results)
+        print(max.ARI)
+        
+        NMI.results <- data.frame(NMI=NA)
+        for (p in colnames(clusters)[1:length(colnames(clusters))]) {
+          
+          cat(crayon::cyan(paste0('Calculating NMI for ', p, '\n')))
+          NMI.results[p,] <- aricode::AMI(c1 = clusters[,p], c2 = ground.truth)
+          
+        }
+        
+        NMI.results <- NMI.results[complete.cases(NMI.results),]
+        max.nmi <- max(NMI.results)
+        print(max.nmi)
+        
+        results <- cbind(sil.results, dunn.results, conn.results, ARI.results, NMI.results)
+        rownames(results) <- colnames(clusters)
+        colnames(results) <- c(paste0(k, '_sil.results'), 
+                               paste0(k, '_dunn.results'), 
+                               paste0(k, '_conn.results'), 
+                               paste0(k, '_ARI.results'), 
+                               paste0(k, '_NMI.results'))
+        
+        object@methods[[l]]@benchmark_results[[k]] <- results
+        
+      } else {
+        
+        results <- cbind(sil.results, dunn.results, conn.results)
+        rownames(results) <- colnames(all.clusters)
+        colnames(results) <- c(paste0(k, '_sil.results'), paste0(k, '_dunn.results'), paste0(k, '_conn.results'))
+        object@methods[[l]]@benchmark_results[[k]] <- results
+        
+      }
     }
   }
+  
   return(object)
+  
 }
 
-pancreas.test <- benchmark.clustering(object = pancreas, 
-                                      components = 1:3, 
-                                      reduction = 'umap', 
-                                      dist.method = 'euclidean', 
-                                      ground.truth = pancreas$celltype)
+panc <- benchmark.clustering(object = panc, 
+                     assay = c('SCT', 'SCRAN', 'SCANPY', 'TPM'), 
+                     clustering = c('pca_seurat', 'dbmap_seurat'), 
+                     reduction = c('pca_umap', 'dbmap_umap'), 
+                     components = 1:3, 
+                     dist.method = 'euclidean', 
+                     ground.truth = panc$celltype)
 
 library(plotly)
 library(ggplot2)
@@ -2460,22 +2871,28 @@ library(egg)
 
 panc <- readRDS("~/Results/scRNA-seq/IBRAP_development/Example_processed_results/RShiny_test.RData")
 
-plot.reduced.dim <- function(object, 
-                             reduction='', 
+plot.reduced.dim <- function(object,
+                             reduction,
+                             assay,
+                             clust.method,
+                             column,
                              pt.size=5, 
                              metadata.access='clustering',
                              sub.access='metadata',
                              group.by, 
                              dimensions) {
   
-  if(is.null(metadata(object)[['clustering']][['metadata']])){
-    metadata(object)[['clustering']][['metadata']] <- as.data.frame(colData(object))
-  }
+  project.met <- object@sample_metadata
+  assay.met <- object@methods[[assay]]@cluster_assignments[[clust.method]]
+  assay.met <- assay.met[match(rownames(project.met), rownames(assay.met)),]
+  meta <- cbind(project.met, assay.met)
+  
+  
   
   print('plot_cluster_dr_started')
-  results <- as.data.frame(reducedDim(object, as.character(reduction)))[,1:3]
+  results <- as.data.frame(object@methods[[assay]]@visualisation_reductions[[reduction]])
   print('.')
-  results[,'variable'] <- metadata(object)[[metadata.access]][[sub.access]][[group.by]]
+  results[,'variable'] <- meta[,column]
   rownames(results) <- colnames(object)
   print('.')
   if(dimensions == 3) {
@@ -2506,9 +2923,8 @@ plot.reduced.dim <- function(object,
   
 }
 
-plot.reduced.dim(object = panc, reduction = 'tsne',
-                 metadata.access = 'clustering', sub.access = 'metadata',
-                 group.by = 'celltype', dimensions = 2)
+plot.reduced.dim(object = panc, reduction = 'dbmap_umap', assay = 'SCRAN', 
+                 clust.method = 'dbmap_seurat', column = 'RNA_snn_res.1.5', dimensions = 2, pt.size = 2)
 
 plot.features <- function(object, 
                           reduction='', 
