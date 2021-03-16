@@ -204,6 +204,16 @@ panc <- benchmark.clustering(object = panc,
                      ground.truth = panc$celltype)
 ```
 
+Congratulations, you have just run a series of successful IBRAP-based pipelines. Now, with this large amount of data we must ascertain which combinations worked best for our dataset, we have constructed and interactive application to aid users in this discovery. However first, we must save our data object in rds format: 
+
+```
+saveRDS(object = panc, file = '/path/to/folder/location/pancreas_data.rd', compress = TRUE)
+```
+
+### IBRAP application:
+
+
+
 Our current repertoire of tools are outlined in the following table:
 
 #### IBRAP repertoire
