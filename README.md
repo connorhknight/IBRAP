@@ -108,8 +108,101 @@ panc <- perform.sct.normalisation(object = panc, assay = 'RAW', slot = 'counts')
 panc <- perform.tpm.normalisation(object = panc, assay = 'RAW', slot = 'counts', 
                                   vars.to.regress = 'RAW_total.counts')
 ```
+Each normalisation technique is stored in an individual assay within our IBRAP object, these can be seen here:
 
-Once your normalisation has been performed, the next step is to reduce our dataset dimension to a more manageable quantitiy, here we have adopted either PCA or diffusion-based Manifold Approximation and Projection (dbMAP). These methods differ slightly, where PCA requires our data that has been scaled, whereas dbMAP functions well with either counts or normalised counts, but works poorly with scaled data. 
+```
+panc@methods
+```
+henceforth, downstream functions will be applied to our normalisation assays, when we supply our assay as c('SCT', 'SCRAN', 'SCANPY', 'TPM'), the functions will iterate through these assays and perform their algorithms. 
+
+Once your normalisation has been performed, the next step is to reduce our dataset dimension to a more manageable quantitiy, here we have adopted either PCA or diffusion-based Manifold Approximation and Projection (dbMAP). These methods differ slightly, where PCA requires data that has been scaled, whereas dbMAP functions well with either counts or normalised counts, but works poorly with scaled data. 
+
+```
+panc <- perform.pca(object = panc, 
+                    assay = c('SCT', 'SCRAN', 'TPM', 'SCANPY'), 
+                    n.pcs = 1:50, 
+                    reduction.save = 'pca')
+                    
+panc <- perform.dbmap(object = panc, 
+                      assay = c('SCT', 'SCRAN', 'TPM', 'SCANPY'),  
+                      reduction.save = 'dbmap')
+```
+
+Now that we have reduced our datasets to a more manageable dimension, we can proceed to our next stage of the analysis, clustering & visualisation.
+
+### Clustering, Visualisation & Benchmarking: 
+
+Firstly, lets produce our visualisation reductions, these are required in single-cell since the count matrices are spare (contain many zeros). We provide 3 visualisations: t-SNE, UMAP, and lvish. 
+
+```
+panc <- perform.umap(object = panc, 
+                     assay = c('SCT', 'SCRAN', 'TPM', 'SCANPY'), 
+                     reduction = 'pca', 
+                     reduction.save = 'pca_umap', 
+                     n.dim = 1:42, 
+                     n_components = 3)
+panc <- perform.umap(object = panc, 
+                     assay = c('SCT', 'SCRAN', 'TPM', 'SCANPY'), 
+                     reduction = 'dbmap', 
+                     reduction.save = 'dbmap_umap', 
+                     n_components = 3)
+                     
+panc <- perform.tsne(object = panc, 
+                     assay = c('SCT', 'SCRAN', 'TPM', 'SCANPY'), 
+                     reduction = 'pca', 
+                     reduction.save = 'pca_tsne', 
+                     n.dim = 1:42, n_components = 3)
+panc <- perform.tsne(object = panc, 
+                     assay = c('SCT', 'SCRAN', 'TPM', 'SCANPY'), 
+                     reduction = 'dbmap', 
+                     reduction.save = 'dbmap_tsne', n_components = 3)
+                     
+panc <- perform.lvish(object = panc, 
+                      assay = c('SCT', 'SCRAN', 'SCANPY', 'TPM'), 
+                      reduction = 'pca', 
+                      reduction.save = 'pca_lvish', 
+                      n.dim = 1:42, n_components = 3)
+panc <- perform.lvish(object = panc, 
+                      assay = c('SCT', 'SCRAN', 'SCANPY', 'TPM'), 
+                      reduction = 'dbmap', 
+                      reduction.save = 'dbmap_lvish', n_components = 3)
+```
+
+
+Now, we can attempt to discover our cell populations, we provide 3 techniques that are known to function the best: seurat graph-based clustering (fast), kmeans clustering performed on t-SNE reduction (fast), and SC3 which iterates many kmeans clustering and perform hierachial clustering on the results (slow). 
+
+Seurat requires our computational reductions as input, we have both PCA and dbMAP, thus it is appropriate to calculate clusters on both:
+```
+panc <- perform.seurat.cluster(object = panc, assay = c('SCT', 'SCRAN', 'TPM', 'SCANPY'), reduction = c('pca', 'dbmap'), 
+                               assignment.df.name = c('pca_seurat', 'dbmap_seurat'), dims = 1:42)                                                           
+```
+kmeans/t-SNE requires our t-SNE projections, again we calculated t-SNE from our two computational reductions and will use both:
+```
+panc <- perform.reduction.kmeans(object = panc, assay = c('SCT','SCRAN','SCANPY','TPM'), 
+                         reduction = c('dbmap_tsne', 'pca_tsne'), dims = list(NULL, NULL), k = 10:16, 
+                         assignment.df.name = c('dbmap_tsne_kmeans', 'pca_tsne_kmeans'), method = 'kmeans')
+```
+Finally, SC3 is performed on whol count matrices or normalised matrices, however scaled is not recommended. 
+```
+panc <- perform.sc3.slot.cluster(object = panc, 
+                                 assay = c('SCT', 'SCRAN', 'SCANPY', 'TPM'), 
+                                 slot = 'normalised', 
+                                 HVGs = TRUE, 
+                                 assignment.df.name = 'counts_SC3', 
+                                 ks = 10:16, n.core = 3)
+```
+Now we have calculated our clusters, we must assess how effective they were with our benchmarking function:
+
+When the ground truth cell types are available we enable the use of 5 benchmarking metrics: Average Silhouette Width (ASW), Dunn Index (DI), Connectivity, Adjusted Rand Index (ARI), and Normalized Mutual Information (NMI). Without the ground truth we are only able to utilise ASW, DI, and connectivity. Essentially, we want to witness an elevated score in ASW, DI, ARI, and NMI; in contrast, we aim to see a depleted score for connectivity.
+```
+panc <- benchmark.clustering(object = panc, 
+                     assay = c('SCT', 'SCRAN', 'SCANPY', 'TPM'), 
+                     clustering = c('pca_seurat', 'dbmap_seurat', 'dbmap_tsne_kmeans', 'pca_tsne_kmeans', 'counts_SC3'), 
+                     reduction = c('pca_umap', 'dbmap_umap', 'dbmap_umap', 'pca_umap', 'pca_umap'), 
+                     components = 1:3, 
+                     dist.method = 'euclidean', 
+                     ground.truth = panc$celltype)
+```
 
 Our current repertoire of tools are outlined in the following table:
 
