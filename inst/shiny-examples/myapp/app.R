@@ -14,6 +14,8 @@ shinyApp(
         fileInput(inputId = 'rds_file', label = 'RDS file upload', multiple = FALSE,
                   accept = c('.rds')),
         actionButton(inputId = 'generate_metadata', 'Activate'),
+        uiOutput(outputId = 'active_assay'),
+        uiOutput(outputId = 'reduction_selector'),
         hr(),
         h4('Select tab:'),
         menuItem("Clustering", tabName = "Clustering"),
@@ -30,20 +32,15 @@ shinyApp(
                                         box(height = 820, width = 300, title = 'Select metadata',
                                             h4('Select between methods here:'),
                                             uiOutput(outputId = 'cluster_selector'),
-                                            uiOutput(outputId = 'group_by'),
                                             hr(),
                                             h4('Generate a dimensionality reduced plot:'),
                                             uiOutput(outputId = 'cluster.column'),
-                                            uiOutput(outputId = 'reduction_selector'),
                                             selectInput(inputId = 'cluster_dimensions', label = '2D or 3D?', choices = c('2D', '3D'), multiple = FALSE),
                                             numericInput(inputId = 'pt_size', label = 'Point size', value = 5, min = 0.1, max = 10),
                                             br(),
                                             actionButton(inputId = 'plot_DR', label = 'Plot')),
                                         box(height = 820, width = 550, align = "center",
-                                            plotlyOutput(outputId = 'int_DR_plot', width = 1100, height = 800)))
-                        ),
-                        box(height = 900, width = 900, solidHeader = TRUE, status = "primary", title = 'Bar plots', align = 'center',
-                            plotOutput(outputId = 'bar_plot', width = 1400, height = 800)
+                                            plotlyOutput(outputId = 'int_DR_plot', width = 1075, height = 800)))
                         ),
                         box(height = 900, width = 900, solidHeader = TRUE, status = "primary", title = 'benchmarking metrics', align = 'center',
                             plotOutput(outputId = 'benchmark', width = 1400, height = 800)
@@ -69,9 +66,6 @@ shinyApp(
                      box(height = 900, width = 900, solidHeader = FALSE, status = "primary", title = 'Feature violin plots',
                          splitLayout(cellWidths = c("25%", "75%"),
                                      box(height = 820, width = 300, title = 'Violin plot',
-                                         selectInput(inputId = 'graph_type', label = 'Please select graph:', 
-                                                     choices = c('Violin plot', 'Heatmap'), multiple = FALSE),
-                                         uiOutput(outputId = 'assay_selector_vln'),
                                          uiOutput(outputId = 'features_selector_vln'),
                                          uiOutput(outputId = 'cluster_selector_vln'),
                                          uiOutput(outputId = 'cluster.column_vln'),
@@ -79,6 +73,19 @@ shinyApp(
                                      ),
                                      box(height = 820, width = 550, align = "center",
                                          plotOutput(outputId = 'vln_plot', width = 800, height = 800)
+                                     )
+                         )
+                     ),
+                     box(height = 900, width = 900, solidHeader = FALSE, status = "primary", title = 'Feature heatmap',
+                         splitLayout(cellWidths = c("25%", "75%"),
+                                     box(height = 820, width = 300, title = 'Violin plot',
+                                         uiOutput(outputId = 'features_selector_heat'),
+                                         uiOutput(outputId = 'cluster_selector_heat'),
+                                         uiOutput(outputId = 'cluster.column_heat'),
+                                         actionButton(inputId = 'plot_heat', label = 'Plot')
+                                     ),
+                                     box(height = 820, width = 550, align = "center",
+                                         plotOutput(outputId = 'heat_plot', width = 800, height = 800)
                                      )
                          )
                      )
@@ -100,84 +107,61 @@ shinyApp(
         req(input$rds_file)
         direc <- input$rds_file
         print('loading .rds file')
-        print(input$rds_file)
         x <- readRDS(file = as.character(direc$datapath))
         print('.rds file loaded')
         print('object attached')
-        metadata(x)[['clustering']][['metadata']] <- as.data.frame(colData(x))
-        alternative.cluster <- names(metadata(x)[['clustering']])
-        cluster.info <- metadata(x)[['clustering']]
-        forout_reactive$alternative.cluster <- alternative.cluster
-        print(paste0('detected ', alternative.cluster, ' clustering techniques'))
-        clust.bench <- list()
-        clust <- list()
-        reduction <- list()
-        cluster.names <- list()
-        assays.list <- list()
-        clust.bench <- metadata(x)[['benchmarking_clustering']]
-        for(n in names(clust.bench)) {
-          r <- clust.bench[[n]]
-          clust.bench[[n]] <- r[ , colSums(is.na(r)) == 0]
+        
+        for(i in names(x@methods)[2:length(names(x@methods))]) {
+          
+          x@methods[[i]]@cluster_assignments[['metadata']] <- x@sample_metadata
+          
         }
-        rednames <- reducedDimNames(x)
-        for(t in rednames) {
-          reduction[[as.character(t)]] <- reducedDim(x, as.character(t))
-        }
-        assnames <- assayNames(x)
-        for(t in assnames) {
-          assays.list[[as.character(t)]] <- assay(x, as.character(t))
-        }
-        forout_reactive$clustering_benchmarking <- clust.bench
-        forout_reactive$clustering_assignments <- cluster.info
-        forout_reactive$reduction <- reduction
-        forout_reactive$rednames <- rednames
-        forout_reactive$assays <- assays.list
-        forout_reactive$object <- x
-        rm(assays.list, clust, clust.bench, cluster.names, 
-           r, reduction, x, alternative.cluster, assnames, 
-           n, rednames, t, cluster.info)
+        
+        forout_reactive$obj <- x
+        forout_reactive$assay.names <- names(x@methods)[2:length(names(x@methods))]
+        forout_reactive$assays <- x@methods[forout_reactive$assay.names]
+        
       })
     })
     
-    observeEvent(forout_reactive$reduction, {
+    output$active_assay <- renderUI({
+      req(forout_reactive$assay.names)
+      selectInput(inputId = 'assay', choices = forout_reactive$assay.names, label = 'Select assay:')
+      
+    })
+    
+    observeEvent(input$assay, {
+      
+      forout_reactive$active.assay <- forout_reactive$assays[[input$assay]]
+      
+    })
+
+    observeEvent(forout_reactive$obj, {
       showNotification("Project now active", closeButton = TRUE)
     })
     
     output$cluster_selector <- renderUI({
-      choices <- unlist(forout_reactive$alternative.cluster)
+      req(forout_reactive$active.assay)
+      choices <- names(forout_reactive$active.assay@cluster_assignments)
       selectInput(inputId = 'cluster_technique',
-                  label = 'Select cluster technique',
+                  label = 'Select cell assignments ',
                   choices = choices, multiple = FALSE)
     })
     
-    output$group_by <- renderUI({
-      req(forout_reactive$object)
-      obj <- forout_reactive$object
-      dt <- colData(obj)
-      choices <- colnames(dt)[grepl('factor|logical|character',sapply(dt,class))]
-      selectInput(inputId = 'categorical_metadata', label = 'Select categorical grouping', choices = choices, multiple = FALSE)
-    })
-    
-    output$bar_plot <- renderPlot({
-      req(input$categorical_metadata)
-      req(input$cluster_technique)
-      req(input$cluster_column)
-      x <- forout_reactive$object
-      plot.barplot(object = x, x.value = x[[input$categorical_metadata]], metadata(x)[['clustering']][[input$cluster_technique]][[input$cluster_column]])
+    output$cluster.column <- renderUI({
+      req(forout_reactive$active.assay)
+      selectInput(inputId = 'cluster_column',
+                  label = 'Select cell assignment column',
+                  choices = unlist(names(forout_reactive$active.assay@cluster_assignments[[as.character(input$cluster_technique)]])), 
+                  multiple = FALSE)
     })
     
     output$reduction_selector <- renderUI({
-      choices <- unlist(forout_reactive$rednames)
+      req(forout_reactive$active.assay)
+      choices <- names(forout_reactive$active.assay@visualisation_reductions)
       selectInput(inputId = 'reduction_technique',
                   label = 'Select reduction technique',
                   choices = choices, multiple = FALSE)
-    })
-    
-    
-    output$cluster.column <- renderUI({
-      selectInput(inputId = 'cluster_column',
-                  label = 'Select cluster column',
-                  choices = unlist(names(forout_reactive$clustering_assignments[[as.character(input$cluster_technique)]])), multiple = FALSE)
     })
 
     observeEvent(input$plot_DR, {
@@ -186,18 +170,20 @@ shinyApp(
       print(input$cluster_technique)
       print(input$cluster_column)
       if(input$cluster_dimensions == '3D') {
-        p <- plot.reduced.dim(object = forout_reactive$object, 
+        p <- plot.reduced.dim(object = forout_reactive$obj, 
                               reduction = input$reduction_technique, 
-                              pt.size = input$pt_size, metadata.access = 'clustering', 
-                              sub.access = input$cluster_technique, 
-                              group.by = input$cluster_column, 
+                              assay = input$assay, 
+                              pt.size = input$pt_size, 
+                              clust.method = input$cluster_technique, 
+                              column = input$cluster_column, 
                               dimensions = 3)
       } else if (input$cluster_dimensions == '2D') {
-        p <- plot.reduced.dim(object = forout_reactive$object, 
+        p <- plot.reduced.dim(object = forout_reactive$obj, 
                               reduction = input$reduction_technique, 
-                              pt.size = input$pt_size, metadata.access = 'clustering', 
-                              sub.access = input$cluster_technique, 
-                              group.by = input$cluster_column, 
+                              assay = input$assay, 
+                              pt.size = input$pt_size, 
+                              clust.method = input$cluster_technique, 
+                              column = input$cluster_column, 
                               dimensions = 2)
       }
       forout_reactive$DR_plot <- p
@@ -208,51 +194,38 @@ shinyApp(
     })
     
     output$benchmark <- renderPlot({
-      req(forout_reactive$clustering_benchmarking)
-      g <- forout_reactive$object
-      if(input$cluster_technique == 'metadata') {
-        return(NULL)
+      req(input$cluster_technique != 'metadata')
+      g <- forout_reactive$obj
+      h <- names(forout_reactive$active.assay@benchmark_results[[input$cluster_technique]])
+      if(length(h) > 3) {
+        temp <- plot.benchmarking(object = g, 
+                                  assay = input$assay, 
+                                  clustering = input$cluster_technique, 
+                                  ARI = TRUE)
       } else {
-        temp <- plot.benchmarking(object = g, clust.method = input$cluster_technique, ARI = TRUE)
+        temp <- plot.benchmarking(object = g, 
+                                  assay = input$assay, 
+                                  clustering = input$cluster_technique, 
+                                  ARI = FALSE)
       }
-    })
-    
-    output$assay_selector <- renderUI({
-      choices <- names(forout_reactive$assays)
-      selectInput(inputId = 'assays',
-                  label = 'Select assay',
-                  choices = choices, multiple = FALSE)
+      
     })
     
     output$features_selector <- renderUI({
-      choices <- rownames(forout_reactive$object)
-      
+      choices <- rownames(forout_reactive$obj@methods[[1]]@counts)
       selectizeInput(inputId = 'features', label = 'Identify features', 
                      choices = choices, selected = NULL, multiple = TRUE, 
                      options = list(create = TRUE))
     })
     
-    output$reduction_feature <- renderUI({
-      choices <- unlist(forout_reactive$rednames)
-      selectInput(inputId = 'reduction_feature',
-                  label = 'Select reduction technique',
-                  choices = choices, multiple = FALSE)
-    })
-    
-    output$vln_option <- renderUI({
-      
-    })
-    
     observeEvent(input$plot_feature, {
-      g <- forout_reactive$object
+      g <- forout_reactive$obj
       print(g)
-      print(input$assays)
+      print(input$assay)
       print(input$features)
-      print(input$reduction_feature)
-      p <- plot.features.multiple(object = g, 
-                                  assay = input$assays, 
-                                  reduction = input$reduction_feature, 
-                                  lab.key = 'reduction', features = input$features)
+      print(input$reduction_technique)
+      p <- plot.features.multiple(object = g, assay = input$assay, slot = 'normalised', 
+                                  reduction = input$reduction_technique, features = input$features)
       forout_reactive$feature_plot <- p
       
   })
@@ -261,58 +234,74 @@ shinyApp(
       forout_reactive$feature_plot
     })
     
-    output$assay_selector_vln <- renderUI({
-      choices <- names(forout_reactive$assays)
-      selectInput(inputId = 'assays_vln',
-                  label = 'Select assay',
-                  choices = choices, multiple = FALSE)
-    })
-    
     output$features_selector_vln <- renderUI({
-      choices <- rownames(forout_reactive$object)
-      selectizeInput(inputId = 'features_vln', label = 'Identify features', 
+      choices <- rownames(forout_reactive$obj@methods[[1]]@counts)
+      selectizeInput(inputId = 'features_vln', label = 'Identify features',
                      choices = choices, selected = NULL, multiple = TRUE, 
                      options = list(create = TRUE))
     })
-    #
+    
     output$cluster_selector_vln <- renderUI({
-      choices <- unlist(forout_reactive$alternative.cluster)
+      choices <- names(forout_reactive$active.assay@cluster_assignments)
       selectInput(inputId = 'cluster_technique_vln',
                   label = 'Select cluster technique',
                   choices = choices, multiple = FALSE)
     })
-    #
+    
     output$cluster.column_vln <- renderUI({
       selectInput(inputId = 'cluster_column_vln',
                   label = 'Select cluster column',
-                  choices = unlist(names(forout_reactive$clustering_assignments[[as.character(input$cluster_technique_vln)]])), multiple = FALSE)
+                  choices = colnames(forout_reactive$active.assay@cluster_assignments[[input$cluster_technique_vln]]), multiple = FALSE)
     })
     
     observeEvent(input$plot_vln, {
-      g <- forout_reactive$object
+      g <- forout_reactive$obj
       print(g)
-      print(input$graph_type)
-      if(input$graph_type == 'Violin plot') {
-        print(input$assays_vln)
-        print(input$features_vln)
-        print(input$cluster_technique_vln)
-        print(input$cluster_column_vln)
-        p <- plot.vln(object = g, 
-                      assay = input$assays_vln, 
-                      features = input$features_vln, 
-                      group.by = metadata(g)[['clustering']][[input$cluster_technique_vln]][[input$cluster_column_vln]])
-        forout_reactive$vln_plot <- p
-      } else if(input$graph_type == 'Heatmap') {
-        print(input$assays_vln)
-        print(input$features_vln)
-        p <- plot.heatmap(object = g, assay = input$assays_vln, features = input$features_vln)
-        forout_reactive$vln_plot <- p
-        }
+      p <- plot.vln(object = g, assay = input$assay, 
+                    slot = 'normalised', 
+                    features = input$features_vln, 
+                    group.by = forout_reactive$active.assay@cluster_assignments[[input$cluster_technique_vln]][[input$cluster_column_vln]])
+      forout_reactive$vln_plot <- p
     })
     
     output$vln_plot <- renderPlot({
       forout_reactive$vln_plot
     })
+    
+    output$features_selector_heat <- renderUI({
+      
+      choices <- rownames(forout_reactive$obj@methods[[1]]@counts)
+      selectizeInput(inputId = 'features_heat', label = 'Identify features', 
+                     choices = choices, selected = NULL, multiple = TRUE, 
+                     options = list(create = TRUE))
+      
+    })
+    
+    output$cluster_selector_heat <- renderUI({
+      choices <- names(forout_reactive$active.assay@cluster_assignments)
+      selectInput(inputId = 'cluster_selector_heat',
+                  label = 'Select cluster technique',
+                  choices = choices, multiple = FALSE)
+    })
+    
+    output$cluster.column_heat <- renderUI({
+      selectInput(inputId = 'cluster.column_heat',
+                  label = 'Select cluster column',
+                  choices = colnames(forout_reactive$active.assay@cluster_assignments[[input$cluster_selector_heat]]), multiple = FALSE)
+    })
+    
+    output$heat_plot <- renderPlot({
+      
+      req(input$plot_heat)
+      
+      plot.heatmap(object = forout_reactive$obj, 
+                   assay = input$assay, 
+                   slot = 'normalised', 
+                   features = input$features_heat, 
+                   group.by = forout_reactive$active.assay@cluster_assignments[[input$cluster_selector_heat]][[input$cluster.column_heat]])
+      
+    })
+
     
   }
 )

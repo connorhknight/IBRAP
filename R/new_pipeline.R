@@ -48,7 +48,7 @@ Read10X_output <- function(directory,
   return(mm)
 }
 
-marrow_E <- Read10X_output(directory = '/Users/knight05/Raw_Data/Database_samples/healthy_references/BMMC_atlas/marrow_Ck')
+marrow_E <- Read10X_output(directory = '/Users/knight05/Raw_Data/Database_samples/healthy_references/BMMC_atlas/marrow_E')
 
 # Metadata generator
 
@@ -68,14 +68,12 @@ cell_metadata <- function(assay,
 feature_metadata <- function(assay, col.prefix) {
   df <- as.data.frame(as.numeric(rowSums(assay)))
   rownames(df) <- rownames(assay)
-  df$temp <- rowSums(assay > 0)
+  df$temp <- as.numeric(rowSums(assay > 0))
   colnames(df) <- c(paste0(col.prefix,'_total.counts'), paste0(col.prefix,'_total.cells'))
   return(df)
 }
 
-subset_IBRAP <- function(object, 
-                         features = NULL, 
-                         cells = NULL) {
+filter_IBRAP <- function(object, ...) {
   
   if(!is(object = object, class2 = 'IBRAP')) {
     
@@ -84,200 +82,15 @@ subset_IBRAP <- function(object,
     
   }
   
-  if(is.null(features)) {
-    
-    if(is.numeric(cells)) {
-      
-      features <- length(rownames(object@methods[[object@active.method]]@counts))
-      
-    } else if(is.character(cells)) {
-      
-      features <- rownames(object@methods[[object@active.method]]@counts)
-      
-    } else (
-      
-      cat(crayon::cyan('cells must be a character string or numeric'))
-      
-    )
-    
-  }
+  metadata <- object@sample_metadata
   
-  if(is.null(cells)) {
-    
-    if(is.numeric(features)) {
-      
-      cells <- length(colnames(object@methods[[object@active.method]]@counts))
-      
-    } else if(is.character(features)) {
-      
-      cells <- colnames(object@methods[[object@active.method]]@counts)
-      
-    } else (
-      
-      cat(crayon::cyan('features must be a character string or numeric'))
-      
-    )
-    
-  }
+  metadata <- subset(metadata, ...)
   
-  .sample_metadata <- object@sample_metadata[cells,]
-  
-  list.methods <- list()
-  
-  for(x in names(object@methods)) {
-    
-    sub <- object@methods[[x]]
-    
-    if(length(as.matrix(sub@counts)) != 0){
-      
-      .counts <- sub@counts[features,cells]
-      
-    } else {
-      
-      .counts <- sub@counts
-      
-    }
-    
-    if(length(as.matrix(sub@normalised)) != 0) {
-      
-      .normalised <- sub@normalised[features,]
-      
-    } else {
-      
-      .normalised <- sub@normalised
-      
-    }
-    
-    if(length(as.matrix(sub@norm.scaled)) != 0) {
-      
-      .norm.scaled <- sub@norm.scaled[features,cells]
-      
-    } else {
-      
-      .norm.scaled <- sub@norm.scaled
-      
-    }
-    
-    if(length(as.matrix(sub@feature_metadata)) != 0) {
-      
-      .feature_metadata <- sub@feature_metadata[features,]
-      
-    } else {
-      
-      .feature_metadata <- sub@feature_metadata
-      
-    }
-    
-    if(length(names(sub@computational_reductions)) != 0) {
-      
-      .computational_reductions <- list()
-      
-      for(comp in names(sub@computational_reductions))
-        
-        .computational_reductions[[comp]] <- sub@computational_reductions[[comp]][cells,]
-      
-    } else {
-      
-      .computational_reductions <- sub@computational_reductions
-      
-    }
-    
-    if(length(names(sub@visualisation_reductions)) != 0) {
-      
-      .visualisation_reductions <- list()
-      
-      for(vis in names(sub@visualisation_reductions)) {
-        
-        .visualisation_reductions[[vis]] <- sub@visualisation_reductions[[vis]][cells,] 
-        
-      }
-      
-    } else {
-      
-      .visualisation_reductions <- sub@visualisation_reductions
-      
-    }
-    
-    if(length(names(sub@cluster_assignments)) != 0) {
-      
-      .cluster_assignments <- sub@cluster_assignments[cells,]
-      
-    } else {
-      
-      .cluster_assignments <- sub@cluster_assignments
-      
-    }
-    
-    list.methods[[x]] <- new(Class = 'method', 
-                             counts = .counts, 
-                             normalised = .normalised, 
-                             norm.scaled = .norm.scaled,
-                             highly.variable.genes = sub@highly.variable.genes,
-                             feature_metadata = .feature_metadata,
-                             graphs = sub@graphs,
-                             computational_reductions = .computational_reductions,
-                             visualisation_reductions = .visualisation_reductions,
-                             cluster_assignments = .cluster_assignments,
-                             benchmark_results = sub@benchmark_results,
-                             alt_objects = sub@alt_objects,
-                             method.name = sub@method.name)
-    
-  }
-  
-  ibrap <- new(Class = 'IBRAP', 
-               methods = list.methods, 
-               sample_metadata = .sample_metadata,
-               pipelines = object@pipelines, 
-               active.variable = object@active.variable,
-               doublet.barcodes = object@doublet.barcodes,
-               active.method = object@active.method
-  )
-  
-  print(ibrap)
-  return(ibrap)
-}
-
-filter_cell_IBRAP <- function(object, assay, slot, min.features) {
-  
-  if(!is(object = object, class2 = 'IBRAP')) {
-    
-    cat(crayon::cyan('Object must be class IBRAP'))
-    return(NULL)
-    
-  }
-  
-  counts <- object@methods[[assay]][[slot]]
-  
-  nfeatures <- Matrix::colSums(x = counts > 0)
-  counts <- counts[, which(x = nfeatures >= min.features)]
-  
-  object <- object[,colnames(counts)]
+  object <- object[,rownames(metadata)]
   
   return(object)
   
 }
-
-filter_feature_IBRAP <- function(object, assay, slot, min.cells,
-                                 ...) {
-  
-  if(!is(object = object, class2 = 'IBRAP')) {
-    
-    cat(crayon::cyan('Object must be class IBRAP'))
-    return(NULL)
-    
-  }
-  
-  counts <- object@methods[[assay]][[slot]]
-  
-  num.cells <- Matrix::rowSums(x = counts > 0)
-  counts <- counts[which(x = num.cells >= min.cells), ]
-  
-  object <- object[rownames(counts),]
-  
-  return(object)
-  
-}
-
 
 isUnique <- function(vector){
   return(!any(duplicated(vector)))
@@ -1062,6 +875,8 @@ pancreas.data <- readRDS(file = "~/Raw_Data/pancreas_v3_files/pancreas_expressio
 metadata <- readRDS('~/Raw_Data/pancreas_v3_files/pancreas_metadata.rds')
 pancreas.data <- as.matrix(pancreas.data)
 pancreas.data <- round(pancreas.data)
+pancreas.data <- pancreas.data[,metadata$tech == 'celseq2']
+metadata <- metadata[metadata$tech == 'celseq2',]
 
 ### removing scrublets
 
@@ -1089,7 +904,7 @@ perform.scrublet <- function(counts,
   scrublet <- reticulate::import('scrublet', convert = FALSE)
   cat(crayon::cyan('Python modules loaded\n'))
   
-  scrub1 <- scrublet$Scrublet(counts_matrix = t(as.data.frame(as.matrix(counts))), 
+  scrub1 <- scrublet$Scrublet(counts_matrix = as.data.frame(as.matrix(t(counts))), 
                               total_counts = total_counts, 
                               sim_doublet_ratio = sim_doublet_ratio, 
                               n_neighbors = n_neighbors, 
@@ -1135,7 +950,9 @@ perform.scrublet <- function(counts,
   print(comb.plot)
   
   cat(crayon::cyan('doublets detected\n'))
-  counts <- counts[,!res1[[2]] == TRUE]
+  counts <- as.matrix(counts)
+  counts <- counts[,!res1[[2]]]
+  counts <- Matrix::Matrix(data = counts, sparse = T)
   cat(crayon::cyan('matrix scrubbed\n'))
   
   return(counts)
@@ -1195,6 +1012,8 @@ perform.decontX <- function(counts,
   
   cat(crayon::cyan('Decontamination comlpleted\n'))
   
+  print(celda::plotDecontXContamination(x = d))
+  
   cat(crayon::cyan(paste0(formatC(sum(d$contamination)/length(d$contamination), 
                                   digits = 2), 
                           '% average contamination\n')))
@@ -1202,7 +1021,7 @@ perform.decontX <- function(counts,
   clean.matrix <- d$decontXcounts
   cat(crayon::cyan('Matrix isolated\n'))
   clean.matrix <- round(clean.matrix)
-  zero.samples <- colSums(clean.matrix) > 0
+  zero.samples <- colSums(as.matrix(clean.matrix)) > 0
   clean.matrix <- clean.matrix[,zero.samples]
   cat(crayon::cyan('converted to integer\n'))
   return(clean.matrix)
@@ -1234,14 +1053,9 @@ createIBRAPobject <- function(counts,
     
   }
   
-  if(class(counts)[1] != 'dgCMatrix') {
-    
-    cat(crayon::cyan('Converting counts input into sparse matrix\n'))
-    counts <- Matrix::Matrix(counts, sparse = T)
-
-  }
-  
   cat(crayon::cyan(paste0('Adding ', original.project, ' as barcode prefix\n')))
+  
+  counts <- as.matrix(counts)
   
   if(!is.null(meta.data)) {
     
@@ -1279,11 +1093,15 @@ createIBRAPobject <- function(counts,
   
   meta <- as.data.frame(replicate(n = length(colnames(counts)), expr = original.project))
   
-  colnames(meta) <- 'original.project'
-  
+  colnames(meta) <- as.character('original.project')
+
   meta.2 <- cell_metadata(assay = counts, col.prefix = method.name)
   
-  meta <- cbind(meta, meta.2)
+  for(f in colnames(meta.2)) {
+    
+    meta[,f] <- as.numeric(meta.2[,f])
+    
+  }
   
   rownames(meta) <- colnames(counts)
   
@@ -1318,7 +1136,7 @@ createIBRAPobject <- function(counts,
   ##########################################################
   
   first.method <- new('methods', 
-                      counts = counts,
+                      counts = Matrix::Matrix(counts, sparse = T),
                       feature_metadata = f.metadata,
                       method.name = method.name)
   
@@ -1361,11 +1179,11 @@ createIBRAPobject <- function(counts,
 #                            meta.data = extmeta, 
 #                            min.cells = 3)
 
-panc <- createIBRAPobject(counts = FL1,
-                          original.project = 'marrow_Ck', 
-                          method.name = 'RAW')
-
-panc <- panc[,panc$tech == 'celseq2']
+panc <- createIBRAPobject(counts = pancreas.data,
+                          original.project = 'pancreas_celseq', 
+                          method.name = 'RAW',
+                          min.cells = 3,
+                          min.features = 200)
 
 find_percentage_genes <- function(object, 
                                   pattern='^MT-', 
@@ -1374,7 +1192,8 @@ find_percentage_genes <- function(object,
                                   column.name = 'RAW_percent.mt') {
   cat(crayon::cyan('Calculating percentage\n'))
   mat <- as.matrix(object@methods[[assay]][[slot]])
-  temp <- colSums(mat[grep(pattern = pattern, x = rownames(mat)),]) / colSums(mat) * 100
+  subbed <- mat[grep(pattern = pattern, x = rownames(mat)),]
+  temp <- colSums(subbed) / colSums(mat) * 100
   
   cat(crayon::cyan('Percentage calculated\n'))
   temp <- as.data.frame(temp)
@@ -1385,6 +1204,7 @@ find_percentage_genes <- function(object,
   }
   cat(crayon::cyan('Appending new column\n'))
   colnames(temp) <- column.name
+  temp <- apply(temp, 2, function(x) as.numeric(x))
   object@sample_metadata <- cbind(object@sample_metadata, temp)
   return(object)
 }
@@ -1396,7 +1216,7 @@ panc <- find_percentage_genes(object = panc, pattern = 'RPL',
                               assay = 'RAW', slot = 'counts',
                               column.name = 'RAW_percent.rp')
 
-require(egg)
+library(egg)
 
 plot.QC.vln <- function(object, 
                         metadata.columns=c('RAW_total.features', 'RAW_total.counts'), 
@@ -1416,24 +1236,41 @@ plot.QC.vln <- function(object,
     
   }
   
+  cols <- RColorBrewer::brewer.pal(n = length(metadata.columns), name = 'Pastel2')
+  fill.cols <- 
+  
+  count <- 1
+  
   for(o in metadata.columns) {
     
     new.metadata <- data.frame(project=as.factor(object[[split.by]]))
     new.metadata$sample <- as.factor(colnames(object))
     new.metadata$variable <- object[[o]]
+    proj.length <- length(unique(new.metadata$project))
+    if(proj.length < 3) {
+      
+      proj.length.new <- 3
+      cols.proj <- RColorBrewer::brewer.pal(n = proj.length.new, name = 'Pastel1')
+      cols.proj <- cols.proj[[1:proj.length]]
+      
+    }
+    
     plots.list[[o]] <- ggplot2::ggplot(data = new.metadata, 
                                        mapping = ggplot2::aes(x=variable, y=project, fill=project)) + 
       ggplot2::geom_violin() + ggplot2::coord_flip() + ggplot2::ggtitle(o) + 
       ggplot2::xlab('') + ggplot2::ylab('project') + ggplot2::theme_classic() + 
+      ggplot2::geom_boxplot(lwd = 0.6, width = 0.09, fill = cols[[count]]) +
       ggplot2::theme(axis.text.x = ggplot2::element_text(face = 'bold', angle = 45, vjust = 1, hjust=1), 
-                     legend.position="none", plot.title = ggplot2::element_text(hjust=0.5))
+                     legend.position="none", plot.title = ggplot2::element_text(hjust=0.5)) + 
+      scale_fill_manual(values=cols.proj)
+    count <- count + 1
   }
   
   do.call(what = 'ggarrange', args = list(plots = plots.list, nrow=1, ncol=length(plots.list)))
   
 }
 
-plot.QC.vln(object = panc)
+plot.QC.vln(object = panc, metadata.columns = c('RAW_total.features', 'RAW_total.counts', 'RAW_percent.rp'))
 
 plot.QC.scatter <- function(object, 
                             x, 
@@ -1468,41 +1305,38 @@ plot.QC.scatter <- function(object,
     
   }
   
+  
+  
   new.df <- data.frame(as.factor(rownames(metadata)))
   new.df$x <- metadata[,x]
   new.df$y <- metadata[,y]
   new.df$project <- metadata[,split.by]
   
+  proj.length <- length(unique(new.df$project))
+  if(proj.length < 3) {
+    
+    proj.length.new <- 3
+    cols.proj <- RColorBrewer::brewer.pal(n = proj.length.new, name = 'Pastel1')
+    cols.proj <- cols.proj[[1:proj.length]]
+    
+  }
+  
   p <- ggplot2::ggplot(data = new.df, mapping = ggplot2::aes(x = x, y = y, col = project)) + 
     ggplot2::geom_point() + ggplot2::theme_classic() + ggplot2::ggtitle(paste0(x,'_vs_',y)) + 
-    ggplot2::ylab(y) + ggplot2::xlab(x) + labs(color='identifier') 
+    ggplot2::ylab(y) + ggplot2::xlab(x) + labs(color='identifier') + scale_color_manual(values=cols.proj)
   
   print(p)
   
 }
 
 plot.QC.scatter(object = panc, x = 'RAW_total.counts', y = 'RAW_total.features', split.by = 'original.project')
+plot.QC.scatter(object = panc, x = 'RAW_total.counts', y = 'RAW_percent.rp', split.by = 'original.project')
 
-panc <- perform.decontX(object = panc)
-
-
-panc <- filter_cell_IBRAP(object = panc, assay = 'RAW', slot = 'counts', min.features = 200)
-panc <- filter_feature_IBRAP(object = panc, assay = 'RAW', slot = 'counts', min.cells = 3)
-
-cell_metadata()
-
-panc <- find_percentage_genes(object = panc, pattern = '^MT-', 
-                              assay = 'RAW', slot = 'decontaminated',
-                              column.name = 'decontaminated_percent.mt')
-panc <- find_percentage_genes(object = panc, pattern = 'RPL', 
-                              assay = 'RAW', slot = 'decontaminated',
-                              column.name = 'decontaminated_percent.rp')
-
-sd.value <- sd(panc$decontaminated_total.features)
-med.value <- median(panc$decontaminated_total.features)
+sd.value <- sd(panc$RAW_total.features)
+med.value <- median(panc$RAW_total.features)
 max.features <- (sd.value*3)+med.value
 
-panc <- filter_cell_IBRAP(object = panc, decontaminated_total.features < max.features)
+panc <- filter_IBRAP(object = panc, RAW_total.features < max.features & RAW_total.counts > 200 & RAW_percent.mt < 8)
 
 add.cell.cycle <- function(object, 
                            assay,
@@ -1527,7 +1361,8 @@ add.cell.cycle <- function(object,
       }
       
     }
-    object@sample_metadata <- cbind(object@sample_metadata, seuobj@meta.data[, sum(length(colnames(seuobj@meta.data))-2):length(colnames(seuobj@meta.data))])
+    df <- seuobj@meta.data[, sum(length(colnames(seuobj@meta.data))-2):length(colnames(seuobj@meta.data))]
+    object@sample_metadata <- cbind(object@sample_metadata, df)
     cat(crayon::cyan('New metadata added\n'))
   } else {
     seuobj <- Seurat::CreateSeuratObject(counts = object@methods[[assay]][['counts']])
@@ -1547,7 +1382,8 @@ add.cell.cycle <- function(object,
       
     }
     
-    object@sample_metadata <- cbind(object@sample_metadata, seuobj@meta.data[, sum(length(colnames(seuobj@meta.data))-2):length(colnames(seuobj@meta.data))])
+    df <- seuobj@meta.data[, sum(length(colnames(seuobj@meta.data))-2):length(colnames(seuobj@meta.data))]
+    object@sample_metadata <- cbind(object@sample_metadata, df)
     cat(crayon::cyan('New metadata added\n'))
     
   }
@@ -1608,7 +1444,7 @@ add.feature.score <- function(object,
 
 panc <- add.feature.score(object = panc, 
                           assay = 'RAW', 
-                          slot = 'decontaminated',
+                          slot = 'counts',
                           transform = TRUE, 
                           features = c('BAG3', 'BLOC1S5-TXNDC5', 'CALU', 'DNAJB1', 'DUSP1', 'EGR1', 
                                        'FOS', 'FOSB', 'HIF1A', 'HSP90AA1', 'HSP90AB1', 'HSP90AB2P', 
@@ -1637,7 +1473,7 @@ perform.sct.normalisation <- function(object,
   .counts <- as(object = as.matrix(seuratobj@assays$SCT@counts), Class = 'dgCMatrix')
   .normalised <- as(as.matrix(seuratobj@assays$SCT@data), Class = 'dgCMatrix')
   .norm.scaled <- as.matrix(seuratobj@assays$SCT@scale.data)
-  feat.meta <- feature_metadata(assay = .counts, col.prefix = new.assay.name)
+  feat.meta <- feature_metadata(assay = as.matrix(.counts), col.prefix = new.assay.name)
   object@methods[[new.assay.name]] <- new(Class = 'methods',
                                           counts = .counts, 
                                           normalised = .normalised, 
@@ -2001,82 +1837,82 @@ perform.scanpy.normalisation <- function(object,
 
 panc <- perform.scanpy.normalisation(object = panc, vars.to.regress = 'RAW_total.counts')
 
-perform.bbknn <- function(object, 
-                          reduction,
-                          graph.name = 'bbknn',
-                          column.correct,
-                          n_pcs = NULL, 
-                          trim = NULL, 
-                          n_trees = 10,
-                          use_faiss = TRUE,
-                          set_op_mix_ratio = 1.0,
-                          local_connectivity= 1) {
-  
-  sc <- reticulate::import('scanpy')
-  print('.')
-  scobj <- sc$AnnData(X = reducedDim(object, reduction))
-  print('.')
-  scobj$obs_names <- as.factor(colnames(object))
-  print('.')
-  scobj$var_names <- as.factor(colnames(reducedDim(object, reduction)))
-  print('.')
-  scobj$obsm$update(X_pca = reducedDim(object, reduction))
-  print(scobj)
-  
-  if(as.data.frame(colData(object)) >= 1) {
-    print('obs')
-    print(as.data.frame(colData(object)))
-    scobj$obs <- pd$DataFrame(data = as.data.frame(colData(object)))
-  }
-  
-  if(is.null(n_pcs)) {
-    print('npcs calculated')
-    n_pcs <- as.integer(length(colnames(reducedDim(object, reduction))))
-  }
-  
-  if(is.null(trim)) {
-    print('initialising bbknn')
-    sc$external$pp$bbknn(scobj, 
-                         batch_key = as.character(column.correct), 
-                         approx = as.logical(FALSE), 
-                         n_pcs = n_pcs,
-                         n_trees = as.integer(n_trees),
-                         use_faiss = as.logical(use_faiss),
-                         set_op_mix_ratio = set_op_mix_ratio,
-                         local_connectivity = local_connectivity)
-  } else if (!is.null(trim)) {
-    sc$external$pp$bbknn(scobj, 
-                         batch_key= as.character(column.correct), 
-                         approx = as.logical(FALSE), 
-                         n_pcs = n_pcs,
-                         trim = as.integer(trim),
-                         n_trees = as.integer(n_trees),
-                         use_faiss = as.logical(use_faiss),
-                         set_op_mix_ratio = set_op_mix_ratio,
-                         local_connectivity = local_connectivity)
-  }
-  
-  graph.list <- list()
-  connectivities <- scobj$obsp[['connectivities']]
-  colnames(connectivities) <- colnames(object)
-  rownames(connectivities) <- colnames(object)
-  distances <- scobj$obsp[['distances']]
-  colnames(distances) <- colnames(object)
-  rownames(distances) <- colnames(object)
-  
-  graph.list[['connectivities']] <- connectivities
-  graph.list[['distances']] <- distances
-  print(graph.list)
-  metadata(object)[['graphs']][[graph.name]] <- graph.list
-  
-  return(object)
-  
-}
+# perform.bbknn <- function(object, 
+#                           reduction,
+#                           graph.name = 'bbknn',
+#                           column.correct,
+#                           n_pcs = NULL, 
+#                           trim = NULL, 
+#                           n_trees = 10,
+#                           use_faiss = TRUE,
+#                           set_op_mix_ratio = 1.0,
+#                           local_connectivity= 1) {
+#   
+#   sc <- reticulate::import('scanpy')
+#   print('.')
+#   scobj <- sc$AnnData(X = reducedDim(object, reduction))
+#   print('.')
+#   scobj$obs_names <- as.factor(colnames(object))
+#   print('.')
+#   scobj$var_names <- as.factor(colnames(reducedDim(object, reduction)))
+#   print('.')
+#   scobj$obsm$update(X_pca = reducedDim(object, reduction))
+#   print(scobj)
+#   
+#   if(as.data.frame(colData(object)) >= 1) {
+#     print('obs')
+#     print(as.data.frame(colData(object)))
+#     scobj$obs <- pd$DataFrame(data = as.data.frame(colData(object)))
+#   }
+#   
+#   if(is.null(n_pcs)) {
+#     print('npcs calculated')
+#     n_pcs <- as.integer(length(colnames(reducedDim(object, reduction))))
+#   }
+#   
+#   if(is.null(trim)) {
+#     print('initialising bbknn')
+#     sc$external$pp$bbknn(scobj, 
+#                          batch_key = as.character(column.correct), 
+#                          approx = as.logical(FALSE), 
+#                          n_pcs = n_pcs,
+#                          n_trees = as.integer(n_trees),
+#                          use_faiss = as.logical(use_faiss),
+#                          set_op_mix_ratio = set_op_mix_ratio,
+#                          local_connectivity = local_connectivity)
+#   } else if (!is.null(trim)) {
+#     sc$external$pp$bbknn(scobj, 
+#                          batch_key= as.character(column.correct), 
+#                          approx = as.logical(FALSE), 
+#                          n_pcs = n_pcs,
+#                          trim = as.integer(trim),
+#                          n_trees = as.integer(n_trees),
+#                          use_faiss = as.logical(use_faiss),
+#                          set_op_mix_ratio = set_op_mix_ratio,
+#                          local_connectivity = local_connectivity)
+#   }
+#   
+#   graph.list <- list()
+#   connectivities <- scobj$obsp[['connectivities']]
+#   colnames(connectivities) <- colnames(object)
+#   rownames(connectivities) <- colnames(object)
+#   distances <- scobj$obsp[['distances']]
+#   colnames(distances) <- colnames(object)
+#   rownames(distances) <- colnames(object)
+#   
+#   graph.list[['connectivities']] <- connectivities
+#   graph.list[['distances']] <- distances
+#   print(graph.list)
+#   metadata(object)[['graphs']][[graph.name]] <- graph.list
+#   
+#   return(object)
+#   
+# }
 
-test <- perform.bbknn(object = pancreas.test, 
-                      reduction = 'uncorrected_dbmap', 
-                      graph.name = 'dbmap_bbknn', 
-                      column.correct = 'tech')
+# test <- perform.bbknn(object = pancreas.test, 
+#                       reduction = 'uncorrected_dbmap', 
+#                       graph.name = 'dbmap_bbknn', 
+#                       column.correct = 'tech')
 
 perform.pca <- function(object, 
                         assay,
@@ -2259,9 +2095,52 @@ perform.tsne <- function(object,
 panc <- perform.tsne(object = panc, assay = c('SCT', 'SCRAN', 'TPM', 'SCANPY'), reduction = 'pca', reduction.save = 'pca_tsne', n.dim = 1:42, n_components = 3)
 panc <- perform.tsne(object = panc, assay = c('SCT', 'SCRAN', 'TPM', 'SCANPY'), reduction = 'dbmap', reduction.save = 'dbmap_tsne', n_components = 3)
 
+perform.lvish <- function(object, 
+                         assay,
+                         reduction='pca',
+                         reduction.save='lvish',
+                         n.dim=NULL, 
+                         n_components = 3, 
+                         ...) {
+  
+  for(u in assay) {
+    
+    cat(crayon::cyan('Processing', reduction, 'for assay:', u,'\n'))
+    if(!is.null(n.dim)) {
+      
+      c <- uwot::lvish(X = object@methods[[u]]@computational_reductions[[reduction]][,n.dim], n_components = n_components, verbose = TRUE, ...)
+      
+    } else {
+      
+      c <- uwot::lvish(X = object@methods[[u]]@computational_reductions[[reduction]], n_components = n_components, verbose = TRUE, ...)
+      
+    }
+    dim.names <- list()
+    for(l in 1:n_components) {
+      dim.names[[l]] <- paste0('lvish_', l)
+    }
+    colnames(c) <- unlist(dim.names)
+    object@methods[[u]]@visualisation_reductions[[reduction.save]] <- c
+    
+  }
+  
+  return(object)
+}
+
+panc <- perform.lvish(object = panc, 
+                      assay = c('SCT', 'SCRAN', 'SCANPY', 'TPM'), 
+                      reduction = 'pca', 
+                      reduction.save = 'pca_lvish', 
+                      n.dim = 1:42, n_components = 3)
+
+panc <- perform.lvish(object = panc, 
+                      assay = c('SCT', 'SCRAN', 'SCANPY', 'TPM'), 
+                      reduction = 'dbmap', 
+                      reduction.save = 'dbmap_lvish', n_components = 3)
+
 library(harmony)
 
-perform.harmony <- function(object, assay, group.by.vars, reduction = 'pca', dims.use = NULL,
+perform.harmony <- function(object, assay, vars.use, reduction = 'pca', dims.use = NULL,
                             theta = NULL, lambda = NULL, sigma = 0.1, nclust = NULL,
                             tau = 0, block.size = 0.05, max.iter.harmony = 10,
                             max.iter.cluster = 20, epsilon.cluster = 1e-05,
@@ -2308,13 +2187,15 @@ perform.harmony <- function(object, assay, group.by.vars, reduction = 'pca', dim
       
     }
     
-    print('.')
-    
     count <- 1
     
     for(g in reduction) {
       
-      reduction.list <- reduction.list[[g]]
+      print(g)
+      
+      print(names(reduction.list))
+      
+      red <- reduction.list[[g]]
       
       red.save <- reduction.save[[count]]
       
@@ -2322,33 +2203,34 @@ perform.harmony <- function(object, assay, group.by.vars, reduction = 'pca', dim
       
       if(is.null(dims)) {
         
-        dims <- 1:length(colnames(reduction.list))
+        dims <- 1:length(colnames(red))
         
       }
       
       cat(crayon::cyan('Initialising harmony\n'))
       
-      harm <- harmony::HarmonyMatrix(data_mat = reduction.list[,dims], meta_data = object@sample_metadata, vars_use = group.by.vars, do_pca = FALSE, 
+      harm <- harmony::HarmonyMatrix(data_mat = red[,dims], meta_data = object@sample_metadata, vars_use = vars.use, do_pca = FALSE, 
                                      theta = theta, lambda = lambda, sigma = sigma, nclust = nclust, tau = tau, 
                                      block.size = block.size, max.iter.harmony = max.iter.harmony, max.iter.cluster = max.iter.cluster, 
                                      epsilon.cluster = epsilon.cluster, epsilon.harmony = epsilon.harmony, plot_convergence = plot_convergence, 
                                      return_object = FALSE, verbose = verbose, reference_values = reference_values)
       
-      object@methods[[t]]@integration_reductions[[red.save]] <- harm
+      object@methods[[p]]@integration_reductions[[red.save]] <- harm
       
       count <- count + 1
       
     }
-    
-    
-    
+
   }
 
   cat(crayon::cyan('Harmony completed\n'))
   return(object)
 }
 
-perform.harmony(object = panc, assay = c('SCRAN'), group.by.vars = 'celltype', reduction = c('pca', 'dbmap'))
+test <- perform.harmony(object = panc, assay = c('SCRAN'), 
+                vars.use = 'celltype', 
+                reduction = c('pca', 'dbmap'), 
+                reduction.save = c('pca_harmony', 'dbmap_harmony'))
 
 perform.scanorama <- function(object, 
                               assay, 
@@ -2491,9 +2373,47 @@ perform.seurat.cluster <- function(object,
   
   for(p in assay) {
     
+    reduction.list <- list()
+    red.names <- c(names(object@methods[[p]]@computational_reductions), 
+                   names(object@methods[[p]]@integration_reductions),
+                   names(object@methods[[p]]@visualisation_reductions))
+    
+    for(i in red.names) {
+      
+      if(i %in% names(object@methods[[p]]@computational_reductions)) {
+        
+        reduction.list[[i]] <- object@methods[[p]]@computational_reductions[[i]]
+        
+      }
+      
+      if(i %in% names(object@methods[[p]]@integration_reductions)) {
+        
+        reduction.list[[i]] <- object@methods[[p]]@integration_reductions[[i]]
+        
+      }
+      
+      if(i %in% names(object@methods[[p]]@visualisation_reductions)) {
+        
+        reduction.list[[i]] <- object@methods[[p]]@visualisation_reductions[[i]]
+        
+      }
+      
+    }
+    
+    for(r in reduction) {
+      
+      if(!r %in% names(reduction.list)) {
+        
+        cat(crayon::cyan('reductions could not be found\n'))
+        return(object)
+        
+      }
+      
+    }
+    
     cat(crayon::cyan(paste0('Calculating Seurat clusters for assay: ', p, '\n')))
     tmp <- Seurat::CreateSeuratObject(counts = object@methods[[p]]@counts)
-    tmp@reductions[[reduction]] <- Seurat::CreateDimReducObject(embeddings = object@methods[[p]]@computational_reductions[[reduction]], key = reduction)
+    tmp@reductions[[reduction]] <- Seurat::CreateDimReducObject(embeddings = reduction.list[[reduction]], key = reduction)
     orig.name <- names(tmp@meta.data)
     if(!is.null(dims)) {
       
@@ -2534,12 +2454,12 @@ panc <- perform.seurat.cluster(object = panc, assay = c('SCT', 'SCRAN', 'TPM', '
 library(SC3)
 
 perform.sc3.reduction.cluster <- function(object, 
-                                assay,
-                                reduction,
-                                dims,
-                                assignment.df.name,
-                                ks, 
-                                n.core = 3) {
+                                          assay,
+                                          reduction,
+                                          dims,
+                                          assignment.df.name,
+                                          ks, 
+                                          n.core = 3) {
   
   cat(crayon::cyan('Initialising SC3 clustering\n'))
   
@@ -2583,7 +2503,7 @@ perform.sc3.reduction.cluster <- function(object,
       
     }
   
-    reduction.list <- reduction.list[[reduction]]
+    reduction.list <- reduction.list[reduction]
     
     if(is.null(dims)) {
       
@@ -2591,18 +2511,41 @@ perform.sc3.reduction.cluster <- function(object,
       
     }
     
-    print(t(reduction.list))
+    count <- 1
     
-    temp.2 <- SingleCellExperiment(list('logcounts' = t(reduction.list)[dims,]))
-    rowData(temp.2)$feature_symbol <- rownames(temp.2)
-    temp.2 <- temp.2[!duplicated(rowData(temp.2)$feature_symbol), ]
-    temp.2 <- sc3_prepare(temp.2, gene_filter = FALSE, n_cores = n.core)
-    temp.2 <- sc3_calc_dists(temp.2)
-    temp.2 <- sc3_calc_transfs(temp.2)
-    temp.2 <- sc3_kmeans(temp.2, ks = ks)
-    temp.2 <- sc3_calc_consens(temp.2)
-    object@methods[[p]]@cluster_assignments[[assignment.df.name]] <- as.data.frame(colData(temp.2))
-    cat(crayon::cyan('SC3 clustering completed\n'))
+    for(r in reduction) {
+      
+      if(length(reduction == 1)) {
+        
+        red <- reduction.list
+        
+      } else {
+        
+        red <- reduction.list[r]
+        
+      }
+      
+      dimen <- dims[[count]]
+      
+      if(is.null(dimen)) {
+        
+        dimen <- ncol(red)
+        
+      }
+      
+      temp.2 <- SingleCellExperiment(list('logcounts' = t(reduction.list)[dims,]))
+      rowData(temp.2)$feature_symbol <- rownames(temp.2)
+      temp.2 <- temp.2[!duplicated(rowData(temp.2)$feature_symbol), ]
+      temp.2 <- sc3_prepare(temp.2, gene_filter = FALSE, n_cores = n.core)
+      temp.2 <- sc3_calc_dists(temp.2)
+      temp.2 <- sc3_calc_transfs(temp.2)
+      temp.2 <- sc3_kmeans(temp.2, ks = ks)
+      temp.2 <- sc3_calc_consens(temp.2)
+      object@methods[[p]]@cluster_assignments[[assignment.df.name[[count]]]] <- as.data.frame(colData(temp.2))
+      cat(crayon::cyan('SC3 clustering completed\n'))
+      count <- count + 1
+      
+    }
     
   }
 
@@ -2611,20 +2554,20 @@ perform.sc3.reduction.cluster <- function(object,
 }
 
 test <- perform.sc3.reduction.cluster(object = panc, 
-                              assay = c('SCRAN'), 
-                              reduction = 'pca', 
+                              assay = c('SCT', 'SCRAN', 'SCANPY', 'TPM'), 
+                              reduction = c('pca', 'dbmap'), 
                               dims = 1:42, 
-                              assignment.df.name = 'pca_SC3', 
+                              assignment.df.name = c('pca_SC3', 'dbmap_SC3'), 
                               ks = 10:16, 
                               n.core = 3)
 
 perform.sc3.slot.cluster <- function(object, 
-                                          assay,
-                                          slot,
-                                          HVGs,
-                                          assignment.df.name,
-                                          ks, 
-                                          n.core = 3) {
+                                     assay,
+                                     slot,
+                                     HVGs,
+                                     assignment.df.name,
+                                     ks, 
+                                     n.core = 3) {
   
   cat(crayon::cyan('Initialising SC3 clustering\n'))
   
@@ -2638,10 +2581,23 @@ perform.sc3.slot.cluster <- function(object,
       
     }
     
-    temp.2 <- SingleCellExperiment(list('logcounts' = mat))
-    rowData(temp.2)$feature_symbol <- rownames(temp.2)
-    temp.2 <- temp.2[!duplicated(rowData(temp.2)$feature_symbol), ]
-    temp.2 <- sc3_prepare(temp.2, gene_filter = FALSE, n_cores = n.core)
+
+    if(is.null(HVGs)) {
+      
+      temp.2 <- SingleCellExperiment(list('counts' = as.matrix(object@methods[[p]]@counts[rownames(mat),]), 'logcounts' = as.matrix(mat)))
+      rowData(temp.2)$feature_symbol <- rownames(temp.2)
+      temp.2 <- temp.2[!duplicated(rowData(temp.2)$feature_symbol), ]
+      temp.2 <- sc3_prepare(temp.2, gene_filter = TRUE, n_cores = n.core)
+      
+    } else {
+      
+      temp.2 <- SingleCellExperiment(list('logcounts' = as.matrix(mat)))
+      rowData(temp.2)$feature_symbol <- rownames(temp.2)
+      temp.2 <- temp.2[!duplicated(rowData(temp.2)$feature_symbol), ]
+      temp.2 <- sc3_prepare(temp.2, gene_filter = FALSE, n_cores = n.core)
+      
+    }
+    
     temp.2 <- sc3_calc_dists(temp.2)
     temp.2 <- sc3_calc_transfs(temp.2)
     temp.2 <- sc3_kmeans(temp.2, ks = ks)
@@ -2655,40 +2611,127 @@ perform.sc3.slot.cluster <- function(object,
   
 }
 
-perform.tsne.kmeans <- function(object, 
+library(SC3)
+
+panc <- perform.sc3.slot.cluster(object = panc, 
+                                 assay = c('SCT', 'SCRAN', 'SCANPY', 'TPM'), 
+                                 slot = 'normalised', 
+                                 HVGs = T, 
+                                 assignment.df.name = 'counts_SC3', 
+                                 ks = 10:16, n.core = 3)
+
+perform.reduction.kmeans <- function(object, 
+                                assay,
                                 reduction=NULL, 
+                                dims = NULL,
                                 k=NULL,
-                                data_frame_name,
+                                assignment.df.name,
                                 method='kmeans',
                                 ...) {
   
-  clusters <- data.frame(kmeans=numeric(length(colnames(object))))
-  rownames(clusters) <- colnames(object)
+  for(p in assay) {
+    
+    reduction.list <- list()
+    red.names <- c(names(object@methods[[p]]@computational_reductions), 
+                   names(object@methods[[p]]@integration_reductions),
+                   names(object@methods[[p]]@visualisation_reductions))
+    
+    for(i in red.names) {
+      
+      if(i %in% names(object@methods[[p]]@computational_reductions)) {
+        
+        reduction.list[[i]] <- object@methods[[p]]@computational_reductions[[i]]
+        
+      }
+      
+      if(i %in% names(object@methods[[p]]@integration_reductions)) {
+        
+        reduction.list[[i]] <- object@methods[[p]]@integration_reductions[[i]]
+        
+      }
+      
+      if(i %in% names(object@methods[[p]]@visualisation_reductions)) {
+        
+        reduction.list[[i]] <- object@methods[[p]]@visualisation_reductions[[i]]
+        
+      }
+      
+    }
+    
+    for(r in reduction) {
+      
+      if(!r %in% names(reduction.list)) {
+        
+        cat(crayon::cyan('reductions could not be found\n'))
+        return(object)
+        
+      }
+      
+    }
+    
+    print(reduction)
+    print(names(reduction.list))
+    
+    reduction.list <- reduction.list[reduction]
+    
+    count <- 1
+    
+    for(o in reduction) {
+      
+      if(length(reduction) == 1) {
+        
+        red <- reduction.list
+        
+      } else {
+        
+        red <- reduction.list[[o]] 
+        
+      }
+      
+      dimen <- dims[[count]]
+      
+      if(is.null(dimen)) {
+        
+        dimen <- 1:length(colnames(red))
+        
+      }
+      
+      clusters <- data.frame(kmeans=numeric(length(colnames(object))))
+      rownames(clusters) <- colnames(object)
+      
+      if(is.null(k)) {
+        cat(crayon::cyan('Specify number of clusters\n'))
+      }
+      if(is.null(reduction)) {
+        cat(crayon::cyan('Provide assay\n'))
+      }
+      if(method == 'pam') {
+        for(i in k) {
+          clusters[,paste0('pam_clustering_K_', i)] <- as.factor(cluster::pam(x = red[,dimen], k = i, ...)$clustering)
+        }
+      }
+      if(method == 'kmeans') {
+        for(i in k) {
+          clusters[[paste0('kmeans_clustering_K_', i)]] <- as.factor(kmeans(x = red[,dimen], centers = i, ...)$cluster)
+        }
+      } else {
+        cat(crayon::cyan('Please specify method: pam or kmeans\n'))
+      }
+      
+      clusters <- clusters[,2:length(colnames(clusters))]
+      object@methods[[p]]@cluster_assignments[[assignment.df.name[[count]]]] <- clusters
+      
+      count <- count + 1
+    }
+
+  }
   
-  if(is.null(k)) {
-    cat(crayon::cyan('Specify number of clusters\n'))
-  }
-  if(is.null(reduction)) {
-    cat(crayon::cyan('Provide assay\n'))
-  }
-  if(method == 'pam') {
-    for(i in k) {
-      clusters[,paste0('pam_clustering_K_', i)] <- cluster::pam(x = reducedDim(object, reduction), k = i, ...)$clustering
-    }
-  }
-  if(method == 'kmeans') {
-    for(i in k) {
-      clusters[[paste0('kmeans_clustering_K_', i)]] <- kmeans(x = reducedDim(object, reduction), centers = i, ...)$cluster
-    }
-  } else {
-    cat(crayon::cyan('Please specify method: pam or kmeans\n'))
-  }
-  print(clusters)
-  print(data_frame_name)
-  clusters <- clusters[,2:length(colnames(clusters))]
-  metadata(object)[['clustering']][[data_frame_name]] <- clusters
   return(object)
 }
+
+panc <- perform.reduction.kmeans(object = panc, assay = c('SCT','SCRAN','SCANPY','TPM'), 
+                         reduction = c('dbmap_tsne', 'pca_tsne'), dims = list(NULL, NULL), k = 10:16, 
+                         assignment.df.name = c('dbmap_tsne_kmeans', 'pca_tsne_kmeans'), method = 'kmeans')
 
 benchmark.clustering <- function(object, 
                                  assay,
@@ -2840,14 +2883,14 @@ benchmark.clustering <- function(object,
                                paste0(k, '_ARI.results'), 
                                paste0(k, '_NMI.results'))
         
-        object@methods[[l]]@benchmark_results[[k]] <- results
+        object@methods[[l]]@benchmark_results[[k]] <- as.data.frame(results)
         
       } else {
         
         results <- cbind(sil.results, dunn.results, conn.results)
         rownames(results) <- colnames(all.clusters)
         colnames(results) <- c(paste0(k, '_sil.results'), paste0(k, '_dunn.results'), paste0(k, '_conn.results'))
-        object@methods[[l]]@benchmark_results[[k]] <- results
+        object@methods[[l]]@benchmark_results[[k]] <- as.data.frame(results)
         
       }
     }
@@ -2865,6 +2908,22 @@ panc <- benchmark.clustering(object = panc,
                      dist.method = 'euclidean', 
                      ground.truth = panc$celltype)
 
+panc <- benchmark.clustering(object = panc, 
+                             assay = c('SCT', 'SCRAN', 'SCANPY', 'TPM'), 
+                             clustering = c('dbmap_tsne_kmeans', 'pca_tsne_kmeans'), 
+                             reduction = c('dbmap_umap', 'pca_umap'), 
+                             components = 1:3, 
+                             dist.method = 'euclidean', 
+                             ground.truth = panc$celltype)
+
+panc <- benchmark.clustering(object = panc, 
+                             assay = c('SCT', 'SCRAN', 'SCANPY', 'TPM'), 
+                             clustering = c('counts_SC3'), 
+                             reduction = c('pca_umap'), 
+                             components = 1:3, 
+                             dist.method = 'euclidean', 
+                             ground.truth = panc$celltype)
+
 library(plotly)
 library(ggplot2)
 library(egg)
@@ -2877,9 +2936,6 @@ plot.reduced.dim <- function(object,
                              clust.method,
                              column,
                              pt.size=5, 
-                             metadata.access='clustering',
-                             sub.access='metadata',
-                             group.by, 
                              dimensions) {
   
   project.met <- object@sample_metadata
@@ -2923,8 +2979,8 @@ plot.reduced.dim <- function(object,
   
 }
 
-plot.reduced.dim(object = panc, reduction = 'dbmap_umap', assay = 'SCRAN', 
-                 clust.method = 'dbmap_seurat', column = 'RNA_snn_res.1.5', dimensions = 2, pt.size = 2)
+plot.reduced.dim(object = panc, reduction = 'pca_umap', assay = 'SCT', 
+                 clust.method = 'pca_seurat', column = 'RNA_snn_res.1', dimensions = 2, pt.size = 2)
 
 plot.features <- function(object, 
                           reduction='', 
@@ -2976,18 +3032,19 @@ plot.features <- function(object,
 
 plot.features.multiple <- function(object, 
                                    assay, 
-                                   reduction, 
-                                   lab.key, 
+                                   slot,
+                                   reduction,
                                    features) {
   
   plot.list <- list()
   
   for(x in features) {
     print('1')
-    results <- as.data.frame(reducedDim(object, reduction))[,1:2]
+    results <- as.data.frame(object@methods[[assay]]@visualisation_reductions[[reduction]])[,1:2]
+    orig.colnames <- colnames(object@methods[[assay]]@visualisation_reductions[[reduction]][,1:2])
     print('2')
     print(assay)
-    iso <- assay(object, assay)[x,]
+    iso <- object@methods[[assay]][[slot]][x,]
     print('3')
     colnames(results) <- c('red_1', 'red_2')
     print('4')
@@ -2998,7 +3055,7 @@ plot.features.multiple <- function(object,
     plot.list[[x]] <- ggplot(data = results[order(results$feature),], aes(x = red_1, y = red_2)) + 
       geom_point(aes(color=feature)) + 
       scale_color_gradient(low = '#FFFF00', high = '#FF0000') + 
-      theme_bw() + labs(title=x, x=paste0(lab.key,'_1'), y=paste0(lab.key,'_2')) + 
+      theme_bw() + labs(title=x, x=orig.colnames[1], y=orig.colnames[2]) + 
       theme(plot.title = element_text(hjust = 0.5, face = 'bold', size = 10))
     print('7')
   }
@@ -3033,35 +3090,36 @@ plot.features.multiple <- function(object,
   }
 }
 
-# plot.features.multiple(object = panc, assay = 'sctransform', 
-#                        reduction = 'scanorama_reduced_umap', 
-#                        lab.key = 'umap', features = c('GCG', 'MAFA', 'MAFB'))
-
-plot.barplot <- function(object, 
-                         x.value, 
-                         y.value) {
-  object[['var']] <- y.value 
-  object[['group']] <- x.value
-  print(length(unique(object[['var']])))
-  p <- dittoSeq::dittoBarPlot(object = object, 
-                              var = 'var', 
-                              group.by = 'group') + 
-    labs(title='') + 
-    theme(axis.text=element_text(size=16),axis.title=element_text(size=16,face="bold"))
-  
-  print(p)
-}
+plot.features.multiple(object = panc, 
+                       assay = 'SCT', 
+                       reduction = 'pca_umap', 
+                       slot = 'normalised', features = c('GCG', 'MAFA', 'MAFB'))
+# 
+# plot.barplot <- function(object, 
+#                          x.value, 
+#                          y.value) {
+#   object[['var']] <- y.value 
+#   object[['group']] <- x.value
+#   print(length(unique(object[['var']])))
+#   SingleCellExperiment()
+#   p <- dittoSeq::dittoBarPlot(object = object, 
+#                               var = 'var', 
+#                               group.by = 'group') + 
+#     labs(title='') + 
+#     theme(axis.text=element_text(size=16),axis.title=element_text(size=16,face="bold"))
+#   
+#   print(p)
+# }
 
 plot.barplot(object = panc,
              y.value = metadata(panc)$clustering[['seurat:pca_harmony']][['Seurat_res_0.2']],
              x.value = panc$tech)
 
 plot.benchmarking <- function(object, 
-                              clust.method, 
+                              assay,
+                              clustering, 
                               ARI){
-  print('.')
-  clust.bench <- metadata(object)[['benchmarking_clustering']][[as.character(clust.method)]]
-  print('.')
+  clust.bench <- object@methods[[assay]]@benchmark_results[[clustering]]
   clust.bench <- as.data.frame(clust.bench)
   print(clust.bench)
   clust.bench[,'cluster_index'] <- rownames(clust.bench)
@@ -3101,33 +3159,43 @@ plot.benchmarking <- function(object,
   do.call('ggarrange', c(plots = list.plot, ncol = 5))
 }
 
-plot.heatmap <- function(object, 
-                         assay, 
-                         features, 
+plot.heatmap <- function(object,
+                         assay,
+                         slot,
+                         features,
+                         group.by,
                          ...) {
-  
-  ass <- object[features,]
-  ass <- assay(ass, assay)
+
+  ass <- object@methods[[assay]][[slot]]
   cat(crayon::cyan('Isolated assay\n'))
-  
+  ass <- as.matrix(ass)
   logged <- log(ass+1)
   means <- apply(X = logged, MARGIN = 1, FUN = mean)
   standev <- apply(X = logged, MARGIN = 1, FUN = sd)
-  z_scores <- logged - means / standev 
+  z_scores <- logged - means / standev
   cat(crayon::cyan('z-scores calculated\n'))
   
-  p <- gplots::heatmap.2(x = z_scores, 
-                         key.title = 'colour key', 
-                         key.xlab = 'z-score', 
-                         key.ylab = '', xlab = 'cells', 
-                         ylab = 'genes', trace = 'none', margins = c(7,7))
-  p
+  seuobj <- Seurat::CreateSeuratObject(counts = z_scores)
+  
+  if(length(group.by) != ncol(seuobj)) {
+    
+    cat(crayon::cyan('group.by variable does not contain the same quantity as cells.\n'))
+    
+  }
+  
+  features <- features[features %in% rownames(seuobj)]
+  
+  seuobj$clusters <- group.by
+  
+  print(Seurat::DoHeatmap(object = seuobj, features = features, group.by = 'clusters', slot = 'counts'))
+  
 }
 
-# plot.heatmap(object = pancreas, assay = 'counts', features = features)
+plot.heatmap(object = panc, assay = 'SCT', slot = 'normalised', features = features, group.by = panc@methods$SCT@cluster_assignments$counts_SC3$sc3_13_clusters)
 
 plot.vln <- function(object, 
                      assay,
+                     slot,
                      features, 
                      group.by, 
                      title = NULL, 
@@ -3142,15 +3210,14 @@ plot.vln <- function(object,
   plot.list <- list()
   
   for(x in features) {
-    ass <- t(assay(object[x,], assay))
-    df <- data.frame(groups = colnames(object))
+    ass <- t(object@methods[[assay]][[slot]][x,])
+    df <- data.frame(barcodes = colnames(object))
     rownames(df) <- df$barcodes
-    df <- cbind(df, ass)
-    df[,'groups'] <- group.by
-    colnames(df) <- c('group', 'feature')
+    df[,'feature'] <- t(ass)
+    df[,'group'] <- group.by
     
     p <- ggplot(data = df, aes(x = group, y = feature, color = group)) + 
-      geom_violin() + 
+      geom_violin() + geom_boxplot() +
       theme_light() + labs(title = x, y = 'expression', x = 'group') + 
       theme(plot.title = element_text(hjust = 0.5, face = 'bold', size = 20))
     
@@ -3164,10 +3231,10 @@ plot.vln <- function(object,
   }
 }
 
-# plot.vln(object = panc, 
-#          assay = 'sctransform', 
-#          features = c("A1BG-AS1", "A1BG", "A1CF"),
-#          group.by = metadata(panc)[['clustering']][['seurat:scanorama_reduced']][['Seurat_res_0.2']])
+plot.vln(object = panc, assay = 'SCT', 
+         features = c('GCG', 'MAFA', 'MAFB'), 
+         slot = 'normalised', 
+         group.by = panc@methods$SCT@cluster_assignments$pca_seurat$RNA_snn_res.1.5)
 
 perform.seurat.diffexp <- function(object, counts.assay, norm.assay, scaled.assay, test, cluster.method, cluster.column, ...) {
   seuobj <- Seurat::as.Seurat(x = object, counts = counts.assay, data = norm.assay)
