@@ -256,5 +256,3 @@ Our current repertoire of tools are outlined in the following table:
 
 ![pipeline](/figures/IBRAP_schemata.png)
 
-#### IBRAP Tutorial
-
