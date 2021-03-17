@@ -77,7 +77,9 @@ max.features <- (sd.value*3)+med.value
 ```
 The above calculation we have provided is commonly used to determine maximum number of features to retain, in this example we multiple SD by 3, however this can range between 2 for more stringent and 3 for more lenient. 
 
+```
 panc <- filter_IBRAP(object = panc, RAW_total.features < max.features & RAW_percent.mt < 8)
+```
 
 percentage mitochondrial is biologically specific, i.e cells in the lungs contain a higher percentage of mitochondrial counts than other tissues. 
 
@@ -212,15 +214,43 @@ saveRDS(object = panc, file = '/path/to/folder/location/pancreas_data.rd', compr
 
 ### IBRAP application:
 
+Firstly, we must upload our RDS file which can be browsed for under 'RDS file upload', once the upload is completed we must load the file into our application using the 'Activate' button. Now, we can select from our assays under the 'Select assay' selection menu, this can be changed at any time. Finally, we need to select a visualisation projection to view out data in, this can be selected in the dropdown menu under 'Select reduction technique'. Now, we are ready to visualise some data. 
 
+#### TAB: clustering
+
+We can find our cell assignment for our assay under 'Select cell assignment', for simplicity we have also added our metadata to this section incase we need to visualise this information. Under 'Generate a dimensionality column' we have 3 dropdown menus: 'Select cell assignment column' where we navigate between the columns of our selected cell assignment, '2D or 3D?' allow us to choose between visualising the reduction in 2 or 3 dimensions, and 'point size' which allows us to adjust the size of our cells. A legend is also displayed on the right-hand side of our plot which displays which colour corresponds to which cell assignment. 
+
+![step1](/figures/step1.png)
+
+To help us to understand which parameter functioned optimally, benchmarking metrics for the clustering is displayed underneath. These metrics can be used as a guide but may not always indicate the best result or the correct number of clusters. 
+
+![step2](/figures/step2.png)
+
+#### TAB: features
+
+A fundamental part of scRNA-seq analyses is understanding the biology behind the results. Dividing our cell populations up according to their transcriptomic profiles is excellent, but we must understand which assignment belongs to which cell type. Therefore, you can visualise gene expression in our feature tab. 
+
+In the first section of this tab we can produce multiple feature plots displaying the gene expression of specific markers. This enables us to identify canonical markers that aid in their biological identification. 
+
+![step3](/figures/step3.png)
+
+By constructing these leading methods into an ease-of-use interchangeable pipeline, we enable flexibility and uniquity for scRNA-seq analyses. As you can see, the feature we have selected are obvious exclusively expressed in high quantities in a particular demographic. We can begin to understand which cluster belongs to which cell type.
+
+![step4](/figures/step4.png)
+
+To help us get a more categorical understanding of expression we can utilise violin plots split by cluster assignments, this in combination with feature plots is a powerful tool for visualising gene expression. 
+
+![step5](/figures/step5.png)
+
+Finally, in the case where we wish to see the distribution of expression amongst a large number of cells we can use a heatmap. For easy interpretation of the values the expression matrix z-score has been calculated. A z-score is simple to interpret, a negative value means the expression is below the average of the whole population, whereas a positive value indicates a higher than average expression. 
+
+With this visualisation application, we can begin to dissect our best pipeline combination and visually interpret the biology of the results. 
 
 Our current repertoire of tools are outlined in the following table:
 
 #### IBRAP repertoire
 
 ![tool_table](/figures/IBRAP_table.png)
-
-By constructing these leading methods into an ease-of-use interchangeable pipeline, we enable flexibility and uniquity for scRNA-seq analyses. 
 
 #### IBRAP pipeline
 
