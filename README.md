@@ -13,7 +13,7 @@ Droplets are designed to capture a singular cell. However, infrequently (a small
 
 ```
 pancreas.data <- perform.scrublet(counts = pancreas.data, 
-                                  expected_doublet_rate = 0.025)
+                                  expected_doublet_rate = 0.075)
 ```
 
 A simple graph is displayed when scrublet is performed - left corresponds with observed doublet scores and right displays simulated scores. A large number of highly scored doublets in the observed graph indicates a higher number of doublets in the sample.
