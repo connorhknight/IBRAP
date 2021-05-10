@@ -13,7 +13,7 @@ Droplets are designed to capture a singular cell. However, infrequently (a small
 
 ```
 pancreas.data <- perform.scrublet(counts = pancreas.data, 
-                                  expected_doublet_rate = 0.025)
+                                  expected_doublet_rate = 0.075)
 ```
 
 A simple graph is displayed when scrublet is performed - left corresponds with observed doublet scores and right displays simulated scores. A large number of highly scored doublets in the observed graph indicates a higher number of doublets in the sample.
@@ -44,11 +44,11 @@ panc <- createIBRAPobject(counts = pancreas.data,
                           min.cells = 3,
                           min.features = 200)
 ```
-Initial filtering of the count matrix is important, cells with little information are likely incomplete, cells that are not spread across more than a few cells will also not add value to the analysis. Therefore, we remove them upon initiation. 
+Initial filtering of the count matrix is important, cells with little information are likely incomplete, features that are not spread across more than a few cells will also not add value to the analysis. Therefore, we remove them upon object initiation. 
 
 ### Quality Control and further filtering: 
 
-A common conudnrum shared across all platforms of scRNA-seq are mitochondrial RNA counts. During cell preparation, cell lysis can cause the mitochondria to leak mitochondrial RNA, which is not a true representation of the cells transcriptome and can influence downstream analyses. Thus, it is important to quanitify the amount of mitochondrial RNA in a cell. This can also be applied to ribosomal RNA. 
+A common conudnrum shared across all platforms of scRNA-seq are mitochondrial RNA counts. During cell preparation, cell lysis can cause the mitochondria to leak mitochondrial RNA, which is not a true representation of the cells transcriptome and can influence downstream analyses. Thus, it is important to quanitify the amount of mitochondrial RNA in a cell, this can also be applied to ribosomal RNA. 
 
 ```
 panc <- find_percentage_genes(object = panc, pattern = '^MT-', 
@@ -75,7 +75,7 @@ sd.value <- sd(panc$RAW_total.features)
 med.value <- median(panc$RAW_total.features)
 max.features <- (sd.value*3)+med.value
 ```
-The above calculation we have provided is commonly used to determine maximum number of features to retain, in this example we multiple SD by 3, however this can range between 2 for more stringent and 3 for more lenient. 
+The above calculation we have provided is commonly used to determine maximum number of features to retain in a cell, in this example we multiple SD by 3, however this can range between 2 for more stringent and 3 for more lenient. 
 
 ```
 panc <- filter_IBRAP(object = panc, RAW_total.features < max.features & RAW_percent.mt < 8)
@@ -184,7 +184,7 @@ panc <- perform.reduction.kmeans(object = panc, assay = c('SCT','SCRAN','SCANPY'
                          reduction = c('dbmap_tsne', 'pca_tsne'), dims = list(NULL, NULL), k = 10:16, 
                          assignment.df.name = c('dbmap_tsne_kmeans', 'pca_tsne_kmeans'), method = 'kmeans')
 ```
-Finally, SC3 is performed on whol count matrices or normalised matrices, however scaled is not recommended. 
+Finally, SC3 is performed on whole count matrices or normalised matrices, however scaled is not recommended. 
 ```
 panc <- perform.sc3.slot.cluster(object = panc, 
                                  assay = c('SCT', 'SCRAN', 'SCANPY', 'TPM'), 
@@ -206,7 +206,7 @@ panc <- benchmark.clustering(object = panc,
                      ground.truth = panc$celltype)
 ```
 
-Congratulations, you have just run a series of successful IBRAP-based pipelines. Now, with this large amount of data we must ascertain which combinations worked best for our dataset, we have constructed and interactive application to aid users in this discovery. However first, we must save our data object in rds format: 
+Congratulations, you have just run a series of successful IBRAP-based pipelines. Now, with this large amount of data we must ascertain which combinations worked best for our dataset, we have constructed an interactive application to aid users in this discovery. However first, we must save our data object in rds format: 
 
 ```
 saveRDS(object = panc, file = '/path/to/folder/location/pancreas_data.rd', compress = TRUE)
@@ -214,7 +214,7 @@ saveRDS(object = panc, file = '/path/to/folder/location/pancreas_data.rd', compr
 
 ### IBRAP application:
 
-Firstly, we must upload our RDS file which can be browsed for under 'RDS file upload', once the upload is completed we must load the file into our application using the 'Activate' button. Now, we can select from our assays under the 'Select assay' selection menu, this can be changed at any time. Finally, we need to select a visualisation projection to view out data in, this can be selected in the dropdown menu under 'Select reduction technique'. Now, we are ready to visualise some data. 
+Firstly, we must upload our RDS file which can be browsed for under 'RDS file upload', once the upload is completed we must load the file into our application using the 'Activate' button. Now, we can select from our assays under the 'Select assay' selection menu, this can be changed at any time. Finally, we need to select a visualisation projection to view our data in, this can be selected in the dropdown menu under 'Select reduction technique'. Now, we are ready to visualise some data. 
 
 #### TAB: clustering
 
@@ -242,7 +242,7 @@ To help us get a more categorical understanding of expression we can utilise vio
 
 ![step5](/figures/step5.png)
 
-Finally, in the case where we wish to see the distribution of expression amongst a large number of cells we can use a heatmap. For easy interpretation of the values the expression matrix z-score has been calculated. A z-score is simple to interpret, a negative value means the expression is below the average of the whole population, whereas a positive value indicates a higher than average expression. 
+Finally, in the case where we wish to see the distribution of expression amongst a large number of features we can use a heatmap. For easy interpretation of the values the expression matrix z-score has been calculated. A z-score is simple to interpret, a negative value means the expression is below the average of the whole population, whereas a positive value indicates a higher than average expression. 
 
 With this visualisation application, we can begin to dissect our best pipeline combination and visually interpret the biology of the results. 
 
