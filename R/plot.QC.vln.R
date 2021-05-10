@@ -7,7 +7,7 @@
 #' 
 #' @import crayon
 #' @import egg
-#' @import ggplots
+#' @import ggplot2
 #' @import RColorBrewer
 #' 
 #' @param object IBRAP S4 class object

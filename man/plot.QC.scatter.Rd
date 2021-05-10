@@ -4,7 +4,7 @@
 \alias{plot.QC.scatter}
 \title{Plots two QC metrices in scatter format}
 \usage{
-plot.QC.vln(object = obj, metadata.columns = `c('RAW_total.features', 'RAW_total.counts')`, split.by = 'original.project')
+plot.QC.scatter(object = obj, x = 'RAW_total.features', y = 'RAW_total.counts', split.by = 'original.project')
 }
 \arguments{
 \item{object}{IBRAP S4 class object}
@@ -16,7 +16,7 @@ plot.QC.vln(object = obj, metadata.columns = `c('RAW_total.features', 'RAW_total
 \item{split.by}{Character string of which metadata column to separate cells by}
 }
 \value{
-A Violin plot
+A Scatter plot
 }
 \description{
 Plots two QC metric in scatter format

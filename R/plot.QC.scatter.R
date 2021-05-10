@@ -7,7 +7,7 @@
 #' 
 #' @import crayon
 #' @import egg
-#' @import ggplots
+#' @import ggplot2
 #' @import RColorBrewer
 #' 
 #' @param object IBRAP S4 class object
@@ -15,9 +15,9 @@
 #' @param y Character string of which metadata column to subset for the y axis 
 #' @param split.by Character string of which metadata column to separate cells by
 #' 
-#' @usage plot.QC.vln(object = obj, metadata.columns = `c('RAW_total.features', 'RAW_total.counts')`, split.by = 'original.project')
+#' @usage plot.QC.scatter(object = obj, x = 'RAW_total.features', y = 'RAW_total.counts', split.by = 'original.project')
 #' 
-#' @return A Violin plot
+#' @return A Scatter plot
 #'
 #' @export
 
