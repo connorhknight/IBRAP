@@ -14,8 +14,6 @@
 #' @slot cluster_assignments list of cluster assignment output. A dataframe is assigned to each method containing subsequent parameter changes. 
 #' @slot benchmarking_results list of benchmarking results corresponding to the cluster assignment dataframes. 
 #' @slot alt_objects objects used in the analysis derived from alternative packages, i.e. SingleCellExperiment, Seurat, Anndata, etc.
-#'
-#' @export
 
 setClass(Class = 'methods',
          representation = representation(

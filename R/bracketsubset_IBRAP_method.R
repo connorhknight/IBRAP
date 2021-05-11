@@ -1,6 +1,4 @@
 #' @title Method override for subset method `'[['` for IBRAP object
-#'
-#' @export
 
 setMethod(f = '[[', signature = 'IBRAP', 
           function(x, 

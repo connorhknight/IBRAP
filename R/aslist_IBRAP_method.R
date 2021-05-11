@@ -1,6 +1,4 @@
 #' @title Method override for as.list function regarding methods S4 object
-#'
-#' @export
 
 setMethod(f = 'as.list', signature = 'methods',
           function(x) {

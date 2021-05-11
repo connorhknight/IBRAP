@@ -1,6 +1,4 @@
 #' @title Method override for rownames function
-#'
-#' @export
 
 setMethod(f = 'rownames', signature = 'IBRAP', 
           function(x, 

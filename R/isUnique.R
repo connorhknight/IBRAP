@@ -10,8 +10,6 @@
 #' @usage isUnique(vector = gene.names)
 #'
 #' @return Boolean result whether vector is unique
-#'
-#' @export
 
 isUnique <- function(vector){
   return(!any(duplicated(vector)))

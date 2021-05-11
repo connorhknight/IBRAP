@@ -1,6 +1,4 @@
 #' @title Method override for colnames function
-#'
-#' @export
 
 setMethod(f = 'colnames', 
           signature = 'IBRAP', 

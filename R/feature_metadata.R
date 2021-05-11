@@ -11,8 +11,6 @@
 #' @usage feature_metadata(assay = counts, col.prefix = 'RAW')
 #'
 #' @return Gene level metadata appended to metadata
-#'
-#' @export
 
 feature_metadata <- function(assay, 
                              col.prefix) {

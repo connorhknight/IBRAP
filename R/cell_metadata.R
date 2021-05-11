@@ -11,8 +11,6 @@
 #' @usage cell_metadata(assay = counts, col.prefix = 'RAW')
 #'
 #' @return Cell level metadata appended to metadata
-#'
-#' @export
 
 cell_metadata <- function(assay, 
                           col.prefix) {

@@ -11,8 +11,6 @@
 #' @usage filter_IBRAP(assay = counts, ... = RAW_total.features < max.features & RAW_total.counts > 200 & RAW_percent.mt < 8)
 #'
 #' @return Filtered IBRAP object
-#'
-#' @export
 
 filter_IBRAP <- function(object, ...) {
   
