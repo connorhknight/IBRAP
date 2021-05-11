@@ -5,11 +5,6 @@
 #'
 #' @description Plots a defined QC metric in violin format
 #' 
-#' @import crayon
-#' @import egg
-#' @import ggplot2
-#' @import RColorBrewer
-#' 
 #' @param object IBRAP S4 class object
 #' @param metadata.columns A character string or vector of character strings of which metadata columns to subset and plot
 #' @param split.by A character string indicating which metadata column should be used to divide samples
@@ -27,7 +22,7 @@ plot.QC.vln <- function(object,
   
   if(!is(object = object, class2 = 'IBRAP')) {
     
-    cat(cyan('object must be of class IBRAP\n'))
+    cat(crayon::cyan('object must be of class IBRAP\n'))
     return(object)
     
   }
@@ -39,7 +34,7 @@ plot.QC.vln <- function(object,
     
     if(!m %in% colnames(metadata)) {
       
-      cat(cyan('Provided column names do not exist\n'))
+      cat(crayon::cyan('Provided column names do not exist\n'))
       return(NULL)
       
     }
@@ -48,12 +43,18 @@ plot.QC.vln <- function(object,
   
   if(!split.by %in% colnames(object@sample_metadata)) {
     
-    cat(cyan(paste0(split.by, ' does not exist\n')))
+    cat(crayon::cyan(paste0(split.by, ' does not exist\n')))
     return(object)
     
   }
   
-  cols <- brewer.pal(n = length(metadata.columns), name = 'Pastel2')
+  ggarrange.tmp <- function(...) {
+    
+    egg::ggarrange(...)
+    
+  }
+  
+  cols <- RColorBrewer::brewer.pal(n = length(metadata.columns), name = 'Pastel2')
   
   count <- 1
   
@@ -67,22 +68,22 @@ plot.QC.vln <- function(object,
     if(proj.length < 3) {
       
       proj.length.new <- 3
-      cols.proj <- brewer.pal(n = proj.length.new, name = 'Pastel1')
+      cols.proj <- RColorBrewer::brewer.pal(n = proj.length.new, name = 'Pastel1')
       cols.proj <- cols.proj[1:proj.length]
       
     }
     
-    plots.list[[o]] <- ggplot(data = new.metadata, 
-                                       mapping = aes(x=variable, y=project, fill=project)) + 
-      geom_violin() + coord_flip() + ggtitle(o) + 
-      xlab('') + ylab('project') + theme_classic() + 
-      geom_boxplot(lwd = 0.6, width = 0.09, fill = cols[[count]]) +
-      theme(axis.text.x = element_text(face = 'bold', angle = 45, vjust = 1, hjust=1), 
-                     legend.position="none", plot.title = element_text(hjust=0.5)) + 
-      scale_fill_manual(values=cols.proj)
+    plots.list[[o]] <- ggplot2::ggplot(data = new.metadata, 
+                                       mapping = ggplot2::aes(x=variable, y=project, fill=project)) + 
+      ggplot2::geom_violin() + ggplot2::coord_flip() + ggplot2::ggtitle(o) + 
+      ggplot2::xlab('') + ggplot2::ylab('project') + ggplot2::theme_classic() + 
+      ggplot2::geom_boxplot(lwd = 0.6, width = 0.09, fill = cols[[count]]) +
+      ggplot2::theme(axis.text.x = ggplot2::element_text(face = 'bold', angle = 45, vjust = 1, hjust=1), 
+                     legend.position="none", plot.title = ggplot2::element_text(hjust=0.5)) + 
+      ggplot2::scale_fill_manual(values=cols.proj)
     count <- count + 1
   }
   
-  do.call(what = 'ggarrange', args = list(plots = plots.list, nrow=1, ncol=length(plots.list)))
+  do.call(what = 'ggarrange.tmp', args = list(plots = plots.list, nrow=1, ncol=length(plots.list)))
   
 }

@@ -5,11 +5,6 @@
 #'
 #' @description Removes doublets from dataset.
 #' 
-#' @import reticulate
-#' @import ggplot2
-#' @import Matrix
-#' @import crayon
-#' 
 #' @param counts Counts matrix
 #' @param total_counts Total number of cells. NULL = automatically counts.
 #' @param sim_doublet_ratio Number of doublets to simulate relative to observed
@@ -60,7 +55,7 @@ perform.scrublet <- function(counts,
     
     if (!is(object = counts, class2 = 'dgCMatrix')) {
       
-      cat(cyan('counts must be in matrix or dgCMatrix format\n'))
+      cat(crayon::cyan('counts must be in matrix or dgCMatrix format\n'))
       return(counts)
       
     }
@@ -71,7 +66,7 @@ perform.scrublet <- function(counts,
     
     if(!is.numeric(total_counts)) {
       
-      cat(cyan('total_counts must be numerical\n'))
+      cat(crayon::cyan('total_counts must be numerical\n'))
       return(counts)
       
     }
@@ -80,7 +75,7 @@ perform.scrublet <- function(counts,
   
   if(!is.numeric(sim_doublet_ratio)) {
     
-    cat(cyan('sim_doublet_ratio must be numerical\n'))
+    cat(crayon::cyan('sim_doublet_ratio must be numerical\n'))
     return(counts)
     
   }
@@ -89,7 +84,7 @@ perform.scrublet <- function(counts,
     
     if(!is.numeric(n_neighbors)) {
       
-      cat(cyan('n_neighbors must be numerical\n'))
+      cat(crayon::cyan('n_neighbors must be numerical\n'))
       return(counts)
       
     }
@@ -98,112 +93,112 @@ perform.scrublet <- function(counts,
   
   if(!is.numeric(expected_doublet_rate)) {
     
-    cat(cyan('expected_doublet_rate must be numerical\n'))
+    cat(crayon::cyan('expected_doublet_rate must be numerical\n'))
     return(counts)
     
   }
   
   if(!is.numeric(stdev_doublet_rate)) {
     
-    cat(cyan('stdev_doublet_rate must be numerical\n'))
+    cat(crayon::cyan('stdev_doublet_rate must be numerical\n'))
     return(counts)
     
   }
   
   if(!is.numeric(random_state)) {
     
-    cat(cyan('random_state must be numerical\n'))
+    cat(crayon::cyan('random_state must be numerical\n'))
     return(counts)
     
   }
   
   if(!is.numeric(synthetic_doublet_umi_subsampling)) {
     
-    cat(cyan('synthetic_doublet_umi_subsampling must be numerical\n'))
+    cat(crayon::cyan('synthetic_doublet_umi_subsampling must be numerical\n'))
     return(counts)
     
   }
   
   if(!is.logical(use_approx_neighbors)) {
     
-    cat(cyan('use_approx_neighbors must be logical: TRUE/FALSE\n'))
+    cat(crayon::cyan('use_approx_neighbors must be logical: TRUE/FALSE\n'))
     return(counts)
     
   }
   
   if(!is.character(distance_metric)) {
     
-    cat(cyan('distance_metric must be character string\n'))
+    cat(crayon::cyan('distance_metric must be character string\n'))
     return(counts)
     
   }
   
   if(!is.logical(get_doublet_neighbor_parents)) {
     
-    cat(cyan('get_doublet_neighbor_parents must be logical: TRUE/FALSE\n'))
+    cat(crayon::cyan('get_doublet_neighbor_parents must be logical: TRUE/FALSE\n'))
     return(counts)
     
   }
   
   if(!is.numeric(min_counts)) {
     
-    cat(cyan('min_counts must be numerical\n'))
+    cat(crayon::cyan('min_counts must be numerical\n'))
     return(counts)
     
   }
   
   if(!is.numeric(min_cells)) {
     
-    cat(cyan('min_cells must be numerical\n'))
+    cat(crayon::cyan('min_cells must be numerical\n'))
     return(counts)
     
   }
   
   if(!is.numeric(min_gene_variability_pctl)) {
     
-    cat(cyan('min_gene_variability_pctl must be numerical\n'))
+    cat(crayon::cyan('min_gene_variability_pctl must be numerical\n'))
     return(counts)
     
   }
   
   if(!is.logical(log_transform)) {
     
-    cat(cyan('log_transform must be logical: TRUE/FALSE\n'))
+    cat(crayon::cyan('log_transform must be logical: TRUE/FALSE\n'))
     return(counts)
     
   }
   
   if(!is.logical(mean_center)) {
     
-    cat(cyan('mean_center must be logical: TRUE/FALSE\n'))
+    cat(crayon::cyan('mean_center must be logical: TRUE/FALSE\n'))
     return(counts)
     
   }
   
   if(!is.logical(normalize_variance)) {
     
-    cat(cyan('normalize_variance must be logical: TRUE/FALSE\n'))
+    cat(crayon::cyan('normalize_variance must be logical: TRUE/FALSE\n'))
     return(counts)
     
   }
   
   if(!is.numeric(n_prin_comps)) {
     
-    cat(cyan('n_prin_comps must be numerical\n'))
+    cat(crayon::cyan('n_prin_comps must be numerical\n'))
     return(counts)
     
   }
   
   if(!is.character(svd_solver)) {
     
-    cat(cyan('svd_solver must be numerical\n'))
+    cat(crayon::cyan('svd_solver must be numerical\n'))
     return(counts)
     
   }
   
-  cat(cyan('Initialising scrublet\n'))
-  scrublet <- import('scrublet', convert = FALSE)
-  cat(cyan('Python modules loaded\n'))
+  cat(crayon::cyan('Initialising scrublet\n'))
+  scrublet <- reticulate::import('scrublet', convert = FALSE)
+  cat(crayon::cyan('Python modules loaded\n'))
   
   scrub1 <- scrublet$Scrublet(counts_matrix = as.data.frame(as.matrix(t(counts))), 
                               total_counts = total_counts, 
@@ -213,9 +208,9 @@ perform.scrublet <- function(counts,
                               stdev_doublet_rate = stdev_doublet_rate, 
                               random_state = random_state)
   
-  cat(cyan('scrublet object created\n'))
+  cat(crayon::cyan('scrublet object created\n'))
   
-  res1 <- py_to_r(scrub1$scrub_doublets(synthetic_doublet_umi_subsampling = synthetic_doublet_umi_subsampling,
+  res1 <- reticulate::py_to_r(scrub1$scrub_doublets(synthetic_doublet_umi_subsampling = synthetic_doublet_umi_subsampling,
                                                     use_approx_neighbors = use_approx_neighbors, 
                                                     distance_metric = distance_metric, 
                                                     get_doublet_neighbor_parents = get_doublet_neighbor_parents, 
@@ -229,32 +224,32 @@ perform.scrublet <- function(counts,
                                                     svd_solver = svd_solver,
                                                     verbose = TRUE))
   
-  sim.plot <- qplot(as.vector(py_to_r(scrub1$doublet_scores_sim_)), 
+  sim.plot <- ggplot2::qplot(as.vector(reticulate::py_to_r(scrub1$doublet_scores_sim_)), 
                              geom = 'histogram') + 
-    stat_bin(bins = 100) + 
-    xlab('doublet scores') + 
-    ylab('frequency') + 
-    ggtitle(paste0('simulated_doublets')) + 
-    theme_classic() + 
-    theme(plot.title = element_text(hjust = 0.5))
+    ggplot2::stat_bin(bins = 100) + 
+    ggplot2::xlab('doublet scores') + 
+    ggplot2::ylab('frequency') + 
+    ggplot2::ggtitle(paste0('simulated_doublets')) + 
+    ggplot2::theme_classic() + 
+    ggplot2::theme(plot.title = element_text(hjust = 0.5))
   
-  obs.plot <- qplot(as.vector(res1)[[1]], 
+  obs.plot <- ggplot2::qplot(as.vector(res1)[[1]], 
                              geom = 'histogram') + 
-    stat_bin(bins = 80) + 
-    xlab('doublet scores') + 
-    ylab('frequency') + 
-    ggtitle(paste0('observed doublets')) + 
-    theme_classic() + 
-    theme(plot.title = element_text(hjust = 0.5))
+    ggplot2::stat_bin(bins = 80) + 
+    ggplot2::xlab('doublet scores') + 
+    ggplot2::ylab('frequency') + 
+    ggplot2::ggtitle(paste0('observed doublets')) + 
+    ggplot2::theme_classic() + 
+    ggplot2::theme(plot.title = element_text(hjust = 0.5))
   
   comb.plot <- cowplot::plot_grid(sim.plot, obs.plot, ncol = 2, nrow = 1)
   print(comb.plot)
   
-  cat(cyan('doublets detected\n'))
+  cat(crayon::cyan('doublets detected\n'))
   counts <- as.matrix(counts)
   counts <- counts[,!res1[[2]]]
-  counts <- Matrix(data = counts, sparse = T)
-  cat(cyan('matrix scrubbed\n'))
+  counts <- Matrix::Matrix(data = counts, sparse = T)
+  cat(crayon::cyan('matrix scrubbed\n'))
   
   return(counts)
 }

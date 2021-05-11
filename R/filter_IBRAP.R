@@ -5,8 +5,6 @@
 #'
 #' @description Filters cells according to thresholds applied in the columns of object@metadata
 #' 
-#' @import Matrix
-#' 
 #' @param assay IBRAP class object
 #' @param ... 
 #' 

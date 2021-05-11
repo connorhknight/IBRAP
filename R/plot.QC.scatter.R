@@ -5,11 +5,6 @@
 #'
 #' @description Plots two QC metric in scatter format
 #' 
-#' @import crayon
-#' @import egg
-#' @import ggplot2
-#' @import RColorBrewer
-#' 
 #' @param object IBRAP S4 class object
 #' @param x Character string of which metadata column to subset for the x axis 
 #' @param y Character string of which metadata column to subset for the y axis 
@@ -30,13 +25,13 @@ plot.QC.scatter <- function(object,
   
   if(!x %in% colnames(metadata)) {
     
-    cat(cyan('X variable does not exist\n'))
+    cat(crayon::cyan('X variable does not exist\n'))
     
   }
   
   if(!y %in% colnames(metadata)) {
     
-    cat(cyan('Y variable does not exist\n'))
+    cat(crayon::cyan('Y variable does not exist\n'))
     
   }
   
@@ -44,7 +39,7 @@ plot.QC.scatter <- function(object,
     
     if(!split.by %in% colnames(metadata)){
       
-      cat(cyan('split.by variable does not exist\n'))
+      cat(crayon::cyan('split.by variable does not exist\n'))
       
     }
     
@@ -64,9 +59,9 @@ plot.QC.scatter <- function(object,
     
   }
   
-  p <- ggplot(data = new.df, mapping = aes(x = x, y = y, col = project)) + 
-    geom_point() + theme_classic() + ggtitle(paste0(x,'_vs_',y)) + 
-    ylab(y) + xlab(x) + labs(color='identifier') + scale_color_manual(values=cols.proj)
+  p <- ggplot2::ggplot(data = new.df, mapping = ggplot2::aes(x = x, y = y, col = project)) + 
+    ggplot2::geom_point() + ggplot2::theme_classic() + ggplot2::ggtitle(paste0(x,'_vs_',y)) + 
+    ggplot2::ylab(y) + ggplot2::xlab(x) + ggplot2::labs(color='identifier') + ggplot2::scale_color_manual(values=cols.proj)
   
   print(p)
   

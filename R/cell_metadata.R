@@ -5,8 +5,6 @@
 #'
 #' @description Calculates total genes and total counts detected per cell
 #' 
-#' @import Matrix
-#' 
 #' @param assay Counts matrix
 #' @param col.prefix Which prefix to add to `'_total.counts' and '_total.feature'` as cell metdata column names
 #' 
@@ -18,8 +16,8 @@
 
 cell_metadata <- function(assay, 
                           col.prefix) {
-  total.counts <- colSums(assay)
-  total.features <- colSums(assay != 0)
+  total.counts <- Matrix::colSums(assay)
+  total.features <- Matrix::colSums(assay != 0)
   df <- as.data.frame(as.numeric(total.counts))
   df[['total.features']] <- as.numeric(total.features)
   colnames(df) <- c(paste0(col.prefix, '_total.counts'), 

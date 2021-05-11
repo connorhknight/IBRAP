@@ -5,9 +5,6 @@
 #'
 #' @description Find an x amount of top variable genes for your dataset
 #' 
-#' @import crayon
-#' @import Matrix
-#' 
 #' @param object IBRAP S4 class object
 #' @param pattern A character string containing a pattern to identfiy in rownames
 #' @param assay String indicating which assay to source the raw counts from
@@ -71,7 +68,7 @@ find_percentage_genes <- function(object,
   cat(crayon::cyan('Calculating percentage\n'))
   mat <- as.matrix(object@methods[[assay]][[slot]])
   subbed <- mat[grep(pattern = pattern, x = rownames(mat)),]
-  temp <- colSums(subbed) / colSums(mat) * 100
+  temp <- Matrix::colSums(subbed) / Matrix::colSums(mat) * 100
   
   cat(crayon::cyan('Percentage calculated\n'))
   temp <- as.data.frame(temp)

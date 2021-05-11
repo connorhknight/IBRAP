@@ -5,9 +5,6 @@
 #'
 #' @description Removes ambient RNA from datasets
 #' 
-#' @import crayon
-#' @import celda
-#' 
 #' @param counts Counts matrix
 #' @param z Cluster assignments for cells
 #' @param batch Batches for each cell if multiple samples are present
@@ -41,7 +38,7 @@ perform.decontX <- function(counts,
     
     if (!is(object = counts, class2 = 'dgCMatrix')) {
       
-      cat(cyan('counts must be in matrix or dgCMatrix format\n'))
+      cat(crayon::cyan('counts must be in matrix or dgCMatrix format\n'))
       return(counts)
       
     }
@@ -52,7 +49,7 @@ perform.decontX <- function(counts,
     
     if(length(z) != ncol(counts)) {
       
-      cat(cyan('z must have the same length as ncol: counts\n'))
+      cat(crayon::cyan('z must have the same length as ncol: counts\n'))
       return(counts)
       
     }
@@ -61,63 +58,63 @@ perform.decontX <- function(counts,
   
   if(!is.numeric(maxIter)) {
     
-    cat(cyan('maxIter must be numerical\n'))
+    cat(crayon::cyan('maxIter must be numerical\n'))
     return(counts)
     
   }
   
   if(!is.numeric(delta)) {
     
-    cat(cyan('delta must be numerical\n'))
+    cat(crayon::cyan('delta must be numerical\n'))
     return(counts)
     
   }
   
   if(!is.logical(estimateDelta)) {
     
-    cat(cyan('estimateDelta must be logical: TRUE/FALSE\n'))
+    cat(crayon::cyan('estimateDelta must be logical: TRUE/FALSE\n'))
     return(counts)
     
   }
   
   if(!is.numeric(convergence)) {
     
-    cat(cyan('convergence must be numerical\n'))
+    cat(crayon::cyan('convergence must be numerical\n'))
     return(counts)
     
   }
   
   if(!is.numeric(iterLogLik)) {
     
-    cat(cyan('iterLogLik must be numerical\n'))
+    cat(crayon::cyan('iterLogLik must be numerical\n'))
     return(counts)
     
   }
   
   if(!is.numeric(varGenes)) {
     
-    cat(cyan('varGenes must be numerical\n'))
+    cat(crayon::cyan('varGenes must be numerical\n'))
     return(counts)
     
   }
   
   if(!is.numeric(dbscanEps)) {
     
-    cat(cyan('dbscanEps must be numerical\n'))
+    cat(crayon::cyan('dbscanEps must be numerical\n'))
     return(counts)
     
   }
   
   if(!is.numeric(seed)) {
     
-    cat(cyan('seed must be numerical\n'))
+    cat(crayon::cyan('seed must be numerical\n'))
     return(counts)
     
   }
   
   if(is.null(batch)) {
     
-    d <- decontX(x = counts,
+    d <- celda::decontX(x = counts,
                         z = z,
                         batch = NULL,
                         maxIter = maxIter,
@@ -132,7 +129,7 @@ perform.decontX <- function(counts,
     
   } else {
     
-    d <- decontX(x = counts,
+    d <- celda::decontX(x = counts,
                         z = z,
                         batch = object@sample_metadata[,batch],
                         maxIter = maxIter,
@@ -147,20 +144,20 @@ perform.decontX <- function(counts,
     
   }
   
-  cat(cyan('Decontamination completed\n'))
+  cat(crayon::cyan('Decontamination completed\n'))
   
-  print(plotDecontXContamination(x = d))
+  print(celda::plotDecontXContamination(x = d))
   
-  cat(cyan(paste0(formatC(sum(d$contamination)/length(d$contamination), 
+  cat(crayon::cyan(paste0(formatC(sum(d$contamination)/length(d$contamination), 
                                   digits = 2), 
                           '% average contamination\n')))
   
   clean.matrix <- d$decontXcounts
-  cat(cyan('Matrix isolated\n'))
+  cat(crayon::cyan('Matrix isolated\n'))
   clean.matrix <- round(clean.matrix)
-  zero.samples <- colSums(as.matrix(clean.matrix)) > 0
+  zero.samples <- Matrix::colSums(as.matrix(clean.matrix)) > 0
   clean.matrix <- clean.matrix[,zero.samples]
-  cat(cyan('converted to integer\n'))
+  cat(crayon::cyan('converted to integer\n'))
   return(clean.matrix)
   
 }

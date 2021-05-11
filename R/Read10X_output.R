@@ -5,11 +5,6 @@
 #'
 #' @description Concatenates the three output files of CellRanger alignment.
 #' 
-#' @import Biobase
-#' @import utils
-#' @import Matrix
-#' @import crayon
-#' 
 #' @param directory Absolute pathway to directory containing the three files
 #' @param matrix.file Specify .mtx file name. Default = matrix.mtx
 #' @param genes.file Specify file name for genes. Default = genes.tsv
@@ -43,21 +38,21 @@ Read10X_output <- function(directory,
   count.file <- paste0(directory, '/', matrix.file)
   genes.file <- paste0(directory, '/', genes.file)
   barcodes.files <- paste0(directory, '/', barcodes.file)
-  genes_ensembl <- read.table(file = genes.file, sep = '\t', header = FALSE)
-  barcodes <- read.table(file = barcodes.files, sep = '\t', header = FALSE)
-  mm <- readMM(count.file)
+  genes_ensembl <- utils::read.table(file = genes.file, sep = '\t', header = FALSE)
+  barcodes <- utils::read.table(file = barcodes.files, sep = '\t', header = FALSE)
+  mm <- Matrix::readMM(count.file)
   cat(crayon::cyan('Files loaded\n'))
   true.length <- length(genes_ensembl$V2)
   if(true.length != length(unique(genes_ensembl$V2))) {
     if(isTRUE(make.feat.unique)) {
-      cat(cyan('Non-unique features identified\n'))
+      cat(crayon::cyan('Non-unique features identified\n'))
       genes_ensembl$V2 <- make.unique(genes_ensembl$V2)
     }
     
   }
   rownames(mm) <- genes_ensembl$V2
   colnames(mm) <- barcodes$V1
-  cat(cyan('Success: Matrix concatenated\n'))
+  cat(crayon::cyan('Success: Matrix concatenated\n'))
   mm <- as.matrix(mm)
   return(mm)
 }
