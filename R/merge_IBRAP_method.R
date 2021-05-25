@@ -10,7 +10,7 @@ setMethod(f = 'merge', signature = 'IBRAP',
               
               if(length(i@methods[[1]]) > 1) {
                 
-                cat(crayon::cyan('No analysis can be performed prior to merging'))
+                cat(crayon::cyan('No analysis can be performed prior to merging\n'))
                 return(NULL)
                 
               }
@@ -75,8 +75,7 @@ setMethod(f = 'merge', signature = 'IBRAP',
             
             new.method[[names(x@methods)[1]]] <- new(Class = 'methods',
                                                      counts = .counts,
-                                                     feature_metadata = .feature_metadata
-            )
+                                                     feature_metadata = .feature_metadata)
             
             ibrap <- new(Class = 'IBRAP',
                          methods = new.method, 

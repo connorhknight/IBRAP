@@ -5,5 +5,5 @@ setMethod(f = 'colnames',
           function(x, 
                    do.NULL = TRUE, 
                    prefix = 'row') {
-            colnames(x@methods[[x@active.method]]@counts)
+            colnames(x@methods[[1]]@counts)
           })

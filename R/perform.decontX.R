@@ -144,7 +144,7 @@ perform.decontX <- function(counts,
     
   }
   
-  cat(crayon::cyan('Decontamination completed\n'))
+  cat(crayon::cyan('Decontamination comlpleted\n'))
   
   print(celda::plotDecontXContamination(x = d))
   

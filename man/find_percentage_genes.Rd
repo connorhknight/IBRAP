@@ -2,7 +2,7 @@
 % Please edit documentation in R/find_percentage_genes.R
 \name{find_percentage_genes}
 \alias{find_percentage_genes}
-\title{Finds the most variable genes in a dataset}
+\title{Calculates the fraction of counts from genes matching a pattern string}
 \usage{
 find_percentage_genes(object = obj, pattern = '^MT-', assay = 'RAW', slot = 'RAW', column.name = 'RAW_percent.mt')
 }
@@ -21,5 +21,5 @@ find_percentage_genes(object = obj, pattern = '^MT-', assay = 'RAW', slot = 'RAW
 IBRAP S4 class object containing highly varaible genes within the source assay
 }
 \description{
-Find an x amount of top variable genes for your dataset
+Subsets gene names that match the pattern supplied. The percentage fraction of this gene group is then calculated.
 }

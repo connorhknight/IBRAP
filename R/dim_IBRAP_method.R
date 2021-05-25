@@ -3,5 +3,5 @@
 setMethod(f = 'dim', 
           signature = 'IBRAP',
           function(x) {
-            dim(x@methods[[x@active.method]]@counts)
+            dim(x@methods[[1]]@counts)
           })

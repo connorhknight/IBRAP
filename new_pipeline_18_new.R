@@ -8,8 +8,6 @@ reticulate::import('scrublet', convert = FALSE)
 
 # Read 10x
 
-require(Biobase)
-
 Read10X_output <- function(directory, 
                            matrix.file = 'matrix.mtx', 
                            genes.file = 'genes.tsv', 
@@ -52,12 +50,10 @@ marrow_E <- Read10X_output(directory = '/Users/knight05/Raw_Data/Database_sample
 
 # Metadata generator
 
-library(Matrix)
-
 cell_metadata <- function(assay, 
                           col.prefix) {
-  total.counts <- colSums(assay)
-  total.features <- colSums(assay != 0)
+  total.counts <- Matrix::colSums(assay)
+  total.features <- Matrix::colSums(assay != 0)
   df <- as.data.frame(as.numeric(total.counts))
   df[['total.features']] <- as.numeric(total.features)
   colnames(df) <- c(paste0(col.prefix, '_total.counts'), 
@@ -67,9 +63,9 @@ cell_metadata <- function(assay,
 
 feature_metadata <- function(assay, 
                              col.prefix) {
-  df <- as.data.frame(as.numeric(rowSums(assay)))
+  df <- as.data.frame(as.numeric(Matrix::rowSums(assay)))
   rownames(df) <- rownames(assay)
-  df$temp <- as.numeric(rowSums(assay > 0))
+  df$temp <- as.numeric(Matrix::rowSums(assay > 0))
   colnames(df) <- c(paste0(col.prefix,'_total.counts'), paste0(col.prefix,'_total.cells'))
   return(df)
 }
@@ -102,11 +98,7 @@ isUnique <- function(vector){
 setClass(Class = 'IBRAP', 
          representation = representation(
            methods = 'list', 
-           sample_metadata = 'data.frame',
-           pipelines = 'data.frame', 
-           active.variable = 'character',
-           doublet.barcodes = 'character',
-           active.method = 'character'
+           sample_metadata = 'data.frame'
          ))
 
 setMethod(f = 'show', signature = 'IBRAP', definition = function(object) {
@@ -119,10 +111,6 @@ setMethod(f = 'show', signature = 'IBRAP', definition = function(object) {
                            ' features by ', 
                            ncol(object@methods[[object@active.method]]@counts), 
                            ' samples\n')))
-  
-  cat(crayon::white(paste0('  ', 'Active method:', 
-                           object@active.method, ' (features:', nrow(object@methods[[object@active.method]]@counts), 
-                           ', samples:', paste0(ncol(object@methods[[object@active.method]]@counts),')'), '\n')))
   
   lol <- names(object@methods)[1]
   
@@ -143,7 +131,6 @@ setMethod(f = 'show', signature = 'IBRAP', definition = function(object) {
 setClass(Class = 'methods',
          representation = representation(
            counts = 'dgCMatrix', 
-           decontaminated = 'dgCMatrix',
            normalised = 'dgCMatrix', 
            norm.scaled = 'matrix',
            highly.variable.genes = 'character',
@@ -154,14 +141,12 @@ setClass(Class = 'methods',
            visualisation_reductions = 'list',
            cluster_assignments = 'list',
            benchmark_results = 'list',
-           alt_objects = 'list',
-           method.name = 'character'
+           alt_objects = 'list'
          ))
 
 ### add decontaminated slot
 
 setMethod(f = 'show', signature = 'methods', definition = function(object) {
-  cat(crayon::white(paste0(object@method.name, ', an IBRAP method\n')))
   cat(crayon::white(paste0('  Contains: ', 
                            nrow(object@counts), 
                            ' features by ', 
@@ -173,7 +158,7 @@ setMethod(f = 'rownames', signature = 'IBRAP',
           function(x, 
                    do.NULL = TRUE, 
                    prefix = 'row') {
-            rownames(x@methods[[x@active.method]]@counts)
+            rownames(x@methods[[1]]@counts)
           })
 
 setMethod(f = 'colnames', 
@@ -181,13 +166,13 @@ setMethod(f = 'colnames',
           function(x, 
                    do.NULL = TRUE, 
                    prefix = 'row') {
-            colnames(x@methods[[x@active.method]]@counts)
+            colnames(x@methods[[1]]@counts)
           })
 
 setMethod(f = 'dim', 
           signature = 'IBRAP',
           function(x) {
-            dim(x@methods[[x@active.method]]@counts)
+            dim(x@methods[[1]]@counts)
           })
 
 setMethod(f = '[[', signature = 'IBRAP', 
@@ -211,7 +196,6 @@ setMethod(f = 'as.list', signature = 'methods',
           function(x) {
             
             new.list <- list(counts = x@counts, 
-                             decontaminated = x@decontaminated,
                              normalised = x@normalised, 
                              norm.scaled = x@norm.scaled,
                              highly.variable.genes = x@highly.variable.genes,
@@ -222,8 +206,7 @@ setMethod(f = 'as.list', signature = 'methods',
                              visualisation_reductions = x@visualisation_reductions,
                              cluster_assignments = x@cluster_assignments,
                              benchmark_results = x@benchmark_results,
-                             alt_objects = x@alt_objects,
-                             method.name = x@method.name)
+                             alt_objects = x@alt_objects)
             return(new.list)
             
           })
@@ -257,11 +240,6 @@ setMethod(f = '[[<-', signature = 'methods',
             if(length(as.matrix(y$norm.scaled)) != 0) {
               
               x@norm.scaled <- y$norm.scaled
-              
-            }
-            if(length(as.matrix(y$decontaminated))) {
-              
-              x@decontaminated <- y@decontaminated
               
             }
             if(length(as.matrix(y$norm.scaled)) != 0) {
@@ -307,11 +285,6 @@ setMethod(f = '[[<-', signature = 'methods',
             if(length(as.matrix(y$norm.scaled)) != 0) {
               
               x@alt_objects <- y$alt_objects
-              
-            }
-            if(length(as.matrix(y$norm.scaled)) != 0) {
-              
-              x@method.name <- y$method.name
               
             }
             
@@ -379,16 +352,6 @@ setMethod(f = '[', signature = 'IBRAP',
                   
                 }
                 
-                if(length(as.matrix(x@methods[[p]]@decontaminated)) != 0) {
-                  
-                  .decontaminated <- x@methods[[p]]@decontaminated[ii, , drop = FALSE]
-                  
-                } else {
-                  
-                  .decontaminated <- x@methods[[p]]@decontaminated
-                  
-                }
-                
                 if(length(as.matrix(x@methods[[p]]@norm.scaled)) != 0) {
                   
                   .norm.scaled <- x@methods[[p]]@norm.scaled[ii, , drop = FALSE]
@@ -425,11 +388,8 @@ setMethod(f = '[', signature = 'IBRAP',
                 
                 .alt_objects <- x@methods[[p]]@alt_objects
                 
-                .method.name <- x@methods[[p]]@method.name
-                
                 list.methods[[p]] <- new(Class = 'methods', 
                                          counts = .counts,
-                                         decontaminated = .decontaminated,
                                          normalised = .normalised,
                                          norm.scaled = .norm.scaled,
                                          highly.variable.genes = .highly.variable.genes,
@@ -439,26 +399,13 @@ setMethod(f = '[', signature = 'IBRAP',
                                          integration_reductions = .integration_reductions,
                                          visualisation_reductions = .visualisation_reductions,
                                          benchmark_results = .benchmark_results,
-                                         alt_objects = .alt_objects,
-                                         method.name = .method.name)
+                                         alt_objects = .alt_objects)
                 
               }
               
-              .pipelines <- x@pipelines
-              
-              .active.variable <- x@active.variable
-              
-              .doublet.barcodes <- x@doublet.barcodes
-              
-              .active.method <- x@active.method
-              
               return(new(Class = 'IBRAP', 
                          methods = list.methods, 
-                         sample_metadata = .sample_metadata,
-                         pipelines = .pipelines, 
-                         active.variable = .active.variable,
-                         doublet.barcodes = .doublet.barcodes,
-                         active.method = .active.method))
+                         sample_metadata = .sample_metadata))
               
             } 
             
@@ -497,16 +444,6 @@ setMethod(f = '[', signature = 'IBRAP',
                 } else {
                   
                   .normalised <- x@methods[[p]]@normalised
-                  
-                }
-                
-                if(length(as.matrix(x@methods[[p]]@decontaminated))) {
-                  
-                  .decontaminated <- x@methods[[p]]@decontaminated[ , jj, drop = FALSE]
-                  
-                } else {
-                  
-                  .decontaminated <- x@methods[[p]]@decontaminated
                   
                 }
                 
@@ -578,11 +515,8 @@ setMethod(f = '[', signature = 'IBRAP',
                 
                 .alt_objects <- x@methods[[p]]@alt_objects
                 
-                .method.name <- x@methods[[p]]@method.name
-                
                 list.methods[[p]] <- new(Class = 'methods', 
                                          counts = .counts,
-                                         decontaminated = .decontaminated,
                                          normalised = .normalised,
                                          norm.scaled = .norm.scaled,
                                          highly.variable.genes = .highly.variable.genes,
@@ -592,26 +526,13 @@ setMethod(f = '[', signature = 'IBRAP',
                                          integration_reductions = .integration_reductions,
                                          visualisation_reductions = .visualisation_reductions,
                                          benchmark_results = .benchmark_results,
-                                         alt_objects = .alt_objects,
-                                         method.name = .method.name)
+                                         alt_objects = .alt_objects)
                 
               }
               
-              .pipelines <- x@pipelines
-              
-              .active.variable <- x@active.variable
-              
-              .doublet.barcodes <- x@doublet.barcodes
-              
-              .active.method <- x@active.method
-              
               return(new(Class = 'IBRAP', 
                          methods = list.methods, 
-                         sample_metadata = .sample_metadata,
-                         pipelines = .pipelines, 
-                         active.variable = .active.variable,
-                         doublet.barcodes = .doublet.barcodes,
-                         active.method = .active.method))
+                         sample_metadata = .sample_metadata))
               
             }
             
@@ -650,16 +571,6 @@ setMethod(f = '[', signature = 'IBRAP',
                 } else {
                   
                   .counts <- x@methods[[p]]@counts
-                  
-                }
-                
-                if(length(as.matrix(x@methods[[p]]@decontaminated))) {
-                  
-                  .decontaminated <- x@methods[[p]]@decontaminated[ii, jj, drop = FALSE]
-                  
-                } else {
-                  
-                  .decontaminated <- x@methods[[p]]@decontaminated
                   
                 }
                 
@@ -749,11 +660,8 @@ setMethod(f = '[', signature = 'IBRAP',
                 
                 .alt_objects <- x@methods[[p]]@alt_objects
                 
-                .method.name <- x@methods[[p]]@method.name
-                
                 list.methods[[p]] <- new(Class = 'methods', 
                                          counts = .counts,
-                                         decontaminated = .decontaminated,
                                          normalised = .normalised,
                                          norm.scaled = .norm.scaled,
                                          highly.variable.genes = .highly.variable.genes,
@@ -763,26 +671,13 @@ setMethod(f = '[', signature = 'IBRAP',
                                          integration_reductions = .integration_reductions,
                                          visualisation_reductions = .visualisation_reductions,
                                          benchmark_results = .benchmark_results,
-                                         alt_objects = .alt_objects,
-                                         method.name = .method.name)
+                                         alt_objects = .alt_objects)
                 
               }
               
-              .pipelines <- x@pipelines
-              
-              .active.variable <- x@active.variable
-              
-              .doublet.barcodes <- x@doublet.barcodes
-              
-              .active.method <- x@active.method
-              
               return(new(Class = 'IBRAP', 
                          methods = list.methods, 
-                         sample_metadata = .sample_metadata,
-                         pipelines = .pipelines, 
-                         active.variable = .active.variable,
-                         doublet.barcodes = .doublet.barcodes,
-                         active.method = .active.method))
+                         sample_metadata = .sample_metadata))
             }
           })
 
@@ -796,7 +691,7 @@ setMethod(f = 'merge', signature = 'IBRAP',
               
               if(length(i@methods[[1]]) > 1) {
                 
-                cat(crayon::cyan('No analysis can be performed prior to merging'))
+                cat(crayon::cyan('No analysis can be performed prior to merging\n'))
                 return(NULL)
                 
               }
@@ -861,14 +756,11 @@ setMethod(f = 'merge', signature = 'IBRAP',
             
             new.method[[names(x@methods)[1]]] <- new(Class = 'methods',
                                                      counts = .counts,
-                                                     feature_metadata = .feature_metadata,
-                                                     method.name = names(x@methods)[1]
-            )
+                                                     feature_metadata = .feature_metadata)
             
             ibrap <- new(Class = 'IBRAP',
                          methods = new.method, 
-                         sample_metadata = .sample_metadata,
-                         active.method = names(x@methods)[1])
+                         sample_metadata = .sample_metadata)
             
             return(ibrap)
             
@@ -1247,7 +1139,7 @@ perform.decontX <- function(counts,
   clean.matrix <- d$decontXcounts
   cat(crayon::cyan('Matrix isolated\n'))
   clean.matrix <- round(clean.matrix)
-  zero.samples <- colSums(as.matrix(clean.matrix)) > 0
+  zero.samples <- Matrix::colSums(as.matrix(clean.matrix)) > 0
   clean.matrix <- clean.matrix[,zero.samples]
   cat(crayon::cyan('converted to integer\n'))
   return(clean.matrix)
@@ -1392,20 +1284,18 @@ createIBRAPobject <- function(counts,
   f.metadata <- f.metadata[match(rownames(counts), rownames(f.metadata)),]
   
   ##########################################################
-  
+
   first.method <- new('methods', 
                       counts = Matrix::Matrix(counts, sparse = T),
-                      feature_metadata = f.metadata,
-                      method.name = method.name)
-  
+                      feature_metadata = f.metadata)
+
   methods <- list()
   
   methods[[as.character(method.name)]] <- first.method
   
   IBRAP.obj <- new(Class = 'IBRAP', 
                    methods = methods, 
-                   sample_metadata = meta,
-                   active.method = as.character(method.name))
+                   sample_metadata = meta)
   
   return(IBRAP.obj)
   
@@ -1414,17 +1304,15 @@ createIBRAPobject <- function(counts,
 metadata_celseq <- metadata_celseq[colnames(celseq),]
 
 celseq <- createIBRAPobject(counts = celseq,
-                          original.project = 'pancreas_celseq', 
-                          meta.data = metadata_celseq,
-                          method.name = 'RAW',
-                          min.cells = 3,
-                          min.features = 200)
+                              original.project = 'celseq',
+                              method.name = 'RAW',
+                              min.cells = 3,
+                              min.features = 200)
 
 metadata_celseq2 <- metadata_celseq2[colnames(celseq2),]
 
-celseq2 <- createIBRAPobject(counts = celseq2,
-                             original.project = 'pancreas_celseq2', 
-                             meta.data = metadata_celseq2,
+celseq2 <- createIBRAPobject(counts = celseq2@methods$RAW@counts,
+                             original.project = 'pancreas_celseq2',
                              method.name = 'RAW',
                              min.cells = 3,
                              min.features = 200)
@@ -1439,7 +1327,7 @@ smartseq2 <- createIBRAPobject(counts = smartseq2,
                              min.cells = 3,
                              min.features = 200)
 
-celseq_comb <- merge(x = smartseq2, y = celseq2)
+celseq_comb <- merge(x = celseq, y = celseq2)
 
 find_percentage_genes <- function(object, 
                                   pattern='^MT-', 
@@ -1492,7 +1380,7 @@ find_percentage_genes <- function(object,
   cat(crayon::cyan('Calculating percentage\n'))
   mat <- as.matrix(object@methods[[assay]][[slot]])
   subbed <- mat[grep(pattern = pattern, x = rownames(mat)),]
-  temp <- colSums(subbed) / colSums(mat) * 100
+  temp <- Matrix::colSums(subbed) / Matrix::colSums(mat) * 100
   
   cat(crayon::cyan('Percentage calculated\n'))
   temp <- as.data.frame(temp)
@@ -1508,7 +1396,7 @@ find_percentage_genes <- function(object,
   return(object)
 }
 
-smartseq2 <- find_percentage_genes(object = smartseq2, pattern = '^MT-',
+celseq_comb <- find_percentage_genes(object = celseq_comb, pattern = '^MT-',
                               assay = 'RAW', slot = 'counts',
                               column.name = 'RAW_percent.mt')
 smartseq2 <- find_percentage_genes(object = smartseq2, pattern = 'RPL', 
@@ -1526,9 +1414,6 @@ celseq_comb <- find_percentage_genes(object = celseq_comb, pattern = '^MT-',
 celseq_comb <- find_percentage_genes(object = celseq_comb, pattern = 'RPL', 
                                      assay = 'RAW', slot = 'counts',
                                      column.name = 'RAW_percent.rp')
-
-
-library(egg)
 
 plot.QC.vln <- function(object, 
                         metadata.columns=c('RAW_total.features', 
@@ -1563,6 +1448,12 @@ plot.QC.vln <- function(object,
     
   }
   
+  ggarrange.tmp <- function(...) {
+    
+    egg::ggarrange(...)
+    
+  }
+  
   cols <- RColorBrewer::brewer.pal(n = length(metadata.columns), name = 'Pastel2')
   
   count <- 1
@@ -1589,18 +1480,18 @@ plot.QC.vln <- function(object,
       ggplot2::geom_boxplot(lwd = 0.6, width = 0.09, fill = cols[[count]]) +
       ggplot2::theme(axis.text.x = ggplot2::element_text(face = 'bold', angle = 45, vjust = 1, hjust=1), 
                      legend.position="none", plot.title = ggplot2::element_text(hjust=0.5)) + 
-      scale_fill_manual(values=cols.proj)
+      ggplot2::scale_fill_manual(values=cols.proj)
     count <- count + 1
   }
   
-  do.call(what = 'ggarrange', args = list(plots = plots.list, nrow=1, ncol=length(plots.list)))
+  do.call(what = 'ggarrange.tmp', args = list(plots = plots.list, nrow=1, ncol=length(plots.list)))
   
 }
 
-plot.QC.vln(object = smartseq2, 
+plot.QC.vln(object = celseq_comb, 
             metadata.columns = c('RAW_total.features', 
                                  'RAW_total.counts', 
-                                 'RAW_percent.rp'))
+                                 'RAW_percent.mt'))
 plot.QC.vln(object = celseq2, 
             metadata.columns = c('RAW_total.features', 
                                  'RAW_total.counts', 
@@ -1645,6 +1536,7 @@ plot.QC.scatter <- function(object,
   new.df$project <- metadata[,split.by]
   
   proj.length <- length(unique(new.df$project))
+  
   if(proj.length < 3) {
     
     proj.length.new <- 3
@@ -1655,13 +1547,13 @@ plot.QC.scatter <- function(object,
   
   p <- ggplot2::ggplot(data = new.df, mapping = ggplot2::aes(x = x, y = y, col = project)) + 
     ggplot2::geom_point() + ggplot2::theme_classic() + ggplot2::ggtitle(paste0(x,'_vs_',y)) + 
-    ggplot2::ylab(y) + ggplot2::xlab(x) + labs(color='identifier') + scale_color_manual(values=cols.proj)
+    ggplot2::ylab(y) + ggplot2::xlab(x) + ggplot2::labs(color='identifier') + ggplot2::scale_color_manual(values=cols.proj)
   
   print(p)
   
 }
 
-plot.QC.scatter(object = smartseq2, 
+plot.QC.scatter(object = celseq_comb, 
                 x = 'RAW_total.counts', 
                 y = 'RAW_total.features', 
                 split.by = 'original.project')
@@ -1681,11 +1573,11 @@ max.features <- (sd.value*3)+med.value
 celseq_comb <- filter_IBRAP(object = celseq_comb, 
                             RAW_total.features < max.features & RAW_total.counts > 200 & RAW_percent.mt < 8)
 
-sd.value <- sd(smartseq2$RAW_total.features)
-med.value <- median(smartseq2$RAW_total.features)
+sd.value <- sd(marrow_merged$RAW_total.features)
+med.value <- median(marrow_merged$RAW_total.features)
 max.features <- (sd.value*3)+med.value
 
-smartseq2 <- filter_IBRAP(object = smartseq2, 
+marrow_merged <- filter_IBRAP(object = marrow_merged, 
                           RAW_total.features < max.features & RAW_total.counts > 200 & RAW_percent.mt < 8)
 
 sd.value <- sd(celseq2$RAW_total.features)
@@ -1742,7 +1634,7 @@ add.cell.cycle <- function(object,
     
   }
   
-  r <- read.csv('/Users/knight05/Results/scRNA-seq/IBRAP_development/IBRAP/data/Homo_sapiens.csv', header = TRUE, sep = ',')
+  r <- utils::read.csv('/Users/knight05/Results/scRNA-seq/IBRAP_development/IBRAP/data/Homo_sapiens.csv', header = TRUE, sep = ',')
   cat(crayon::cyan('Cell cycle genes loaded\n'))
   if(transform == TRUE) {
     seuobj <- Seurat::CreateSeuratObject(counts = object@methods[[assay]][[slot]])
@@ -1790,7 +1682,7 @@ add.cell.cycle <- function(object,
   return(object)
 }
 
-smartseq2 <- add.cell.cycle(object = smartseq2, 
+celseq_comb <- add.cell.cycle(object = celseq_comb, 
                               assay = 'RAW', 
                               slot = 'counts', 
                               transform = TRUE)
@@ -1912,7 +1804,7 @@ add.feature.score <- function(object,
   return(object)
 }
 
-smartseq2 <- add.feature.score(object = smartseq2, 
+celseq_comb <- add.feature.score(object = celseq_comb, 
                                assay = 'RAW', 
                                slot = 'counts',
                                transform = TRUE, 
@@ -1948,7 +1840,6 @@ perform.sct.normalisation <- function(object,
                                       assay,
                                       slot,
                                       new.assay.name = 'SCT',
-                                      prefix = 'sctransform',
                                       do.scale = TRUE,
                                       do.center = TRUE,
                                       n.genes = 1500,
@@ -2047,8 +1938,7 @@ perform.sct.normalisation <- function(object,
                                           normalised = .normalised, 
                                           norm.scaled = .norm.scaled,
                                           highly.variable.genes = .highly.variable.genes,
-                                          feature_metadata = feat.meta,
-                                          method.name = as.character(new.assay.name))
+                                          feature_metadata = feat.meta)
   if(isTRUE(save.seuratobject)) {
     
     object@methods[[new.assay.name]]@alt_objects[['seurat']] <- seuratobj
@@ -2064,7 +1954,7 @@ perform.sct.normalisation <- function(object,
 # celseq2 <- perform.sct.normalisation(object = celseq2, 
 #                                      assay = 'RAW', 
 #                                      slot = 'counts')
-smartseq2 <- perform.sct.normalisation(object = smartseq2, 
+celseq_comb <- perform.sct.normalisation(object = celseq_comb, 
                                        assay = 'RAW', 
                                        slot = 'counts')
 celseq2 <- perform.sct.normalisation(object = celseq2, 
@@ -2074,10 +1964,9 @@ celseq_comb <- perform.sct.normalisation(object = celseq_comb,
                                          assay = 'RAW', 
                                          slot = 'counts')
 
-library(SingleCellExperiment)
 perform.scran.normalisation <- function(object, 
                                         assay = 'RAW',
-                                        slot = 'decontaminated',
+                                        slot = 'counts',
                                         batch=NULL,
                                         vars.to.regress=NULL,
                                         do.scale=TRUE,
@@ -2184,10 +2073,10 @@ perform.scran.normalisation <- function(object,
   cat(crayon::cyan('quickCluster completed\n'))
   sce <- scran::computeSumFactors(sce, clusters=clusters, max.cluster.size=max.cluster.size, assay.type=slot)
   sce <- scuttle::logNormCounts(x = sce, log = F, center.size.factors=center_size_factors, exprs_values=slot)
-  assay(sce, 'non-logged') <- assay(sce, 'normcounts')
+  SummarizedExperiment::assay(sce, 'non-logged') <- SummarizedExperiment::assay(sce, 'normcounts')
   sce <- scuttle::logNormCounts(x = sce, log = T, center.size.factors=center_size_factors, exprs_values=slot)
-  .counts <- assay(sce, 'non-logged')
-  .normalised <- assay(sce, 'normcounts')
+  .counts <- SummarizedExperiment::assay(sce, 'non-logged')
+  .normalised <- SummarizedExperiment::assay(sce, 'normcounts')
   cat(crayon::cyan('normalisation completed\n'))
   feat.meta <- feature_metadata(assay = .counts, col.prefix = new.assay.name)
   if(!is.null(batch)) {
@@ -2233,14 +2122,13 @@ perform.scran.normalisation <- function(object,
                                           normalised = as(.normalised, 'dgCMatrix'), 
                                           norm.scaled = as.matrix(.norm.scaled),
                                           highly.variable.genes = top.hvgs,
-                                          feature_metadata = feat.meta,
-                                          method.name = as.character(new.assay.name))
+                                          feature_metadata = feat.meta)
   cat(crayon::cyan('Done\n'))
   return(object)
 }
 
 
-smartseq2 <- perform.scran.normalisation(object = smartseq2, 
+celseq_comb <- perform.scran.normalisation(object = celseq_comb, 
                                          assay = 'RAW', 
                                          slot = 'counts', 
                                          vars.to.regress = 'RAW_total.counts')
@@ -2406,19 +2294,17 @@ perform.tpm.normalisation <- function(object,
   .norm.scaled <- seuobj@assays$RNA@scale.data
   
   object@methods[[new.assay.name]] <- new(Class = 'methods',
-                                          counts = as(.counts, 'dgCMatrix'), 
-                                          normalised = as(.normalised, 'dgCMatrix'), 
+                                          counts = Matrix::Matrix(.counts, sparse = T), 
+                                          normalised = Matrix::Matrix(.normalised, sparse = T), 
                                           norm.scaled = as.matrix(.norm.scaled),
-                                          highly.variable.genes = .highly.variable.genes,
-                                          feature_metadata = feature_metadata(assay = .counts, col.prefix = new.assay.name),
-                                          method.name = as.character(new.assay.name))
+                                          highly.variable.genes = .highly.variable.genes)
   
   cat(crayon::cyan('Completed!\n'))
   
   return(object)
 }
 
-smartseq2 <- perform.tpm.normalisation(object = smartseq2, 
+celseq_comb <- perform.tpm.normalisation(object = celseq_comb, 
                                        assay = 'RAW', 
                                        slot = 'counts', 
                                        n.genes = 1500,
@@ -2797,8 +2683,7 @@ perform.scanpy.normalisation <- function(object,
                                           normalised = as(.normalised, 'dgCMatrix'), 
                                           norm.scaled = as.matrix(.norm.scaled),
                                           highly.variable.genes = .highly.variable.genes,
-                                          feature_metadata = feat.metadata,
-                                          method.name = as.character(new.assay.name))
+                                          feature_metadata = feat.metadata)
   
   if(isTRUE(save.anndata)) {
     
@@ -2811,7 +2696,7 @@ perform.scanpy.normalisation <- function(object,
   return(object)
 }
 
-smartseq2 <- perform.scanpy.normalisation(object = smartseq2, 
+celseq_comb <- perform.scanpy.normalisation(object = celseq_comb, 
                                           vars.to.regress = 'RAW_total.counts')
 celseq2 <- perform.scanpy.normalisation(object = celseq2, 
                                         vars.to.regress = 'RAW_total.counts')
@@ -2880,9 +2765,9 @@ perform.pca <- function(object,
     
     p <- PCAtools::screeplot(pcaobj = a, components = 1:sum(as.numeric(b)+10), 
                         title = paste0(assay,'_PCA_variance'), vline = b) +
-      geom_label(aes(x = b, y = 50,
+      ggplot2::geom_label(ggplot2::aes(x = b, y = 50,
                      label = 'Elbow point', vjust = -1, size = 8)) +
-      ggtitle(paste0(t,'_screeplot'))
+      ggplot2::ggtitle(paste0(t,'_screeplot'))
     
     print(p)
     
@@ -2896,7 +2781,7 @@ perform.pca <- function(object,
   
 }
 
-smartseq2 <- perform.pca(object = smartseq2, 
+celseq_comb <- perform.pca(object = celseq_comb, 
                          assay = c('SCT', 'SCRAN', 'TPM', 'SCANPY'), 
                          n.pcs = 1:50, reduction.save = 'pca')
 celseq2 <- perform.pca(object = celseq2, 
@@ -2998,7 +2883,7 @@ perform.dbmap <- function(object,
     
     cellnames <- colnames(object@methods[[o]][[slot]])
     
-    data <- scipy.sparse$csr_matrix(reticulate::r_to_py(t(object@methods[[o]][[slot]][object@methods[[o]]@highly.variable.genes,])))
+    data <- scipy.sparse$csr_matrix(reticulate::r_to_py(t(as.matrix(object@methods[[o]][[slot]]))[,object@methods[[o]]@highly.variable.genes]))
     
     if(!is.null(n_components)) {
       
@@ -3019,7 +2904,7 @@ perform.dbmap <- function(object,
     dbmap_components <- reticulate::py_to_r(diff$transform(data))
     
     res <- diff$return_dict()
-
+    
     rownames(dbmap_components) <- cellnames
     
     dim.names <- list()
@@ -3042,7 +2927,7 @@ perform.dbmap <- function(object,
   
 }
 
-smartseq2 <- perform.dbmap(object = smartseq2, 
+celseq_comb <- perform.dbmap(object = celseq_comb, 
                            assay = c('SCT', 'SCRAN', 'TPM', 'SCANPY'),  
                            reduction.save = 'dbmap')
 celseq2 <- perform.dbmap(object = celseq2, 
@@ -3870,7 +3755,7 @@ perform.umap <- function(object,
 #                             reduction.save = 'dbmap_umap', 
 #                             n_components = 3)
 
-celseq2 <- perform.umap(object = celseq2, 
+celseq_comb <- perform.umap(object = celseq_comb, 
                         assay = c('SCT', 'SCRAN', 'TPM', 'SCANPY'), 
                         reduction = c('pca', 'dbmap'), 
                         reduction.save = c('pca_umap', 'dbmap_umap'), 

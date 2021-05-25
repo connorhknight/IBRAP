@@ -1,9 +1,9 @@
 #' @name find_percentage_genes
 #' @aliases find_percentage_genes
 #' 
-#' @title Finds the most variable genes in a dataset
+#' @title Calculates the fraction of counts from genes matching a pattern string
 #'
-#' @description Find an x amount of top variable genes for your dataset
+#' @description Subsets gene names that match the pattern supplied. The percentage fraction of this gene group is then calculated.
 #' 
 #' @param object IBRAP S4 class object
 #' @param pattern A character string containing a pattern to identfiy in rownames

@@ -4,5 +4,5 @@ setMethod(f = 'rownames', signature = 'IBRAP',
           function(x, 
                    do.NULL = TRUE, 
                    prefix = 'row') {
-            rownames(x@methods[[x@active.method]]@counts)
+            rownames(x@methods[[1]]@counts)
           })

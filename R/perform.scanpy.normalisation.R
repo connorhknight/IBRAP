@@ -1,0 +1,409 @@
+#' @name perform.scanpy.normalisation
+#' @aliases perform.scanpy.normalisation
+#' 
+#' @title Performs Scanpy normalisation
+#'
+#' @description A new method-assay is produced. Raw counts are normalised and HVGs identified using Scanpy
+#' 
+#' @param object IBRAP S4 class object
+#' @param assay Character. String containing indicating which assay to use
+#' @param slot Character. String indicating which slot within the assay should be sourced
+#' @param new.assay.name Character. What should the new assay be called. Default = 'SCRAN'
+#' @param target_sum Numerical. What should the data be scaled to. Default = 1e6
+#' @param exclude_highly_expressed Boolean. Should highly expressed genes be excluded. Default = FALSE
+#' @param max_fraction Numerical. If exclude_highly_expressed=True, consider cells as highly expressed that have more counts than max_fraction of the original total counts in at least one cell. Default = 0.05
+#' @param key_added Character. What should the column name be that contains cell scaling factors. Default = 'scanpy_norm_factor'
+#' @param n_top_genes Numerical. How many HVGs should be identified. Default = 1500
+#' @param max_mean Numerical. If n_top_genes is NULL, this is the maximum mean to determine HVGs. Default = 6
+#' @param min_mean Numerical. If n_top_genes is NULL, this is the minimum mean to determine HVGs. Default = 0.0125
+#' @param min_disp Numerical. If n_top_genes is NULL, The minimum dispersion that should be presented in a gene for it to be considered highly varaible. Default = 0.5
+#' @param span Numerical. The fraction of cells that should be subset for the LOESS fit model. Default = 0.3
+#' @param n_bins Numerical. Number of bins to produce when determining HVGs
+#' @param flavour Character. Choosing which HVG selection method to use when, options: 'seurat', 'cell_ranger', 'seurat_v3'. Default = 'seurat'
+#' @param batch_key Character. Which column in the metadata identifies the batches of the cells. Default = NULL
+#' @param do.scale Boolean. Whether the gene expression should be scaled. Default = TRUE
+#' @param vars.to.regress Character. A single or multiple columns of information in the metadata that should be regressed from the dataset. Default = NULL
+#' @param n_jobs Numerical. The number of jobs that should be performed in parallel. Default = NULL
+#' @param zero_centre Boolean. Should the gene expression be centred arouynd 0. Default = TRUE
+#' @param max_value Numerical. Clip to this value after scaling. Default = NULL
+#' @param obsm Numerical. Which value to scale data against. Default = NULL
+#' 
+#' @return Produces a new 'methods' assay containing normalised, scaled and HVGs.
+#'
+#' @export
+
+perform.scanpy.normalisation <- function(object, 
+                                         assay='RAW', 
+                                         slot='counts', 
+                                         new.assay.name='SCANPY', 
+                                         target_sum = 1e6, 
+                                         exclude_highly_expressed = FALSE,  
+                                         max_fraction = 0.05, 
+                                         key_added = 'scanpy_norm_factor',
+                                         
+                                         n_top_genes = 1500, 
+                                         max_mean = 6, 
+                                         min_mean = 0.0125, 
+                                         min_disp = 0.5, 
+                                         span = 0.3, 
+                                         n_bins = 20, 
+                                         flavor = 'seurat', 
+                                         batch_key = NULL,
+                                         
+                                         do.scale=TRUE,
+                                         vars.to.regress=NULL, 
+                                         n_jobs = NULL, 
+                                         zero_center = TRUE, 
+                                         max_value = NULL, 
+                                         obsm = NULL,
+                                         
+                                         save.anndata = TRUE
+) {
+  
+  if(!is(object = object, class2 = 'IBRAP')) {
+    
+    cat(crayon::cyan('Object must be of class IBRAP\n'))
+    return(object)
+    
+  }
+  if(!is.character(assay)) {
+    
+    cat(crayon::cyan('Assay must be a character string\n'))
+    return(object)
+    
+  }
+  
+  if(!assay %in% names(object@methods)) {
+    
+    cat(crayon::cyan('assay does not exist\n'))
+    return(object)
+    
+  }
+  
+  if(!is.character(slot)) {
+    
+    cat(crayon::cyan('Slot must be a character string\n'))
+    return(object)
+    
+  }
+  
+  if(!slot %in% c('counts', 'normalised', 'norm.scaled')) {
+    
+    cat(crayon::cyan('slot does not exist\n'))
+    return(object)
+    
+  }
+  
+  if(!is.character(new.assay.name)) {
+    
+    cat(crayon::cyan('new.assay.name must be character string \n'))
+    return(object)
+    
+  }
+  
+  if(!is.numeric(target_sum)) {
+    
+    cat(crayon::cyan('target_sum must be numerical \n'))
+    return(object)
+    
+  }
+  
+  if(!is.logical(exclude_highly_expressed)) {
+    
+    cat(crayon::cyan('exclude_highly_expressed must be logical\n'))
+    return(object)
+    
+  }
+  
+  if(!is.numeric(max_fraction)) {
+    
+    cat(crayon::cyan('max_fraction must be numerical \n'))
+    return(object)
+    
+  }
+  
+  if(!is.character(key_added)) {
+    
+    cat(crayon::cyan('key_added must be character string \n'))
+    return(object)
+    
+  }
+  
+  if(!is.numeric(n_top_genes)) {
+    
+    cat(crayon::cyan('n_top_genes must be numerical \n'))
+    return(object)
+    
+  }
+  
+  if(!is.numeric(max_mean)) {
+    
+    cat(crayon::cyan('max_mean must be numerical \n'))
+    return(object)
+    
+  }
+  
+  if(!is.numeric(min_mean)) {
+    
+    cat(crayon::cyan('min_mean must be numerical \n'))
+    return(object)
+    
+  }
+  
+  if(!is.numeric(min_disp)) {
+    
+    cat(crayon::cyan('min_disp must be numerical \n'))
+    return(object)
+    
+  }
+  
+  if(!is.numeric(span)) {
+    
+    cat(crayon::cyan('span must be numerical \n'))
+    return(object)
+    
+  }
+  
+  if(!is.character(flavor)) {
+    
+    cat(crayon::cyan('flavor must be character string \n'))
+    return(object)
+    
+  }
+  
+  if(!is.null(batch_key)) {
+    
+    if(!is.character(batch_key)) {
+      
+      cat(crayon::cyan('batch_key must be character string\n'))
+      return(object)
+      
+    }
+    
+  }
+  
+  if(!is.logical(do.scale)) {
+    
+    cat(crayon::cyan('do.scale must be logical: TRUE/FALSE\n'))
+    return(object)
+    
+  }
+  
+  if(!is.null(batch_key)) {
+    
+    if(!is.numeric(batch_key)) {
+      
+      cat(crayon::cyan('batch_key must be character string\n'))
+      return(object)
+      
+    }
+    
+  }
+  
+  if(!is.null(vars.to.regress)) {
+    
+    if(!is.character(vars.to.regress)) {
+      
+      cat(crayon::cyan('vars.to.regress must be character string\n'))
+      return(object)
+      
+    }
+    
+  }
+  
+  if(!is.logical(do.scale)) {
+    
+    cat(crayon::cyan('do.scale must be logical: TRUE/FALSE\n'))
+    return(object)
+    
+  }
+  
+  if(!is.null(n_jobs)) {
+    
+    if(!is.numeric(n_jobs)) {
+      
+      cat(crayon::cyan('n_jobs must be numerical\n'))
+      return(object)
+      
+    }
+    
+  }
+  
+  if(!is.null(zero_center)) {
+    
+    if(!is.logical(zero_center)) {
+      
+      cat(crayon::cyan('zero_center must be logical: TRUE/FALSE\n'))
+      return(object)
+      
+    }
+    
+  }
+  
+  if(!is.null(max_value)) {
+    
+    if(!is.numeric(max_value)) {
+      
+      cat(crayon::cyan('max_value must be numerical\n'))
+      return(object)
+      
+    }
+    
+  }
+  
+  if(!is.null(obsm)) {
+    
+    if(!is.character(obsm)) {
+      
+      cat(crayon::cyan('obsm must be numerical\n'))
+      return(object)
+      
+    }
+    
+  }
+  
+  sc <- reticulate::import('scanpy')
+  scobj <- sc$AnnData(X = t(as.matrix(object@methods[[assay]][[slot]])))
+  scobj$obs_names <- as.factor(colnames(object))
+  scobj$var_names <- as.factor(rownames(object))
+  
+  if(length(names(object@sample_metadata)) >= 1) {
+    scobj$obs <- object@sample_metadata
+  }
+  
+  cat(crayon::cyan('Normalising counts\n'))
+  
+  if(!is.null(target_sum) & !is.null(key_added)) {
+    sc$pp$normalize_total(adata = scobj, target_sum = as.integer(target_sum), 
+                          exclude_highly_expressed = as.logical(exclude_highly_expressed), 
+                          max_fraction = as.integer(max_fraction), key_added = as.character(key_added))
+  } else if (!is.null(target_sum)) {
+    sc$pp$normalize_total(adata = scobj, target_sum = as.integer(target_sum), 
+                          exclude_highly_expressed = as.logical(exclude_highly_expressed), 
+                          max_fraction = as.integer(max_fraction))
+  } else if (!is.null(key_added)) {
+    sc$pp$normalize_total(adata = scobj, 
+                          exclude_highly_expressed = as.logical(exclude_highly_expressed), 
+                          max_fraction = as.integer(max_fraction))
+  } else {
+    sc$pp$normalize_total(adata = scobj)
+  }
+  
+  .counts <- t(scobj$X)
+  rownames(.counts) <- rownames(object)
+  colnames(.counts) <- colnames(object)
+  
+  feat.metadata <- feature_metadata(assay = .counts, col.prefix = 'SCANPY')
+  
+  cat(crayon::cyan('Logging data\n'))
+  
+  sc$pp$log1p(scobj)
+  
+  .normalised <- t(scobj$X)
+  rownames(.normalised) <- rownames(object)
+  colnames(.normalised) <- colnames(object)
+  
+  cat(crayon::cyan('Computing highly variable genes\n'))
+  
+  if (!is.null(n_top_genes) & !is.null(batch_key)) {
+    
+    sc$pp$highly_variable_genes(adata = scobj, 
+                                n_top_genes = as.integer(n_top_genes), 
+                                min_mean = as.integer(min_mean), 
+                                max_mean = as.integer(max_mean), 
+                                min_disp = as.integer(min_disp), 
+                                span = as.integer(span),
+                                n_bins = as.integer(n_bins), 
+                                flavor = as.character(flavor), 
+                                batch_key = as.character(batch_key))
+    
+  } else if (!is.null(n_top_genes)) {
+    
+    sc$pp$highly_variable_genes(adata = scobj, 
+                                n_top_genes = as.integer(n_top_genes), 
+                                min_mean = as.integer(min_mean), 
+                                max_mean = as.integer(max_mean), 
+                                min_disp = as.integer(min_disp), 
+                                span = as.integer(span),
+                                n_bins = as.integer(n_bins), 
+                                flavor = as.character(flavor))
+    
+  } else if (!is.null(batch_key)) {
+    
+    sc$pp$highly_variable_genes(adata = scobj,
+                                min_mean = as.integer(min_mean), 
+                                max_mean = as.integer(max_mean), 
+                                min_disp = as.integer(min_disp), 
+                                span = as.integer(span),
+                                n_bins = as.integer(n_bins), 
+                                flavor = as.character(flavor))
+    
+  } else {
+    
+    sc$pp$highly_variable_genes(adata = scobj, 
+                                min_mean = as.integer(min_mean), 
+                                max_mean = as.integer(max_mean), 
+                                min_disp = as.integer(min_disp), 
+                                span = as.integer(span),
+                                n_bins = as.integer(n_bins), 
+                                flavor = as.character(flavor))
+    
+  }
+  
+  .highly.variable.genes <- rownames(object)[scobj$var[['highly_variable']]]
+  
+  scobj2 <- sc$AnnData(X = t(.normalised[.highly.variable.genes,]))
+  
+  if(length(names(object@sample_metadata)) >= 1) {
+    scobj2$obs <- object@sample_metadata
+  }
+  
+  if(!is.null(do.scale)) {
+    
+    if(!is.null(vars.to.regress)) {
+      if(!is.null(n_jobs)) {
+        sc$pp$regress_out(adata = scobj2, keys = vars.to.regress, n_jobs = as.integer(n_jobs))
+      } else {
+        sc$pp$regress_out(adata = scobj2, keys = vars.to.regress)
+      }
+    }
+    
+    if(!is.null(max_value) & !is.null(obsm)) {
+      sc$pp$scale(scobj2, zero_center = as.logical(zero_center), max_value = as.integer(max_value), obsm = as.character(obsm))
+    } else if(!is.null(max_value)) {
+      sc$pp$scale(scobj2, zero_center = as.logical(zero_center), max_value = as.integer(max_value))
+    } else if(!is.null(obsm)) {
+      sc$pp$scale(scobj2, zero_center = as.logical(zero_center), obsm = as.character(obsm))
+    } else {
+      sc$pp$scale(scobj2)
+    }
+    
+    .norm.scaled <- t(scobj2$X)
+    colnames(.norm.scaled) <- colnames(object)
+    rownames(.norm.scaled) <- rownames(object)[rownames(object) %in% .highly.variable.genes]
+    
+  } else {
+    
+    .norm.scaled <- .normalised[.highly.variable.genes,]
+    colnames(.norm.scaled) <- colnames(object)
+    rownames(.norm.scaled) <- rownames(object)[rownames(object) %in% .highly.variable.genes]
+    
+  }
+  
+  object@methods[[new.assay.name]] <- new(Class = 'methods',
+                                          counts = as(.counts, 'dgCMatrix'), 
+                                          normalised = as(.normalised, 'dgCMatrix'), 
+                                          norm.scaled = as.matrix(.norm.scaled),
+                                          highly.variable.genes = .highly.variable.genes,
+                                          feature_metadata = feat.metadata)
+  
+  if(isTRUE(save.anndata)) {
+    
+    object@methods[[new.assay.name]]@alt_objects$anndata
+    
+  }
+  
+  
+  
+  return(object)
+}

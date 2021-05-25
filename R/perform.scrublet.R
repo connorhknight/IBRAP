@@ -231,7 +231,7 @@ perform.scrublet <- function(counts,
     ggplot2::ylab('frequency') + 
     ggplot2::ggtitle(paste0('simulated_doublets')) + 
     ggplot2::theme_classic() + 
-    ggplot2::theme(plot.title = element_text(hjust = 0.5))
+    ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5))
   
   obs.plot <- ggplot2::qplot(as.vector(res1)[[1]], 
                              geom = 'histogram') + 
@@ -240,7 +240,7 @@ perform.scrublet <- function(counts,
     ggplot2::ylab('frequency') + 
     ggplot2::ggtitle(paste0('observed doublets')) + 
     ggplot2::theme_classic() + 
-    ggplot2::theme(plot.title = element_text(hjust = 0.5))
+    ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5))
   
   comb.plot <- cowplot::plot_grid(sim.plot, obs.plot, ncol = 2, nrow = 1)
   print(comb.plot)

@@ -14,7 +14,7 @@
 
 feature_metadata <- function(assay, 
                              col.prefix) {
-  df <- as.data.frame(as.numeric(rowSums(assay)))
+  df <- as.data.frame(as.numeric(Matrix::rowSums(assay)))
   rownames(df) <- rownames(assay)
   df$temp <- as.numeric(Matrix::rowSums(assay > 0))
   colnames(df) <- c(paste0(col.prefix,'_total.counts'), paste0(col.prefix,'_total.cells'))

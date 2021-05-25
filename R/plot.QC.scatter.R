@@ -51,6 +51,7 @@ plot.QC.scatter <- function(object,
   new.df$project <- metadata[,split.by]
   
   proj.length <- length(unique(new.df$project))
+  
   if(proj.length < 3) {
     
     proj.length.new <- 3

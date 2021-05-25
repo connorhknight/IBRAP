@@ -82,12 +82,12 @@ createIBRAPobject <- function(counts,
     
     if(!is.numeric(min.features)) {
       
-      cat(crayon::cyan('min.features must be numerical\n'))
+      cat(crayon::cyan('min.features must be numerical'))
       return(counts)
       
     }
     
-    nfeatures <- colSums(x = counts > 0)
+    nfeatures <- Matrix::colSums(x = counts > 0)
     
     counts <- counts[, which(x = nfeatures >= min.features)]
     
@@ -97,12 +97,12 @@ createIBRAPobject <- function(counts,
     
     if(!is.numeric(min.cells)) {
       
-      cat(crayon::cyan('min.cells must be numerical\n'))
+      cat(crayon::cyan('min.cells must be numerical'))
       return(counts)
       
     }
     
-    num.cells <- rowSums(x = counts > 0)
+    num.cells <- Matrix::rowSums(x = counts > 0)
     
     counts <- counts[which(x = num.cells >= min.cells), ]
     
@@ -134,7 +134,7 @@ createIBRAPobject <- function(counts,
     
     if(isFALSE(isUnique(c(l1,l2)))) {
       
-      cat(crayon::cyan('Column names from meta.data cannot be named: original.project, counts_total.counts or counts_total.features\n'))
+      cat(crayon::cyan('Column names from meta.data cannot be named:', 'original.project, counts_total.counts or counts_total.features\n'))
       
       return(counts)
       
