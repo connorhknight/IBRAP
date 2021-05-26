@@ -1,32 +1,40 @@
 Package: IBRAP
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Integrated Benchmarking scRNA-seq Analytical Pipeline
 Version: 0.1.0
-Author: Who wrote it
-Maintainer: The package maintainer <yourself@somewhere.net>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
+Author: Connor Harry Knight
+Maintainer: The package maintainer <c.h.knight@qmul.ac.uk>
+Description: This package integrates numerous leading scRNA-seq analytical components
+    into one major framework. These components can all be applied to the dataset or
+    you can stick to one pipeline. If numerous have been generated, benchmarking
+    metrices can be applied to ascertain which pipeline performed best. A tutorial
+    on how to use IBRAP can be found at: https://github.com/connorhknight/IBRAP
 License: What license is it under?
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.1.1.9000
 Imports: 
-    Matrix,
-    scran,
-    SingleCellExperiment,
-    scater,
-    edgeR,
-    ggplot2,
-    umap,
-    gmodels,
-    Seurat,
-    RColorBrewer,
-    plotly,
-    MASS,
-    Rtsne,
-    PCAtools,
-    uwot,
-    tibble,
-    cluster,
-    clValid,
-    SC3
+    reticulate (>= 1.20),
+    utils (>= 4.0.4),
+    Matrix (>= 1.3-3),
+    crayon (>= 1.4.1),
+    ggplot2 (>= 3.3.3),
+    cowplot (>= 1.1.1),
+    celda (>= 1.7.3),
+    egg (>= 0.4.5),
+    RColorBrewer (>= 1.1-2),
+    Seurat (>= 4.0.1),
+    SingleCellExperiment (>= 1.12.0),
+    scran (>= 1.18.7),
+    scuttle (>= 1.0.4),
+    SummarizedExperiment (>= 1.20.0),
+    PCAtools (>= 2.2.0),
+    harmony (>= 1.0),
+    uwot (>= 0.1.10),
+    ProjectionBasedClustering (>= 1.1.6),
+    SC3 (>= 1.18.0),
+    cluster (>= 2.1.2),
+    clValid (>= 0.7),
+    mclust (>= 5.4.7),
+    aricode (>= 1.0.0),
+    plotly (>= 4.9.3)
