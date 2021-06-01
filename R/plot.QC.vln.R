@@ -71,6 +71,10 @@ plot.QC.vln <- function(object,
       cols.proj <- RColorBrewer::brewer.pal(n = proj.length.new, name = 'Pastel1')
       cols.proj <- cols.proj[1:proj.length]
       
+    } else {
+      
+      cols.proj <- RColorBrewer::brewer.pal(n = proj.length, name = 'Pastel1')
+      
     }
     
     plots.list[[o]] <- ggplot2::ggplot(data = new.metadata, 

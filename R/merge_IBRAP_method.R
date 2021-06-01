@@ -62,7 +62,7 @@ setMethod(f = 'merge', signature = 'IBRAP',
               .feature_metadata$total.counts.x <- .feature_metadata[,2] + .feature_metadata[,4]
               .feature_metadata <- .feature_metadata[,1:2]
               colnames(.feature_metadata) <- c('total.cells', 'total.counts')
-              print('.')
+
             }
             
             .counts[is.na(.counts)] <- 0
