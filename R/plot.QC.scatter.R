@@ -58,6 +58,10 @@ plot.QC.scatter <- function(object,
     cols.proj <- RColorBrewer::brewer.pal(n = proj.length.new, name = 'Pastel1')
     cols.proj <- cols.proj[1:proj.length]
     
+  } else {
+    
+    cols.proj <- RColorBrewer::brewer.pal(n = proj.length, name = 'Pastel1')
+    
   }
   
   p <- ggplot2::ggplot(data = new.df, mapping = ggplot2::aes(x = x, y = y, col = project)) + 
