@@ -1,7 +1,7 @@
 Package: IBRAP
 Type: Package
 Title: Integrated Benchmarking scRNA-seq Analytical Pipeline
-Version: 0.1.0
+Version: 1.0.0
 Author: Connor Harry Knight
 Maintainer: The package maintainer <c.h.knight@qmul.ac.uk>
 Description: This package integrates numerous leading scRNA-seq analytical components
@@ -12,7 +12,7 @@ Description: This package integrates numerous leading scRNA-seq analytical compo
 License: What license is it under?
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.1.1.9000
+RoxygenNote: 7.1.1
 Imports: 
     reticulate (>= 1.20),
     utils (>= 4.0.4),
@@ -29,10 +29,9 @@ Imports:
     scuttle (>= 1.0.4),
     SummarizedExperiment (>= 1.20.0),
     PCAtools (>= 2.2.0),
-    harmony (>= 1.0),
+    harmony (>= 0.1.0),
     uwot (>= 0.1.10),
     ProjectionBasedClustering (>= 1.1.6),
-    SC3 (>= 1.18.0),
     cluster (>= 2.1.2),
     clValid (>= 0.7),
     mclust (>= 5.4.7),
