@@ -58,11 +58,11 @@ setMethod(f = 'merge', signature = 'IBRAP',
               .feature_metadata[is.na(.feature_metadata)] <- 0
               rownames(.feature_metadata) <- .feature_metadata$Row.names
               .feature_metadata$Row.names <- NULL
-              .feature_metadata$total.cells.x <- .feature_metadata$RAW_total.cells.x + .feature_metadata$RAW_total.cells.y
-              .feature_metadata$total.counts.x <- .feature_metadata$RAW_total.counts.x + .feature_metadata$RAW_total.counts.y
+              .feature_metadata$total.cells.x <- .feature_metadata[,1] + .feature_metadata[,3]
+              .feature_metadata$total.counts.x <- .feature_metadata[,2] + .feature_metadata[,4]
               .feature_metadata <- .feature_metadata[,1:2]
               colnames(.feature_metadata) <- c('total.cells', 'total.counts')
-              
+              print('.')
             }
             
             .counts[is.na(.counts)] <- 0
