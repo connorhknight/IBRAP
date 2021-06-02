@@ -47,6 +47,9 @@ Read10X_output <- function(directory,
 }
 
 marrow_E <- Read10X_output(directory = '/Users/knight05/Raw_Data/Database_samples/healthy_references/BMMC_atlas/marrow_E')
+marrow_K <- Read10X_output(directory = '/Users/knight05/Raw_Data/Database_samples/healthy_references/BMMC_atlas/marrow_K')
+marrow_N <- Read10X_output(directory = '/Users/knight05/Raw_Data/Database_samples/healthy_references/BMMC_atlas/marrow_N')
+marrow_Q <- Read10X_output(directory = '/Users/knight05/Raw_Data/Database_samples/healthy_references/BMMC_atlas/marrow_Q')
 
 # Metadata generator
 
@@ -773,8 +776,15 @@ pancreas.data <- round(pancreas.data)
 
 celseq2 <- pancreas.data[,rownames(metadata[metadata$tech == 'celseq2',])]
 metadata_celseq2 <- metadata[rownames(metadata[metadata$tech == 'celseq2',]),]
+
 celseq <- pancreas.data[,rownames(metadata[metadata$tech == 'celseq',])]
 metadata_celseq <- metadata[rownames(metadata[metadata$tech == 'celseq',]),]
+
+fluidigmc1 <- pancreas.data[,rownames(metadata[metadata$tech == 'fluidigmc1',])]
+metadata_fluidigmc1 <- metadata[rownames(metadata[metadata$tech == 'fluidigmc1',]),]
+
+smartseq2 <- pancreas.data[,rownames(metadata[metadata$tech == 'smartseq2',])]
+metadata_smartseq2 <- metadata[rownames(metadata[metadata$tech == 'smartseq2',]),]
 
 ### removing scrublets
 
@@ -1001,8 +1011,10 @@ perform.scrublet <- function(counts,
   return(counts)
 }
 
-celseq <- perform.scrublet(counts = celseq)
-celseq2 <- perform.scrublet(counts = celseq2)
+marrow_E <- perform.scrublet(counts = marrow_E)
+marrow_K <- perform.scrublet(counts = marrow_K)
+marrow_N <- perform.scrublet(counts = marrow_N)
+marrow_Q <- perform.scrublet(counts = marrow_Q)
 
 # decontamination
 
@@ -1146,8 +1158,10 @@ perform.decontX <- function(counts,
   
 }
 
-celseq <- perform.decontX(counts = celseq)
-celseq2 <- perform.decontX(counts = celseq2)
+marrow_E <- perform.decontX(counts = marrow_E)
+marrow_K <- perform.decontX(counts = marrow_K)
+marrow_N <- perform.decontX(counts = marrow_N)
+marrow_Q <- perform.decontX(counts = marrow_Q)
 
 # IBRAP object
 
@@ -1303,8 +1317,26 @@ createIBRAPobject <- function(counts,
 
 metadata_celseq <- metadata_celseq[colnames(celseq),]
 
-celseq <- createIBRAPobject(counts = celseq,
-                              original.project = 'celseq',
+marrow_E <- createIBRAPobject(counts = marrow_E,
+                              original.project = 'marrow_E',
+                              method.name = 'RAW',
+                              min.cells = 3,
+                              min.features = 200)
+
+marrow_K <- createIBRAPobject(counts = marrow_K,
+                              original.project = 'marrow_K',
+                              method.name = 'RAW',
+                              min.cells = 3,
+                              min.features = 200)
+
+marrow_N <- createIBRAPobject(counts = marrow_N,
+                              original.project = 'marrow_N',
+                              method.name = 'RAW',
+                              min.cells = 3,
+                              min.features = 200)
+
+marrow_Q <- createIBRAPobject(counts = marrow_Q,
+                              original.project = 'marrow_Q',
                               method.name = 'RAW',
                               min.cells = 3,
                               min.features = 200)
@@ -1327,7 +1359,7 @@ smartseq2 <- createIBRAPobject(counts = smartseq2,
                              min.cells = 3,
                              min.features = 200)
 
-celseq_comb <- merge(x = celseq, y = celseq2)
+marrow <- merge(x = marrow_E, y = c(marrow_K, marrow_N, marrow_Q))
 
 find_percentage_genes <- function(object, 
                                   pattern='^MT-', 
@@ -1471,6 +1503,10 @@ plot.QC.vln <- function(object,
       cols.proj <- RColorBrewer::brewer.pal(n = proj.length.new, name = 'Pastel1')
       cols.proj <- cols.proj[1:proj.length]
       
+    } else {
+      
+      cols.proj <- RColorBrewer::brewer.pal(n = proj.length, name = 'Pastel1')
+      
     }
     
     plots.list[[o]] <- ggplot2::ggplot(data = new.metadata, 
@@ -1543,6 +1579,10 @@ plot.QC.scatter <- function(object,
     cols.proj <- RColorBrewer::brewer.pal(n = proj.length.new, name = 'Pastel1')
     cols.proj <- cols.proj[1:proj.length]
     
+  } else {
+    
+    cols.proj <- RColorBrewer::brewer.pal(n = proj.length, name = 'Pastel1')
+    
   }
   
   p <- ggplot2::ggplot(data = new.df, mapping = ggplot2::aes(x = x, y = y, col = project)) + 
@@ -1566,11 +1606,11 @@ plot.QC.scatter(object = celseq_comb,
                 y = 'RAW_total.features', 
                 split.by = 'original.project')
 
-sd.value <- sd(celseq_comb$RAW_total.features)
-med.value <- median(celseq_comb$RAW_total.features)
+sd.value <- sd(marrow$RAW_total.features)
+med.value <- median(marrow$RAW_total.features)
 max.features <- (sd.value*3)+med.value
 
-celseq_comb <- filter_IBRAP(object = celseq_comb, 
+marrow <- filter_IBRAP(object = marrow, 
                             RAW_total.features < max.features & RAW_total.counts > 200 & RAW_percent.mt < 8)
 
 sd.value <- sd(marrow_merged$RAW_total.features)
@@ -2191,7 +2231,7 @@ perform.tpm.normalisation <- function(object,
     
   }
   
-  r <- read.csv('/Users/knight05/Results/scRNA-seq/IBRAP_development/IBRAP/data/mart_export.csv', header = TRUE, sep = ',')
+  r <- utils::read.csv('/Users/knight05/Results/scRNA-seq/IBRAP_development/IBRAP/data/mart_export.csv', header = TRUE, sep = ',')
   
   if(is.null(r)) {
     
@@ -4701,14 +4741,14 @@ perform.sc3.reduction.cluster <- function(object,
         
       }
       
-      temp.2 <- SingleCellExperiment(list('logcounts' = t(red)[dimen,]))
+      temp.2 <- SingleCellExperiment::SingleCellExperiment(list('logcounts' = t(red)[dimen,]))
       rowData(temp.2)$feature_symbol <- rownames(temp.2)
       temp.2 <- temp.2[!duplicated(rowData(temp.2)$feature_symbol), ]
-      temp.2 <- sc3_prepare(temp.2, gene_filter = FALSE, n_cores = n.core)
-      temp.2 <- sc3_calc_dists(temp.2)
-      temp.2 <- sc3_calc_transfs(temp.2)
-      temp.2 <- sc3_kmeans(temp.2, ks = ks)
-      temp.2 <- sc3_calc_consens(temp.2)
+      temp.2 <- SC3::sc3_prepare(temp.2, gene_filter = FALSE, n_cores = n.core)
+      temp.2 <- SC3::sc3_calc_dists(temp.2)
+      temp.2 <- SC3::sc3_calc_transfs(temp.2)
+      temp.2 <- SC3::sc3_kmeans(temp.2, ks = ks)
+      temp.2 <- SC3::sc3_calc_consens(temp.2)
       object@methods[[p]]@cluster_assignments[[assignment.df.name[[count]]]] <- as.data.frame(colData(temp.2))
       cat(crayon::cyan('SC3 clustering completed\n'))
       count <- count + 1
@@ -4812,7 +4852,7 @@ perform.sc3.slot.cluster <- function(object,
 
     if(is.null(HVGs)) {
       
-      temp.2 <- SingleCellExperiment(list('counts' = as.matrix(object@methods[[p]]@counts[rownames(mat),]), 'logcounts' = as.matrix(mat)))
+      temp.2 <- SingleCellExperiment::SingleCellExperiment(list('counts' = as.matrix(object@methods[[p]]@counts[rownames(mat),]), 'logcounts' = as.matrix(mat)))
       rowData(temp.2)$feature_symbol <- rownames(temp.2)
       temp.2 <- temp.2[!duplicated(rowData(temp.2)$feature_symbol), ]
       temp.2 <- sc3_prepare(temp.2, gene_filter = TRUE, n_cores = n.core)
