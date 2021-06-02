@@ -68,7 +68,7 @@ perform.tpm.normalisation <- function(object,
     
   }
   
-  r <- utils::read.csv(system.file("extdata", "mart_export.csv", package = "IBRAP"), header = TRUE, sep = ',')
+  r <- utils::read.csv(system.file("data", "mart_export.csv", package = "IBRAP"), header = TRUE, sep = ',')
   
   if(is.null(r)) {
     

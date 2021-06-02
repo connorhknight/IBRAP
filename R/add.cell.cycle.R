@@ -63,8 +63,10 @@ add.cell.cycle <- function(object,
     
   }
   
-  r <- utils::read.csv('/Users/knight05/Results/scRNA-seq/IBRAP_development/IBRAP/data/Homo_sapiens.csv', header = TRUE, sep = ',')
+  r <- utils::read.csv(system.file("data", "Homo_sapiens.csv", package = "IBRAP"), header = TRUE, sep = ',')
+  
   cat(crayon::cyan('Cell cycle genes loaded\n'))
+  
   if(transform == TRUE) {
     seuobj <- Seurat::CreateSeuratObject(counts = object@methods[[assay]][[slot]])
     cat(crayon::cyan('Converted to Seurat object\n'))
