@@ -59,8 +59,12 @@ perform.dbmap <- function(object,
   
   if(!is.numeric(n_components)) {
     
-    cat(crayon::cyan('n_components must be numerical \n'))
-    return(object)
+    if(!is.null(n_components)) {
+      
+      cat(crayon::cyan('n_components must be numerical or NULL\n'))
+      return(object)
+      
+    }
     
   }
   

@@ -10,6 +10,9 @@
 #' @param reduction Character. String defining the name of the reduction to provide for BBKNN. Default = NULL
 #' @param graph.name Character. What should the BBKNN graph be named. Default = 'bbknn
 #' @param batch Character. Column name in metadata indicating batch. Can be multiple.
+#' @param approx Character. Employs annoy's approximate neighbour finding. Useful for large datasets but may increase correction. 
+#' @param metric. Character. Which distance metric to use when approx is TRUE, options: 'angular', 'euclidean', 'manhattan' or 'hamming'. Default = 'euclidean'
+#' @param neighbors_within_batch Numerical. How many neighbours to report per batch. Default = 3
 #' @param n_pcs Numerical. Range of principal components to use. Default = NULL
 #' @param trim Numerical. Trims the n of neighbours per cell to this value. Helps with population independence. Default = NULL
 #' @param n_trees Numerical. Number of trees to generate in annoy forest. More trees provides higher precision at the cost of increased resource demand and run time. Default = 10
@@ -26,6 +29,9 @@ perform.bbknn <- function(object,
                           reduction,
                           graph.name = 'bbknn',
                           batch,
+                          approx = FALSE,
+                          metric = 'euclidean',
+                          neighbors_within_batch = 3,
                           n_pcs = NULL,
                           trim = NULL,
                           n_trees = 10,
@@ -103,6 +109,29 @@ perform.bbknn <- function(object,
     return(object)
     
   }
+  
+  if(!is.logical(approx)) {
+    
+    cat(crayon::cyan('approx must be logical: TRUE/FALSE \n'))
+    return(object)
+    
+  }
+  
+  if(!is.character(metric)) {
+    
+    cat(crayon::cyan('metric must be character \n'))
+    return(object)
+    
+  }
+  
+  if(!is.numeric(neighbors_within_batch)) {
+    
+    cat(crayon::cyan('neighbors_within_batch must be numerical \n'))
+    return(object)
+    
+  }
+  
+  
   
   if(!is.null(trim)) {
     
@@ -187,6 +216,8 @@ perform.bbknn <- function(object,
         sc$external$pp$bbknn(scobj,
                              batch_key = as.character(batch),
                              approx = as.logical(FALSE),
+                             metric = as.character(metric),
+                             neighbors_within_batch = as.numeric(neighbors_within_batch),
                              n_pcs = n_pcs,
                              n_trees = as.integer(n_trees),
                              use_faiss = as.logical(use_faiss),
@@ -198,6 +229,8 @@ perform.bbknn <- function(object,
         sc$external$pp$bbknn(scobj,
                              batch_key= as.character(batch),
                              approx = as.logical(FALSE),
+                             metric = as.character(metric),
+                             neighbors_within_batch = as.numeric(neighbors_within_batch),
                              n_pcs = n_pcs,
                              trim = as.integer(trim),
                              n_trees = as.integer(n_trees),
