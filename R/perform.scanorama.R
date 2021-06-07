@@ -146,7 +146,7 @@ perform.scanorama <- function(object,
     
   }
   
-  cat(crayon::cyan('Initialising scanorama\n'))
+  cat(crayon::cyan('Loading python modules\n'))
   scanorama <- reticulate::import('scanorama', convert = FALSE)
   cat(crayon::cyan('Python modules loaded\n'))
   
@@ -154,7 +154,7 @@ perform.scanorama <- function(object,
   
   for(p in assay) {
     
-    cat(crayon::cyan(paste0('Correcting assay: ', p, '\n')))
+    cat(crayon::cyan(paste0('Initialising scanorama for assay: ', p, '\n')))
     
     list.matrix <- list()
     column.names <- list()

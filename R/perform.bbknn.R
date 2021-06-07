@@ -212,7 +212,7 @@ perform.bbknn <- function(object,
       
       if(is.null(trim)) {
         
-        cat(crayon::cyan(paste0('initialising bbknn for assay: ', p,  ', reduction: ', r, '\n')))
+        cat(crayon::cyan(paste0('initialising BBKNN for assay: ', p,  ', reduction: ', r, '\n')))
         
         sc$external$pp$bbknn(scobj,
                              batch_key = as.character(batch),
@@ -225,9 +225,11 @@ perform.bbknn <- function(object,
                              set_op_mix_ratio = set_op_mix_ratio,
                              local_connectivity = local_connectivity)
         
+        cat(crayon::cyan('BBKNN complete \n'))
+        
       } else if (!is.null(trim)) {
         
-        cat(crayon::cyan(paste0('initialising bbknn for assay: ', p,  ', reduction: ', r, '\n')))
+        cat(crayon::cyan(paste0('initialising BBKNN for assay: ', p,  ', reduction: ', r, '\n')))
         
         sc$external$pp$bbknn(scobj,
                              batch_key= as.character(batch),
@@ -240,6 +242,9 @@ perform.bbknn <- function(object,
                              use_faiss = as.logical(use_faiss),
                              set_op_mix_ratio = set_op_mix_ratio,
                              local_connectivity = local_connectivity)
+        
+        cat(crayon::cyan('BBKNN complete \n'))
+        
       }
       
       graph.list <- list()
