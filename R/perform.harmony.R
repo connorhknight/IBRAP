@@ -179,7 +179,7 @@ perform.harmony <- function(object,
         
       }
       
-      cat(crayon::cyan('Initialising harmony for assay: ', p, ', reduction: ', g, '\n'))
+      cat(crayon::cyan(paste0('Initialising harmony for assay: ', p, ', reduction: ', g, '\n')))
       
       harm <- harmony::HarmonyMatrix(data_mat = red[,dims], meta_data = object@sample_metadata, vars_use = vars.use, do_pca = FALSE, verbose = TRUE, ...)
       
