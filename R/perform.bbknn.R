@@ -213,11 +213,12 @@ perform.bbknn <- function(object,
       if(is.null(trim)) {
         
         cat(crayon::cyan('initialising bbknn\n'))
+        
         sc$external$pp$bbknn(scobj,
                              batch_key = as.character(batch),
                              approx = as.logical(FALSE),
                              metric = as.character(metric),
-                             neighbors_within_batch = as.numeric(neighbors_within_batch),
+                             neighbors_within_batch = as.integer(neighbors_within_batch),
                              n_pcs = n_pcs,
                              n_trees = as.integer(n_trees),
                              use_faiss = as.logical(use_faiss),
@@ -226,11 +227,13 @@ perform.bbknn <- function(object,
         
       } else if (!is.null(trim)) {
         
+        cat(crayon::cyan('initialising bbknn\n'))
+        
         sc$external$pp$bbknn(scobj,
                              batch_key= as.character(batch),
                              approx = as.logical(FALSE),
                              metric = as.character(metric),
-                             neighbors_within_batch = as.numeric(neighbors_within_batch),
+                             neighbors_within_batch = as.integer(neighbors_within_batch),
                              n_pcs = n_pcs,
                              trim = as.integer(trim),
                              n_trees = as.integer(n_trees),
