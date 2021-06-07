@@ -248,7 +248,7 @@ perform.seurat.cluster <- function(object,
       
       for(t in graph) {
         
-        graph.iso <- object@methods[[p]]@graphs[[graph]]$connectivities
+        graph.iso <- object@methods[[p]]@graphs[[t]]$connectivities
         
         cat(crayon::cyan(paste0('Calculating Seurat clusters for assay: ', p, ' using graph: ', t, '\n')))
         
