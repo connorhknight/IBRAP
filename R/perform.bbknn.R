@@ -212,7 +212,7 @@ perform.bbknn <- function(object,
       
       if(is.null(trim)) {
         
-        cat(crayon::cyan('initialising bbknn\n'))
+        cat(crayon::cyan(paste0('initialising bbknn for assay: ', p,  ', reduction: ', r, '\n')))
         
         sc$external$pp$bbknn(scobj,
                              batch_key = as.character(batch),
@@ -227,7 +227,7 @@ perform.bbknn <- function(object,
         
       } else if (!is.null(trim)) {
         
-        cat(crayon::cyan('initialising bbknn\n'))
+        cat(crayon::cyan(paste0('initialising bbknn for assay: ', p,  ', reduction: ', r, '\n')))
         
         sc$external$pp$bbknn(scobj,
                              batch_key= as.character(batch),
