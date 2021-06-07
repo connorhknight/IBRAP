@@ -10,6 +10,9 @@ perform.bbknn(
   reduction,
   graph.name = "bbknn",
   batch,
+  approx = FALSE,
+  metric = "euclidean",
+  neighbors_within_batch = 3,
   n_pcs = NULL,
   trim = NULL,
   n_trees = 10,
@@ -30,6 +33,10 @@ perform.bbknn(
 
 \item{batch}{Character. Column name in metadata indicating batch. Can be multiple.}
 
+\item{approx}{Character. Employs annoy's approximate neighbour finding. Useful for large datasets but may increase correction.}
+
+\item{neighbors_within_batch}{Numerical. How many neighbours to report per batch. Default = 3}
+
 \item{n_pcs}{Numerical. Range of principal components to use. Default = NULL}
 
 \item{trim}{Numerical. Trims the n of neighbours per cell to this value. Helps with population independence. Default = NULL}
@@ -41,6 +48,8 @@ perform.bbknn(
 \item{set_op_mix_ratio}{Numerical. UMAP connectivity parameter between 0 and 1. controls the blen d between a connectivity matrix formed exclusively from mutual nearest neighbour pairs (0) and a union of all observed neighbour relationships with the mutual pairs emphasised (1). Default = 1.0}
 
 \item{local_connectivity}{Numerical. How many nearest neighbours of each cell are assumed to be fully connected. Default = 1}
+
+\item{metric.}{Character. Which distance metric to use when approx is TRUE, options: 'angular', 'euclidean', 'manhattan' or 'hamming'. Default = 'euclidean'}
 }
 \value{
 BBKNN connectivity graph contained in graphs in the indicated method-assays
