@@ -6,14 +6,10 @@ setMethod(f = 'show', signature = 'IBRAP', definition = function(object) {
                            '\n')))
   
   cat(crayon::white(paste0('  ', 
-                           nrow(object@methods[[object@active.method]]@counts), 
+                           nrow(object@methods[[1]]@counts), 
                            ' features by ', 
-                           ncol(object@methods[[object@active.method]]@counts), 
+                           ncol(object@methods[[1]]@counts), 
                            ' samples\n')))
-  
-  cat(crayon::white(paste0('  ', 'Active method:', 
-                           object@active.method, ' (features:', nrow(object@methods[[object@active.method]]@counts), 
-                           ', samples:', paste0(ncol(object@methods[[object@active.method]]@counts),')'), '\n')))
   
   lol <- names(object@methods)[1]
   
