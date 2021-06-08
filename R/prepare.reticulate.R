@@ -9,13 +9,13 @@
 
 prepare.reticulate <- function() {
   
-  if(isFALSE(py_module_available('scrublet'))){
+  if(isFALSE(reticulate::py_module_available('scrublet'))){
     
-    py_install('scrublet', pip = T)
+    reticulate::py_install('scrublet', pip = T)
     
   }
   
-  if(isFALSE(py_module_available('scrublet'))) {
+  if(isFALSE(reticulate::py_module_available('scrublet'))) {
     
     cat(cyan('Scrublet is not installed, please try manually.\n'))
     
@@ -27,13 +27,13 @@ prepare.reticulate <- function() {
   
   ####################################################
   
-  if(isFALSE(py_module_available('scanpy'))){
+  if(isFALSE(reticulate::py_module_available('scanpy'))){
     
-    py_install('scanpy', pip = T)
+    reticulate::py_install('scanpy', pip = T)
     
   }
   
-  if(isFALSE(py_module_available('scanpy'))) {
+  if(isFALSE(reticulate::py_module_available('scanpy'))) {
     
     cat(cyan('Scanpy is not install, please try manually.\n'))
     
@@ -45,13 +45,13 @@ prepare.reticulate <- function() {
   
   ####################################################
   
-  if(isFALSE(py_module_available('bbknn'))){
+  if(isFALSE(reticulate::py_module_available('bbknn'))){
     
-    py_install('bbknn', pip = T)
+    reticulate::py_install('bbknn', pip = T)
     
   }
   
-  if(isFALSE(py_module_available('bbknn'))) {
+  if(isFALSE(reticulate::py_module_available('bbknn'))) {
     
     cat(cyan('BBKNN is not install, please try manually.\n'))
     
@@ -63,13 +63,13 @@ prepare.reticulate <- function() {
   
   ####################################################
   
-  if(isFALSE(py_module_available('scanorama'))){
+  if(isFALSE(reticulate::py_module_available('scanorama'))){
     
-    py_install('scanorama', pip = T)
+    reticulate::py_install('scanorama', pip = T)
     
   }
   
-  if(isFALSE(py_module_available('scanorama'))) {
+  if(isFALSE(reticulate::py_module_available('scanorama'))) {
     
     cat(cyan('Scanorama is not install, please try manually.\n'))
     
@@ -81,14 +81,14 @@ prepare.reticulate <- function() {
   
   ####################################################
   
-  if(isFALSE(py_module_available('dbmap'))){
+  if(isFALSE(reticulate::py_module_available('dbmap'))){
     
-    py_install('nmslib', pip = T)
-    py_install('dbmap', pip = T)
+    reticulate::py_install('nmslib', pip = T)
+    reticulate::py_install('dbmap', pip = T)
     
   }
   
-  if(isFALSE(py_module_available('dbmap'))) {
+  if(isFALSE(reticulate::py_module_available('dbmap'))) {
     
     cat(cyan('dbMAP is not install, please try manually.\n'))
     
