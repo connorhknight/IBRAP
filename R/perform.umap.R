@@ -99,6 +99,8 @@ perform.umap <- function(object,
         red.iso <- Seurat::Embeddings(object = seuobj, 
                                       reduction = 'umap')
         
+        rownames(red.iso) <- colnames(object)
+        
         dim.names <- list()
         
         for(l in 1:2) {
@@ -203,6 +205,8 @@ perform.umap <- function(object,
         }
         
         colnames(c) <- unlist(dim.names)
+        
+        rownames(c) <- colnames(object)
         
         object@methods[[u]]@visualisation_reductions[[red.save]] <- c
         

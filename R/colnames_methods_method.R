@@ -1,9 +1,9 @@
 #' @title Method override for colnames function
 
 setMethod(f = 'colnames', 
-          signature = 'IBRAP', 
+          signature = 'methods', 
           function(x, 
                    do.NULL = TRUE, 
                    prefix = 'row') {
-            colnames(x@methods[[1]]@counts)
+            colnames(x@counts)
           })

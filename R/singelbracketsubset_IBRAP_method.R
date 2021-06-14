@@ -9,6 +9,8 @@ setMethod(f = '[', signature = 'IBRAP',
             
             if(!missing(i) & missing(j)) {
               
+              # Just features
+              
               if(!is.character(i)) {
                 
                 ii <- .convert_subset_index(x = i, rownames(x))
@@ -26,8 +28,9 @@ setMethod(f = '[', signature = 'IBRAP',
               for(p in names(x@methods)) {
                 
                 if(length(as.matrix(x@methods[[p]]@counts)) != 0) {
-                  
-                  .counts <- x@methods[[p]]@counts[ii, , drop = FALSE]
+
+                  genes <- ii[ii %in% rownames(x@methods[[p]]@counts)]
+                  .counts <- x@methods[[p]]@counts[genes , , drop = FALSE]
                   
                 } else {
                   
@@ -36,28 +39,22 @@ setMethod(f = '[', signature = 'IBRAP',
                 }
                 
                 if(length(as.matrix(x@methods[[p]]@normalised)) != 0) {
-                  
-                  .normalised <- x@methods[[p]]@normalised[ii, , drop = FALSE]
+
+                  genes <- ii[ii %in% rownames(x@methods[[p]]@normalised)]
+                  .normalised <- x@methods[[p]]@normalised[genes, ,drop = FALSE]
                   
                 } else {
                   
                   .normalised <- x@methods[[p]]@normalised
                   
                 }
-                
-                if(length(as.matrix(x@methods[[p]]@norm.scaled)) != 0) {
-                  
-                  .norm.scaled <- x@methods[[p]]@norm.scaled[ii, , drop = FALSE]
-                  
-                } else {
-                  
-                  .norm.scaled <- x@methods[[p]]@norm.scaled
-                  
-                }
+
+                .norm.scaled <- x@methods[[p]]@norm.scaled
                 
                 if(length(as.matrix(x@methods[[p]]@feature_metadata)) != 0) {
                   
-                  .feature_metadata <- x@methods[[p]]@feature_metadata[ii, , drop = FALSE]
+                  genes <- ii[ii %in% rownames(x@methods[[p]]@feature_metadata)]
+                  .feature_metadata <- x@methods[[p]]@feature_metadata[genes, , drop = FALSE]
                   
                 } else {
                   
@@ -65,8 +62,16 @@ setMethod(f = '[', signature = 'IBRAP',
                   
                 }
                 
-                .highly.variable.genes <- x@methods[[p]]@highly.variable.genes
-                
+                if(!is.null(x@methods[[p]]@highly.variable.genes)) {
+                  
+                  .highly.variable.genes <- x@methods[[p]]@highly.variable.genes[x@methods[[p]]@highly.variable.genes %in% rownames(.counts)]
+                  
+                } else {
+                  
+                  .highly.variable.genes <- x@methods[[p]]@highly.variable.genes
+                  
+                }
+
                 .graphs <- x@methods[[p]]@graphs
                 
                 .computational_reductions <- x@methods[[p]]@computational_reductions
@@ -91,6 +96,7 @@ setMethod(f = '[', signature = 'IBRAP',
                                          computational_reductions = .computational_reductions,
                                          integration_reductions = .integration_reductions,
                                          visualisation_reductions = .visualisation_reductions,
+                                         cluster_assignments = .cluster_assignments,
                                          benchmark_results = .benchmark_results,
                                          alt_objects = .alt_objects)
                 
@@ -103,6 +109,8 @@ setMethod(f = '[', signature = 'IBRAP',
             } 
             
             if(missing(i) & !missing(j)) {
+              
+              # Just cells
               
               if(!is.character(j)) {
                 
@@ -139,16 +147,9 @@ setMethod(f = '[', signature = 'IBRAP',
                   .normalised <- x@methods[[p]]@normalised
                   
                 }
-                
-                if(length(as.matrix(x@methods[[p]]@norm.scaled)) != 0) {
-                  
-                  .norm.scaled <- x@methods[[p]]@norm.scaled[ , jj, drop = FALSE]
-                  
-                } else {
-                  
-                  .norm.scaled <- x@methods[[p]]@norm.scaled
-                  
-                }
+
+                .norm.scaled <- x@methods[[p]]@norm.scaled
+
                 
                 if(length(x@methods[[p]]@computational_reductions) != 0) {
                   
@@ -156,7 +157,7 @@ setMethod(f = '[', signature = 'IBRAP',
                   
                   for(g in names(x@methods[[p]]@computational_reductions)) {
                     
-                    .computational_reductions[[g]] <- x@methods[[p]]@computational_reductions[jj, , drop = FALSE]
+                    .computational_reductions[[g]] <- x@methods[[p]]@computational_reductions[[g]][jj, , drop = FALSE]
                     
                   }
                   
@@ -172,7 +173,7 @@ setMethod(f = '[', signature = 'IBRAP',
                   
                   for(g in names(x@methods[[p]]@integration_reductions)) {
                     
-                    .integration_reductions[[g]] <- x@methods[[p]]@integration_reductions[jj, , drop = FALSE]
+                    .integration_reductions[[g]] <- x@methods[[p]]@integration_reductions[[g]][jj, , drop = FALSE]
                     
                   }
                   
@@ -188,13 +189,29 @@ setMethod(f = '[', signature = 'IBRAP',
                   
                   for(g in names(x@methods[[p]]@visualisation_reductions)) {
                     
-                    .visualisation_reductions[[g]] <- x@methods[[p]]@visualisation_reductions[jj, , drop = FALSE]
+                    .visualisation_reductions[[g]] <- x@methods[[p]]@visualisation_reductions[[g]][jj, , drop = FALSE]
                     
                   }
                   
                 } else {
                   
-                  .visualisation_reductions <-x@methods[[p]]@visualisation_reductions
+                  .visualisation_reductions <- x@methods[[p]]@visualisation_reductions
+                  
+                }
+                
+                if(length(x@methods[[p]]@cluster_assignments) != 0) {
+                  
+                  .cluster_assignments <- list()
+                  
+                  for(g in names(x@methods[[p]]@cluster_assignments)) {
+                    
+                    .cluster_assignments[[g]] <- x@methods[[p]]@cluster_assignments[[g]][jj, , drop = FALSE]
+                    
+                  }
+                  
+                } else {
+                  
+                  .cluster_assignments <- x@methods[[p]]@cluster_assignments
                   
                 }
                 
@@ -202,11 +219,31 @@ setMethod(f = '[', signature = 'IBRAP',
                 
                 .feature_metadata <- x@methods[[p]]@feature_metadata
                 
-                .graphs <- x@methods[[p]]@graphs
+                if(length(x@methods[[p]]@graphs) != 0) {
+                  
+                  for(l in names(x@methods[[p]]@graphs)) {
+                    
+                    .graphs <- x@methods[[p]]@graphs
+                    
+                    list.graphs <- list()
+
+                    for(t in names(x@methods[[p]]@graphs[[l]])) {
+
+                      list.graphs[[t]] <- x@methods[[p]]@graphs[[l]][[t]][jj, jj, drop = FALSE]
+                      
+                    }
+                    
+                  }
+                  
+                  .graphs <- list.graphs
+                  
+                } else {
+                  
+                  .graphs <- x@methods[[p]]@graphs
+                  
+                }
                 
                 .benchmark_results <- x@methods[[p]]@benchmark_results
-                
-                .alt_objects <- x@methods[[p]]@alt_objects
                 
                 list.methods[[p]] <- new(Class = 'methods', 
                                          counts = .counts,
@@ -218,8 +255,8 @@ setMethod(f = '[', signature = 'IBRAP',
                                          computational_reductions = .computational_reductions,
                                          integration_reductions = .integration_reductions,
                                          visualisation_reductions = .visualisation_reductions,
-                                         benchmark_results = .benchmark_results,
-                                         alt_objects = .alt_objects)
+                                         cluster_assignments = .cluster_assignments,
+                                         benchmark_results = .benchmark_results)
                 
               }
               
@@ -230,6 +267,8 @@ setMethod(f = '[', signature = 'IBRAP',
             }
             
             if(!missing(i) & !missing(j)) {
+              
+              # features and cells
               
               if(!is.character(i)) {
                 
@@ -258,9 +297,11 @@ setMethod(f = '[', signature = 'IBRAP',
               for(p in names(x@methods)) {
                 
                 if(length(as.matrix(x@methods[[p]]@counts)) != 0) {
-                  
-                  .counts <- x@methods[[p]]@counts[ii , jj, drop = FALSE]
-                  
+
+                  cells <- jj[jj %in% colnames(x@methods[[p]]@counts)]
+                  genes <- ii[ii %in% rownames(x@methods[[p]]@counts)]
+                  .counts <- x@methods[[p]]@counts[genes , cells, drop = FALSE]
+
                 } else {
                   
                   .counts <- x@methods[[p]]@counts
@@ -269,7 +310,9 @@ setMethod(f = '[', signature = 'IBRAP',
                 
                 if(length(as.matrix(x@methods[[p]]@normalised)) != 0) {
                   
-                  .normalised <- x@methods[[p]]@normalised[ii , jj, drop = FALSE]
+                  cells <- jj[jj %in% colnames(x@methods[[p]]@normalised)]
+                  genes <- ii[ii %in% rownames(x@methods[[p]]@normalised)]
+                  .normalised <- x@methods[[p]]@normalised[genes , cells, drop = FALSE]
                   
                 } else {
                   
@@ -277,19 +320,12 @@ setMethod(f = '[', signature = 'IBRAP',
                   
                 }
                 
-                if(length(as.matrix(x@methods[[p]]@norm.scaled)) != 0) {
-                  
-                  .norm.scaled <- x@methods[[p]]@norm.scaled[ii , jj, drop = FALSE]
-                  
-                } else {
-                  
-                  .norm.scaled <- x@methods[[p]]@norm.scaled
-                  
-                }
-                
+                .norm.scaled <- x@methods[[p]]@norm.scaled
+
                 if(length(as.matrix(x@methods[[p]]@feature_metadata)) != 0) {
                   
-                  .feature_metadata <- x@methods[[p]]@feature_metadata[ii, , drop = FALSE]
+                  genes <- ii[ii %in% rownames(x@methods[[p]]@feature_metadata)]
+                  .feature_metadata <- x@methods[[p]]@feature_metadata[genes, , drop = FALSE]
                   
                 } else {
                   
@@ -303,7 +339,7 @@ setMethod(f = '[', signature = 'IBRAP',
                   
                   for(g in names(x@methods[[p]]@computational_reductions)) {
                     
-                    .computational_reductions[[g]] <- x@methods[[p]]@computational_reductions[jj, , drop = FALSE]
+                    .computational_reductions[[g]] <- x@methods[[p]]@computational_reductions[[g]][jj, , drop = FALSE]
                     
                   }
                   
@@ -319,7 +355,7 @@ setMethod(f = '[', signature = 'IBRAP',
                   
                   for(g in names(x@methods[[p]]@integration_reductions)) {
                     
-                    .integration_reductions[[g]] <- x@methods[[p]]@integration_reductions[jj, , drop = FALSE]
+                    .integration_reductions[[g]] <- x@methods[[p]]@integration_reductions[[g]][jj, , drop = FALSE]
                     
                   }
                   
@@ -335,7 +371,7 @@ setMethod(f = '[', signature = 'IBRAP',
                   
                   for(g in names(x@methods[[p]]@visualisation_reductions)) {
                     
-                    .visualisation_reductions[[g]] <- x@methods[[p]]@visualisation_reductions[jj, , drop = FALSE]
+                    .visualisation_reductions[[g]] <- x@methods[[p]]@visualisation_reductions[[g]][jj, , drop = FALSE]
                     
                   }
                   
@@ -345,9 +381,55 @@ setMethod(f = '[', signature = 'IBRAP',
                   
                 }
                 
-                .highly.variable.genes <- x@methods[[p]]@highly.variable.genes
+                if(length(x@methods[[p]]@cluster_assignments) != 0) {
+                  
+                  .cluster_assignments <- list()
+                  
+                  for(g in names(x@methods[[p]]@cluster_assignments)) {
+                    
+                    .cluster_assignments[[g]] <- x@methods[[p]]@cluster_assignments[[g]][jj, , drop = FALSE]
+                    
+                  }
+                  
+                } else {
+                  
+                  .cluster_assignments <- x@methods[[p]]@cluster_assignments
+                  
+                }
                 
-                .graphs <- x@methods[[p]]@graphs
+                if(!is.null(x@methods[[p]]@highly.variable.genes)) {
+                  
+                  .highly.variable.genes <- x@methods[[p]]@highly.variable.genes[x@methods[[p]]@highly.variable.genes %in% rownames(.counts)]
+                  
+                } else {
+                  
+                  .highly.variable.genes <- x@methods[[p]]@highly.variable.genes
+                  
+                }
+                
+                if(length(x@methods[[p]]@graphs) != 0) {
+                  
+                  for(l in names(x@methods[[p]]@graphs)) {
+                    
+                    .graphs <- x@methods[[p]]@graphs
+                    
+                    list.graphs <- list()
+                    
+                    for(t in names(x@methods[[p]]@graphs[[l]])) {
+                      
+                      list.graphs[[t]] <- x@methods[[p]]@graphs[[l]][[t]][jj, jj, drop = FALSE]
+                      
+                    }
+                    
+                  }
+                  
+                  .graphs <- list.graphs
+                  
+                } else {
+                  
+                  .graphs <- x@methods[[p]]@graphs
+                  
+                }
                 
                 .benchmark_results <- x@methods[[p]]@benchmark_results
                 
@@ -363,6 +445,7 @@ setMethod(f = '[', signature = 'IBRAP',
                                          computational_reductions = .computational_reductions,
                                          integration_reductions = .integration_reductions,
                                          visualisation_reductions = .visualisation_reductions,
+                                         cluster_assignments = .cluster_assignments,
                                          benchmark_results = .benchmark_results,
                                          alt_objects = .alt_objects)
                 

@@ -144,6 +144,7 @@ setClass(Class = 'methods',
            visualisation_reductions = 'list',
            cluster_assignments = 'list',
            benchmark_results = 'list',
+           trajectory_results = 'list',
            alt_objects = 'list'
          ))
 
@@ -5441,6 +5442,168 @@ panc <- benchmark.clustering(object = celseq_comb,
                              dist.method = 'euclidean', 
                              ground.truth = celseq_comb$celltype)
 
+perform.slingshot.trajectory <- function(object, 
+                                         reduction, 
+                                         assay,
+                                         clust.method,
+                                         column, 
+                                         start.clus = NULL, 
+                                         end.clus = NULL,
+                                         ...) {
+  
+  if(!is(object, 'IBRAP')) {
+    
+    cat(crayon::cyan('Object must be of class IBRAP \n'))
+    return(NULL)
+    
+  }
+  
+  if(!is.character(reduction)) {
+    
+    cat(crayon::cyan('Reduction must be character string \n'))
+    return(NULL)
+    
+  }
+  
+  if(!is.character(assay)) {
+    
+    cat(crayon::cyan('Assay must be character string \n'))
+    return(NULL)
+    
+  }
+  
+  if(!assay %in% names(object@methods)) {
+    
+    cat(crayon::cyan('Assay does not exist \n'))
+    return(NULL)
+    
+  }
+  
+  if(!reduction %in% c(names(object@methods[[assay]]@computational_reductions), 
+                       names(object@methods[[assay]]@integration_reductions),
+                       names(object@methods[[assay]]@visualisation_reductions))) {
+    
+    cat(crayon::cyan('Reduction not present in assay \n'))
+    return(NULL)
+    
+  }
+  
+  reduction.list <- list()
+  red.names <- c(names(object@methods[[assay]]@computational_reductions), 
+                 names(object@methods[[assay]]@integration_reductions),
+                 names(object@methods[[assay]]@visualisation_reductions))
+  
+  for(i in red.names) {
+    
+    if(i %in% names(object@methods[[assay]]@computational_reductions)) {
+      
+      reduction.list[[i]] <- object@methods[[assay]]@computational_reductions[[i]]
+      
+    }
+    
+    if(i %in% names(object@methods[[assay]]@integration_reductions)) {
+      
+      reduction.list[[i]] <- object@methods[[assay]]@integration_reductions[[i]]
+      
+    }
+    
+    if(i %in% names(object@methods[[assay]]@visualisation_reductions)) {
+      
+      reduction.list[[i]] <- object@methods[[assay]]@visualisation_reductions[[i]]
+      
+    }
+  }
+    
+  red <- reduction.list[[reduction]]
+  
+  if(!is.character(clust.method)) {
+    
+    cat(crayon::cyan('clust.method should be a character string \n'))
+    return(NULL)
+    
+  }
+  
+  if(clust.method != 'method') {
+    
+    if(!clust.method %in% names(object@methods[[assay]]@cluster_assignments)) {
+      
+      cat(crayon::cyan('clust.method should either be metadata or cluster assignment data.frame name \n'))
+      return(NULL)
+      
+    }
+    
+    if(!column %in% colnames(object@methods[[assay]]@cluster_assignments[[clust.method]])) {
+      
+      cat(crayon::cyan(paste0(column, ' does not exist in the defined clust.method dataframe \n')))
+      return(NULL)
+      
+    } else if (column %in% colnames(object@methods[[assay]]@cluster_assignments[[clust.method]])) {
+      
+      clusters <- object@methods[[assay]]@cluster_assignments[[clust.method]][,column]
+      
+      if(is.null(clusters)) {
+        
+        cat(crayon::cyan(paste0('error, defined column is null \n')))
+        return(NULL)
+        
+      }
+      
+    }
+    
+  } else if (clust.method == 'metadata') {
+    
+    if(!column %in% colnames(object@sample_metadata)) {
+      
+      cat(crayon::cyan(paste0('error, defined column is null \n')))
+      return(NULL)
+      
+    } else if (column %in% colnames(object@sample_metadata)) {
+      
+      clusters <- object@sample_metadata[,column]
+      
+      if(is.null(clusters)) {
+        
+        cat(crayon::cyan(paste0('error, defined column is null \n')))
+        return(NULL)
+        
+      }
+      
+    }
+    
+  }
+  
+  if(!is.null(start.clus)) {
+    
+    if(!start.clus %in% clusters) {
+      
+      cat(crayon::cyan(paste0('start cluster is not present within the defined clusters \n')))
+      return(NULL)
+      
+    }
+    
+  }
+  
+  if(!is.null(end.clus)) {
+    
+    if(!end.clus %in% clusters) {
+      
+      cat(crayon::cyan(paste0('end cluster is not present within the defined clusters \n')))
+      return(NULL)
+      
+    }
+    
+  }
+  
+  cat(crayon::cyan('initiating slingshot \n'))
+  
+  res <- slingshot::slingshot(data = red, clusterLabels = clusters, start.clus = start.clus, end.clus = end.clus, ...)
+  
+  cat(crayon::cyan('initiating slingshot \n'))
+  
+  return(res)
+  
+}
+  
 
 library(plotly)
 library(ggplot2)
@@ -5682,8 +5845,8 @@ plot.reduced.dim <- function(object,
   
 }
 
-plot.reduced.dim(object = celseq_comb, reduction = 'trajectory_inference', assay = 'SCANPY', 
-                 clust.method = 'metadata', column = 'celltype', dimensions = 2, pt.size = 2)
+plot.reduced.dim(object = marrow, reduction = 'scanorama_umap', assay = 'SCT', 
+                 clust.method = 'scanorama_Louvain', column = 'RNA_snn_res.1.5', dimensions = 2, pt.size = 0.1)
 
 plot.features <- function(object, 
                           reduction='', 
