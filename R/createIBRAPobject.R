@@ -125,7 +125,7 @@ createIBRAPobject <- function(counts,
   f.metadata <- feature_metadata(assay = counts, col.prefix = method.name)
   
   if(!is.null(meta.data)) {
-    
+    print('.')
     cat(crayon::cyan('Concatenating metadata\n'))
     
     l1 <- colnames(meta)
@@ -141,9 +141,9 @@ createIBRAPobject <- function(counts,
     }
     
     meta <- meta[match(rownames(meta.data), rownames(meta)),]
-    
+    print('.')
     meta <- cbind(meta, meta.data)
-    
+    print('.')
     meta <- meta[match(colnames(counts), rownames(meta)),]
     print('.')
   }
