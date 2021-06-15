@@ -154,11 +154,14 @@ createIBRAPobject <- function(counts,
   
   counts <- Matrix::Matrix(counts, sparse = T)
   
+  print('.')
   print(class(counts))
+  normalised <- as(matrix(nrow = 0, ncol = 0), 'dgCMatrix')
+  print(class(normalised))
   
   first.method <- new('methods', 
                       counts = counts,
-                      normalised = as(matrix(nrow = 0, ncol = 0), 'dgCMatrix'),
+                      normalised = normalised,
                       feature_metadata = f.metadata)
   
   methods <- list()
