@@ -145,11 +145,11 @@ createIBRAPobject <- function(counts,
     meta <- cbind(meta, meta.data)
     
     meta <- meta[match(colnames(counts), rownames(meta)),]
-    
+    print('.')
   }
   
   f.metadata <- f.metadata[match(rownames(counts), rownames(f.metadata)),]
-  
+  print('.')
   ##########################################################
   
   counts <- Matrix::Matrix(counts, sparse = T)
