@@ -152,8 +152,13 @@ createIBRAPobject <- function(counts,
   
   ##########################################################
   
+  counts <- Matrix::Matrix(counts, sparse = T)
+  
+  print(class(counts))
+  
   first.method <- new('methods', 
-                      counts = Matrix::Matrix(counts, sparse = T),
+                      counts = counts,
+                      normalised = as(matrix(nrow = 0, ncol = 0), 'dgCMatrix'),
                       feature_metadata = f.metadata)
   
   methods <- list()

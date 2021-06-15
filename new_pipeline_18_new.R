@@ -402,6 +402,7 @@ setMethod(f = '[', signature = 'IBRAP',
                                          computational_reductions = .computational_reductions,
                                          integration_reductions = .integration_reductions,
                                          visualisation_reductions = .visualisation_reductions,
+                                         cluster_assignments = .cluster_assignments,
                                          benchmark_results = .benchmark_results,
                                          alt_objects = .alt_objects)
                 
@@ -467,7 +468,7 @@ setMethod(f = '[', signature = 'IBRAP',
                   
                   for(g in names(x@methods[[p]]@computational_reductions)) {
                     
-                    .computational_reductions[[g]] <- x@methods[[p]]@computational_reductions[jj, , drop = FALSE]
+                    .computational_reductions[[g]] <- x@methods[[p]]@computational_reductions[[g]][jj, , drop = FALSE]
                     
                   }
                   
@@ -483,7 +484,7 @@ setMethod(f = '[', signature = 'IBRAP',
                   
                   for(g in names(x@methods[[p]]@integration_reductions)) {
                     
-                    .integration_reductions[[g]] <- x@methods[[p]]@integration_reductions[jj, , drop = FALSE]
+                    .integration_reductions[[g]] <- x@methods[[p]]@integration_reductions[[g]][jj, , drop = FALSE]
                     
                   }
                   
@@ -499,13 +500,29 @@ setMethod(f = '[', signature = 'IBRAP',
                   
                   for(g in names(x@methods[[p]]@visualisation_reductions)) {
                     
-                    .visualisation_reductions[[g]] <- x@methods[[p]]@visualisation_reductions[jj, , drop = FALSE]
+                    .visualisation_reductions[[g]] <- x@methods[[p]]@visualisation_reductions[[g]][jj, , drop = FALSE]
                     
                   }
                   
                 } else {
                   
-                  .visualisation_reductions <-x@methods[[p]]@visualisation_reductions
+                  .visualisation_reductions <- x@methods[[p]]@visualisation_reductions
+                  
+                }
+                
+                if(length(x@methods[[p]]@cluster_assignments) != 0) {
+                  
+                  .cluster_assignments <- list()
+                  
+                  for(g in names(x@methods[[p]]@cluster_assignments)) {
+                    
+                    .cluster_assignments[[g]] <- x@methods[[p]]@cluster_assignments[[g]][jj, , drop = FALSE]
+                    
+                  }
+                  
+                } else {
+                  
+                  .cluster_assignments <- x@methods[[p]]@cluster_assignments
                   
                 }
                 
@@ -529,6 +546,7 @@ setMethod(f = '[', signature = 'IBRAP',
                                          computational_reductions = .computational_reductions,
                                          integration_reductions = .integration_reductions,
                                          visualisation_reductions = .visualisation_reductions,
+                                         cluster_assignments = .cluster_assignments,
                                          benchmark_results = .benchmark_results,
                                          alt_objects = .alt_objects)
                 
@@ -614,7 +632,7 @@ setMethod(f = '[', signature = 'IBRAP',
                   
                   for(g in names(x@methods[[p]]@computational_reductions)) {
                     
-                    .computational_reductions[[g]] <- x@methods[[p]]@computational_reductions[jj, , drop = FALSE]
+                    .computational_reductions[[g]] <- x@methods[[p]]@computational_reductions[[g]][jj, , drop = FALSE]
                     
                   }
                   
@@ -630,7 +648,7 @@ setMethod(f = '[', signature = 'IBRAP',
                   
                   for(g in names(x@methods[[p]]@integration_reductions)) {
                     
-                    .integration_reductions[[g]] <- x@methods[[p]]@integration_reductions[jj, , drop = FALSE]
+                    .integration_reductions[[g]] <- x@methods[[p]]@integration_reductions[[g]][jj, , drop = FALSE]
                     
                   }
                   
@@ -646,13 +664,29 @@ setMethod(f = '[', signature = 'IBRAP',
                   
                   for(g in names(x@methods[[p]]@visualisation_reductions)) {
                     
-                    .visualisation_reductions[[g]] <- x@methods[[p]]@visualisation_reductions[jj, , drop = FALSE]
+                    .visualisation_reductions[[g]] <- x@methods[[p]]@visualisation_reductions[[g]][jj, , drop = FALSE]
                     
                   }
                   
                 } else {
                   
                   .visualisation_reductions <-x@methods[[p]]@visualisation_reductions
+                  
+                }
+                
+                if(length(x@methods[[p]]@cluster_assignments) != 0) {
+                  
+                  .cluster_assignments <- list()
+                  
+                  for(g in names(x@methods[[p]]@cluster_assignments)) {
+                    
+                    .cluster_assignments[[g]] <- x@methods[[p]]@cluster_assignments[[g]][jj, , drop = FALSE]
+                    
+                  }
+                  
+                } else {
+                  
+                  .cluster_assignments <- x@methods[[p]]@cluster_assignments
                   
                 }
                 
@@ -674,6 +708,7 @@ setMethod(f = '[', signature = 'IBRAP',
                                          computational_reductions = .computational_reductions,
                                          integration_reductions = .integration_reductions,
                                          visualisation_reductions = .visualisation_reductions,
+                                         cluster_assignments = .cluster_assignments,
                                          benchmark_results = .benchmark_results,
                                          alt_objects = .alt_objects)
                 
@@ -5514,7 +5549,7 @@ perform.slingshot.trajectory <- function(object,
     }
   }
     
-  red <- reduction.list[[reduction]]
+  red <- reduction.list[[reduction]][,1:2]
   
   if(!is.character(clust.method)) {
     
@@ -6140,6 +6175,8 @@ perform.seurat.diffexp <- function(object,
   return(results)
   
 }
+
+
 
 results_integrated_scanpy <- perform.seurat.diffexp(object = celseq_comb,
                                             assay = 'SCANPY',
