@@ -125,7 +125,7 @@ createIBRAPobject <- function(counts,
   f.metadata <- feature_metadata(assay = counts, col.prefix = method.name)
   
   if(!is.null(meta.data)) {
-    print('.')
+
     cat(crayon::cyan('Concatenating metadata\n'))
     
     l1 <- colnames(meta)
@@ -141,27 +141,19 @@ createIBRAPobject <- function(counts,
     }
     
     meta <- meta[match(rownames(meta.data), rownames(meta)),]
-    print('.')
+
     meta <- cbind(meta, meta.data)
-    print('.')
+
     meta <- meta[match(colnames(counts), rownames(meta)),]
-    print('.')
+
   }
   
   f.metadata <- f.metadata[match(rownames(counts), rownames(f.metadata)),]
-  print('.')
+
   ##########################################################
   
-  counts <- Matrix::Matrix(counts, sparse = T)
-  
-  print('.')
-  print(class(counts))
-  normalised <- as(matrix(nrow = 0, ncol = 0), 'dgCMatrix')
-  print(class(normalised))
-  
   first.method <- new('methods', 
-                      counts = counts,
-                      normalised = normalised,
+                      counts = Matrix::Matrix(counts, sparse = T),
                       feature_metadata = f.metadata)
   
   methods <- list()
