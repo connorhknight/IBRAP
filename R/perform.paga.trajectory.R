@@ -102,7 +102,3 @@ perform.paga.trajectory <- function(object,
   return(tmp)
   
 }
-
-paga.result <- perform.paga.trajectory(object = marrow, assay = 'SCANPY', reduction = 'scanorama_umap', clust.method = 'scanorama_Louvain', column = 'RNA_snn_res.1')
-
-
