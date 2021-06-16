@@ -1,28 +1,45 @@
 sc <- reticulate::import(module = 'scanpy', convert = T)
 
-scobj <- sc$AnnData(X = t(as.matrix(marrow@methods$RAW@counts)))
-scobj$obs_names <- as.factor(colnames(marrow))
-scobj$var_names <- as.factor(rownames(marrow))
+scobj <- sc$AnnData(X = t(as.matrix(marrow_subset@methods$RAW@counts)))
+scobj$obs_names <- as.factor(colnames(marrow_subset))
+scobj$var_names <- as.factor(rownames(marrow_subset))
 
-if(length(colnames(as.data.frame(marrow@sample_metadata))) >= 1) {
+if(length(colnames(as.data.frame(marrow_subset@sample_metadata))) >= 1) {
   
   pd <- reticulate::import('pandas')
   
-  scobj$obs <- pd$DataFrame(data = as.data.frame(marrow@sample_metadata))
+  scobj$obs <- pd$DataFrame(data = as.data.frame(marrow_subset@sample_metadata))
   
 }
 
-scobj$obs[['clusters']] <- marrow@methods$SCANPY@cluster_assignments$scanorama_Louvain$RNA_snn_res.1
+scobj$obs[['clusters']] <- marrow_subset@methods$SCT@cluster_assignments$scanorama_Louvain$RNA_snn_res.1
 
-scobj$obsm$update(X_pca = as.matrix(marrow@methods$SCANPY@computational_reductions$pca))
+scobj$obsm$update(X_pca = as.matrix(marrow_subset@methods$SCT@integration_reductions$scanorama))
 
 sc$pp$neighbors(adata = scobj, n_neighbors=as.integer(50), n_pcs=as.integer(50))
 
 sc$tl$paga(adata = scobj, groups = 'clusters')
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+g <- scobj$uns[['paga']]
+
 tmp <- as.matrix(reticulate::py_to_r(g$connectivities_tree))
 
 tmp[tmp > 0] = 1
+
+library(igraph)
 
 m <- graph.adjacency(adjmatrix = tmp)
 
@@ -42,7 +59,7 @@ net <- cbind(net, unlist(stren))
 
 colnames(net) <- c('from', 'to', 'width')
 
-node <- data.frame(unique(as.integer(marrow@methods$SCANPY@cluster_assignments$scanorama_Louvain$RNA_snn_res.1)))
+node <- data.frame(unique(as.integer(marrow_subset@methods$SCANPY@cluster_assignments$scanorama_Louvain$RNA_snn_res.1)))
 node <- cbind(node, as.character(node[,1]))
 colnames(node) <- c('id', 'label')
 node[,'shape'] <- 'circle'

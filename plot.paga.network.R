@@ -9,6 +9,8 @@ plot.paga.network <- function(result, title='', layout = "layout_nicely") {
   
   net <- igraph::get.edgelist(tmp)
   
+  stren <- list()
+  
   for(i in 1:nrow(net)) {
     
     stren[[i]] <- tmp1[net[i,1],net[i,2]]
@@ -31,6 +33,9 @@ plot.paga.network <- function(result, title='', layout = "layout_nicely") {
   edge[,'color'] <- 'black'
   edge$from <- edge$from - 1
   edge$to <- edge$to - 1
+  
+  node$label <- as.character(as.numeric(node$label)-1)
+  node$id <- node$id-1
   
   p <- visNetwork::visNetwork(nodes = node, edges = edge, main = title) %>% 
     visNetwork::visIgraphLayout(layout = layout) %>% 

@@ -8,9 +8,9 @@
 #' @param result A SlingshotDataSet class results object
 #' @param clusters Vector. A vector of clusters to use in ggplot, if NULL the clusters used to generate results will be used. Default = NULL
 #' @param lineages Boolean. Should the direct lineages be applied or curving, TRUE = curves, FALSE = lineages. Default = FALSE
-#' @param which.lineage Numerical. If NULL, then all lineages are plotted, otherwise a numerical value is supplied indicating which lineage to use. Default = NULL
 #' @param pt_size Numerical. What size should the cell points be. Default = 0.1
 #' @param line_size Numerical. What size should the lineage lines be. Default = 0.1
+#' @param relevant
 #' @param title Character. Name the graph. Default = NULL
 #' @param lab.clusters Boolean. Whether the clusters within a lineage should be labelled, note this only works for lineages and not curves. Default = TRUE
 #' @param ... arguments to be passed to ggplot::geom_point
