@@ -54,10 +54,6 @@ perform.seurat.diffexp.all <- function(object,
     
   }
   
-  seuobj <- Seurat::CreateSeuratObject(counts = object@methods[[assay]]@counts)
-  seuobj@assays$RNA@data <- object@methods[[assay]]@normalised
-  seuobj@assays$RNA@scale.data <- object@methods[[assay]]@norm.scaled
-  
   if(!is.null(identity)) {
     
     if(!is.vector(identity)) {
@@ -93,6 +89,13 @@ perform.seurat.diffexp.all <- function(object,
       return(NULL)
       
     }
+    
+    seuobj <- Seurat::CreateSeuratObject(counts = object@methods[[assay]]@counts)
+    seuobj@assays$RNA@data <- object@methods[[assay]]@normalised
+    seuobj@assays$RNA@scale.data <- object@methods[[assay]]@norm.scaled
+    
+    seuobj$cluster <- identity
+    Seurat::Idents(seuobj) <- 'cluster'
     
     met <- merge(seuobj@meta.data, object@sample_metadata, by = 0)
     rownames(met) <- colnames(seuobj)
