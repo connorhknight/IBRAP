@@ -9,10 +9,6 @@ perform.seurat.diffexp.all(
   assay = NULL,
   test = "wilcox",
   identity = NULL,
-  ident.1 = NULL,
-  ident.2 = NULL,
-  cells.1 = NULL,
-  cells.2 = NULL,
   latent.vars = NULL,
   ...
 )
