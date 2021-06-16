@@ -33,8 +33,6 @@
 
 \item{...}{arguments to be passed to ggplot::geom_point}
 
-\item{which.lineage}{Numerical. If NULL, then all lineages are plotted, otherwise a numerical value is supplied indicating which lineage to use. Default = NULL}
-
 \item{title}{Character. Name the graph. Default = NULL}
 
 \item{lab.clusters}{Boolean. Whether the clusters within a lineage should be labelled, note this only works for lineages and not curves. Default = TRUE}
