@@ -97,7 +97,7 @@ createIBRAPobject <- function(counts,
     
     if(!is.numeric(min.cells)) {
       
-      cat(crayon::cyan('min.cells must be numerical'))
+      cat(crayon::cyan('min.cells must be numerical \n'))
       return(counts)
       
     }

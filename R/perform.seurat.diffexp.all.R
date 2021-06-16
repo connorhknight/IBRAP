@@ -1,7 +1,7 @@
-#' @name perform.seurat.diffexp
-#' @aliases perform.seurat.diffexp
+#' @name perform.seurat.diffexp.all
+#' @aliases perform.seurat.diffexp.all
 #' 
-#' @title Perform differential expression
+#' @title Perform differential expression one cluster vs all
 #'
 #' @description Performs differential expression on the assay differentiating the supplied identities, some methods enable variable regression, including: LR, negbinom, poisson or MAST. This function compares one cluster vs all others
 #' 
@@ -17,7 +17,7 @@
 #' @export
 #' 
 
-perform.seurat.diffexp <- function(object, 
+perform.seurat.diffexp.all <- function(object, 
                                    assay = NULL,
                                    test = 'wilcox', 
                                    identity = NULL,
@@ -58,48 +58,6 @@ perform.seurat.diffexp <- function(object,
     
   }
   
-  if(!is.null(cells.1)) {
-    
-    if(!is.vector(cells.1)) {
-      
-      cat(crayon::cyan('cells.1 must be a vector \n'))
-      return(NULL)
-      
-    } else if(!cells.1 %in% colnames(object@methods[[assay]][[counts]] )) {
-      
-      cat(crayon::cyan('cells.1 are not contained within the assay \n'))
-      return(NULL)
-      
-    }
-    
-  } else if (is.null(cells.1)) {
-    
-    cat(crayon::cyan('Please provide the cells.1 identities \n'))
-    return(NULL)
-    
-  }
-  
-  if(!is.null(cells.2)) {
-    
-    if(!is.vector(cells.2)) {
-      
-      cat(crayon::cyan('cells.2 must be a vector \n'))
-      return(NULL)
-      
-    } else if(!cells.2 %in% colnames(object@methods[[assay]][[counts]] )) {
-      
-      cat(crayon::cyan('cells.2 are not contained within the assay \n'))
-      return(NULL)
-      
-    }
-    
-  } else if (is.null(cells.2)) {
-    
-    cat(crayon::cyan('Please provide the cells.2 identities \n'))
-    return(NULL)
-    
-  }
-  
   seuobj <- Seurat::CreateSeuratObject(counts = object@methods[[assay]]@counts)
   seuobj@assays$RNA@data <- object@methods[[assay]]@normalised
   seuobj@assays$RNA@scale.data <- object@methods[[assay]]@norm.scaled
@@ -124,43 +82,7 @@ perform.seurat.diffexp <- function(object,
     return(NULL)
     
   }
-  
-  if(!is.null(ident.1) && !is.null(identity)) {
-    
-    if(!is.vector(ident.1)) {
-      
-      cat(crayon::cyan('ident.1 must be a vector \n'))
-      return(NULL)
-      
-    } else if (!ident.1 %in% identity) {
-      
-      cat(crayon::cyan('ident.1 is not contained within identity \n'))
-      return(NULL)
-      
-    } else {
-      
-      seuobj$clusters <- identity
-      Seurat::Idents(seuobj) <- 'clusters'
-      
-    }
-    
-  }
-  
-  if(!is.null(ident.2) && !is.null(identity)) {
-    
-    if(!is.vector(ident.2)) {
-      
-      cat(crayon::cyan('ident.2 must be a vector \n'))
-      return(NULL)
-      
-    } else if (!ident.2 %in% identity) {
-      
-      cat(crayon::cyan('ident.2 is not contained within identity \n'))
-      return(NULL)
-      
-    }
-    
-  }
+
   
   if(!is.null(latent.vars)) {
     
@@ -169,7 +91,7 @@ perform.seurat.diffexp <- function(object,
       cat(crayon::cyan('Latent.vars must be character(s)\n'))
       return(NULL)
       
-    } else if (!latent.vars %in% names(object@sample_metadata)) {
+    } else if(!latent.vars %in% names(object@sample_metadata)) {
       
       cat(crayon::cyan('Latent.vars do not exist in object@sample_metadata \n'))
       return(NULL)
@@ -180,27 +102,11 @@ perform.seurat.diffexp <- function(object,
     rownames(met) <- colnames(seuobj)
     seuobj@meta.data <- met
     
-    if(!is.null(identity) && !is.null(ident.1) && !is.null(ident.2)) {
-      
-      results <- Seurat::FindMarkers(object = seuobj, ident.1 = ident.1, ident.2 = ident.2,  test.use = test, latent.vars = latent.vars, ...)
-      
-    } else if (!is.null(cells.1) && !is.null(cells.2)) {
-      
-      results <- Seurat::FindMarkers(object = seuobj, cells.1 = cells.1, cells.2 = cells.2,  test.use = test, latent.vars = latent.vars, ...)
-      
-    }
+    results <- Seurat::FindMarkers(object = seuobj, test.use = test, latent.vars = latent.vars, ...)
     
   } else {
     
-    if(!is.null(identity) && !is.null(ident.1) && !is.null(ident.2)) {
-      
-      results <- Seurat::FindMarkers(object = seuobj, ident.1 = ident.1, ident.2 = ident.2,  test.use = test, ...)
-      
-    } else if (!is.null(cells.1) && !is.null(cells.2)) {
-      
-      results <- Seurat::FindMarkers(object = seuobj, cells.1 = cells.1, cells.2 = cells.2,  test.use = test, ...)
-      
-    }
+    results <- Seurat::FindMarkers(object = seuobj, test.use = test, ...)
     
   }
   

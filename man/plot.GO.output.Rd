@@ -2,13 +2,16 @@
 % Please edit documentation in R/plot.GO.output.R
 \name{plot.GO.output}
 \alias{plot.GO.output}
-\title{Create an IBRAP class object}
+\title{Plot GO enrichment output}
 \usage{
-createIBRAPobject(counts = counts, original.project = 'project_1', method.name = 'RAW', meta.data = df, min.cells = 3, min.features = 200)
+\method{plot}{GO.output}(result)
+}
+\arguments{
+\item{result}{The result file from the perform.GO.enrichment}
 }
 \value{
 IBRAP S4 class object containing raw counts and metadata
 }
 \description{
-Creates and produces project metadata into an IBRAP S4 class object
+Creates a dot plot of GO terms
 }

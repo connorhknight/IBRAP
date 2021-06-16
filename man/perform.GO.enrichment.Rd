@@ -2,21 +2,54 @@
 % Please edit documentation in R/perform.GO.enrichment.R
 \name{perform.GO.enrichment}
 \alias{perform.GO.enrichment}
-\title{Plots slingshot results}
+\title{Gene Ontology enrichment}
 \usage{
 perform.GO.enrichment(
   result,
-  pval.cutoff = 0.001,
+  whichOnto = "BP",
+  feasibleGenes = NULL,
+  mapping = "org.Hs.eg.db",
+  ID = "symbol",
+  nodeSize = 5,
+  algorithm = "classic",
+  statistic = "ks",
+  rank.cutoff = 0.001,
   gene.col = "gene",
   pval.col = "p_val",
   cluster.col = "cluster",
-  nodeSize = 5,
   n.top.pathways = 10
 )
 }
+\arguments{
+\item{result}{A database containing the differential expression results}
+
+\item{whichOnto}{Character. specifying one of the three GO ontologies, namely: "BP", "MF", "CC". Default = 'BP'}
+
+\item{feasibleGenes}{Character vector. vector containing a subset of gene identifiers. Only these genes will be used to annotate GO terms. Default value is NULL which means that there are no genes filtered.}
+
+\item{mapping}{Character. The name of the Bioconductor package containing the gene mappings for a specific organism. For example: mapping = "org.Hs.eg.db".}
+
+\item{ID}{Character. Specify the gene identifier to use. Currently only the following identifiers can be used: c("entrez", "genbank", "alias", "ensembl", "symbol", "genename", "unigene")}
+
+\item{nodeSize}{Numerical. Minimum number of genes required to consider a GO term. Default = 5}
+
+\item{algorithm}{Character. Which algorithm to use when testing for significant GO terms, options: 'classic', 'elim', 'weight', 'weight01', 'lea', 'parentchild'. Default = 'classic'}
+
+\item{statistic}{Character. Which statistic to use when testing for significant GO terms, options: 'fisher', 'ks', 't', 'globaltest', 'sum', 'ks.ties'. Default = 'ks'}
+
+\item{rank.cutoff}{Numerical. Which cut off to apply for pathway significance, this value will change according to the statistic applied. Default = 0.001}
+
+\item{gene.col}{Character. Which column name within differential expression results contains the genes. Default = 'gene.col'}
+
+\item{pval.col}{Character. Which column name within differential expression results contains the p values. Default = 'p_val'}
+
+\item{cluster.col}{Character. Which column name within differential expression results contains the cluster assignments. Default = 'cluster'}
+
+\item{n.top.pathways}{Numerical. How many top pathways per group should be retained. Default = 10}
+}
 \value{
-A ggplot of the reduced cellular embbedings and trajectories.
+A dataframe containing the top enriched pathways for each cluster
 }
 \description{
-Plots the results of the slingshot analysis using ggplots2
+Performs gene ontology enrichment for individual cluster differential expression results.
 }
