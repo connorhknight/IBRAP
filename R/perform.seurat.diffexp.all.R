@@ -98,11 +98,11 @@ perform.seurat.diffexp.all <- function(object,
     rownames(met) <- colnames(seuobj)
     seuobj@meta.data <- met
     
-    results <- Seurat::FindMarkers(object = seuobj, test.use = test, latent.vars = latent.vars, ...)
+    results <- Seurat::FindAllMarkers(object = seuobj, test.use = test, latent.vars = latent.vars, ...)
     
   } else {
     
-    results <- Seurat::FindMarkers(object = seuobj, test.use = test, ...)
+    results <- Seurat::FindAllMarkers(object = seuobj, test.use = test, ...)
     
   }
   
