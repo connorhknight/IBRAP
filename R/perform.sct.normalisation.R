@@ -27,6 +27,7 @@ perform.sct.normalisation <- function(object,
                                       n.genes = 1500,
                                       min_cells = 3,
                                       save.seuratobject = TRUE,
+                                      vars.to.regress = NULL,
                                       ...) {
   
   if(!is(object = object, class2 = 'IBRAP')) {
@@ -106,9 +107,10 @@ perform.sct.normalisation <- function(object,
   }
   
   cat(crayon::cyan('Converting to Seurat object\n'))
-  seuratobj <- Seurat::CreateSeuratObject(counts = object@methods[[assay]][[slot]], project = 'NA')
+  seuratobj <- Seurat::CreateSeuratObject(counts = as.matrix(object@methods[[assay]][[slot]]), project = 'NA')
+  seuratobj@meta.data <- cbind(seuratobj@meta.data, object@sample_metadata)
   cat(crayon::cyan('Initiating SCTransform\n'))
-  seuratobj <- Seurat::SCTransform(object = seuratobj, do.scale = do.scale, do.center = do.center, min_cells = min_cells, variable.features.n = n.genes, ...)
+  seuratobj <- Seurat::SCTransform(object = seuratobj, do.scale = do.scale, do.center = do.center, vars.to.regress = vars.to.regress, min_cells = min_cells, variable.features.n = n.genes, ...)
   cat(crayon::cyan('SCTransform completed!\n'))
   .highly.variable.genes <- as.character(seuratobj@assays$SCT@var.features)
   .counts <- as(object = as.matrix(seuratobj@assays$SCT@counts), Class = 'dgCMatrix')
