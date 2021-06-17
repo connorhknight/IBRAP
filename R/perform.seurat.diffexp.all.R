@@ -100,10 +100,21 @@ perform.seurat.diffexp.all <- function(object,
     met <- merge(seuobj@meta.data, object@sample_metadata, by = 0)
     rownames(met) <- colnames(seuobj)
     seuobj@meta.data <- met
-    
+
     results <- Seurat::FindAllMarkers(object = seuobj, test.use = test, latent.vars = latent.vars, ...)
     
   } else {
+    
+    seuobj <- Seurat::CreateSeuratObject(counts = object@methods[[assay]]@counts)
+    seuobj@assays$RNA@data <- object@methods[[assay]]@normalised
+    seuobj@assays$RNA@scale.data <- object@methods[[assay]]@norm.scaled
+    
+    seuobj$cluster <- identity
+    Seurat::Idents(seuobj) <- 'cluster'
+    
+    met <- merge(seuobj@meta.data, object@sample_metadata, by = 0)
+    rownames(met) <- colnames(seuobj)
+    seuobj@meta.data <- met
     
     results <- Seurat::FindAllMarkers(object = seuobj, test.use = test, ...)
     
