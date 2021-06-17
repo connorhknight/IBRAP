@@ -12,6 +12,9 @@ perform.umap(
   reduction.save = "umap",
   n.dims = NULL,
   n_components = 3,
+  n_neighbors = 30,
+  metric = "cosine",
+  min_dist = 0.3,
   ...
 )
 }

@@ -9,10 +9,10 @@ perform.sct.normalisation(
   assay,
   slot,
   new.assay.name = "SCT",
-  do.scale = TRUE,
+  do.scale = FALSE,
   do.center = TRUE,
   n.genes = 1500,
-  min_cells = 3,
+  min_cells = 5,
   save.seuratobject = TRUE,
   vars.to.regress = NULL,
   ...
