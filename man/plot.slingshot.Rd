@@ -31,6 +31,8 @@
 
 \item{line_size}{Numerical. What size should the lineage lines be. Default = 0.1}
 
+\item{relevant}{Should only pseudotime relevant cells be plotted. Default = TRUE}
+
 \item{...}{arguments to be passed to ggplot::geom_point}
 
 \item{title}{Character. Name the graph. Default = NULL}
