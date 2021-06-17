@@ -17,11 +17,11 @@ prepare.reticulate <- function() {
   
   if(isFALSE(reticulate::py_module_available('scrublet'))) {
     
-    cat(cyan('Scrublet is not installed, please try manually.\n'))
+    cat(crayon::cyan('Scrublet is not installed, please try manually.\n'))
     
   } else {
     
-    cat(cyan('scrublet installed.\n'))
+    cat(crayon::cyan('scrublet installed.\n'))
     
   }
   
@@ -35,11 +35,11 @@ prepare.reticulate <- function() {
   
   if(isFALSE(reticulate::py_module_available('scanpy'))) {
     
-    cat(cyan('Scanpy is not install, please try manually.\n'))
+    cat(crayon::cyan('Scanpy is not install, please try manually.\n'))
     
   } else {
     
-    cat(cyan('scanpy installed.\n'))
+    cat(crayon::cyan('scanpy installed.\n'))
     
   }
   
@@ -53,11 +53,11 @@ prepare.reticulate <- function() {
   
   if(isFALSE(reticulate::py_module_available('bbknn'))) {
     
-    cat(cyan('BBKNN is not install, please try manually.\n'))
+    cat(crayon::cyan('BBKNN is not install, please try manually.\n'))
     
   } else {
     
-    cat(cyan('BBKNN installed.\n'))
+    cat(crayon::cyan('BBKNN installed.\n'))
     
   }
   
@@ -71,11 +71,11 @@ prepare.reticulate <- function() {
   
   if(isFALSE(reticulate::py_module_available('scanorama'))) {
     
-    cat(cyan('Scanorama is not install, please try manually.\n'))
+    cat(crayon::cyan('Scanorama is not install, please try manually.\n'))
     
   } else {
     
-    cat(cyan('Scanorama installed.\n'))
+    cat(crayon::cyan('Scanorama installed.\n'))
     
   }
   
@@ -90,11 +90,11 @@ prepare.reticulate <- function() {
   
   if(isFALSE(reticulate::py_module_available('dbmap'))) {
     
-    cat(cyan('dbMAP is not install, please try manually.\n'))
+    cat(crayon::cyan('dbMAP is not install, please try manually.\n'))
     
   } else {
     
-    cat(cyan('dbMAP installed.\n'))
+    cat(crayon::cyan('dbMAP installed.\n'))
     
   }
   
