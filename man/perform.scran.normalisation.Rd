@@ -10,7 +10,7 @@ perform.scran.normalisation(
   slot = "counts",
   batch = NULL,
   vars.to.regress = NULL,
-  do.scale = TRUE,
+  do.scale = FALSE,
   do.center = TRUE,
   new.assay.name = "SCRAN",
   n.genes = 1500,

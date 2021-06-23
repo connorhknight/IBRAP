@@ -99,7 +99,7 @@ perform.slingshot.trajectory <- function(object,
     
   }
   
-  if(clust.method != 'method') {
+  if(clust.method != 'metadata') {
     
     if(!clust.method %in% names(object@methods[[assay]]@cluster_assignments)) {
       

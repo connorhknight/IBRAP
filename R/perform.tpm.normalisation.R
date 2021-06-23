@@ -22,7 +22,7 @@ perform.tpm.normalisation <- function(object,
                                       assay = 'RAW', 
                                       slot = 'counts',
                                       n.genes = 1500,
-                                      do.scale = TRUE,
+                                      do.scale = FALSE,
                                       do.center = TRUE,
                                       vars.to.regress = NULL,
                                       new.assay.name = 'TPM') {
