@@ -1,4 +1,6 @@
 #' @title Method override for `'['` subset function regarding IBRAP S4 object
+#' 
+#' @exportMethod 
 
 setMethod(f = '[', signature = 'IBRAP',
           function(x, 
@@ -72,7 +74,7 @@ setMethod(f = '[', signature = 'IBRAP',
                   
                 }
 
-                .graphs <- x@methods[[p]]@graphs
+                .neighbours <- x@methods[[p]]@neighbours
                 
                 .computational_reductions <- x@methods[[p]]@computational_reductions
                 
@@ -84,21 +86,18 @@ setMethod(f = '[', signature = 'IBRAP',
                 
                 .benchmark_results <- x@methods[[p]]@benchmark_results
                 
-                .alt_objects <- x@methods[[p]]@alt_objects
-                
                 list.methods[[p]] <- new(Class = 'methods', 
                                          counts = .counts,
                                          normalised = .normalised,
                                          norm.scaled = .norm.scaled,
                                          highly.variable.genes = .highly.variable.genes,
                                          feature_metadata = .feature_metadata,
-                                         graphs = .graphs,
+                                         neighbours = .neighbours,
                                          computational_reductions = .computational_reductions,
                                          integration_reductions = .integration_reductions,
                                          visualisation_reductions = .visualisation_reductions,
                                          cluster_assignments = .cluster_assignments,
-                                         benchmark_results = .benchmark_results,
-                                         alt_objects = .alt_objects)
+                                         benchmark_results = .benchmark_results)
                 
               }
               
@@ -219,27 +218,27 @@ setMethod(f = '[', signature = 'IBRAP',
                 
                 .feature_metadata <- x@methods[[p]]@feature_metadata
                 
-                if(length(x@methods[[p]]@graphs) != 0) {
+                if(length(x@methods[[p]]@neighbours) != 0) {
                   
-                  for(l in names(x@methods[[p]]@graphs)) {
+                  for(l in names(x@methods[[p]]@neighbours)) {
                     
-                    .graphs <- x@methods[[p]]@graphs
+                    .neighbours <- x@methods[[p]]@neighbours
                     
-                    list.graphs <- list()
+                    list.neighbours <- list()
 
-                    for(t in names(x@methods[[p]]@graphs[[l]])) {
+                    for(t in names(x@methods[[p]]@neighbours[[l]])) {
 
-                      list.graphs[[t]] <- x@methods[[p]]@graphs[[l]][[t]][jj, jj, drop = FALSE]
+                      list.neighbours[[t]] <- x@methods[[p]]@neighbours[[l]][[t]][jj, jj, drop = FALSE]
                       
                     }
                     
                   }
                   
-                  .graphs <- list.graphs
+                  .neighbours <- list.neighbours
                   
                 } else {
                   
-                  .graphs <- x@methods[[p]]@graphs
+                  .neighbours <- x@methods[[p]]@neighbours
                   
                 }
                 
@@ -251,7 +250,7 @@ setMethod(f = '[', signature = 'IBRAP',
                                          norm.scaled = .norm.scaled,
                                          highly.variable.genes = .highly.variable.genes,
                                          feature_metadata = .feature_metadata,
-                                         graphs = .graphs,
+                                         neighbours = .neighbours,
                                          computational_reductions = .computational_reductions,
                                          integration_reductions = .integration_reductions,
                                          visualisation_reductions = .visualisation_reductions,
@@ -407,33 +406,31 @@ setMethod(f = '[', signature = 'IBRAP',
                   
                 }
                 
-                if(length(x@methods[[p]]@graphs) != 0) {
+                if(length(x@methods[[p]]@neighbours) != 0) {
                   
-                  for(l in names(x@methods[[p]]@graphs)) {
+                  for(l in names(x@methods[[p]]@neighbours)) {
                     
-                    .graphs <- x@methods[[p]]@graphs
+                    .neighbours <- x@methods[[p]]@neighbours
                     
-                    list.graphs <- list()
+                    list.neighbours <- list()
                     
-                    for(t in names(x@methods[[p]]@graphs[[l]])) {
+                    for(t in names(x@methods[[p]]@neighbours[[l]])) {
                       
-                      list.graphs[[t]] <- x@methods[[p]]@graphs[[l]][[t]][jj, jj, drop = FALSE]
+                      list.neighbours[[t]] <- x@methods[[p]]@neighbours[[l]][[t]][jj, jj, drop = FALSE]
                       
                     }
                     
                   }
                   
-                  .graphs <- list.graphs
+                  .neighbours <- list.neighbours
                   
                 } else {
                   
-                  .graphs <- x@methods[[p]]@graphs
+                  .neighbours <- x@methods[[p]]@neighbours
                   
                 }
                 
                 .benchmark_results <- x@methods[[p]]@benchmark_results
-                
-                .alt_objects <- x@methods[[p]]@alt_objects
                 
                 list.methods[[p]] <- new(Class = 'methods', 
                                          counts = .counts,
@@ -441,13 +438,12 @@ setMethod(f = '[', signature = 'IBRAP',
                                          norm.scaled = .norm.scaled,
                                          highly.variable.genes = .highly.variable.genes,
                                          feature_metadata = .feature_metadata,
-                                         graphs = .graphs,
+                                         neighbours = .neighbours,
                                          computational_reductions = .computational_reductions,
                                          integration_reductions = .integration_reductions,
                                          visualisation_reductions = .visualisation_reductions,
                                          cluster_assignments = .cluster_assignments,
-                                         benchmark_results = .benchmark_results,
-                                         alt_objects = .alt_objects)
+                                         benchmark_results = .benchmark_results)
                 
               }
               

@@ -27,15 +27,13 @@ createIBRAPobject <- function(counts,
   
   if(!is.character(original.project)) {
     
-    cat(crayon::cyan('original.project must be a character string\n'))
-    return(counts)
+    stop('original.project must be a character string \n')
     
   }
   
   if(!is.character(method.name)) {
     
-    cat(crayon::cyan('method.name must be a character string\n'))
-    return(counts)
+    stop('method.name must be a character string \n')
     
   }
   
@@ -43,8 +41,7 @@ createIBRAPobject <- function(counts,
     
     if (!is(object = counts, class2 = 'dgCMatrix')) {
       
-      cat(crayon::cyan('counts must be in matrix or dgCMatrix format\n'))
-      return(counts)
+      stop('counts must be in matrix or dgCMatrix format \n')
       
     }
     
@@ -58,15 +55,13 @@ createIBRAPobject <- function(counts,
     
     if(!is.data.frame(meta.data)) {
       
-      cat(crayon::cyan('meta.data must be of class data.frame'))
+      stop('meta.data must be of class data.frame')
       
     }
     
     if(FALSE %in% (rownames(meta.data) %in% colnames(counts))) {
       
-      cat(crayon::cyan('meta.data rownames must be the same as counts colnames\n'))
-      
-      return(counts)
+      stop('meta.data rownames must be the same as counts colnames \n')
       
     } else {
       
@@ -82,8 +77,7 @@ createIBRAPobject <- function(counts,
     
     if(!is.numeric(min.features)) {
       
-      cat(crayon::cyan('min.features must be numerical'))
-      return(counts)
+      stop('min.features must be numerical \n')
       
     }
     
@@ -97,8 +91,7 @@ createIBRAPobject <- function(counts,
     
     if(!is.numeric(min.cells)) {
       
-      cat(crayon::cyan('min.cells must be numerical \n'))
-      return(counts)
+      stop('min.cells must be numerical \n')
       
     }
     
@@ -126,7 +119,7 @@ createIBRAPobject <- function(counts,
   
   if(!is.null(meta.data)) {
 
-    cat(crayon::cyan('Concatenating metadata\n'))
+    cat(crayon::cyan('Concatenating metadata \n'))
     
     l1 <- colnames(meta)
     
@@ -134,9 +127,7 @@ createIBRAPobject <- function(counts,
     
     if(isFALSE(isUnique(c(l1,l2)))) {
       
-      cat(crayon::cyan('Column names from meta.data cannot be named:', 'original.project, counts_total.counts or counts_total.features\n'))
-      
-      return(counts)
+      stop('Column names from meta.data cannot be named: original.project, counts_total.counts or counts_total.features \n')
       
     }
     

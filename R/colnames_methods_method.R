@@ -1,4 +1,8 @@
+#' @name colnames_methods
+#' 
 #' @title Method override for colnames function
+#' 
+#' @exportMethod 
 
 setMethod(f = 'colnames', 
           signature = 'methods', 

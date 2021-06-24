@@ -1,4 +1,8 @@
+#' @name merge_ibrap
+#' 
 #' @title Method override for merge function regarding IBRAP S4 objects
+#' 
+#' @exportMethod 
 
 setMethod(f = 'merge', signature = 'IBRAP',
           function(x, 

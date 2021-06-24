@@ -1,4 +1,8 @@
+#' @name doublet_bracket_replace_ibrap
+#' 
 #' @title Method override for colnames function
+#' 
+#' @exportMethod 
 
 setMethod(f = '[[<-', signature = 'IBRAP', 
           function(x, 

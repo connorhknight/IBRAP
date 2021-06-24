@@ -1,4 +1,8 @@
+#' @name dim_ibrap
+#' 
 #' @title Method override for dim function
+#' 
+#' @exportMethod 
 
 setMethod(f = 'dim', 
           signature = 'IBRAP',

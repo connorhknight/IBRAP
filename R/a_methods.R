@@ -1,5 +1,7 @@
+#' @name methods-object
+#' 
 #' @title An S4 class object of method-assays
-#'
+#' 
 #' @description An S4 class object that contains data matrices, HVGs, feature metadata, neighbourhood graphs, reduction embeddings, cluster assignments, and benchmarking results.
 #' 
 #' @slot counts Raw counts matrix in dgCMatrix format.
@@ -13,7 +15,9 @@
 #' @slot visualisation_reductions list of visualisation reductions, i.e. t-SNE, UMAP, etc. 
 #' @slot cluster_assignments list of cluster assignment output. A dataframe is assigned to each method containing subsequent parameter changes. 
 #' @slot benchmarking_results list of benchmarking results corresponding to the cluster assignment dataframes. 
-#' @slot alt_objects objects used in the analysis derived from alternative packages, i.e. SingleCellExperiment, Seurat, Anndata, etc.
+#' 
+#' @exportClass 
+
 
 setClass(Class = 'methods',
          representation = representation(
@@ -22,11 +26,10 @@ setClass(Class = 'methods',
            norm.scaled = 'matrix',
            highly.variable.genes = 'character',
            feature_metadata = 'data.frame',
-           graphs = 'list',
+           neighbours = 'list', 
            computational_reductions = 'list',
            integration_reductions = 'list',
            visualisation_reductions = 'list',
            cluster_assignments = 'list',
-           benchmark_results = 'list',
-           alt_objects = 'list'
+           benchmark_results = 'list'
          ))

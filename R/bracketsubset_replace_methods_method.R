@@ -1,4 +1,8 @@
+#' @name double_bracket-methods
+#' 
 #' @title Method override for `'[[<-'` subset function regarding methods S4 object
+#' 
+#'  @exportMethod  
 
 setMethod(f = '[[<-', signature = 'methods',
           function(x, 
@@ -32,7 +36,7 @@ setMethod(f = '[[<-', signature = 'methods',
             }
             if(length(as.matrix(y$norm.scaled)) != 0) {
               
-              x@graphs <- y$graphs
+              x@neighbours <- y$neighbours
               
             }
             if(length(as.matrix(y$norm.scaled)) != 0) {
@@ -58,11 +62,6 @@ setMethod(f = '[[<-', signature = 'methods',
             if(length(as.matrix(y$norm.scaled)) != 0) {
               
               x@benchmark_results <- y$benchmark_results
-              
-            }
-            if(length(as.matrix(y$norm.scaled)) != 0) {
-              
-              x@alt_objects <- y$alt_objects
               
             }
             

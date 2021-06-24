@@ -1,4 +1,8 @@
+#' @name showmethod_ibrap
+#' 
 #' @title Method for IBRAP S4 object
+#' 
+#' @exportMethod 
 
 setMethod(f = 'show', signature = 'IBRAP', definition = function(object) {
   cat(crayon::white(paste0('An object of class ', 
