@@ -13,7 +13,6 @@ perform.sct.normalisation(
   do.center = TRUE,
   n.genes = 1500,
   min_cells = 5,
-  save.seuratobject = TRUE,
   vars.to.regress = NULL,
   ...
 )

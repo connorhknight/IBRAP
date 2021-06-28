@@ -55,9 +55,7 @@ perform.scanpy.normalisation <- function(object,
                                          n_jobs = NULL, 
                                          zero_center = TRUE, 
                                          max_value = NULL, 
-                                         obsm = NULL,
-                                         
-                                         save.anndata = TRUE
+                                         obsm = NULL
 ) {
   
   if(!is(object = object, class2 = 'IBRAP')) {
@@ -396,14 +394,6 @@ perform.scanpy.normalisation <- function(object,
                                           norm.scaled = as.matrix(.norm.scaled),
                                           highly.variable.genes = .highly.variable.genes,
                                           feature_metadata = feat.metadata)
-  
-  if(isTRUE(save.anndata)) {
-    
-    object@methods[[new.assay.name]]@alt_objects$anndata
-    
-  }
-  
-  
   
   return(object)
 }

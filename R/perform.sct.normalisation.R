@@ -26,7 +26,6 @@ perform.sct.normalisation <- function(object,
                                       do.center = TRUE,
                                       n.genes = 1500,
                                       min_cells = 5,
-                                      save.seuratobject = TRUE,
                                       vars.to.regress = NULL,
                                       ...) {
   
@@ -123,11 +122,6 @@ perform.sct.normalisation <- function(object,
                                           norm.scaled = .norm.scaled,
                                           highly.variable.genes = .highly.variable.genes,
                                           feature_metadata = feat.meta)
-  if(isTRUE(save.seuratobject)) {
-    
-    object@methods[[new.assay.name]]@alt_objects[['seurat']] <- seuratobj
-    
-  }
   cat(crayon::cyan('Populated IBRAP object\n'))
   return(object)
 }

@@ -26,8 +26,7 @@ perform.scanpy.normalisation(
   n_jobs = NULL,
   zero_center = TRUE,
   max_value = NULL,
-  obsm = NULL,
-  save.anndata = TRUE
+  obsm = NULL
 )
 }
 \arguments{
