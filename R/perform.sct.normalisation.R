@@ -98,13 +98,6 @@ perform.sct.normalisation <- function(object,
     
   }
   
-  if(!is.logical(save.seuratobject)) {
-    
-    cat(crayon::cyan('save.seuratobject must be logical: TRUE/FALSE\n'))
-    return(object)
-    
-  }
-  
   cat(crayon::cyan('Converting to Seurat object\n'))
   seuratobj <- Seurat::CreateSeuratObject(counts = as.matrix(object@methods[[assay]][[slot]]), project = 'NA')
   seuratobj@meta.data <- cbind(seuratobj@meta.data, object@sample_metadata)
