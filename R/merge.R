@@ -79,6 +79,7 @@ setMethod(f = 'merge', signature = 'IBRAP',
             
             new.method[[names(x@methods)[1]]] <- new(Class = 'methods',
                                                      counts = .counts,
+                                                     normalised = as(matrix(nrow = 0, ncol = 0), 'dgCMatrix'),
                                                      feature_metadata = .feature_metadata)
             
             ibrap <- new(Class = 'IBRAP',
