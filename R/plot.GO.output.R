@@ -9,7 +9,7 @@
 #' 
 #' @return IBRAP S4 class object containing raw counts and metadata
 #'
-#' @export
+#' @export plot.GO.output
 
 plot.GO.output <- function(result) {
   

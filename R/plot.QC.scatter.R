@@ -14,7 +14,7 @@
 #' 
 #' @return A Scatter plot
 #'
-#' @export
+#' @export plot.QC.scatter
 
 plot.QC.scatter <- function(object, 
                             x, 

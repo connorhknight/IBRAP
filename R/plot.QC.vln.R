@@ -13,7 +13,7 @@
 #' 
 #' @return A Violin plot
 #'
-#' @export
+#' @export plot.QC.vln
 
 plot.QC.vln <- function(object, 
                         metadata.columns=c('RAW_total.features', 

@@ -17,7 +17,7 @@
 #' 
 #' @return A ggplot of the reduced cellular embbedings and trajectories. 
 #'
-#' @export
+#' @export plot.slingshot
 
 plot.slingshot <- function(result, 
                            clusters = NULL, 
