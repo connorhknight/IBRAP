@@ -8,6 +8,7 @@ perform.pca(
   object,
   assay,
   slot = "norm.scaled",
+  plot.var = TRUE,
   n.pcs = 50,
   reduction.save = "pca",
   ...
@@ -19,6 +20,8 @@ perform.pca(
 \item{assay}{Character. String containing indicating which assay to use}
 
 \item{slot}{Character. String indicating which slot within the assay should be sourced}
+
+\item{plot.var}{Boolean. Should the explained variance of PCs be plotted}
 
 \item{n.pcs}{Numerical. How many principal components should be produced. Default = 50}
 

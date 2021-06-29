@@ -8,6 +8,7 @@
 #' @param object IBRAP S4 class object
 #' @param assay Character. String containing indicating which assay to use
 #' @param slot Character. String indicating which slot within the assay should be sourced
+#' @param plot.var Boolean. Should the explained variance of PCs be plotted
 #' @param n.pcs Numerical. How many principal components should be produced. Default = 50
 #' @param reduction.save Character. What should this reduction be saved as in computation_reduction. Default = 'pca'
 #' @param ... Arguments to be passed to PCAtools::pca
@@ -19,6 +20,7 @@
 perform.pca <- function(object, 
                         assay,
                         slot='norm.scaled',
+                        plot.var = TRUE,
                         n.pcs=50,
                         reduction.save='pca', 
                         ...) {
@@ -74,13 +76,13 @@ perform.pca <- function(object,
     mat <- object@methods[[t]][[slot]]
     cat(crayon::cyan('Initialising PCA for assay:', t, '\n'))
     a <- PCAtools::pca(mat = mat, center = F, scale = F, ...)
-    b <- PCAtools::findElbowPoint(a$variance)
-    
-    p <- PCAtools::screeplot(pcaobj = a, components = 1:sum(as.numeric(b)+10), 
-                             title = paste0(assay,'_PCA_variance'), vline = b) +
-      ggplot2::geom_label(ggplot2::aes(x = b, y = 50,
-                                       label = 'Elbow point', vjust = -1, size = 8)) +
-      ggplot2::ggtitle(paste0(t,'_screeplot'))
+    eig <- a$sdev^2/sum(a$sdev^2)
+    eig <- as.data.frame(eig*100)
+    temp <- as.character(colnames(a$rotated))
+    eig[,2] <- factor(x = temp, levels = unique(temp))
+    colnames(eig) <- c ('Variance', 'PCs')
+
+    p <- ggplot2::ggplot(data = eig[n.pcs,], mapping = ggplot2::aes(x = PCs, y = Variance)) + ggplot2::geom_point() + egg::theme_article() + ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90, vjust = 0.5, hjust=1)) + ggplot2::ylab('Explained Variance (%)')
     
     print(p)
     

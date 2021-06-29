@@ -1,6 +1,17 @@
 
 
-perform.seurat.neighbours <- function(object, assay, reduction, dims=NULL) {
+perform.seurat.neighbours <- function(object, 
+                                      assay, 
+                                      reduction, 
+                                      dims=NULL,
+                                      neighbour.name=NULL,
+                                      k.param=20,
+                                      compute.SNN=TRUE,
+                                      prune.SNN=1/15, 
+                                      nn.method='annoy', 
+                                      n.trees = 50,
+                                      nn.eps=0.0, 
+                                      annoy.metric='euclidean') {
   
   for(p in assay) {
     
@@ -56,9 +67,29 @@ perform.seurat.neighbours <- function(object, assay, reduction, dims=NULL) {
       red <- reduction.list[[g]]
       red.key <- reduction[count]
       
+      seuobj@reductions[[red.key]] <- Seurat::CreateDimReducObject(embeddings = as.matrix(red), key = red.key)
+      
+      
+      seuobj <- suppressWarnings(Seurat::FindNeighbors(object = seuobj, 
+                                                       k.param = k.param,
+                                                       reduction = red.key, 
+                                                       verbose = T, 
+                                                       dims = dim, 
+                                                       compute.SNN = compute.SNN, 
+                                                       prune.SNN = prune.SNN,
+                                                       nn.method = nn.method, 
+                                                       n.trees = n.trees,
+                                                       annoy.metric = annoy.metric, 
+                                                       nn.eps = nn.eps))
+      
+      object@methods[[p]]@neighbours[[neighbour.name]][['connectivities']] <- seuobj@graphs$RNA_snn
+      
+      count <- count + 1
       
     }
     
   }
+  
+  return(object)
 
 }

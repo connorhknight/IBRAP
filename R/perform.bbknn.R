@@ -260,8 +260,8 @@ perform.bbknn <- function(object,
       graph.list[['connectivities']] <- connectivities
       graph.list[['distances']] <- distances
       
-      object@methods[[p]]@graphs[[graph.name[count]]] <- graph.list
-      object@methods[[p]]@alt_objects$anndata <- scobj
+      object@methods[[p]]@neighbours[[graph.name[count]]] <- graph.list
+
       count <- count + 1
       
     }

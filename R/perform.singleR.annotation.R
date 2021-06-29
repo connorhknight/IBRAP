@@ -50,7 +50,7 @@ perform.singleR.annotation <- function(object,
     
   }
   
-  if(!is(ref, 'AnyMatrix')) {
+  if(!is(ref, 'matrix')) {
     
     cat(crayon::cyan('reference matrix must be a matrix class \n'))
     return(object)

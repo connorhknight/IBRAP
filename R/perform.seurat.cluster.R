@@ -212,21 +212,6 @@ perform.seurat.cluster <- function(object,
       
     }
     
-    if(!is.null(reduction)) {
-      
-      for(r in reduction) {
-        
-        if(!r %in% names(reduction.list)) {
-          
-          cat(crayon::cyan('reductions could not be found\n'))
-          return(object)
-          
-        }
-        
-      }
-      
-    }
-    
     if(!is.null(graph)) {
       
       for(g in graph) {
