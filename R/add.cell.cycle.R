@@ -63,7 +63,7 @@ add.cell.cycle <- function(object,
     
   }
   
-  r <- read.table(text = as.character(Homo_sapiens$phase.geneID.GeneName), sep = ',')
+  r <- read.table(text = as.character(IBRAP::Homo_sapiens$phase.geneID.GeneName), sep = ',')
   colnames(r) <- c('phase', 'geneID', 'geneName')
   
   cat(crayon::cyan('Cell cycle genes loaded\n'))
