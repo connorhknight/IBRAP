@@ -63,7 +63,8 @@ add.cell.cycle <- function(object,
     
   }
   
-  r <- utils::read.csv(system.file("data", "Homo_sapiens.csv", package = "IBRAP"), header = TRUE, sep = ',')
+  r <- read.table(text = as.character(Homo_sapiens$phase.geneID.GeneName), sep = ',')
+  colnames(r) <- c('phase', 'geneID', 'geneName')
   
   cat(crayon::cyan('Cell cycle genes loaded\n'))
   

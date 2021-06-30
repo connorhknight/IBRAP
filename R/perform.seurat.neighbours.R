@@ -58,6 +58,9 @@ perform.seurat.neighbours <- function(object, assay, reduction, dims=NULL) {
       red <- reduction.list[[g]]
       red.key <- reduction[count]
       
+      seuobj <- Seurat::FindNeighbors()
+      
+      
       
     }
     

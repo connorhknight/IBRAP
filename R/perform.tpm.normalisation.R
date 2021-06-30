@@ -68,7 +68,8 @@ perform.tpm.normalisation <- function(object,
     
   }
   
-  r <- utils::read.csv(system.file("data", "mart_export.csv", package = "IBRAP"), header = TRUE, sep = ',')
+  r <- read.table(text = as.character(IBRAP::mart_export$Gene.stable.ID.Gene.name.Gene.start..bp..Gene.end..bp.), sep = ',')
+  colnames(r) <- c('geneID', 'geneName', 'start', 'end')
   
   if(is.null(r)) {
     
@@ -107,13 +108,13 @@ perform.tpm.normalisation <- function(object,
     
   }
   
-  r$Gene.length <- r$Gene.end..bp. - r$Gene.start..bp.
+  r$Gene.length <- r$end - r$start
   
-  subset <- r[r$Gene.name %in% rownames(object),]
+  subset <- r[r$geneName %in% rownames(object),]
   
   cat(crayon::cyan('Matrix subsetted\n'))
   
-  rownames(subset) <- make.unique(names = as.character(subset$Gene.name), '.')
+  rownames(subset) <- make.unique(names = as.character(subset$geneName), '.')
   
   cat(crayon::cyan('Rownames added\n'))
   

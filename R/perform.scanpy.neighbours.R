@@ -66,7 +66,7 @@ perform.scanpy.neighbours <- function(object,
       scobj$obs_names <- as.factor(colnames(object@methods[[2]]@norm.scaled))
       scobj$var_names <- as.factor(rownames(object@methods[[2]]@norm.scaled))
       
-      if(length(colnames(as.data.frame(pancreas@sample_metadata))) >= 1) {
+      if(length(colnames(as.data.frame(object@sample_metadata))) >= 1) {
         
         pd <- reticulate::import('pandas')
         
