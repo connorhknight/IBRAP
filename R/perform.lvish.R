@@ -27,15 +27,13 @@ perform.lvish <- function(object,
   
   if(!is(object = object, class2 = 'IBRAP')) {
     
-    cat(crayon::cyan('object must be of class IBRAP\n'))
-    return(object)
+    stop('object must be of class IBRAP\n')
     
   }
   
   if(!is.character(assay)) {
     
-    cat(crayon::cyan('assay must be character string\n'))
-    return(object)
+    stop('assay must be character string\n')
     
   }
   
@@ -43,8 +41,7 @@ perform.lvish <- function(object,
     
     if(!x %in% names(object@methods)) {
       
-      cat(crayon::cyan(paste0('reduction: ', x, 'does not exist\n')))
-      return(object)
+      stop(paste0('reduction: ', x, 'does not exist\n'))
       
     }
     
@@ -52,8 +49,7 @@ perform.lvish <- function(object,
   
   if(!is.character(reduction)) {
     
-    cat(crayon::cyan('reduction must be character string\n'))
-    return(object)
+    stop('reduction must be character string\n')
     
   }
   
@@ -65,8 +61,7 @@ perform.lvish <- function(object,
                          object@methods[[i]]@visualisation_reductions, 
                          object@methods[[i]]@integration_reductions))) {
         
-        cat(crayon::cyan(paste0('reduction: ', x, ' does not exist\n')))
-        return(object)
+        stop(paste0('reduction: ', x, ' does not exist\n'))
         
       }
       
@@ -76,22 +71,19 @@ perform.lvish <- function(object,
   
   if(!is.character(reduction.save)) {
     
-    cat(crayon::cyan('reduction.save must be character string\n'))
-    return(object)
+    stop('reduction.save must be character string\n')
     
   }
   
   if(!is.numeric(n_components)) {
     
-    cat(crayon::cyan('n_components must be numerical\n'))
-    return(object)
+   stop('n_components must be numerical\n')
     
   }
   
   if(!is.list(n.dim)) {
     
-    cat(crayon::cyan('dimensions must be supplied in list format\n'))
-    return(object)
+    stop('dimensions must be supplied in list format\n')
     
   }
   
@@ -134,7 +126,7 @@ perform.lvish <- function(object,
       
       dim <- n.dim[[count]]
       
-      cat(crayon::cyan('Processing', r, 'for assay:', u,'\n'))
+      cat(crayon::cyan(paste0(Sys.time(), ': processing', r, 'for assay:', u,'\n')))
       
       if(!is.null(dim)) {
         

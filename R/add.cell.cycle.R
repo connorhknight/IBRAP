@@ -23,63 +23,59 @@ add.cell.cycle <- function(object,
   
   if(!is(object = object, class2 = 'IBRAP')) {
     
-    cat(crayon::cyan('object must be of class IBRAP\n'))
-    return(object)
+    stop('object must be of class IBRAP\n')
     
   }
   
   if(!is.character(assay)) {
     
-    cat(crayon::cyan('assay must be character string\n'))
-    return(object)
+    stop('assay must be character string\n')
     
   }
   
   if(!assay %in% names(object@methods)) {
     
-    cat(crayon::cyan('assay does not exist\n'))
-    return(object)
+    stop('assay does not exist\n')
     
   }
   
   if(!is.character(slot)) {
     
-    cat(crayon::cyan('slot must be character string\n'))
-    return(object)
+    stop('slot must be character string\n')
     
   }
   
   if(!slot %in% c('counts', 'normalised', 'norm.scaled')) {
     
-    cat(crayon::cyan('slot must be character string\n'))
-    return(object)
+    stop('slot must be character string\n')
     
   }
   
   if(!is.logical(transform)) {
     
-    cat(crayon::cyan('transform must be logical: TRUE/FALSE\n'))
-    return(object)
+    stop('transform must be logical: TRUE/FALSE\n')
     
   }
   
   r <- read.table(text = as.character(IBRAP::Homo_sapiens$phase.geneID.GeneName), sep = ',')
   colnames(r) <- c('phase', 'geneID', 'geneName')
   
-  cat(crayon::cyan('Cell cycle genes loaded\n'))
+  cat(crayon::cyan(paste0(Sys.time(), ': cell cycle genes loaded\n')))
   
   if(transform == TRUE) {
     seuobj <- Seurat::CreateSeuratObject(counts = object@methods[[assay]][[slot]])
-    cat(crayon::cyan('Converted to Seurat object\n'))
+    
+    
+    cat(crayon::cyan(paste0(Sys.time(), ':converted to Seurat object\n')))
     seuobj <- Seurat::NormalizeData(object = seuobj)
-    cat(crayon::cyan('Data transformed\n'))
+    cat(crayon::cyan(paste0(Sys.time(), ': data transformed\n')))
     seuobj <- Seurat::CellCycleScoring(object = seuobj, s.features = r[55:97,3], g2m.features = r[1:54,3], ...)
-    cat(crayon::cyan('Cell cycle scores identified\n'))
+    cat(crayon::cyan(paste0(Sys.time(), ': cell cycle scores identified\n')))
     for(o in names(seuobj@meta.data)) {
       
       if(o %in% names(object@sample_metadata)) {
         
-        cat(crayon::cyan(paste0('found duplicated column name: ',o, 'removing old column names.\n')))
+        cat(crayon::cyan(paste0(Sys.time(), ': found duplicated column name: ',o, 'removing old column names.\n')))
         object@sample_metadata[,o] <- NULL
         
       }
@@ -87,19 +83,19 @@ add.cell.cycle <- function(object,
     }
     df <- seuobj@meta.data[, sum(length(colnames(seuobj@meta.data))-2):length(colnames(seuobj@meta.data))]
     object@sample_metadata <- cbind(object@sample_metadata, df)
-    cat(crayon::cyan('New metadata added\n'))
+    cat(crayon::cyan(paste0(Sys.time(), ': new metadata added\n')))
   } else {
     seuobj <- Seurat::CreateSeuratObject(counts = object@methods[[assay]][['counts']])
     seuobj@assays$RNA@data <- object@methods[[assay]][[slot]]
-    cat(crayon::cyan('Converted to Seurat object\n'))
+    cat(crayon::cyan(paste0(Sys.time(), ': converted to Seurat object\n')))
     seuobj <- Seurat::CellCycleScoring(object = seuobj, s.features = r[55:97,3], g2m.features = r[1:54,3], ...)
-    cat(crayon::cyan('Data transformed\n'))
+    cat(crayon::cyan(paste0(Sys.time(), ': data transformed\n')))
     
     for(o in names(seuobj@meta.data)) {
       
       if(o %in% names(object@sample_metadata)) {
         
-        cat(crayon::cyan(paste0('found duplicated column name: ',o, 'removing old column names.\n')))
+        cat(crayon::cyan(paste0(Sys.time(), ': found duplicated column name: ',o, 'removing old column names.\n')))
         object@sample_metadata[,o] <- NULL
         
       }
@@ -108,7 +104,7 @@ add.cell.cycle <- function(object,
     
     df <- seuobj@meta.data[, sum(length(colnames(seuobj@meta.data))-2):length(colnames(seuobj@meta.data))]
     object@sample_metadata <- cbind(object@sample_metadata, df)
-    cat(crayon::cyan('New metadata added\n'))
+    cat(crayon::cyan(paste0(Sys.time(), ': new metadata added\n')))
     
   }
   return(object)

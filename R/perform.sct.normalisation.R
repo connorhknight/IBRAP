@@ -31,79 +31,69 @@ perform.sct.normalisation <- function(object,
   
   if(!is(object = object, class2 = 'IBRAP')) {
     
-    cat(crayon::cyan('Object must be of class IBRAP\n'))
-    return(object)
+    stop('Object must be of class IBRAP\n')
     
   }
   if(!is.character(assay)) {
     
-    cat(crayon::cyan('Assay must be a character string\n'))
-    return(object)
+    stop('Assay must be a character string\n')
     
   }
   
   if(!assay %in% names(object@methods)) {
     
-    cat(crayon::cyan('assay does not exist\n'))
-    return(object)
+    stop('assay does not exist\n')
     
   }
   
   if(!is.character(slot)) {
     
-    cat(crayon::cyan('Slot must be a character string\n'))
-    return(object)
+    stop('Slot must be a character string\n')
     
   }
   
   if(!slot %in% c('counts', 'normalised', 'norm.scaled')) {
     
-    cat(crayon::cyan('slot does not exist\n'))
-    return(object)
+    stop('slot does not exist\n')
     
   }
   
   if(!is.character(new.assay.name)) {
     
-    cat(crayon::cyan('new.assay.name must be character string\n'))
-    return(object)
+    stop('new.assay.name must be character string\n')
     
   }
   
   if(!is.logical(do.scale)) {
     
-    cat(crayon::cyan('do.scale must be logical: TRUE/FALSE\n'))
-    return(object)
+    stop('do.scale must be logical: TRUE/FALSE\n')
     
   }
   
   if(!is.logical(do.center)) {
     
-    cat(crayon::cyan('do.center must be logical: TRUE/FALSE\n'))
-    return(object)
+    stop('do.center must be logical: TRUE/FALSE\n')
     
   }
   
   if(!is.numeric(n.genes)) {
     
-    cat(crayon::cyan('n.genes must be numerical\n'))
-    return(object)
+    stop('n.genes must be numerical\n')
     
   }
   
   if(!is.numeric(min_cells)) {
     
-    cat(crayon::cyan('min_cells must be numerical\n'))
-    return(object)
+    stop('min_cells must be numerical\n')
     
   }
   
-  cat(crayon::cyan('Converting to Seurat object\n'))
+  cat(crayon::cyan(paste0(Sys.time(), ': converting to Seurat object\n')))
   seuratobj <- Seurat::CreateSeuratObject(counts = as.matrix(object@methods[[assay]][[slot]]), project = 'NA')
   seuratobj@meta.data <- cbind(seuratobj@meta.data, object@sample_metadata)
-  cat(crayon::cyan('Initiating SCTransform\n'))
+  cat(crayon::cyan(paste0(Sys.time(), ': initiating SCTransform\n')))
   seuratobj <- Seurat::SCTransform(object = seuratobj, do.scale = do.scale, do.center = do.center, vars.to.regress = vars.to.regress, min_cells = min_cells, variable.features.n = n.genes, ...)
-  cat(crayon::cyan('SCTransform completed!\n'))
+  cat(crayon::cyan('SCT normalisation completed\n'))
   .highly.variable.genes <- as.character(seuratobj@assays$SCT@var.features)
   .counts <- as(object = as.matrix(seuratobj@assays$SCT@counts), Class = 'dgCMatrix')
   .normalised <- as(as.matrix(seuratobj@assays$SCT@data), Class = 'dgCMatrix')
@@ -115,6 +105,6 @@ perform.sct.normalisation <- function(object,
                                           norm.scaled = .norm.scaled,
                                           highly.variable.genes = .highly.variable.genes,
                                           feature_metadata = feat.meta)
-  cat(crayon::cyan('Populated IBRAP object\n'))
+  cat(crayon::cyan(paste0(Sys.time(), ': populated IBRAP object\n')))
   return(object)
 }

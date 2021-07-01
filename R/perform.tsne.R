@@ -27,15 +27,13 @@ perform.tsne <- function(object,
   
   if(!is(object = object, class2 = 'IBRAP')) {
     
-    cat(crayon::cyan('Must be IBRAP class object\n'))
-    return(object)
+    stop('Must be IBRAP class object\n')
     
   }
   
   if(!is.character(assay)) {
     
-    cat(crayon::cyan(paste0('assay must be character string\n')))
-    return(object)
+    stop(paste0('assay must be character string\n'))
     
   }
   
@@ -43,8 +41,7 @@ perform.tsne <- function(object,
     
     if(!x %in% names(object@methods)) {
       
-      cat(crayon::cyan('assay: ', x, ' does not exist \n'))
-      return(object)
+      stop('assay: ', x, ' does not exist \n')
       
     }
     
@@ -52,8 +49,7 @@ perform.tsne <- function(object,
   
   if(!is.character(reduction)) {
     
-    cat(crayon::cyan(paste0('reduction must be character string\n')))
-    return(object)
+    stop(paste0('reduction must be character string\n'))
     
   }
   
@@ -65,8 +61,7 @@ perform.tsne <- function(object,
                          object@methods[[i]]@visualisation_reductions, 
                          object@methods[[i]]@integration_reductions))) {
         
-        cat(crayon::cyan(paste0('reduction: ', x, ' does not exist\n')))
-        return(object)
+        stop(paste0('reduction: ', x, ' does not exist\n'))
         
       }
       
@@ -76,22 +71,19 @@ perform.tsne <- function(object,
   
   if(!is.character(reduction.save)) {
     
-    cat(crayon::cyan(paste0('reduction.save must be character string\n')))
-    return(object)
+    stop(paste0('reduction.save must be character string\n'))
     
   }
   
   if(!is.numeric(n_components)) {
     
-    cat(crayon::cyan(paste0('n_components must be numerical\n')))
-    return(object)
+    stop(paste0('n_components must be numerical\n'))
     
   }
   
   if(!is.list(n.dims)) {
     
-    cat(crayon::cyan('dimensions must be supplied in list format\n'))
-    return(object)
+    stop('dimensions must be supplied in list format\n')
     
   }
   
@@ -135,7 +127,7 @@ perform.tsne <- function(object,
       
       dim <- n.dims[[count]]
       
-      cat(crayon::cyan('Processing', r, 'for assay:', g,'\n'))
+      cat(crayon::cyan(paste0(Sys.time(), ': rocessing', r, 'for assay:', g,'\n')))
       
       if(!is.null(dim)) {
         
@@ -149,7 +141,7 @@ perform.tsne <- function(object,
         
       }
       
-      cat(crayon::cyan('t-SNE reduction completed\n'))
+      cat(crayon::cyan(paste0(Sys.time(), ': t-SNE reduction completed\n')))
       
       dim.names <- list()
       
@@ -165,7 +157,7 @@ perform.tsne <- function(object,
       
       object@methods[[g]]@visualisation_reductions[[red.save]] <- c
       
-      cat(crayon::cyan('t-SNE data added\n'))
+      cat(crayon::cyan(paste0(Sys.time(), ': t-SNE data added\n')))
       
       count <- count + 1
       

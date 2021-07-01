@@ -22,8 +22,7 @@ plot.QC.vln <- function(object,
   
   if(!is(object = object, class2 = 'IBRAP')) {
     
-    cat(crayon::cyan('object must be of class IBRAP\n'))
-    return(NULL)
+    stop('object must be of class IBRAP\n')
     
   }
   
@@ -34,8 +33,7 @@ plot.QC.vln <- function(object,
     
     if(!m %in% colnames(metadata)) {
       
-      cat(crayon::cyan('Provided column names do not exist\n'))
-      return(NULL)
+       stop('Provided column names do not exist\n')
       
     }
     
@@ -43,8 +41,7 @@ plot.QC.vln <- function(object,
   
   if(!split.by %in% colnames(object@sample_metadata)) {
     
-    cat(crayon::cyan(paste0(split.by, ' does not exist\n')))
-    return(NULL)
+    stop(paste0(split.by, ' does not exist\n'))
     
   }
   

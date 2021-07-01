@@ -31,63 +31,55 @@ perform.singleR.annotation <- function(object,
   
   if(!is(object, 'IBRAP')) {
     
-    cat(crayon::cyan('object should be IBRAP class \n'))
-    return(object)
+    stop('object should be IBRAP class \n')
     
   }
   
   if(!is.character(assay)) {
     
-    cat(crayon::cyan('assay must be a character string \n'))
-    return(object)
+    stop('assay must be a character string \n'
     
   }
   
   if(!is.character(slot)) {
     
-    cat(crayon::cyan('slot must be a character string \n'))
-    return(object)
+    stop('slot must be a character string \n')
     
   }
   
   if(!is(ref, 'matrix')) {
     
-    cat(crayon::cyan('reference matrix must be a matrix class \n'))
-    return(object)
+    stop('reference matrix must be a matrix class \n')
     
   }
   
   if(!is.logical(log.transform)) {
     
-    cat(crayon::cyan('log.transform must be logical, TRUE/FALSE \n'))
-    return(object)
+    stop('log.transform must be logical, TRUE/FALSE \n'
     
   }
   
   
   if(!is.logical(tpm.transform)) {
     
-    cat(crayon::cyan('tpm.transform must be logical, TRUE/FALSE \n'))
-    return(object)
+    stop('tpm.transform must be logical, TRUE/FALSE \n')
     
   }
   
   if(!is.vector(ref.labels)) {
     
-    cat(crayon::cyan('ref.labels must be vector, TRUE/FALSE \n'))
-    return(object)
+    stop('ref.labels must be vector, TRUE/FALSE \n')
     
   }
   if(!is.character(column.suffix)) {
     
-    cat(crayon::cyan('column.suffix must be character string \n'))
-    return(object)
+    stop('column.suffix must be character string \n')
     
   }
   
   if(isTRUE(tpm.transform)) {
     
-    cat(crayon::cyan('tpm transforming reference data \n'))
+    cat(crayon::cyan(paste0(Sys.time(), ': tpm transforming reference data \n')))
     
     temp <- createIBRAPobject(counts = ref, original.project = 'tpm_transform')
     temp <- perform.tpm.normalisation(object = temp)
@@ -95,7 +87,7 @@ perform.singleR.annotation <- function(object,
     
   } else if (isTRUE(log.transform) && isFALSE(tpm.transform)) {
     
-    cat(crayon::cyan('log2 transforming reference data \n'))
+    cat(crayon::cyan(paste0(Sys.time(), ': log2 transforming reference data \n')))
     
     ref <- log2(ref+1)
     
@@ -103,11 +95,11 @@ perform.singleR.annotation <- function(object,
   
   query <- object@methods[[assay]][[slot]]
   
-  cat(crayon::cyan('initiating singleR automated labelling \n'))
+  cat(crayon::cyan(paste0(Sys.time(), ': initiating singleR automated labelling \n')))
   
   result <- SingleR::SingleR(test = query, ref = ref, labels = ref.labels, ...)
   
-  cat(crayon::cyan('completed singleR automated labelling \n'))
+  cat(crayon::cyan(paste0(Sys.time(), ': completed singleR automated labelling \n')))
   
   result$pruned.labels[is.na(result$pruned.labels)] <- 'X'
   result$labels[is.na(result$labels)] <- 'X'
@@ -115,8 +107,8 @@ perform.singleR.annotation <- function(object,
   object@sample_metadata[,paste0('singleR_pruned_labels_', column.suffix)] <- result$pruned.labels
   object@sample_metadata[,paste0('singleR_labels_', column.suffix)] <- result$labels
   
-  cat(crayon::cyan('appending annotations to metadata \n'))
-  cat(crayon::cyan('complete \n'))
+  cat(crayon::cyan(paste0(Sys.time(), ': appending annotations to metadata \n')))
+  cat(crayon::cyan(paste0(Sys.time(), ': complete \n')))
   
   return(object)
   

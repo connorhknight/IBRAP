@@ -27,15 +27,13 @@ benchmark.clustering <- function(object,
   
   if(!is(object = object, class2 = 'IBRAP')) {
     
-    cat(crayon::cyan('object must be of class IBRAP \n'))
-    return(NULL)
+    stop('object must be of class IBRAP \n')
     
   }
   
   if(!is.character(assay)) {
     
-    cat(crayon::cyan('assay must be character string(s) \n'))
-    return(NULL)
+    stop('assay must be character string(s) \n')
     
   }
   
@@ -43,8 +41,7 @@ benchmark.clustering <- function(object,
     
     if(!x %in% names(object@methods)) {
       
-      cat(crayon::cyan(paste0('assay: ', x, 'does not exist\n')))
-      return(object)
+      stop(paste0('assay: ', x, 'does not exist\n'))
       
     }
     
@@ -52,8 +49,7 @@ benchmark.clustering <- function(object,
   
   if(!is.character(clustering)) {
     
-    cat(crayon::cyan('clustering must be character string(s)\n'))
-    return(NULL)
+    stop('clustering must be character string(s)\n')
     
   }
   
@@ -63,8 +59,7 @@ benchmark.clustering <- function(object,
       
       if(!x %in% names(object@methods[[l]]@cluster_assignments)) {
         
-        cat(crayon::cyan('clustering: ,', x, 'not present in assay: ', l, '\n'))
-        return(NULL)
+        stop('clustering: ,', x, 'not present in assay: ', l, '\n')
         
       }
       
@@ -78,8 +73,7 @@ benchmark.clustering <- function(object,
                            object@methods[[i]]@visualisation_reductions, 
                            object@methods[[i]]@integration_reductions))) {
           
-          cat(crayon::cyan(paste0('reduction: ', x, ' does not exist\n')))
-          return(object)
+          stop(paste0('reduction: ', x, ' does not exist\n'))
           
         }
         
@@ -89,21 +83,15 @@ benchmark.clustering <- function(object,
     
     if(!is.numeric(n.dims)) {
       
-      cat(crayon::cyan('n.dims must be numerical\n'))
-      return(object)
+      stop('n.dims must be numerical\n')
       
     }
     
     if(!is.character(dist.method)) {
       
-      cat(crayon::cyan('dist.method must be a character string\n'))
-      return(object)
+      stop('dist.method must be a character string\n')
       
     }
-    
-    
-    
-    print(l)
     
     reduction.list <- list()
     red.names <- c(names(object@methods[[l]]@computational_reductions), 
@@ -136,8 +124,7 @@ benchmark.clustering <- function(object,
       
       if(!r %in% names(reduction.list)) {
         
-        cat(crayon::cyan('reductions could not be found\n'))
-        return(object)
+        stop('reductions could not be found\n')
         
       }
       
@@ -160,7 +147,7 @@ benchmark.clustering <- function(object,
         
         if(length(unique(clusters[,p])) <= 1) {
           
-          cat(crayon::cyan(paste0('cluster column: ', p, ' contains only 1 cluster group, omitting now\n')))
+          cat(crayon::cyan(paste0(Sys.time(), ': cluster column: ', p, ' contains only 1 cluster group, omitting now\n')))
           clusters[,p] <- NULL
           
         }
@@ -173,7 +160,7 @@ benchmark.clustering <- function(object,
       
       for (v in colnames(clusters)[1:length(colnames(clusters))]) {
         
-        cat(crayon::cyan(paste0('Calculating silhouette for ', v, '\n')))
+        cat(crayon::cyan(paste0(Sys.time(), ': calculating silhouette for ', v, '\n')))
         tmp <- cluster::silhouette(x = as.numeric(x = as.factor(x = clusters[,v])), dist = dist.matrix)
         average <- sum(tmp[,3])/length(tmp[,3])
         sil.results[v,] <- average
@@ -187,7 +174,7 @@ benchmark.clustering <- function(object,
       dunn.results <- data.frame(dunn.index=NA)
       for (p in colnames(clusters)[1:length(colnames(clusters))]){
         
-        cat(crayon::cyan(paste0('Calculating dunn index for ', p, '\n')))
+        cat(crayon::cyan(paste0(Sys.time(), ': calculating dunn index for ', p, '\n')))
         dunn.results[p,] <- clValid::dunn(distance = dist.matrix, 
                                           clusters = as.numeric(x = as.factor(x = clusters[,p])))
         
@@ -200,7 +187,7 @@ benchmark.clustering <- function(object,
       conn.results <- data.frame(connectivity=NA)
       for (p in colnames(clusters)[1:length(colnames(clusters))]){
         
-        cat(crayon::cyan(paste0('Calculating connectivity for ', p, '\n')))
+        cat(crayon::cyan(paste0(Sys.time(), ': calculating connectivity for ', p, '\n')))
         conn.results[p,] <- clValid::connectivity(distance = dist.matrix, clusters = clusters[,p])
         
       }
@@ -214,7 +201,7 @@ benchmark.clustering <- function(object,
         ARI.results <- data.frame(ARI=NA)
         for (p in colnames(clusters)[1:length(colnames(clusters))]){
           
-          cat(crayon::cyan(paste0('Calculating ARI for ', p, '\n')))
+          cat(crayon::cyan(paste0(Sys.time(), ': calculating ARI for ', p, '\n')))
           ARI.results[p,] <- mclust::adjustedRandIndex(x = clusters[,p], y = ground.truth)
           
         }
@@ -226,7 +213,7 @@ benchmark.clustering <- function(object,
         NMI.results <- data.frame(NMI=NA)
         for (p in colnames(clusters)[1:length(colnames(clusters))]) {
           
-          cat(crayon::cyan(paste0('Calculating NMI for ', p, '\n')))
+          cat(crayon::cyan(paste0(Sys.time(), ': alculating NMI for ', p, '\n')))
           NMI.results[p,] <- aricode::AMI(c1 = clusters[,p], c2 = ground.truth)
           
         }
@@ -255,6 +242,8 @@ benchmark.clustering <- function(object,
       }
     }
   }
+  
+  cat(crayon::cyan(paste0(Sys.time(), ': completed calcualting benchmarking metrices')))
   
   return(object)
   

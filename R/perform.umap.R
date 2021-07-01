@@ -31,15 +31,13 @@ perform.umap <- function(object,
   
   if(!is(object = object, class2 = 'IBRAP')) {
     
-    cat(crayon::cyan('object must be of class IBRAP\n'))
-    return(object)
+    stop('object must be of class IBRAP\n')
     
   }
   
   if(!is.character(assay)) {
     
-    cat(crayon::cyan('assay must be character string \n'))
-    return(object)
+    stop('assay must be character string \n')
     
   }
   
@@ -47,8 +45,8 @@ perform.umap <- function(object,
     
     if(!x %in% names(object@methods)) {
       
-      cat(crayon::cyan('assay: ', x, 'does not exist\n'))
-      return(object)
+      stop('assay: ', x, 'does not exist\n')
+      
       
     }
     
@@ -56,22 +54,19 @@ perform.umap <- function(object,
   
   if(!is.character(reduction.save)) {
     
-    cat(crayon::cyan('reduction.save must be character string \n'))
-    return(object)
+    stop('reduction.save must be character string \n')
     
   }
   
   if(!is.numeric(n_components)) {
     
-    cat(crayon::cyan('n_components must be numerical\n'))
-    return(object)
+    stop('n_components must be numerical\n')
     
   }
   
   if(!is.null(reduction) & !is.null(graph)) {
     
-    cat(crayon::cyan('only graphs OR reductions can be provided\n'))
-    return(object)
+    stop('only graphs OR reductions can be provided\n')
     
   }
   
@@ -81,17 +76,17 @@ perform.umap <- function(object,
       
       count <- 1
       
-      graphs <- object@methods[[u]]@graphs
+      graphs <- object@methods[[u]]@neighbours
       
       for (g in graph) {
         
-        cat(crayon::cyan('Processing', g, 'for assay:', u,'\n'))
+        cat(crayon::cyan(paste0(Sys.time(), ': processing ', g, ' for assay: ', u,'\n')))
         
         red.save <- reduction.save[count]
         
         seuobj <- suppressWarnings(Seurat::CreateSeuratObject(counts = object@methods[[u]]@counts))
         
-        seuobj[['temp']] <- suppressWarnings(Seurat::as.Graph(object@methods[[u]]@graphs[[g]]$connectivities))
+        seuobj@graphs[['temp']] <- suppressWarnings(Seurat::as.Graph(object@methods[[u]]@neighbours[[g]]$connectivities))
         
         seuobj <- suppressWarnings(Seurat::RunUMAP(object = seuobj, 
                                                    graph = 'temp', 
@@ -124,15 +119,13 @@ perform.umap <- function(object,
       
       if(!is.list(n.dims)) {
         
-        cat(crayon::cyan('dimensions must be supplied in list format\n'))
-        return(object)
+        stop('dimensions must be supplied in list format\n')
         
       }
       
       if(!is.character(reduction)) {
         
-        cat(crayon::cyan('reduction must be character string \n'))
-        return(object)
+        stop('reduction must be character string \n')
         
       }
       
@@ -142,8 +135,7 @@ perform.umap <- function(object,
                      names(object@methods[[u]]@integration_reductions),
                      names(object@methods[[u]]@visualisation_reductions))) {
           
-          cat(crayon::cyan(paste0('reduction:', r, ' does not exist\n')))
-          return(object)
+          stop(paste0('reduction:', r, ' does not exist\n'))
           
         }
         
@@ -187,7 +179,7 @@ perform.umap <- function(object,
         
         red <- reduction.list[[i]]
         
-        cat(crayon::cyan('Processing', i, 'for assay:', u,'\n'))
+        cat(crayon::cyan(paste0(Sys.time(), ': processing ', i, ' for assay: ', u,'\n')))
         
         if(!is.null(dim)) {
           

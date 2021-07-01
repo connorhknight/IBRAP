@@ -28,57 +28,49 @@ add.feature.score <- function(object,
   
   if(!is(object = object, class2 = 'IBRAP')) {
     
-    cat(crayon::cyan('object must be of class IBRAP\n'))
-    return(object)
+    stop(crayon::cyan('object must be of class IBRAP\n')
     
   }
   
   if(!is.character(assay)) {
     
-    cat(crayon::cyan('assay must be character string\n'))
-    return(object)
+    stop('assay must be character string\n')
     
   }
   
   if(!assay %in% names(object@methods)) {
     
-    cat(crayon::cyan('assay does not exist\n'))
-    return(object)
+    stop('assay does not exist\n')
     
   }
   
   if(!is.character(slot)) {
     
-    cat(crayon::cyan('slot must be character string\n'))
-    return(object)
+    stop('slot must be character string\n')
     
   }
   
   if(!slot %in% c('counts', 'normalised', 'norm.scaled')) {
     
-    cat(crayon::cyan('slot does not exist\n'))
-    return(object)
+    stop('slot does not exist\n')
     
   }
   
   if(!is.logical(transform)) {
     
-    cat(crayon::cyan('transform must be logical: TRUE/FALSEt\n'))
-    return(object)
+    stop('transform must be logical: TRUE/FALSEt\n')
     
   }
   
   if(!is.character(features)) {
     
-    cat(crayon::cyan('features must be character string(s)\n'))
-    return(object)
+    stop('features must be character string(s)\n')
     
   }
   
   if(!is.character(column.name)) {
     
-    cat(crayon::cyan('column.name must be character string\n'))
-    return(object)
+    stop('column.name must be character string\n')
     
   }
   
@@ -86,11 +78,11 @@ add.feature.score <- function(object,
   genes <- list(genes[genes %in% features])
   if(transform == TRUE) {
     seuobj <- Seurat::CreateSeuratObject(counts = object@methods[[assay]][[slot]])
-    cat(crayon::cyan('Converted to Seurat object\n'))
+    cat(crayon::cyan(paste0(Sys.time(), ': converted to Seurat object\n')))
     seuobj <- Seurat::NormalizeData(object = seuobj)
-    cat(crayon::cyan('Data transformed\n'))
+    cat(crayon::cyan(paste0(Sys.time(), ': data transformed\n')))
     seuobj <- Seurat::AddModuleScore(object = seuobj, features = genes, ...)
-    cat(crayon::cyan('Seurat gene score calculated\n'))
+    cat(crayon::cyan(paste0(Sys.time(), ': seurat gene score calculated\n')))
     for(o in names(seuobj@meta.data)) {
       
       if(o %in% names(object@sample_metadata)) {
@@ -102,25 +94,25 @@ add.feature.score <- function(object,
       
     }
     object@sample_metadata[[column.name]] <- seuobj@meta.data[, length(colnames(seuobj@meta.data))]
-    cat(crayon::cyan('New metadata added\n'))
+    cat(crayon::cyan(paste0(Sys.time(), ': new metadata added\n')))
   } else {
     seuobj <- Seurat::CreateSeuratObject(counts = object@methods[[assay]][['counts']])
     seuobj@assays$RNA@data <- object@methods[[assay]][[slot]]
-    cat(crayon::cyan('Converted to Seurat object\n'))
+    cat(crayon::cyan(paste0(Sys.time(), ': converted to Seurat object\n')))
     seuobj <- Seurat::AddModuleScore(object = seuobj, features = features, ...)
-    cat(crayon::cyan('Seurat gene score calculated\n'))
+    cat(crayon::cyan(paste0(Sys.time(), ': seurat gene score calculated\n')))
     for(o in names(seuobj@meta.data)) {
       
       if(o %in% names(object@sample_metadata)) {
         
-        cat(crayon::cyan(paste0('found duplicated column name: ',o, 'removing old column names.\n')))
+        cat(crayon::cyan(paste0(Sys.time(), ': found duplicated column name: ',o, 'removing old column names.\n')))
         object@sample_metadata[,o] <- NULL
         
       }
       
     }
     object@sample_metadata[[column.name]] <- seuobj@meta.data[, length(colnames(seuobj@meta.data))]
-    cat(crayon::cyan('New metadata added\n'))
+    cat(crayon::cyan(paste0(Sys.time(), ': new metadata added\n')))
   }
   return(object)
 }

@@ -30,8 +30,7 @@ perform.seurat.diffexp <- function(object,
   
   if(!is(object, 'IBRAP')) {
     
-    cat(crayon::cyan('Object must be IBRAP class \n'))
-    return(NULL)
+    stop('Object must be IBRAP class \n')
     
   }
   
@@ -39,22 +38,19 @@ perform.seurat.diffexp <- function(object,
     
     if(!is.character(assay)) {
       
-      cat(crayon::cyan('Assay must be character string \n'))
-      return(NULL)
+      stop('Assay must be character string \n')
       
     }
     
   } else if (is.null(assay)) {
     
-    cat(crayon::cyan('Please indicate which assay to access \n'))
-    return(NULL)
+    stop('Please indicate which assay to access \n')
     
   }
   
   if(!is.character(test)) {
     
-    cat(crayon::cyan('Test must be character string \n'))
-    return(NULL)
+    stop('Test must be character string \n')
     
   }
   
@@ -62,20 +58,17 @@ perform.seurat.diffexp <- function(object,
     
     if(!is.vector(cells.1)) {
       
-      cat(crayon::cyan('cells.1 must be a vector \n'))
-      return(NULL)
+      stop('cells.1 must be a vector \n')
       
     } else if(!cells.1 %in% colnames(object@methods[[assay]][[counts]] )) {
       
-      cat(crayon::cyan('cells.1 are not contained within the assay \n'))
-      return(NULL)
+      stop('cells.1 are not contained within the assay \n')
       
     }
     
   } else if (is.null(cells.1)) {
     
-    cat(crayon::cyan('Please provide the cells.1 identities \n'))
-    return(NULL)
+    stop('Please provide the cells.1 identities \n'
     
   }
   
@@ -83,20 +76,17 @@ perform.seurat.diffexp <- function(object,
     
     if(!is.vector(cells.2)) {
       
-      cat(crayon::cyan('cells.2 must be a vector \n'))
-      return(NULL)
+      stop('cells.2 must be a vector \n')
       
     } else if(!cells.2 %in% colnames(object@methods[[assay]][[counts]] )) {
       
-      cat(crayon::cyan('cells.2 are not contained within the assay \n'))
-      return(NULL)
+      stop('cells.2 are not contained within the assay \n')
       
     }
     
   } else if (is.null(cells.2)) {
     
-    cat(crayon::cyan('Please provide the cells.2 identities \n'))
-    return(NULL)
+    stop('Please provide the cells.2 identities \n')
     
   }
   
@@ -108,20 +98,17 @@ perform.seurat.diffexp <- function(object,
     
     if(!is.vector(identity)) {
       
-      cat(crayon::cyan('Identity must be a vector \n'))
-      return(NULL)
+      stop('Identity must be a vector \n')
       
     } else if(length(identity) != ncol(object@methods[[assay]]@counts)) {
       
-      cat(crayon::cyan('Identity length does not match the number of cells \n'))
-      return(NULL)
+      stop('Identity length does not match the number of cells \n')
       
     }
     
   } else if (is.null(identity)) {
     
-    cat(crayon::cyan('Please provide the cell identities \n'))
-    return(NULL)
+    stop('Please provide the cell identities \n')
     
   }
   
@@ -129,13 +116,11 @@ perform.seurat.diffexp <- function(object,
     
     if(!is.vector(ident.1)) {
       
-      cat(crayon::cyan('ident.1 must be a vector \n'))
-      return(NULL)
+      stop('ident.1 must be a vector \n')
       
     } else if (!ident.1 %in% identity) {
       
-      cat(crayon::cyan('ident.1 is not contained within identity \n'))
-      return(NULL)
+      stop('ident.1 is not contained within identity \n')
       
     } else {
       
@@ -150,13 +135,11 @@ perform.seurat.diffexp <- function(object,
     
     if(!is.vector(ident.2)) {
       
-      cat(crayon::cyan('ident.2 must be a vector \n'))
-      return(NULL)
+      stop('ident.2 must be a vector \n')
       
     } else if (!ident.2 %in% identity) {
       
-      cat(crayon::cyan('ident.2 is not contained within identity \n'))
-      return(NULL)
+      stop('ident.2 is not contained within identity \n')
       
     }
     
@@ -166,13 +149,11 @@ perform.seurat.diffexp <- function(object,
     
     if(!is.character(latent.vars)) {
       
-      cat(crayon::cyan('Latent.vars must be character(s)\n'))
-      return(NULL)
+      stop('Latent.vars must be character(s)\n')
       
     } else if (!latent.vars %in% names(object@sample_metadata)) {
       
-      cat(crayon::cyan('Latent.vars do not exist in object@sample_metadata \n'))
-      return(NULL)
+      stop('Latent.vars do not exist in object@sample_metadata \n')
       
     }
     

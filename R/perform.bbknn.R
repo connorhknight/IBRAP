@@ -19,6 +19,9 @@
 #' @param use_faiss Boolean. Uses faiss package to compute nearest neighbour, this improves run time at the cost of precision. Default = TRUE
 #' @param set_op_mix_ratio Numerical. UMAP connectivity parameter between 0 and 1. controls the blen d between a connectivity matrix formed exclusively from mutual nearest neighbour pairs (0) and a union of all observed neighbour relationships with the mutual pairs emphasised (1). Default = 1.0
 #' @param local_connectivity Numerical. How many nearest neighbours of each cell are assumed to be fully connected. Default = 1
+#' @param generate.diffmap Boolean. Should diffusion maps be generated from the neighourhood graphs, these will be stored in computational_reductions and can be used for umap generation and further neighbourhood generation. Default = TRUE
+#' @param n_comps Numerical. How many components should be generated for the diffusion maps. Default = 15
+#' @param diffmap.name Character. What should the diffusion maps be named. 
 #' 
 #' @return BBKNN connectivity graph contained in graphs in the indicated method-assays
 #'
@@ -38,19 +41,19 @@ perform.bbknn <- function(object,
                           use_faiss = TRUE,
                           set_op_mix_ratio = 1.0,
                           local_connectivity= 1,
-                          save.object = TRUE) {
+                          generate.diffmap = FALSE,
+                          n_comps = 15,
+                          diffmap.name) {
   
   if(!is(object = object, class2 = 'IBRAP')) {
     
-    cat(crayon::cyan('object must be of class IBRAP\n'))
-    return(object)
+    stop('object must be of class IBRAP\n')
     
   }
   
   if(!is.character(assay)) {
     
-    cat(crayon::cyan('assay must be character string\n'))
-    return(object)
+    stop('assay must be character string\n')
     
   }
   
@@ -58,8 +61,7 @@ perform.bbknn <- function(object,
     
     if(!x %in% names(object@methods)) {
       
-      cat(crayon::cyan(paste0('reduction: ', x, 'does not exist\n')))
-      return(object)
+      stop(paste0('reduction: ', x, 'does not exist\n'))
       
     }
     
@@ -67,8 +69,7 @@ perform.bbknn <- function(object,
   
   if(!is.character(reduction)) {
     
-    cat(crayon::cyan('reduction must be character string\n'))
-    return(object)
+    stop('reduction must be character string\n')
     
   }
   
@@ -76,12 +77,10 @@ perform.bbknn <- function(object,
     
     for(i in assay) {
       
-      if(!x %in% names(c(object@methods[[i]]@computational_reductions, 
-                         object@methods[[i]]@visualisation_reductions, 
+      if(!x %in% names(c(object@methods[[i]]@computational_reductions, object@methods[[i]]@visualisation_reductions, 
                          object@methods[[i]]@integration_reductions))) {
         
-        cat(crayon::cyan(paste0('reduction: ', x, ' does not exist\n')))
-        return(object)
+        stop(paste0('reduction: ', x, ' does not exist\n'))
         
       }
       
@@ -91,54 +90,45 @@ perform.bbknn <- function(object,
   
   if(!is.character(graph.name)) {
     
-    cat(crayon::cyan('graph.name must be character string\n'))
-    return(object)
+    stop('graph.name must be character string\n')
     
   }
   
   if(!is.character(batch)) {
     
-    cat(crayon::cyan('batch must be character string\n'))
-    return(object)
+    stop('batch must be character string\n')
     
   }
   
   if(!batch %in% colnames(object@sample_metadata)) {
     
-    cat(crayon::cyan('batch does not exist\n'))
-    return(object)
+    stop(crayon::cyan('batch does not exist\n'))
     
   }
   
   if(!is.logical(approx)) {
     
-    cat(crayon::cyan('approx must be logical: TRUE/FALSE \n'))
-    return(object)
+    stop('approx must be logical: TRUE/FALSE \n')
     
   }
   
   if(!is.character(metric)) {
     
-    cat(crayon::cyan('metric must be character \n'))
-    return(object)
+    stop('metric must be character \n')
     
   }
   
   if(!is.numeric(neighbors_within_batch)) {
     
-    cat(crayon::cyan('neighbors_within_batch must be numerical \n'))
-    return(object)
+    stop('neighbors_within_batch must be numerical \n')
     
   }
-  
-  
   
   if(!is.null(trim)) {
     
     if(!is.numeric(trim)) {
       
-      cat(crayon::cyan('trim must be character string\n'))
-      return(object)
+      stop('trim must be character string\n')
       
     }
     
@@ -146,46 +136,37 @@ perform.bbknn <- function(object,
   
   if(!is.numeric(n_trees)) {
     
-    cat(crayon::cyan('n_trees must be numerical\n'))
-    return(object)
+    stop('n_trees must be numerical\n')
     
   }
   
   if(!is.logical(use_faiss)) {
     
-    cat(crayon::cyan('use_faiss must be logical: TRUE/FALSE\n'))
+    stop('use_faiss must be logical: TRUE/FALSE\n')
     
   }
   
   if(!is.numeric(set_op_mix_ratio)) {
     
-    cat(crayon::cyan('set_op_mix_ratio must be numerical\n'))
-    return(object)
+    stop('set_op_mix_ratio must be numerical\n')
     
   }
   
   if(!is.numeric(local_connectivity)) {
     
-    cat(crayon::cyan('local_connectivity must be numerical\n'))
-    return(object)
+    stop('local_connectivity must be numerical\n')
     
   }
   
-  if(!is.logical(save.object)) {
-    
-    cat(crayon::cyan('save.object must be logical: TRUE/FALSE\n'))
-    return(object)
-    
-  }
+  sc <- reticulate::import('scanpy')
+  pd <- reticulate::import('pandas')
   
   for(p in assay) {
     
     count <- 1
     
     for(r in reduction) {
-      
-      sc <- reticulate::import('scanpy')
-      
+    
       scobj <- sc$AnnData(X = object@methods[[p]]@computational_reductions[[reduction[count]]])
       
       scobj$obs_names <- as.factor(colnames(object))
@@ -195,16 +176,14 @@ perform.bbknn <- function(object,
       scobj$obsm$update(X_pca = object@methods[[p]]@computational_reductions[[reduction[count]]])
       
       if(length(colnames(as.data.frame(object@sample_metadata))) >= 1) {
-        
-        pd <- reticulate::import('pandas')
-        
+
         scobj$obs <- pd$DataFrame(data = as.data.frame(object@sample_metadata))
         
       }
       
       if(is.null(n_pcs)) {
         
-        cat(crayon::cyan('npcs calculated\n'))
+        cat(crayon::cyan(paste0(Sys.time(), ': npcs calculated\n')))
         
         n_pcs <- as.integer(length(colnames(object@methods[[p]]@computational_reductions[[reduction[count]]])))
         
@@ -212,7 +191,7 @@ perform.bbknn <- function(object,
       
       if(is.null(trim)) {
         
-        cat(crayon::cyan(paste0('initialising BBKNN for assay: ', p,  ', reduction: ', r, '\n')))
+        cat(crayon::cyan(paste0(Sys.time(), ': initialising BBKNN for assay: ', p,  ', reduction: ', r, '\n')))
         
         sc$external$pp$bbknn(scobj,
                              batch_key = as.character(batch),
@@ -225,11 +204,11 @@ perform.bbknn <- function(object,
                              set_op_mix_ratio = set_op_mix_ratio,
                              local_connectivity = local_connectivity)
         
-        cat(crayon::cyan('BBKNN complete \n'))
+        cat(crayon::cyan(paste0(Sys.time(), ': BBKNN complete \n')))
         
       } else if (!is.null(trim)) {
         
-        cat(crayon::cyan(paste0('initialising BBKNN for assay: ', p,  ', reduction: ', r, '\n')))
+        cat(crayon::cyan(paste0(Sys.time(), ': initialising BBKNN for assay: ', p,  ', reduction: ', r, '\n')))
         
         sc$external$pp$bbknn(scobj,
                              batch_key= as.character(batch),
@@ -243,7 +222,36 @@ perform.bbknn <- function(object,
                              set_op_mix_ratio = set_op_mix_ratio,
                              local_connectivity = local_connectivity)
         
-        cat(crayon::cyan('BBKNN complete \n'))
+        cat(crayon::cyan(paste0(Sys.time(), ': BBKNN complete \n')))
+        
+      }
+      
+      if(isTRUE(generate.diffmap)) {
+        
+        cat(crayon::cyan(paste0(Sys.time(), ': calcualting diffusion map\n')))
+        
+        sc$tl$diffmap(adata = scobj, n_comps = as.integer(n_comps))
+        
+        cat(crayon::cyan(paste0(Sys.time(), ': diffusion map calculated\n')))
+        
+        diffmap <- as.matrix(scobj$obsm[['X_diffmap']])
+        
+        DC_names <- list()
+        
+        counter <- 1
+        
+        for(x in 1:ncol(diffmap)) {
+          
+          DC_names[[counter]] <- paste0('DC_', counter)
+          
+          counter <- counter + 1
+          
+        }
+        
+        DC_names <- unlist(DC_names)
+        
+        colnames(diffmap) <- DC_names
+        rownames(diffmap) <- colnames(object)
         
       }
       
@@ -261,6 +269,8 @@ perform.bbknn <- function(object,
       graph.list[['distances']] <- distances
       
       object@methods[[p]]@neighbours[[graph.name[count]]] <- graph.list
+      
+      object@methods[[p]]@computational_reductions[[diffmap.name[count]]] <- diffmap
 
       count <- count + 1
       

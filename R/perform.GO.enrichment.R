@@ -40,65 +40,55 @@ perform.GO.enrichment <- function(result,
   
   if(!is.data.frame(result)) {
     
-    cat(crayon::cyan('results must be in data.frame format \n'))
-    return(NULL)
+    stop('results must be in data.frame format \n')
     
   } 
   
   if(!is.character(gene.col)) {
     
-    cat(crayon::cyan('Gene.col must be a character string \n'))
-    return(NULL)
+    stop('Gene.col must be a character string \n')
     
   } else if (!gene.col %in% colnames(result)) {
     
-    cat(crayon::cyan('gene.col is not in colnames(results) \n'))
-    return(NULL)
+    stop('gene.col is not in colnames(results) \n')
     
   }
   
   if(!is.character(pval.col)) {
     
-    cat(crayon::cyan('pval.col must be a character string \n'))
-    return(NULL)
+    stop('pval.col must be a character string \n')
     
   } else if (!pval.col %in% colnames(result)) {
     
-    cat(crayon::cyan('pval.col is not in colnames(results) \n'))
-    return(NULL)
+    stop('pval.col is not in colnames(results) \n')
     
   }
   
   if(!is.character(cluster.col)) {
     
-    cat(crayon::cyan('cluster.col must be a character string \n'))
-    return(NULL)
+    stop('cluster.col must be a character string \n')
     
   } else if (!cluster.col %in% colnames(result)) {
     
-    cat(crayon::cyan('cluster.col is not in colnames(results) \n'))
-    return(NULL)
+    stop('cluster.col is not in colnames(results) \n')
     
   }
   
   if(!is.numeric(nodeSize)) {
     
-    cat(crayon::cyan('nodeSize must be numerical\n'))
-    return(NULL)
+    stop('nodeSize must be numerical\n')
     
   }
   
   if(!is.numeric(rank.cutoff)) {
     
-    cat(crayon::cyan('rank.cutoff must be numerical\n'))
-    return(NULL)
+    stop('rank.cutoff must be numerical\n')
     
   }
   
   if(!is.numeric(n.top.pathways)) {
     
-    cat(crayon::cyan('n.top.pathways must be numerical\n'))
-    return(NULL)
+    stop('n.top.pathways must be numerical\n')
     
   }
   
@@ -168,6 +158,8 @@ perform.GO.enrichment <- function(result,
     }
 
   }
+  
+  cat(crayon::cyan(paste0(Sys.time(), ': completed gene ontology enrichment \n')))
   
   return(cat_df)
   

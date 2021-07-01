@@ -29,29 +29,25 @@ perform.slingshot.trajectory <- function(object,
   
   if(!is(object, 'IBRAP')) {
     
-    cat(crayon::cyan('Object must be of class IBRAP \n'))
-    return(NULL)
+    stop('Object must be of class IBRAP \n')
     
   }
   
   if(!is.character(reduction)) {
     
-    cat(crayon::cyan('Reduction must be character string \n'))
-    return(NULL)
+    stop('Reduction must be character string \n')
     
   }
   
   if(!is.character(assay)) {
     
-    cat(crayon::cyan('Assay must be character string \n'))
-    return(NULL)
+    stop('Assay must be character string \n')
     
   }
   
   if(!assay %in% names(object@methods)) {
     
-    cat(crayon::cyan('Assay does not exist \n'))
-    return(NULL)
+    stop('Assay does not exist \n')
     
   }
   
@@ -59,8 +55,7 @@ perform.slingshot.trajectory <- function(object,
                        names(object@methods[[assay]]@integration_reductions),
                        names(object@methods[[assay]]@visualisation_reductions))) {
     
-    cat(crayon::cyan('Reduction not present in assay \n'))
-    return(NULL)
+    stop('Reduction not present in assay \n')
     
   }
   
@@ -94,8 +89,7 @@ perform.slingshot.trajectory <- function(object,
   
   if(!is.character(clust.method)) {
     
-    cat(crayon::cyan('clust.method should be a character string \n'))
-    return(NULL)
+    stop('clust.method should be a character string \n')
     
   }
   
@@ -103,15 +97,13 @@ perform.slingshot.trajectory <- function(object,
     
     if(!clust.method %in% names(object@methods[[assay]]@cluster_assignments)) {
       
-      cat(crayon::cyan('clust.method should either be metadata or cluster assignment data.frame name \n'))
-      return(NULL)
+      stop('clust.method should either be metadata or cluster assignment data.frame name \n')
       
     }
     
     if(!column %in% colnames(object@methods[[assay]]@cluster_assignments[[clust.method]])) {
       
-      cat(crayon::cyan(paste0(column, ' does not exist in the defined clust.method dataframe \n')))
-      return(NULL)
+      stop(paste0(column, ' does not exist in the defined clust.method dataframe \n'))
       
     } else if (column %in% colnames(object@methods[[assay]]@cluster_assignments[[clust.method]])) {
       
@@ -119,8 +111,7 @@ perform.slingshot.trajectory <- function(object,
       
       if(is.null(clusters)) {
         
-        cat(crayon::cyan(paste0('error, defined column is null \n')))
-        return(NULL)
+        stop(paste0('error, defined column is null \n'))
         
       }
       
@@ -130,8 +121,7 @@ perform.slingshot.trajectory <- function(object,
     
     if(!column %in% colnames(object@sample_metadata)) {
       
-      cat(crayon::cyan(paste0('error, defined column is null \n')))
-      return(NULL)
+      stop(paste0('error, defined column is null \n'))
       
     } else if (column %in% colnames(object@sample_metadata)) {
       
@@ -139,8 +129,7 @@ perform.slingshot.trajectory <- function(object,
       
       if(is.null(clusters)) {
         
-        cat(crayon::cyan(paste0('error, defined column is null \n')))
-        return(NULL)
+        stop(paste0('error, defined column is null \n'))
         
       }
       
@@ -152,8 +141,7 @@ perform.slingshot.trajectory <- function(object,
     
     if(!start.clus %in% clusters) {
       
-      cat(crayon::cyan(paste0('start cluster is not present within the defined clusters \n')))
-      return(NULL)
+      stop(paste0('start cluster is not present within the defined clusters \n'))
       
     }
     
@@ -163,20 +151,19 @@ perform.slingshot.trajectory <- function(object,
     
     if(!end.clus %in% clusters) {
       
-      cat(crayon::cyan(paste0('end cluster is not present within the defined clusters \n')))
-      return(NULL)
+      stop(paste0('end cluster is not present within the defined clusters \n'))
       
     }
     
   }
   
-  cat(crayon::cyan('initiating slingshot \n'))
+  cat(crayon::cyan(paste0(Sys.time(), ': initiating slingshot \n')))
   
   res <- slingshot::slingshot(data = red, clusterLabels = clusters, start.clus = start.clus, end.clus = end.clus, ...)
   
   pt <- slingshot::slingPseudotime(res)
   
-  cat(crayon::cyan('initiating slingshot \n'))
+  cat(crayon::cyan(paste0(Sys.time(), ': initiating slingshot \n')))
   
   slingres <- list(assignments = res, pseudotimes = pt)
   

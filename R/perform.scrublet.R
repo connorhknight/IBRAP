@@ -55,8 +55,7 @@ perform.scrublet <- function(counts,
     
     if (!is(object = counts, class2 = 'dgCMatrix')) {
       
-      cat(crayon::cyan('counts must be in matrix or dgCMatrix format\n'))
-      return(counts)
+      stop('counts must be in matrix or dgCMatrix format\n')
       
     }
     
@@ -66,8 +65,7 @@ perform.scrublet <- function(counts,
     
     if(!is.numeric(total_counts)) {
       
-      cat(crayon::cyan('total_counts must be numerical\n'))
-      return(counts)
+      stop('total_counts must be numerical\n')
       
     }
     
@@ -75,8 +73,7 @@ perform.scrublet <- function(counts,
   
   if(!is.numeric(sim_doublet_ratio)) {
     
-    cat(crayon::cyan('sim_doublet_ratio must be numerical\n'))
-    return(counts)
+    stop('sim_doublet_ratio must be numerical\n'
     
   }
   
@@ -84,8 +81,7 @@ perform.scrublet <- function(counts,
     
     if(!is.numeric(n_neighbors)) {
       
-      cat(crayon::cyan('n_neighbors must be numerical\n'))
-      return(counts)
+      stop('n_neighbors must be numerical\n')
       
     }
     
@@ -93,112 +89,97 @@ perform.scrublet <- function(counts,
   
   if(!is.numeric(expected_doublet_rate)) {
     
-    cat(crayon::cyan('expected_doublet_rate must be numerical\n'))
-    return(counts)
+    stop('expected_doublet_rate must be numerical\n')
     
   }
   
   if(!is.numeric(stdev_doublet_rate)) {
     
-    cat(crayon::cyan('stdev_doublet_rate must be numerical\n'))
-    return(counts)
+    stop('stdev_doublet_rate must be numerical\n')
     
   }
   
   if(!is.numeric(random_state)) {
     
-    cat(crayon::cyan('random_state must be numerical\n'))
-    return(counts)
+    stop('random_state must be numerical\n')
     
   }
   
   if(!is.numeric(synthetic_doublet_umi_subsampling)) {
     
-    cat(crayon::cyan('synthetic_doublet_umi_subsampling must be numerical\n'))
-    return(counts)
+    stop'synthetic_doublet_umi_subsampling must be numerical\n')
     
   }
   
   if(!is.logical(use_approx_neighbors)) {
     
-    cat(crayon::cyan('use_approx_neighbors must be logical: TRUE/FALSE\n'))
-    return(counts)
+    stop('use_approx_neighbors must be logical: TRUE/FALSE\n')
     
   }
   
   if(!is.character(distance_metric)) {
     
-    cat(crayon::cyan('distance_metric must be character string\n'))
-    return(counts)
+    stop('distance_metric must be character string\n')
     
   }
   
   if(!is.logical(get_doublet_neighbor_parents)) {
     
-    cat(crayon::cyan('get_doublet_neighbor_parents must be logical: TRUE/FALSE\n'))
-    return(counts)
+    stop('get_doublet_neighbor_parents must be logical: TRUE/FALSE\n')
     
   }
   
   if(!is.numeric(min_counts)) {
     
-    cat(crayon::cyan('min_counts must be numerical\n'))
-    return(counts)
+    stop('min_counts must be numerical\n')
     
   }
   
   if(!is.numeric(min_cells)) {
     
-    cat(crayon::cyan('min_cells must be numerical\n'))
-    return(counts)
+    stop('min_cells must be numerical\n')
     
   }
   
   if(!is.numeric(min_gene_variability_pctl)) {
     
-    cat(crayon::cyan('min_gene_variability_pctl must be numerical\n'))
-    return(counts)
+    stop('min_gene_variability_pctl must be numerical\n')
     
   }
   
   if(!is.logical(log_transform)) {
     
-    cat(crayon::cyan('log_transform must be logical: TRUE/FALSE\n'))
-    return(counts)
+    stop('log_transform must be logical: TRUE/FALSE\n')
     
   }
   
   if(!is.logical(mean_center)) {
     
-    cat(crayon::cyan('mean_center must be logical: TRUE/FALSE\n'))
-    return(counts)
+    stop('mean_center must be logical: TRUE/FALSE\n')
     
   }
   
   if(!is.logical(normalize_variance)) {
     
-    cat(crayon::cyan('normalize_variance must be logical: TRUE/FALSE\n'))
-    return(counts)
+    stop('normalize_variance must be logical: TRUE/FALSE\n')
     
   }
   
   if(!is.numeric(n_prin_comps)) {
     
-    cat(crayon::cyan('n_prin_comps must be numerical\n'))
-    return(counts)
+    stop('n_prin_comps must be numerical\n')
     
   }
   
   if(!is.character(svd_solver)) {
     
-    cat(crayon::cyan('svd_solver must be numerical\n'))
-    return(counts)
+    stop('svd_solver must be numerical\n')
     
   }
   
-  cat(crayon::cyan('Initialising scrublet\n'))
+  cat(crayon::cyan(paste0(Sys.time(), ': initialising scrublet\n')))
   scrublet <- reticulate::import('scrublet', convert = FALSE)
-  cat(crayon::cyan('Python modules loaded\n'))
+  cat(crayon::cyan(paste0(Sys.time(), ': python modules loaded\n')))
   
   scrub1 <- scrublet$Scrublet(counts_matrix = as.data.frame(as.matrix(t(counts))), 
                               total_counts = total_counts, 
@@ -208,7 +189,7 @@ perform.scrublet <- function(counts,
                               stdev_doublet_rate = stdev_doublet_rate, 
                               random_state = random_state)
   
-  cat(crayon::cyan('scrublet object created\n'))
+  cat(crayon::cyan(paste0(Sys.time(), ': scrublet object created\n')))
   
   res1 <- reticulate::py_to_r(scrub1$scrub_doublets(synthetic_doublet_umi_subsampling = synthetic_doublet_umi_subsampling,
                                                     use_approx_neighbors = use_approx_neighbors, 
@@ -245,11 +226,11 @@ perform.scrublet <- function(counts,
   comb.plot <- cowplot::plot_grid(sim.plot, obs.plot, ncol = 2, nrow = 1)
   print(comb.plot)
   
-  cat(crayon::cyan('doublets detected\n'))
+  cat(crayon::cyan(paste0(Sys.time(), ': doublets detected\n')))
   counts <- as.matrix(counts)
   counts <- counts[,!res1[[2]]]
   counts <- Matrix::Matrix(data = counts, sparse = T)
-  cat(crayon::cyan('matrix scrubbed\n'))
+  cat(crayon::cyan(paste0(Sys.time(), ': matrix scrubbed\n')))
   
   return(counts)
 }

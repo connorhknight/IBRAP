@@ -18,8 +18,7 @@ filter_IBRAP <- function(object, ...) {
   
   if(!is(object = object, class2 = 'IBRAP')) {
     
-    cat(crayon::cyan('Object must be class IBRAP'))
-    return(NULL)
+    stop('Object must be class IBRAP')
     
   }
   

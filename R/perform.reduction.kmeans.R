@@ -29,15 +29,13 @@ perform.reduction.kmeans <- function(object,
   
   if(!is(object = object, class2 = 'IBRAP')) {
     
-    cat(crayon::cyan('object must be of class IBRAP \n'))
-    return(NULL)
+    stop('object must be of class IBRAP \n')
     
   }
   
   if(!is.character(assay)) {
     
-    cat(crayon::cyan('assay must be character string(s) \n'))
-    return(NULL)
+    stop('assay must be character string(s) \n')
     
   }
   
@@ -45,8 +43,7 @@ perform.reduction.kmeans <- function(object,
     
     if(!x %in% names(object@methods)) {
       
-      cat(crayon::cyan(paste0('reduction: ', x, 'does not exist\n')))
-      return(object)
+      stop(paste0('reduction: ', x, 'does not exist\n'))
       
     }
     
@@ -60,8 +57,7 @@ perform.reduction.kmeans <- function(object,
                          object@methods[[i]]@visualisation_reductions, 
                          object@methods[[i]]@integration_reductions))) {
         
-        cat(crayon::cyan(paste0('reduction: ', x, ' does not exist\n')))
-        return(object)
+        stop(paste0('reduction: ', x, ' does not exist\n'))
         
       }
       
@@ -71,22 +67,19 @@ perform.reduction.kmeans <- function(object,
   
   if(!is.numeric(k)) {
     
-    cat(crayon::cyan(paste0('k must be numerical\n')))
-    return(object)
+    stop(paste0('k must be numerical\n'))
     
   }
   
   if(!is.character(assignment.df.name)) {
     
-    cat(crayon::cyan(paste0('assignment.df.name must be character string(s)\n')))
-    return(object)
+    stop(paste0('assignment.df.name must be character string(s)\n'))
     
   }
   
   if(!method %in% c('kmeans', 'pam')) {
     
-    cat(crayon::cyan(paste0('method must be kmeans or pam\n')))
-    return(object)
+    stop(paste0('method must be kmeans or pam\n'))
     
   }
   
@@ -123,15 +116,11 @@ perform.reduction.kmeans <- function(object,
       
       if(!r %in% names(reduction.list)) {
         
-        cat(crayon::cyan('reductions could not be found\n'))
-        return(object)
+      stop('reductions could not be found\n')
         
       }
       
     }
-    
-    print(reduction)
-    print(names(reduction.list))
     
     reduction.list <- reduction.list[reduction]
     
@@ -161,22 +150,28 @@ perform.reduction.kmeans <- function(object,
       rownames(clusters) <- colnames(object)
       
       if(is.null(k)) {
-        cat(crayon::cyan('Specify number of clusters\n'))
+        stop('specify number of clusters\n')
       }
       if(is.null(reduction)) {
-        cat(crayon::cyan('Provide assay\n'))
+        stop('provide assay\n')
       }
       if(method == 'pam') {
         for(i in k) {
+          
+          cat(crayon::cyan(paste0(Sys.time(), ': calculating PAM for k = ', i, '\n')))
+          
           clusters[,paste0('pam_clustering_K_', i)] <- as.factor(cluster::pam(x = red[,dimen], k = i, ...)$clustering)
         }
       }
       if(method == 'kmeans') {
         for(i in k) {
+          
+          cat(crayon::cyan(paste0(Sys.time(), ': calculating kmeans for k = ', i, '\n')))
+          
           clusters[[paste0('kmeans_clustering_K_', i)]] <- as.factor(kmeans(x = red[,dimen], centers = i, ...)$cluster)
         }
       } else {
-        cat(crayon::cyan('Please specify method: pam or kmeans\n'))
+        stop('please specify method: pam or kmeans\n')
       }
       
       clusters <- clusters[,2:length(colnames(clusters))]
@@ -186,6 +181,8 @@ perform.reduction.kmeans <- function(object,
     }
     
   }
+  
+  cat(crayon::cyan(paste0(Sys.time(), ': finished kmeans clustering \n')
   
   return(object)
 }

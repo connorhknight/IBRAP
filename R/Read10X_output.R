@@ -27,13 +27,13 @@ Read10X_output <- function(directory,
   
   dir.files <- list.files(path = directory)
   if(!matrix.file %in% dir.files) {
-    cat(crayon::cyan(paste0('Expected file: ', matrix.file, '\n')))
+    cat(crayon::cyan(paste0(Sys.time(), ': expected file: ', matrix.file, '\n')))
   }
   if(!genes.file %in% dir.files) {
-    cat(crayon::cyan('Expected file: ', genes.file, '\n'))
+    cat(crayon::cyan(paste0(Sys.time(), ': expected file: ', genes.file, '\n')))
   }
   if(!barcodes.file %in% dir.files) {
-    cat(crayon::cyan('Expected file: ', barcodes.file, '\n'))
+    cat(crayon::cyan(paste0(Sys.time(), ': expected file: ', barcodes.file, '\n')))
   }
   count.file <- paste0(directory, '/', matrix.file)
   genes.file <- paste0(directory, '/', genes.file)
@@ -41,18 +41,18 @@ Read10X_output <- function(directory,
   genes_ensembl <- utils::read.table(file = genes.file, sep = '\t', header = FALSE)
   barcodes <- utils::read.table(file = barcodes.files, sep = '\t', header = FALSE)
   mm <- Matrix::readMM(count.file)
-  cat(crayon::cyan('Files loaded\n'))
+  cat(crayon::cyan(paste0(Sys.time(), ': files loaded\n')))
   true.length <- length(genes_ensembl$V2)
   if(true.length != length(unique(genes_ensembl$V2))) {
     if(isTRUE(make.feat.unique)) {
-      cat(crayon::cyan('Non-unique features identified\n'))
+      cat(crayon::cyan(paste0(Sys.time(), ': non-unique features identified\n')))
       genes_ensembl$V2 <- make.unique(genes_ensembl$V2)
     }
     
   }
   rownames(mm) <- genes_ensembl$V2
   colnames(mm) <- barcodes$V1
-  cat(crayon::cyan('Success: Matrix concatenated\n'))
+  cat(crayon::cyan(paste0(Sys.time(), ': success: Matrix concatenated\n')))
   mm <- as.matrix(mm)
   return(mm)
 }

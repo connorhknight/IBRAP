@@ -27,15 +27,13 @@ perform.sc3.slot.cluster <- function(object,
   
   if(!is(object = object, class2 = 'IBRAP')) {
     
-    cat(crayon::cyan('object must be of class IBRAP \n'))
-    return(NULL)
+    stop('object must be of class IBRAP \n')
     
   }
   
   if(!is.character(assay)) {
     
-    cat(crayon::cyan('assay must be character string(s) \n'))
-    return(NULL)
+    stop('assay must be character string(s) \n')
     
   }
   
@@ -43,8 +41,7 @@ perform.sc3.slot.cluster <- function(object,
     
     if(!x %in% names(object@methods)) {
       
-      cat(crayon::cyan(paste0('reduction: ', x, 'does not exist\n')))
-      return(object)
+      stop(paste0('reduction: ', x, 'does not exist\n'))
       
     }
     
@@ -52,40 +49,35 @@ perform.sc3.slot.cluster <- function(object,
   
   if(!is.character(slot)) {
     
-    cat(crayon::cyan(paste0('slot must be character string\n')))
-    return(object)
+    stop(paste0('slot must be character string\n'))
     
   }
   
   if(!is.logical(HVGs)) {
     
-    cat(crayon::cyan(paste0('HVGs must be logical: TRUE/FALSE\n')))
-    return(object)
+    cat(crayon::cyan(paste0('HVGs must be logical: TRUE/FALSE\n'))
     
   }
   
   if(!is.character(assignment.df.name)) {
     
-    cat(crayon::cyan(paste0('assignment.df.name must be character string(s)\n')))
-    return(object)
+    stop(paste0('assignment.df.name must be character string(s)\n'))
     
   }
   
   if(!is.numeric(ks)) {
     
-    cat(crayon::cyan(paste0('ks must be numerical\n')))
-    return(object)
+    stop(paste0('ks must be numerical\n'))
     
   }
   
   if(!is.numeric(n.core)) {
     
-    cat(crayon::cyan(paste0('n.core must be numerical\n')))
-    return(object)
+    stop(paste0('n.core must be numerical\n'))
     
   }
   
-  cat(crayon::cyan('Initialising SC3 clustering\n'))
+  cat(crayon::cyan(paste0(Sys.time(), ': initialising SC3 clustering\n')))
   
   for(p in assay) {
     
@@ -119,7 +111,7 @@ perform.sc3.slot.cluster <- function(object,
     temp.2 <- sc3_kmeans(temp.2, ks = ks)
     temp.2 <- sc3_calc_consens(temp.2)
     object@methods[[p]]@cluster_assignments[[assignment.df.name]] <- as.data.frame(colData(temp.2))
-    cat(crayon::cyan('SC3 clustering completed\n'))
+    cat(crayon::cyan(paste0(Sys.time(), ': SC3 clustering completed\n')))
     
   }
   

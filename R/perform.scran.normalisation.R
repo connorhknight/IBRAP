@@ -35,35 +35,30 @@ perform.scran.normalisation <- function(object,
   
   if(!is(object = object, class2 = 'IBRAP')) {
     
-    cat(crayon::cyan('Object must be of class IBRAP\n'))
-    return(object)
+    stop('Object must be of class IBRAP\n')
     
   }
   if(!is.character(assay)) {
     
-    cat(crayon::cyan('Assay must be a character string\n'))
-    return(object)
+    stop('Assay must be a character string\n')
     
   }
   
   if(!assay %in% names(object@methods)) {
     
-    cat(crayon::cyan('Assay does not exist\n'))
-    return(object)
+    stop('Assay does not exist\n')
     
   }
   
   if(!is.character(slot)) {
     
-    cat(crayon::cyan('Slot must be a character string\n'))
-    return(object)
+    stop('Slot must be a character string\n')
     
   }
   
   if(!is.null(batch)) {
     
-    cat(crayon::cyan('batch must be a character string of column name contained in sample_metadata\n'))
-    return(object)
+    stop('batch must be a character string of column name contained in sample_metadata\n')
     
   }
   
@@ -71,8 +66,7 @@ perform.scran.normalisation <- function(object,
     
     if(!is.character(vars.to.regress)) {
       
-      cat(crayon::cyan('vars.to.regress must be a character string(s) of column name contained in sample_metadata\n'))
-      return(object)
+      cstop('vars.to.regress must be a character string(s) of column name contained in sample_metadata\n')
       
     }
     
@@ -80,43 +74,37 @@ perform.scran.normalisation <- function(object,
   
   if(!is.logical(do.scale)) {
     
-    cat(crayon::cyan('do.scale must be logical: TRUE/FALSE\n'))
-    return(object)
+    stop('do.scale must be logical: TRUE/FALSE\n')
     
   }
   
   if(!is.logical(do.center)) {
     
-    cat(crayon::cyan('do.center must be logical: TRUE/FALSE\n'))
-    return(object)
+    stop('do.center must be logical: TRUE/FALSE\n')
     
   }
   
   if(!is.character(new.assay.name)) {
     
-    cat(crayon::cyan('new.assay.name must be character string\n'))
-    return(object)
+    stop('new.assay.name must be character string\n')
     
   }
   
   if(!is.numeric(n.genes)) {
     
-    cat(crayon::cyan('n.genes must be numerical\n'))
-    return(object)
+    stop('n.genes must be numerical\n')
     
   }
   
   if(!is.numeric(max.cluster.size)) {
     
-    cat(crayon::cyan('max.cluster.size must be numerical\n'))
-    return(object)
+    stop('max.cluster.size must be numerical\n')
     
   }
   
   if(!is.logical(center_size_factors)) {
     
-    cat(crayon::cyan('center_size_factors must be logical: TRUE/FALSE\n'))
-    return(object)
+    stop('center_size_factors must be logical: TRUE/FALSE\n')
     
   }
   
@@ -127,18 +115,17 @@ perform.scran.normalisation <- function(object,
   
   clusters <- scran::quickCluster(mat)
   
-  cat(crayon::cyan('quickCluster completed\n'))
+  cat(crayon::cyan(paste0(Sys.time(), ': quickCluster completed\n')))
   sce <- scran::computeSumFactors(sce, clusters=clusters, max.cluster.size=max.cluster.size, assay.type=slot)
   sce <- scuttle::logNormCounts(x = sce, log = F, center.size.factors=center_size_factors, exprs_values=slot)
-  SummarizedExperiment::assay(sce, 'non-logged') <- SummarizedExperiment::assay(sce, 'normcounts')
-  sce <- scuttle::logNormCounts(x = sce, log = T, center.size.factors=center_size_factors, exprs_values=slot)
-  .counts <- SummarizedExperiment::assay(sce, 'non-logged')
-  .normalised <- SummarizedExperiment::assay(sce, 'normcounts')
-  cat(crayon::cyan('normalisation completed\n'))
+  .counts <- SummarizedExperiment::assay(sce, 'normcounts')
+  SummarizedExperiment::assay(sce, 'logcounts') <- log2(.counts + 1)
+  .normalised <- SummarizedExperiment::assay(sce, 'logcounts')
+  cat(crayon::cyan(paste0(Sys.time(), ': normalisation completed\n')))
   feat.meta <- feature_metadata(assay = .counts, col.prefix = new.assay.name)
   if(!is.null(batch)) {
     
-    dec <- scran::modelGeneVar(sce, assay.type='normcounts', block=object@sample_metadata[[batch]])
+    dec <- scran::modelGeneVar(sce, assay.type='logcounts', block=object@sample_metadata[[batch]])
     
   } else {
     
@@ -148,24 +135,24 @@ perform.scran.normalisation <- function(object,
   
   top.hvgs <- scran::getTopHVGs(stats = dec, n = n.genes)
   
-  cat(crayon::cyan('HVGs identified\n'))
+  cat(crayon::cyan(paste0(Sys.time(), ': HVGs identified\n')))
   
   seuobj <- Seurat::CreateSeuratObject(counts = object@methods[[assay]]@counts)
   
   if(!is.null(vars.to.regress)) {
-    
+
     vars.to.regress.df <- as.data.frame(object@sample_metadata[,vars.to.regress])
     colnames(vars.to.regress.df) <- vars.to.regress
     rownames(vars.to.regress.df) <- colnames(object)
-    
+
     vars.to.regress.df <- vars.to.regress.df[match(rownames(seuobj@meta.data), rownames(vars.to.regress.df)),]
     seuobj@meta.data <- cbind(seuobj@meta.data,vars.to.regress.df)
-    
+
     colnames(seuobj@meta.data) <- c(names(seuobj@meta.data)[1:sum(length(names(seuobj@meta.data))-length(vars.to.regress))], vars.to.regress)
-    
-    seuobj@assays$RNA@data <- .normalised[top.hvgs,]
+
+    seuobj@assays$RNA@data <- as(.normalised, 'dgCMatrix')[top.hvgs,]
     seuobj <- Seurat::ScaleData(object = seuobj, vars.to.regress=vars.to.regress, do.scale=do.scale, do.center=do.center)
-    
+
   } else {
     
     seuobj <- Seurat::ScaleData(object = seuobj, do.scale=do.scale, do.center=do.center)
@@ -180,6 +167,6 @@ perform.scran.normalisation <- function(object,
                                           norm.scaled = as.matrix(.norm.scaled),
                                           highly.variable.genes = top.hvgs,
                                           feature_metadata = feat.meta)
-  cat(crayon::cyan('Done\n'))
+  cat(crayon::cyan(paste0(Sys.time(), ': Scran normalisation completed \n'))
   return(object)
 }

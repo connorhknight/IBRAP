@@ -39,15 +39,13 @@ perform.scanorama <- function(object,
   
   if(!is(object = object, class2 = 'IBRAP')) {
     
-    cat(crayon::cyan('object must be of class IBRAP \n'))
-    return(object)
+    stop('object must be of class IBRAP \n')
     
   }
   
   if(!is.character(assay)) {
     
-    cat(crayon::cyan('assay must be character string\n'))
-    return(object)
+    stop('assay must be character string\n')
     
   }
   
@@ -55,8 +53,7 @@ perform.scanorama <- function(object,
     
     if(!x %in% names(object@methods)) {
       
-      cat(crayon::cyan(paste0('reduction: ', x, 'does not exist\n')))
-      return(object)
+      stop(paste0('reduction: ', x, 'does not exist\n'))
       
     }
     
@@ -64,97 +61,85 @@ perform.scanorama <- function(object,
   
   if(!is.character(slot)) {
     
-    cat(crayon::cyan('slot must be a character string\n'))
-    return(object)
+    stop('slot must be a character string\n')
     
   }
   
   if(!slot %in% c('counts', 'normalised', 'norm.scaled')) {
     
-    cat(crayon::cyan('slot does not exist\n'))
-    return(object)
+    stop('slot does not exist\n')
     
   }
   
   if(!is.character(split.by)) {
     
-    cat(crayon::cyan('split.by must be character string\n'))
-    return(object)
+    stop('split.by must be character string\n')
     
   }
   
   if(!is.numeric(n.dims)) {
     
-    cat(crayon::cyan('n.dims must be numerical\n'))
-    return(object)
+    stop('n.dims must be numerical\n')
     
   }
   
   if(!is.character(reduction.save)) {
     
-    cat(crayon::cyan('reduction.save must be character string\n'))
-    return(object)
+    stop('reduction.save must be character string\n')
     
   }
   
   if(!is.numeric(batch_size)) {
     
-    cat(crayon::cyan('batch_size must be numerical\n'))
-    return(object)
+    stop('batch_size must be numerical\n')
     
   }
   
   if(!is.logical(approx)) {
     
-    cat(crayon::cyan('approx must be logical: TRUE/FALSE\n'))
-    return(object)
+    stop('approx must be logical: TRUE/FALSE\n')
     
   }
   
   if(!is.numeric(sigma)) {
     
-    cat(crayon::cyan('sigma must be numerical\n'))
-    return(object)
+    stop('sigma must be numerical\n')
     
   }
   
   if(!is.numeric(alpha)) {
     
-    cat(crayon::cyan('alpha must be numerical\n'))
-    return(object)
+    stop('alpha must be numerical\n')
     
   }
   
   if(!is.numeric(knn)) {
     
-    cat(crayon::cyan('knn must be numerical\n'))
-    return(object)
+    stop('knn must be numerical\n')
     
   }
   
   if(!is.logical(union)) {
     
-    cat(crayon::cyan('union must be logical: TRUE/FALSE\n'))
-    return(object)
+    stop('union must be logical: TRUE/FALSE\n')
     
   }
   
   if(!is.numeric(seed)) {
     
-    cat(crayon::cyan('seed must be numerical\n'))
-    return(object)
+    stop('seed must be numerical\n')
     
   }
   
-  cat(crayon::cyan('Loading python modules\n'))
+  cat(crayon::cyan(paste0(Sys.time(), ': loading python modules\n')))
   scanorama <- reticulate::import('scanorama', convert = FALSE)
-  cat(crayon::cyan('Python modules loaded\n'))
+  cat(crayon::cyan(paste0(Sys.time(), ': python modules loaded\n')))
   
   count <- 1
   
   for(p in assay) {
     
-    cat(crayon::cyan(paste0('Initialising scanorama for assay: ', p, '\n')))
+    cat(crayon::cyan(paste0(Sys.time(), ': initialising scanorama for assay: ', p, '\n')))
     
     list.matrix <- list()
     column.names <- list()
@@ -168,15 +153,15 @@ perform.scanorama <- function(object,
       counter <- counter + 1
     }
     
-    cat(crayon::cyan('Matrices isolated\n'))
+    cat(crayon::cyan(paste0(Sys.time(), ': matrices isolated\n')))
     gene.list <- list()
     
     for(x in 1:length(sep)) {
       gene.list[[x]] <- rownames(mat[,object@sample_metadata[,split.by] == x])
     }
     
-    cat(crayon::cyan('Genes identified\n'))
-    cat(crayon::cyan('Corrections starting\n'))
+    cat(crayon::cyan(paste0(Sys.time(), ': genes identified\n')))
+    cat(crayon::cyan(paste0(Sys.time(), ': corrections starting\n')))
     integrated.corrected.data <- scanorama$correct(datasets_full = reticulate::r_to_py(list.matrix), 
                                                    genes_list = reticulate::r_to_py(gene.list), 
                                                    dimred = as.integer(n.dims), 
@@ -192,7 +177,7 @@ perform.scanorama <- function(object,
                                                    seed = as.integer(seed))
     
     dims <- list()
-    cat(crayon::cyan('Isolating scanorama reduced dimensions\n'))
+    cat(crayon::cyan(paste0(Sys.time(), ': isolating scanorama reduced dimensions\n')))
     dim.names <- list()
     
     for(c in 1:n.dims) {
@@ -208,9 +193,9 @@ perform.scanorama <- function(object,
       dims[[x]] <- transposed
     }
     
-    cat(crayon::cyan('Combining samples\n'))
+    cat(crayon::cyan(paste0(Sys.time(), ': combining samples\n')))
     combined <- do.call('cbind', dims)
-    cat(crayon::cyan('Samples concatenated\n'))
+    cat(crayon::cyan(paste0(Sys.time(), ': samples concatenated\n')))
     object@methods[[p]]@integration_reductions[[reduction.save]] <- t(combined)
     
   }

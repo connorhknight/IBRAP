@@ -27,15 +27,13 @@ perform.harmony <- function(object,
   
   if(!is(object = object, class2 = 'IBRAP')) {
     
-    cat(crayon::cyan('object must be of class IBRAP \n'))
-    return(object)
+    stop('object must be of class IBRAP \n')
     
   }
   
   if(!is.character(assay)) {
     
-    cat(crayon::cyan('assay must be character string\n'))
-    return(object)
+    stop('assay must be character string\n')
     
   }
   
@@ -43,8 +41,7 @@ perform.harmony <- function(object,
     
     if(!x %in% names(object@methods)) {
       
-      cat(crayon::cyan(paste0('reduction: ', x, 'does not exist\n')))
-      return(object)
+      stop(paste0('reduction: ', x, 'does not exist\n'))
       
     }
     
@@ -52,22 +49,19 @@ perform.harmony <- function(object,
   
   if(!is.character(vars.use)) {
     
-    cat(crayon::cyan('vars.use must be character string(s)\n'))
-    return(object)
+    stop('vars.use must be character string(s)\n')
     
   }
   
   if(!vars.use %in% names(object@sample_metadata)) {
     
-    cat(crayon::cyan('vars.use does not exist\n'))
-    return(object)
+    stop('vars.use does not exist\n')
     
   }
   
   if(!is.character(reduction)) {
     
-    cat(crayon::cyan('reduction must be character string(s)\n'))
-    return(object)
+    stop('reduction must be character string(s)\n')
     
   }
   
@@ -79,8 +73,7 @@ perform.harmony <- function(object,
                          object@methods[[i]]@visualisation_reductions, 
                          object@methods[[i]]@integration_reductions))) {
         
-        cat(crayon::cyan(paste0('reduction: ', x, ' does not exist\n')))
-        return(object)
+        stop(paste0('reduction: ', x, ' does not exist\n'))
         
       }
       
@@ -90,8 +83,7 @@ perform.harmony <- function(object,
   
   if(!is.character(reduction.save)) {
     
-    cat(crayon::cyan('reduction.save must be character string(s)\n'))
-    return(object)
+    stop('reduction.save must be character string(s)\n')
     
   }
   
@@ -103,8 +95,7 @@ perform.harmony <- function(object,
         
         if(!is.numeric(x)) {
           
-          cat(crayon::cyan('dims must either be numeric or NULL\n'))
-          return(object)
+          stop('dims must either be numeric or NULL\n')
           
         } 
         
@@ -112,8 +103,7 @@ perform.harmony <- function(object,
         
         if(!is.null(x)) {
           
-          cat(crayon::cyan('dims must either be numeric or NULL\n'))
-          return(object)
+          stop('dims must either be numeric or NULL\n')
           
         }
         
@@ -156,8 +146,7 @@ perform.harmony <- function(object,
       
       if(!r %in% names(reduction.list)) {
         
-        cat(crayon::cyan('reductions could not be found\n'))
-        return(object)
+        stop('reductions could not be found\n')
         
       }
       
@@ -179,7 +168,7 @@ perform.harmony <- function(object,
         
       }
       
-      cat(crayon::cyan(paste0('Initialising harmony for assay: ', p, ', reduction: ', g, '\n')))
+      cat(crayon::cyan(paste0(Sys.time(), ': initialising harmony for assay: ', p, ', reduction: ', g, '\n')))
       
       harm <- harmony::HarmonyMatrix(data_mat = red[,dims], meta_data = object@sample_metadata, vars_use = vars.use, do_pca = FALSE, verbose = TRUE, ...)
       
@@ -191,6 +180,6 @@ perform.harmony <- function(object,
     
   }
   
-  cat(crayon::cyan('Harmony completed\n'))
+  cat(crayon::cyan(paste0(Sys.time(), ': harmony completed\n')))
   return(object)
 }

@@ -40,6 +40,7 @@ perform.scanpy.normalisation <- function(object,
                                          exclude_highly_expressed = FALSE,  
                                          max_fraction = 0.05, 
                                          key_added = 'scanpy_norm_factor',
+                                         log1 = TRUE,
                                          
                                          n_top_genes = 1500, 
                                          max_mean = 6, 
@@ -60,112 +61,96 @@ perform.scanpy.normalisation <- function(object,
   
   if(!is(object = object, class2 = 'IBRAP')) {
     
-    cat(crayon::cyan('Object must be of class IBRAP\n'))
-    return(object)
+    stop('Object must be of class IBRAP\n')
     
   }
   if(!is.character(assay)) {
     
-    cat(crayon::cyan('Assay must be a character string\n'))
-    return(object)
+    stop('Assay must be a character string\n')
     
   }
   
   if(!assay %in% names(object@methods)) {
     
-    cat(crayon::cyan('assay does not exist\n'))
-    return(object)
+    stop('assay does not exist\n')
     
   }
   
   if(!is.character(slot)) {
     
-    cat(crayon::cyan('Slot must be a character string\n'))
-    return(object)
+    stop('Slot must be a character string\n')
     
   }
   
   if(!slot %in% c('counts', 'normalised', 'norm.scaled')) {
     
-    cat(crayon::cyan('slot does not exist\n'))
-    return(object)
+    stop('slot does not exist\n')
     
   }
   
   if(!is.character(new.assay.name)) {
     
-    cat(crayon::cyan('new.assay.name must be character string \n'))
-    return(object)
+    stop('new.assay.name must be character string \n')
     
   }
   
   if(!is.numeric(target_sum)) {
     
-    cat(crayon::cyan('target_sum must be numerical \n'))
-    return(object)
+    stop('target_sum must be numerical \n')
     
   }
   
   if(!is.logical(exclude_highly_expressed)) {
     
-    cat(crayon::cyan('exclude_highly_expressed must be logical\n'))
-    return(object)
+    stop('exclude_highly_expressed must be logical\n')
     
   }
   
   if(!is.numeric(max_fraction)) {
     
-    cat(crayon::cyan('max_fraction must be numerical \n'))
-    return(object)
+    stop('max_fraction must be numerical \n')
     
   }
   
   if(!is.character(key_added)) {
     
-    cat(crayon::cyan('key_added must be character string \n'))
-    return(object)
+    stop('key_added must be character string \n')
     
   }
   
   if(!is.numeric(n_top_genes)) {
     
-    cat(crayon::cyan('n_top_genes must be numerical \n'))
-    return(object)
+    stop('n_top_genes must be numerical \n')
     
   }
   
   if(!is.numeric(max_mean)) {
     
-    cat(crayon::cyan('max_mean must be numerical \n'))
-    return(object)
+    stop('max_mean must be numerical \n')
     
   }
   
   if(!is.numeric(min_mean)) {
     
-    cat(crayon::cyan('min_mean must be numerical \n'))
-    return(object)
+    stop('min_mean must be numerical \n')
     
   }
   
   if(!is.numeric(min_disp)) {
     
-    cat(crayon::cyan('min_disp must be numerical \n'))
-    return(object)
+    stop('min_disp must be numerical \n')
     
   }
   
   if(!is.numeric(span)) {
     
-    cat(crayon::cyan('span must be numerical \n'))
-    return(object)
+    stop('span must be numerical \n')
     
   }
   
   if(!is.character(flavor)) {
     
-    cat(crayon::cyan('flavor must be character string \n'))
-    return(object)
+    stop('flavor must be character string \n'))
     
   }
   
@@ -173,8 +158,7 @@ perform.scanpy.normalisation <- function(object,
     
     if(!is.character(batch_key)) {
       
-      cat(crayon::cyan('batch_key must be character string\n'))
-      return(object)
+      stop('batch_key must be character string\n')
       
     }
     
@@ -182,8 +166,7 @@ perform.scanpy.normalisation <- function(object,
   
   if(!is.logical(do.scale)) {
     
-    cat(crayon::cyan('do.scale must be logical: TRUE/FALSE\n'))
-    return(object)
+    stop('do.scale must be logical: TRUE/FALSE\n')
     
   }
   
@@ -191,8 +174,7 @@ perform.scanpy.normalisation <- function(object,
     
     if(!is.numeric(batch_key)) {
       
-      cat(crayon::cyan('batch_key must be character string\n'))
-      return(object)
+      stop('batch_key must be character string\n')
       
     }
     
@@ -202,8 +184,7 @@ perform.scanpy.normalisation <- function(object,
     
     if(!is.character(vars.to.regress)) {
       
-      cat(crayon::cyan('vars.to.regress must be character string\n'))
-      return(object)
+      stop('vars.to.regress must be character string\n')
       
     }
     
@@ -211,8 +192,7 @@ perform.scanpy.normalisation <- function(object,
   
   if(!is.logical(do.scale)) {
     
-    cat(crayon::cyan('do.scale must be logical: TRUE/FALSE\n'))
-    return(object)
+    stop('do.scale must be logical: TRUE/FALSE\n')
     
   }
   
@@ -220,8 +200,7 @@ perform.scanpy.normalisation <- function(object,
     
     if(!is.numeric(n_jobs)) {
       
-      cat(crayon::cyan('n_jobs must be numerical\n'))
-      return(object)
+      stop('n_jobs must be numerical\n')
       
     }
     
@@ -231,8 +210,7 @@ perform.scanpy.normalisation <- function(object,
     
     if(!is.logical(zero_center)) {
       
-      cat(crayon::cyan('zero_center must be logical: TRUE/FALSE\n'))
-      return(object)
+      stop('zero_center must be logical: TRUE/FALSE\n')
       
     }
     
@@ -242,8 +220,7 @@ perform.scanpy.normalisation <- function(object,
     
     if(!is.numeric(max_value)) {
       
-      cat(crayon::cyan('max_value must be numerical\n'))
-      return(object)
+      stop('max_value must be numerical\n')
       
     }
     
@@ -253,8 +230,7 @@ perform.scanpy.normalisation <- function(object,
     
     if(!is.character(obsm)) {
       
-      cat(crayon::cyan('obsm must be numerical\n'))
-      return(object)
+      stop('obsm must be numerical\n')
       
     }
     
@@ -269,7 +245,7 @@ perform.scanpy.normalisation <- function(object,
     scobj$obs <- object@sample_metadata
   }
   
-  cat(crayon::cyan('Normalising counts\n'))
+  cat(crayon::cyan(paste0(Sys.time(), ': normalising counts\n')))
   
   if(!is.null(target_sum) & !is.null(key_added)) {
     sc$pp$normalize_total(adata = scobj, target_sum = as.integer(target_sum), 
@@ -293,15 +269,23 @@ perform.scanpy.normalisation <- function(object,
   
   feat.metadata <- feature_metadata(assay = .counts, col.prefix = 'SCANPY')
   
-  cat(crayon::cyan('Logging data\n'))
+  cat(crayon::cyan(paste0(Sys.time(), ': log transforming data\n')))
   
-  sc$pp$log1p(scobj)
+  if(isTRUE(log1)) {
+    
+    sc$pp$log1p(scobj)
+    
+  } else if(isFALSE(log1)) {
+    
+    scobj$X <- log2(scobj$X+1)
+    
+  }
   
   .normalised <- t(scobj$X)
   rownames(.normalised) <- rownames(object)
   colnames(.normalised) <- colnames(object)
   
-  cat(crayon::cyan('Computing highly variable genes\n'))
+  cat(crayon::cyan(paste0(Sys.time(), ': computing highly variable genes\n')))
   
   if (!is.null(n_top_genes) & !is.null(batch_key)) {
     
@@ -394,6 +378,8 @@ perform.scanpy.normalisation <- function(object,
                                           norm.scaled = as.matrix(.norm.scaled),
                                           highly.variable.genes = .highly.variable.genes,
                                           feature_metadata = feat.metadata)
+  
+  cat(crayon::cyan(paste0(Sys.time(), ': Scanpy normalisation completed \n')))
   
   return(object)
 }

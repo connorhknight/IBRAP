@@ -35,8 +35,7 @@ plot.slingshot <- function(result,
   
   if(isFALSE(is(object = result$assignments, 'SlingshotDataSet'))) {
     
-    cat(crayon::cyan('result must be a SlingshotDataSet \n'))
-    return(NULL)
+    stop('result must be a SlingshotDataSet \n')
 
   }
   
@@ -46,15 +45,13 @@ plot.slingshot <- function(result,
     
     if(length(clusters) != nrow(test@clusterLabels)) {
       
-      cat(crayon::cyan('supplied clusters must be the same length as number of cells contained in results \n'))
-      return(NULL)
+      stop('supplied clusters must be the same length as number of cells contained in results \n')
       
     }
     
     if(!is.character(clusters)) {
       
-      cat(crayon::cyan('unable to convert supplied clusters to character string \n'))
-      return(NULL)
+      stop('unable to convert supplied clusters to character string \n')
       
     }
     
@@ -62,22 +59,19 @@ plot.slingshot <- function(result,
   
   if(!is.logical(lineages)) {
     
-    cat(crayon::cyan('lineages should be boolean, TRUE/FALSE \n'))
-    return(NULL)
+    stop('lineages should be boolean, TRUE/FALSE \n')
     
   }
   
   if(!is.numeric(pt_size)) {
     
-    cat(crayon::cyan('pt_size msut be numerical \n'))
-    return(NULL)
+    stop('pt_size msut be numerical \n')
     
   }
   
   if(!is.numeric(line_size)) {
     
-    cat(crayon::cyan('line_size msut be numerical \n'))
-    return(NULL)
+    stop('line_size msut be numerical \n')
     
   }
   
@@ -96,7 +90,7 @@ plot.slingshot <- function(result,
   
   if(!feature %in% rownames(object@methods[[assay]][[slot]])) {
     
-    cat(crayon::cyan(paste0(feature, ' not present in ', slot, ', switching to count matrix \n')))
+    cat(crayon::cyan(paste0(Sys.time(), ': ',feature, ' not present in ', slot, ', switching to count matrix \n')))
     slot <- 'counts'
     
   }

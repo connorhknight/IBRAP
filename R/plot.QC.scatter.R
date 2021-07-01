@@ -25,15 +25,13 @@ plot.QC.scatter <- function(object,
   
   if(!x %in% colnames(metadata)) {
     
-    cat(crayon::cyan('X variable does not exist\n'))
-    return(NULL)
+    stop('X variable does not exist\n')
     
   }
   
   if(!y %in% colnames(metadata)) {
     
-    cat(crayon::cyan('Y variable does not exist\n'))
-    return(NULL)
+    stop('Y variable does not exist\n'
     
   }
   
@@ -41,8 +39,7 @@ plot.QC.scatter <- function(object,
     
     if(!split.by %in% colnames(metadata)){
       
-      cat(crayon::cyan('split.by variable does not exist\n'))
-      return(NULL)
+      stop('split.by variable does not exist\n')
       
     }
     
