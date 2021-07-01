@@ -93,7 +93,7 @@ perform.sct.normalisation <- function(object,
   seuratobj@meta.data <- cbind(seuratobj@meta.data, object@sample_metadata)
   cat(crayon::cyan(paste0(Sys.time(), ': initiating SCTransform\n')))
   seuratobj <- Seurat::SCTransform(object = seuratobj, do.scale = do.scale, do.center = do.center, vars.to.regress = vars.to.regress, min_cells = min_cells, variable.features.n = n.genes, ...)
-  cat(crayon::cyan('SCT normalisation completed\n'))
+
   .highly.variable.genes <- as.character(seuratobj@assays$SCT@var.features)
   .counts <- as(object = as.matrix(seuratobj@assays$SCT@counts), Class = 'dgCMatrix')
   .normalised <- as(as.matrix(seuratobj@assays$SCT@data), Class = 'dgCMatrix')
@@ -105,6 +105,6 @@ perform.sct.normalisation <- function(object,
                                           norm.scaled = .norm.scaled,
                                           highly.variable.genes = .highly.variable.genes,
                                           feature_metadata = feat.meta)
-  cat(crayon::cyan(paste0(Sys.time(), ': populated IBRAP object\n')))
+  cat(crayon::cyan(paste0(Sys.time(), ': SCT normalisation completed\n')))
   return(object)
 }
