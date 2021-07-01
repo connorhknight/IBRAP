@@ -68,7 +68,7 @@ perform.seurat.diffexp <- function(object,
     
   } else if (is.null(cells.1)) {
     
-    stop('Please provide the cells.1 identities \n'
+    stop('Please provide the cells.1 identities \n')
     
   }
   

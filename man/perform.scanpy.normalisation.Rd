@@ -13,6 +13,7 @@ perform.scanpy.normalisation(
   exclude_highly_expressed = FALSE,
   max_fraction = 0.05,
   key_added = "scanpy_norm_factor",
+  log1 = TRUE,
   n_top_genes = 1500,
   max_mean = 6,
   min_mean = 0.0125,

@@ -37,7 +37,7 @@ perform.singleR.annotation <- function(object,
   
   if(!is.character(assay)) {
     
-    stop('assay must be a character string \n'
+    stop('assay must be a character string \n')
     
   }
   
@@ -55,7 +55,7 @@ perform.singleR.annotation <- function(object,
   
   if(!is.logical(log.transform)) {
     
-    stop('log.transform must be logical, TRUE/FALSE \n'
+    stop('log.transform must be logical, TRUE/FALSE \n')
     
   }
   

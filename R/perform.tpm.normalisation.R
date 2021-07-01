@@ -168,7 +168,7 @@ perform.tpm.normalisation <- function(object,
                                           norm.scaled = as.matrix(.norm.scaled),
                                           highly.variable.genes = .highly.variable.genes)
   
-  cat(crayon::cyan(paste0(Sys.time(), ': TPM normalisation completed\n'))
+  cat(crayon::cyan(paste0(Sys.time(), ': TPM normalisation completed\n')))
   
   return(object)
 }

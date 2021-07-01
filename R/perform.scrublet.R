@@ -73,7 +73,7 @@ perform.scrublet <- function(counts,
   
   if(!is.numeric(sim_doublet_ratio)) {
     
-    stop('sim_doublet_ratio must be numerical\n'
+    stop('sim_doublet_ratio must be numerical\n')
     
   }
   
@@ -107,7 +107,7 @@ perform.scrublet <- function(counts,
   
   if(!is.numeric(synthetic_doublet_umi_subsampling)) {
     
-    stop'synthetic_doublet_umi_subsampling must be numerical\n')
+    stop('synthetic_doublet_umi_subsampling must be numerical\n')
     
   }
   

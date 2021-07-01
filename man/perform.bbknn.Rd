@@ -19,7 +19,9 @@ perform.bbknn(
   use_faiss = TRUE,
   set_op_mix_ratio = 1,
   local_connectivity = 1,
-  save.object = TRUE
+  generate.diffmap = FALSE,
+  n_comps = 15,
+  diffmap.name
 )
 }
 \arguments{
@@ -48,6 +50,12 @@ perform.bbknn(
 \item{set_op_mix_ratio}{Numerical. UMAP connectivity parameter between 0 and 1. controls the blen d between a connectivity matrix formed exclusively from mutual nearest neighbour pairs (0) and a union of all observed neighbour relationships with the mutual pairs emphasised (1). Default = 1.0}
 
 \item{local_connectivity}{Numerical. How many nearest neighbours of each cell are assumed to be fully connected. Default = 1}
+
+\item{generate.diffmap}{Boolean. Should diffusion maps be generated from the neighourhood graphs, these will be stored in computational_reductions and can be used for umap generation and further neighbourhood generation. Default = TRUE}
+
+\item{n_comps}{Numerical. How many components should be generated for the diffusion maps. Default = 15}
+
+\item{diffmap.name}{Character. What should the diffusion maps be named.}
 
 \item{metric.}{Character. Which distance metric to use when approx is TRUE, options: 'angular', 'euclidean', 'manhattan' or 'hamming'. Default = 'euclidean'}
 }

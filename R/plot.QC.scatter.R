@@ -31,7 +31,7 @@ plot.QC.scatter <- function(object,
   
   if(!y %in% colnames(metadata)) {
     
-    stop('Y variable does not exist\n'
+    stop('Y variable does not exist\n')
     
   }
   

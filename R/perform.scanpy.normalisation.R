@@ -150,7 +150,7 @@ perform.scanpy.normalisation <- function(object,
   
   if(!is.character(flavor)) {
     
-    stop('flavor must be character string \n'))
+    stop('flavor must be character string \n')
     
   }
   

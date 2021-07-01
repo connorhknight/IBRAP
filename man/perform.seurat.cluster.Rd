@@ -7,18 +7,9 @@
 perform.seurat.cluster(
   object,
   assay,
-  reduction = NULL,
-  dims = NULL,
-  graph = NULL,
-  k.param = 20,
-  compute.SNN = TRUE,
-  prune.SNN = 1/15,
-  nn.method = "annoy",
-  n.trees = 50,
-  nn.eps = 0,
-  annoy.metric = "euclidean",
+  neighbours,
   algorithm = 1,
-  assignment.df.name = "seurat",
+  cluster.df.name,
   res = c(0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1, 1.1, 1.2, 1.3, 1.4, 1.5),
   ...
 )
@@ -28,36 +19,18 @@ perform.seurat.cluster(
 
 \item{assay}{Character. String containing indicating which assay to use}
 
-\item{reduction}{Character. String defining which reduction to supply to the clustering algorithm. Default = NULL}
-
-\item{dims}{Numerical. How many dimensions of the reduciton should be supplied, NULL equates to all/. Default = NULL}
-
-\item{graph}{Character. Name of the graph to use for clustering (i.e. BBKNN integrated graph or previously calculated nearest neighbour graphs), only either graphs or reductions can be supplied in one instance. Default = NULL}
-
-\item{k.param}{Numerical. The number of k when calcuating k-nearest neighbour. Default = 20}
-
-\item{compute.SNN}{Boolean. Should the shared nearest neighbour graph be calculated. Default = TRUE}
-
-\item{prune.SNN}{Numerical. Setas acceptance cutoff for jaccard index whilst computing neighbourhood overlap for SNN construction. Any edges with a value less than this parameter will be removed. 0 = no pruning and 1 = prune everything. Default = 0}
-
-\item{nn.method}{Character. Nearest neighbour method, either 'rann' or 'annoy'. Default = 'annoy'}
-
-\item{n.trees}{Numerical. More trees facilitates hgiher precision when using 'annoy' method. Default = 20}
-
-\item{nn.eps}{Numerical. Margin of error when performing nearest neighbour search whilst using rann method. 0 would imply an exact search. Default = 0.0}
-
-\item{annoy.metric}{Character. Distance metric for annoy method. Options: 'euclidean', 'cosine', 'manhattan', 'hamming'. Default = 'euclidean'}
+\item{neighbours}{Character. String indicating which neighbourhood graphs should be used.}
 
 \item{algorithm}{Numerical. Algorithm for modularity optimization (1 = original Louvain algorithm; 2 = Louvain algorithm with multilevel refinement; 3 = SLM algorithm; 4 = Leiden algorithm). Leiden requires the leidenalg python. Default = 1 Default = NULL}
 
-\item{assignment.df.name}{Character. What to call the df contained in clusters. Default = 'seurat}
+\item{cluster.df.name}{Character. What to call the df contained in clusters. Default = 'seurat}
 
 \item{res}{Numerical vector. Which resolution to run the clusterign algorithm at, a smaller and larger value identified less and more clusters, respectively. Default = c(0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1,1.1,1.2,1.3,1.4,1.5)}
 
 \item{...}{arguments to be passed to Seurat::FindClusters}
 }
 \value{
-Cluster assignments using the list of resolutions provided contained within cluster_assignments under assignment.df.name
+Cluster assignments using the list of resolutions provided contained within cluster_assignments under cluster.df.name
 }
 \description{
 Performs Seurat clustering on defined method-assays and supplied reductions or graphs.

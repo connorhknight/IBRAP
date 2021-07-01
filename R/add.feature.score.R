@@ -28,7 +28,7 @@ add.feature.score <- function(object,
   
   if(!is(object = object, class2 = 'IBRAP')) {
     
-    stop(crayon::cyan('object must be of class IBRAP\n')
+    stop(crayon::cyan('object must be of class IBRAP\n'))
     
   }
   

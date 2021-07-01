@@ -182,7 +182,7 @@ perform.reduction.kmeans <- function(object,
     
   }
   
-  cat(crayon::cyan(paste0(Sys.time(), ': finished kmeans clustering \n')
+  cat(crayon::cyan(paste0(Sys.time(), ': finished kmeans clustering \n')))
   
   return(object)
 }

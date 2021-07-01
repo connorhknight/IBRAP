@@ -167,6 +167,6 @@ perform.scran.normalisation <- function(object,
                                           norm.scaled = as.matrix(.norm.scaled),
                                           highly.variable.genes = top.hvgs,
                                           feature_metadata = feat.meta)
-  cat(crayon::cyan(paste0(Sys.time(), ': Scran normalisation completed \n'))
+  cat(crayon::cyan(paste0(Sys.time(), ': Scran normalisation completed \n')))
   return(object)
 }

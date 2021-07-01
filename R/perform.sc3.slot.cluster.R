@@ -55,7 +55,7 @@ perform.sc3.slot.cluster <- function(object,
   
   if(!is.logical(HVGs)) {
     
-    cat(crayon::cyan(paste0('HVGs must be logical: TRUE/FALSE\n'))
+    cat(crayon::cyan(paste0('HVGs must be logical: TRUE/FALSE\n')))
     
   }
   
