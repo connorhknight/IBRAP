@@ -220,17 +220,21 @@ setMethod(f = '[', signature = 'IBRAP',
                 
                 if(length(x@methods[[p]]@neighbours) != 0) {
                   
+                  list.neighbours <- list()
+                  
                   for(l in names(x@methods[[p]]@neighbours)) {
                     
                     .neighbours <- x@methods[[p]]@neighbours
                     
-                    list.neighbours <- list()
+                    list.neighbours.sub <- list()
 
                     for(t in names(x@methods[[p]]@neighbours[[l]])) {
 
-                      list.neighbours[[l]][[t]] <- x@methods[[p]]@neighbours[[l]][[t]][jj, jj, drop = FALSE]
+                      list.neighbours.sub[[t]] <- x@methods[[p]]@neighbours[[l]][[t]][jj, jj, drop = FALSE]
                       
                     }
+                    
+                    list.neighbours[[l]] <- list.neighbours.sub
                     
                   }
                   
@@ -408,17 +412,21 @@ setMethod(f = '[', signature = 'IBRAP',
                 
                 if(length(x@methods[[p]]@neighbours) != 0) {
                   
+                  list.neighbours <- list()
+                  
                   for(l in names(x@methods[[p]]@neighbours)) {
                     
                     .neighbours <- x@methods[[p]]@neighbours
                     
-                    list.neighbours <- list()
+                    list.neighbours.sub <- list()
                     
                     for(t in names(x@methods[[p]]@neighbours[[l]])) {
                       
-                      list.neighbours[[l]][[t]] <- x@methods[[p]]@neighbours[[l]][[t]][jj, jj, drop = FALSE]
+                      list.neighbours.sub[[t]] <- x@methods[[p]]@neighbours[[l]][[t]][jj, jj, drop = FALSE]
                       
                     }
+                    
+                    list.neighbours[[l]] <- list.neighbours.sub
                     
                   }
                   
