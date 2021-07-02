@@ -113,15 +113,32 @@ plot.slingshot <- function(result,
       
       red <- red[rel.cells,]
       
-      pseudotime_x <- pseudotime[rel.cells,x]
+      if(isTRUE(Pseudotime)) {
+        
+        pseudotime_x <- pseudotime[rel.cells,x]
+        
+      }
       
-      expr <- object@methods[[assay]][[slot]][feature,rel.cells]
+      if(isTRUE(Expression)) {
+        
+        expr <- object@methods[[assay]][[slot]][feature,rel.cells]
+        
+      }
       
     } else {
       
-      pseudotime_x <- pseudotime[,x]
-      pseudotime_x[is.na(pseudotime_x)] <- 0
-      expr <- object@methods[[assay]][[slot]][feature,]
+      if(isTRUE(Pseudotime)) {
+        
+        pseudotime_x <- pseudotime[,x]
+        
+      }
+      
+      if(isTRUE(Expression)) {
+        
+        expr <- object@methods[[assay]][[slot]][feature,]
+        
+      }
+      
       red <- cbind(red,clusters)
       
     }

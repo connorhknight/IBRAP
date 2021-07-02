@@ -228,7 +228,7 @@ setMethod(f = '[', signature = 'IBRAP',
 
                     for(t in names(x@methods[[p]]@neighbours[[l]])) {
 
-                      list.neighbours[[t]] <- x@methods[[p]]@neighbours[[l]][[t]][jj, jj, drop = FALSE]
+                      list.neighbours[[l]][[t]] <- x@methods[[p]]@neighbours[[l]][[t]][jj, jj, drop = FALSE]
                       
                     }
                     
@@ -416,7 +416,7 @@ setMethod(f = '[', signature = 'IBRAP',
                     
                     for(t in names(x@methods[[p]]@neighbours[[l]])) {
                       
-                      list.neighbours[[t]] <- x@methods[[p]]@neighbours[[l]][[t]][jj, jj, drop = FALSE]
+                      list.neighbours[[l]][[t]] <- x@methods[[p]]@neighbours[[l]][[t]][jj, jj, drop = FALSE]
                       
                     }
                     

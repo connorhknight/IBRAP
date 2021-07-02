@@ -137,6 +137,8 @@ benchmark.clustering <- function(object,
     
     for(k in clustering) {
       
+      cat(crayon::cyan(paste0(Sys.time(), ': benchmarking for assay: ', l, ' cluster dataframe: ', k, '\n')))
+      
       reduction_sub <- reduction.list[[reduction[count]]][,n.dims]
       
       count <- count + 1
@@ -213,7 +215,7 @@ benchmark.clustering <- function(object,
         NMI.results <- data.frame(NMI=NA)
         for (p in colnames(clusters)[1:length(colnames(clusters))]) {
           
-          cat(crayon::cyan(paste0(Sys.time(), ': alculating NMI for ', p, '\n')))
+          cat(crayon::cyan(paste0(Sys.time(), ': calculating NMI for ', p, '\n')))
           NMI.results[p,] <- aricode::AMI(c1 = clusters[,p], c2 = ground.truth)
           
         }
