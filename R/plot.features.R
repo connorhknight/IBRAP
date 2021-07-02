@@ -13,7 +13,7 @@
 #' 
 #' @return A plot of reduced dimensions annotated with assignments
 #'
-#' @export plot.reduced.dim
+#' @export plot.features
 
 plot.features <- function(object, 
                           assay, 

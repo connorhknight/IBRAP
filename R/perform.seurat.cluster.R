@@ -114,7 +114,15 @@ perform.seurat.cluster <- function(object,
         
         new.clusters <- tmp@meta.data[,post.name]
         
-        new.clusters <- new.clusters[match(rownames(object@sample_metadata), rownames(new.clusters)),]
+        if(!is.data.frame(new.clusters)) {
+          
+          new.clusters <- as.data.frame(new.clusters)
+          
+          rownames(new.clusters) <- rownames(tmp@meta.data)
+          
+          colnames(new.clusters) <- as.character('res_', res)
+          
+        }
         
         object@methods[[p]]@cluster_assignments[[cluster.df.name[count]]] <- new.clusters
         
