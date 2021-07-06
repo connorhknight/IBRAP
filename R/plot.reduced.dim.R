@@ -138,15 +138,19 @@ plot.reduced.dim <- function(object,
     
   } else {
     
-    project.met <- object@sample_metadata
+    results <- as.data.frame(reduction.list[[reduction]])
     
     assay.met <- object@methods[[assay]]@cluster_assignments[[clust.method]]
     
-    assay.met <- assay.met[match(rownames(project.met), rownames(assay.met)),]
+    print(assay.met)
     
-    meta <- cbind(project.met, assay.met)
+    assay.met <- assay.met[match(rownames(results), rownames(assay.met)),]
     
-    results <- as.data.frame(reduction.list[[reduction]])
+    orig.names <- colnames(results)
+    
+    results <- cbind(results, assay.met[,column])
+    
+    print(c(orig.names, 'variable'))
     
     colnames(results) <- c(orig.names, 'variable')
     

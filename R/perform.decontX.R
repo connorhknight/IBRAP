@@ -138,9 +138,7 @@ perform.decontX <- function(counts,
   
   print(celda::plotDecontXContamination(x = d))
   
-  cat(crayon::cyan(paste0(Sys.time, ': ',formatC(sum(d$contamination)/length(d$contamination), 
-                                  digits = 2), 
-                          '% average contamination\n')))
+  cat(crayon::cyan(paste0(Sys.time, ': ',formatC(sum(d$contamination)/length(d$contamination), digits = 2), '% average contamination\n')))
   
   clean.matrix <- d$decontXcounts
   cat(crayon::cyan(paste0(Sys.time(), ': matrix isolated\n')))

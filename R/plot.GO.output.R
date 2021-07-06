@@ -6,8 +6,6 @@
 #' @description Creates a dot plot of GO terms
 #'
 #' @param result The result file from the perform.GO.enrichment
-#' 
-#' @return IBRAP S4 class object containing raw counts and metadata
 #'
 #' @export plot.GO.output
 

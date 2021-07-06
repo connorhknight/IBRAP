@@ -23,8 +23,8 @@ perform.umap <- function(object,
                          graph=NULL,
                          reduction.save='umap',
                          n.dims=NULL, 
-                         n_components = 3, 
-                         n_neighbors = 30,
+                         n_components = 3L, 
+                         n_neighbors = 30L,
                          metric = 'cosine',
                          min_dist = 0.3,
                          ...) {
@@ -179,31 +179,41 @@ perform.umap <- function(object,
         
         red <- reduction.list[[i]]
         
-        cat(crayon::cyan(paste0(Sys.time(), ': processing ', i, ' for assay: ', u,'\n')))
-        
-        if(!is.null(dim)) {
+        if(is.null(dim)) {
           
-          c <- uwot::umap(X = red[,dim], n_components = n_components, verbose = TRUE, ...)
-          
-        } else {
-          
-          c <- uwot::umap(X = red, n_components = n_components, verbose = TRUE, ...)
+          dim <- 1:ncol(red)
           
         }
         
+        cat(crayon::cyan(paste0(Sys.time(), ': processing ', i, ' for assay: ', u,'\n')))
+        
+        seuobj <- suppressWarnings(Seurat::CreateSeuratObject(counts = object@methods[[u]]@counts))
+        
+        seuobj@reductions$pca <- suppressWarnings(Seurat::CreateDimReducObject(embeddings = red, assay = 'RNA', key = paste0(i, '_')))
+        print(dim)
+        seuobj <- suppressWarnings(Seurat::RunUMAP(object = seuobj, 
+                                                   dims = dim,
+                                                   n_components = n_components, 
+                                                   reduction = 'pca',
+                                                   verbose = TRUE,
+                                                   ...))
+        
+        red.iso <- Seurat::Embeddings(object = seuobj, 
+                                      reduction = 'umap')
+        
+        rownames(red.iso) <- colnames(object)
+        
         dim.names <- list()
         
-        for(l in 1:n_components) {
+        for(l in 1:2) {
           
           dim.names[[l]] <- paste0('umap_', l)
           
         }
         
-        colnames(c) <- unlist(dim.names)
+        colnames(red.iso) <- unlist(dim.names)
         
-        rownames(c) <- colnames(object)
-        
-        object@methods[[u]]@visualisation_reductions[[red.save]] <- c
+        object@methods[[u]]@visualisation_reductions[[red.save]] <- red.iso
         
         count <- count + 1
         

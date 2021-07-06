@@ -88,10 +88,14 @@ plot.slingshot <- function(result,
     
   }
   
-  if(!feature %in% rownames(object@methods[[assay]][[slot]])) {
+  if(isTRUE(Expression)) {
     
-    cat(crayon::cyan(paste0(Sys.time(), ': ',feature, ' not present in ', slot, ', switching to count matrix \n')))
-    slot <- 'counts'
+    if(!feature %in% rownames(object@methods[[assay]][[slot]])) {
+      
+      cat(crayon::cyan(paste0(Sys.time(), ': ',feature, ' not present in ', slot, ', switching to count matrix \n')))
+      slot <- 'counts'
+      
+    }
     
   }
   

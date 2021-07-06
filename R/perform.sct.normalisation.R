@@ -22,11 +22,6 @@ perform.sct.normalisation <- function(object,
                                       assay,
                                       slot,
                                       new.assay.name = 'SCT',
-                                      do.scale = FALSE,
-                                      do.center = TRUE,
-                                      n.genes = 1500,
-                                      min_cells = 5,
-                                      vars.to.regress = NULL,
                                       ...) {
   
   if(!is(object = object, class2 = 'IBRAP')) {
@@ -64,35 +59,11 @@ perform.sct.normalisation <- function(object,
     
   }
   
-  if(!is.logical(do.scale)) {
-    
-    stop('do.scale must be logical: TRUE/FALSE\n')
-    
-  }
-  
-  if(!is.logical(do.center)) {
-    
-    stop('do.center must be logical: TRUE/FALSE\n')
-    
-  }
-  
-  if(!is.numeric(n.genes)) {
-    
-    stop('n.genes must be numerical\n')
-    
-  }
-  
-  if(!is.numeric(min_cells)) {
-    
-    stop('min_cells must be numerical\n')
-    
-  }
-  
   cat(crayon::cyan(paste0(Sys.time(), ': converting to Seurat object\n')))
   seuratobj <- Seurat::CreateSeuratObject(counts = as.matrix(object@methods[[assay]][[slot]]), project = 'NA')
   seuratobj@meta.data <- cbind(seuratobj@meta.data, object@sample_metadata)
   cat(crayon::cyan(paste0(Sys.time(), ': initiating SCTransform\n')))
-  seuratobj <- Seurat::SCTransform(object = seuratobj, do.scale = do.scale, do.center = do.center, vars.to.regress = vars.to.regress, min_cells = min_cells, variable.features.n = n.genes, ...)
+  seuratobj <- Seurat::SCTransform(object = seuratobj, ...)
 
   .highly.variable.genes <- as.character(seuratobj@assays$SCT@var.features)
   .counts <- as(object = as.matrix(seuratobj@assays$SCT@counts), Class = 'dgCMatrix')
