@@ -139,6 +139,13 @@ benchmark.clustering <- function(object,
       
       cat(crayon::cyan(paste0(Sys.time(), ': benchmarking for assay: ', l, ' cluster dataframe: ', k, '\n')))
       
+      print(count)
+      print(reduction[count])
+      print(n.dims)
+      print(reduction.list[[reduction[count]]])
+      
+      print(reduction.list[[reduction[count]]][,n.dims])
+      
       reduction_sub <- reduction.list[[reduction[count]]][,n.dims]
       
       count <- count + 1

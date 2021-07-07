@@ -4,18 +4,7 @@
 \alias{perform.sct.normalisation}
 \title{Performs SCTransform}
 \usage{
-perform.sct.normalisation(
-  object,
-  assay,
-  slot,
-  new.assay.name = "SCT",
-  do.scale = FALSE,
-  do.center = TRUE,
-  n.genes = 1500,
-  min_cells = 5,
-  vars.to.regress = NULL,
-  ...
-)
+perform.sct.normalisation(object, assay, slot, new.assay.name = "SCT", ...)
 }
 \arguments{
 \item{object}{IBRAP S4 class object}

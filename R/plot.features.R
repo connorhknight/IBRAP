@@ -98,7 +98,7 @@ plot.features <- function(object,
       ggplot2::geom_point(ggplot2::aes(color=feature), size = pt.size)+ 
       ggplot2::scale_color_gradient(low = '#C0C0C0', high = '#4169E1') + 
       ggplot2::theme_classic() + ggplot2::labs(title=x, x=orig.colnames[1], y=orig.colnames[2]) + 
-      ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5, face = 'bold', size = 10))
+      ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5, face = 'bold', size = 20))
 
   }
   

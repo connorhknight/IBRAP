@@ -11,8 +11,8 @@ perform.umap(
   graph = NULL,
   reduction.save = "umap",
   n.dims = NULL,
-  n_components = 3,
-  n_neighbors = 30,
+  n_components = 3L,
+  n_neighbors = 30L,
   metric = "cosine",
   min_dist = 0.3,
   ...

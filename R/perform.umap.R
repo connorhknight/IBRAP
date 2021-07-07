@@ -190,7 +190,7 @@ perform.umap <- function(object,
         seuobj <- suppressWarnings(Seurat::CreateSeuratObject(counts = object@methods[[u]]@counts))
         
         seuobj@reductions$pca <- suppressWarnings(Seurat::CreateDimReducObject(embeddings = red, assay = 'RNA', key = paste0(i, '_')))
-        print(dim)
+
         seuobj <- suppressWarnings(Seurat::RunUMAP(object = seuobj, 
                                                    dims = dim,
                                                    n_components = n_components, 

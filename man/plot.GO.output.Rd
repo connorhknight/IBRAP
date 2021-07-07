@@ -9,9 +9,6 @@
 \arguments{
 \item{result}{The result file from the perform.GO.enrichment}
 }
-\value{
-IBRAP S4 class object containing raw counts and metadata
-}
 \description{
 Creates a dot plot of GO terms
 }
