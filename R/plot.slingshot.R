@@ -255,7 +255,7 @@ plot.slingshot <- function(result,
       ggplot2::geom_point(size = pt_size, ...) + 
       ggplot2::theme(legend.title.align=0.5) +
       ggplot2::theme_classic() +
-      ggplot2::scale_color_continuous()
+      ggplot2::scale_color_continuous(low = '#C0C0C0', high = '#4169E1')
     
     if (isFALSE(lineages)) {
       

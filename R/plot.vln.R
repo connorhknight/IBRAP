@@ -113,7 +113,7 @@ plot.vln <- function(object,
     if(count < length(features)) {
       
       p <- ggplot2::ggplot(data = df, ggplot2::aes(x = group, y = feature, color = group)) + 
-        ggplot2::geom_violin() + ggplot2::geom_boxplot() +
+        ggplot2::geom_violin() + ggplot2::geom_boxplot(lwd = 0.6, width = 0.09) +
         ggplot2::theme_light() + ggplot2::labs(title = x, y = as.character(ylab), x = '') +
         ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5, face = 'bold', size = 20),
                        legend.position = 'none', axis.text.x = ggplot2::element_blank())
@@ -121,7 +121,7 @@ plot.vln <- function(object,
     } else {
       
       p <- ggplot2::ggplot(data = df, ggplot2::aes(x = group, y = feature, color = group)) + 
-        ggplot2::geom_violin() + ggplot2::geom_boxplot() +
+        ggplot2::geom_violin() + ggplot2::geom_boxplot(lwd = 0.6, width = 0.09) +
         ggplot2::theme_light() + ggplot2::labs(title = x, y = as.character(ylab), x = as.character(xlab)) + 
         ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5, face = 'bold', size = 20), 
                        axis.text.x = ggplot2::element_text(angle = 90, vjust = 0.5, hjust=1),

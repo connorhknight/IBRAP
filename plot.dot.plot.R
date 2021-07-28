@@ -70,7 +70,7 @@ plot.dot.plot <- function(object, assay, slot='normalised', clust.method, column
       
     } else {
       
-      if(!column %in% colnames(object@methods[[assay]]@cluster_assignments[[clust.method]][,column])) {
+      if(!column %in% colnames(object@methods[[assay]]@cluster_assignments[[clust.method]])) {
         
         stop('column not contained within clust.method \n')
         
@@ -84,7 +84,7 @@ plot.dot.plot <- function(object, assay, slot='normalised', clust.method, column
     
     if(!x %in% rownames(object@methods[[assay]][[slot]])) {
       
-      stop(paste0(x ' not contained within expression matrix \n'))
+      stop(paste0(x, ' not contained within expression matrix \n'))
       
     }
     

@@ -1,10 +1,14 @@
 
 library(IBRAP)
 
-sample_1 <- read.csv('/Users/knight05/Downloads/SP3tFLBcells_dfall_decontx_ec.csv', 
+sample_1 <- read.csv('/Users/knight05/Downloads/SP3tFLBcells_ec_CRv3.csv', 
                      header = T, row.names = 1, sep = ',')
 
-sample <- createIBRAPobject(counts = as.matrix(sample), original.project = 'FL', 
+sample_1 <- perform.scrublet(counts = as.matrix(sample_1))
+
+sample_1 <- perform.decontX(counts = sample_1)
+
+sample <- createIBRAPobject(counts = sample_1, original.project = 'FL', 
                             min.cells = 3, min.features = 200)
 
 
@@ -57,7 +61,9 @@ sample <- add.feature.score(object = sample,
 
 sample <- perform.sct.normalisation(object = sample, 
                                     assay = 'RAW', 
-                                    slot = 'counts', vars.to.regress = 'RAW_percent.mt')
+                                    slot = 'counts', 
+                                    vars.to.regress = 'RAW_percent.mt', 
+                                    variable.features.n = 1500)
 
 sample <- perform.scran.normalisation(object = sample, 
                                       assay = 'RAW', 
@@ -68,9 +74,11 @@ sample <- perform.scanpy.normalisation(object = sample,
                                        vars.to.regress = c('RAW_total.counts', 'RAW_percent.mt'), 
                                        do.scale = T, log1 = F)
 
-# sample <- remove.hvgs(object = sample, assay = c('SCT', 'SCRAN', 'SCANPY'), hvgs.omit = list(unwanted,
-#                                                                                              unwanted,
-#                                                                                              unwanted))    
+unwanted <- c('IGK','IGL', mt)
+
+sample <- remove.hvgs(object = sample, assay = c('SCT', 'SCRAN', 'SCANPY'), hvgs.omit = list(unwanted,
+                                                                                             unwanted,
+                                                                                             unwanted))
 
 sample <- perform.pca(object = sample, 
                       assay = c('SCT', 'SCRAN', 'SCANPY'), 
@@ -80,20 +88,20 @@ sample <- perform.pca(object = sample,
 sample <- perform.seurat.neighbours(object = sample, 
                                     assay = c('SCT', 'SCRAN', 'SCANPY'), 
                                     reduction = c('pca'), 
-                                    dims = list(20), 
+                                    dims = list(0), 
                                     neighbour.name = c('pca_seurat'))
 
 sample <- perform.scanpy.neighbours(object = sample, assay = c('SCT', 'SCRAN', 'SCANPY'), 
                                     reduction = c('pca'), 
                                     neighbour.name = c('pca_scanpy'), 
-                                    ims = list(20), 
+                                    dims = list(0), 
                                     generate.diffmap = T,
                                     diffmap.name = c('pca_diffmap'))
 
 sample <- perform.scanpy.neighbours(object = sample, assay = c('SCT', 'SCRAN', 'SCANPY'), 
                                     reduction = c('pca_diffmap'), 
                                     neighbour.name = c('pca_diffmap_scanpy'), 
-                                    dims = list(20))
+                                    dims = list(0))
 
 sample <- perform.seurat.neighbours(object = sample, 
                                     assay = c('SCT', 'SCRAN', 'SCANPY'), 
@@ -129,18 +137,38 @@ sample <- perform.seurat.cluster(object = sample, assay = c('SCT', 'SCRAN', 'SCA
                                                      "pca_diffmap_seurat_louvain",
                                                      "pca_diffmap_scanpy_louvain"))
 
-plot.reduced.dim(object = sample, 
-                 reduction = 'pca_umap', 
-                 assay = 'SCANPY', 
-                 clust.method = 'pca_seurat_louvain', 
-                 column = 'neighbourhood_graph_res.0.6')
+plot.list <- list()
 
-tmp <- perform.slingshot.trajectory(object = sample, 
+plot.list[[1]] <- plot.reduced.dim(object = sample, 
+                                   reduction = 'pca_umap', 
+                                   assay = 'SCT', 
+                                   clust.method = 'pca_seurat_louvain', 
+                                   column = 'neighbourhood_graph_res.0.6', pt.size = 0.1) + 
+  ggplot2::theme(legend.position = 'none')
+
+plot.list[[2]] <- plot.reduced.dim(object = sample, 
+                                   reduction = 'pca_umap', 
+                                   assay = 'SCRAN', 
+                                   clust.method = 'pca_seurat_louvain', 
+                                   column = 'neighbourhood_graph_res.0.6', pt.size = 0.1) + 
+  ggplot2::theme(legend.position = 'none')
+
+plot.list[[3]] <- plot.reduced.dim(object = sample, 
+                                   reduction = 'pca_umap', 
+                                   assay = 'SCANPY', 
+                                   clust.method = 'pca_seurat_louvain', 
+                                   column = 'neighbourhood_graph_res.0.6', pt.size = 0.1) + 
+  ggplot2::theme(legend.position = 'none')
+
+plot.features(object = sample, assay = 'SCT', slot = 'normalised',
+              reduction = 'pca_umap', features = c('CD79A', 'BIRC5', 'TOP2A'))
+
+tmp.2 <- perform.slingshot.trajectory(object = sample, 
                                     reduction = 'pca_umap', 
                                     assay = 'SCT', 
                                     clust.method = 'pca_seurat_louvain', 
                                     column = 'neighbourhood_graph_res.0.6')
 
-plot.slingshot(result = tmp, 
+plot.slingshot(result = tmp.2, 
                relevant = F, 
                Pseudotime = T)
