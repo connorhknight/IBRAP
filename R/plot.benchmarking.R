@@ -31,15 +31,15 @@ plot.benchmarking <- function(object,
     
   }
   
-  if(!is.vector(clustering)) {
+  if(!is.character(clustering)) {
     
-    stop('clustering must be a vector \n')
+    stop('clustering must be a character string \n')
     
   } else {
     
-    if(length(clustering) != ncol(object)) {
+    if(!clustering %in% names(object@methods[[assay]]@benchmark_results)) {
       
-      stop('clustering must be the same length as the number of cells \n')
+      stop('clustering not contained within benchmark_results \n')
       
     }
     

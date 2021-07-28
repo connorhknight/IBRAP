@@ -24,92 +24,89 @@ shinyApp(
     ),
     dashboardBody(
       fluidRow(
-      tabItems(
-        tabItem(tabName = "Clustering",
-                column( 12,
-                        box(height = 900, width = 900, solidHeader = TRUE, status = "primary", title = 'Clustering plots',
-                            splitLayout(cellWidths = c("25%", "75%"),
-                                        box(height = 820, width = 300, title = 'Select metadata',
-                                            h4('Select between methods here:'),
-                                            uiOutput(outputId = 'cluster_selector'),
-                                            hr(),
-                                            h4('Generate a dimensionality reduced plot:'),
-                                            uiOutput(outputId = 'cluster.column'),
-                                            selectInput(inputId = 'cluster_dimensions', label = '2D or 3D?', choices = c('2D', '3D'), multiple = FALSE),
-                                            numericInput(inputId = 'pt_size', label = 'Point size', value = 5, min = 0.1, max = 10),
-                                            br(),
-                                            actionButton(inputId = 'plot_DR', label = 'Plot')),
-                                        box(height = 820, width = 550, align = "center",
-                                            plotlyOutput(outputId = 'int_DR_plot', width = 1075, height = 800)))
-                        ),
-                        box(height = 900, width = 900, solidHeader = TRUE, status = "primary", title = 'benchmarking metrics', align = 'center',
-                            plotOutput(outputId = 'benchmark', width = 1400, height = 800)
-                        )
-
-                
-        )),
-        tabItem(tabName = "Features",
-                column(12 ,
-                        box(height = 900, width = 900, solidHeader = FALSE, status = "primary", title = 'Feature scatter plots',
-                            splitLayout(cellWidths = c("25%", "75%"),
-                                        box(height = 820, width = 300, title = 'Feature plot',
-                                            uiOutput(outputId = 'assay_selector'),
-                                            uiOutput(outputId = 'features_selector'),
-                                            uiOutput(outputId = 'reduction_feature'),
-                                            actionButton(inputId = 'plot_feature', label = 'Plot')
-                                            ),
-                                        box(height = 820, width = 550, align = "center",
-                                            plotOutput(outputId = 'feature_plot', width = 800, height = 800)
-                                            )
+        tabItems(
+          tabItem(tabName = "Clustering",
+                  column( 12,
+                          box(height = 900, width = 900, solidHeader = TRUE, status = "primary", title = 'Clustering plots',
+                              splitLayout(cellWidths = c("25%", "75%"),
+                                          box(height = 820, width = 300, title = 'Select metadata',
+                                              h4('Select between methods here:'),
+                                              uiOutput(outputId = 'cluster_selector'),
+                                              hr(),
+                                              h4('Generate a dimensionality reduced plot:'),
+                                              uiOutput(outputId = 'cluster.column'),
+                                              numericInput(inputId = 'pt_size', label = 'Point size', value = 5, min = 0.01, max = 10),
+                                              br(),
+                                              actionButton(inputId = 'plot_DR', label = 'Plot')),
+                                          box(height = 820, width = 550, align = "center",
+                                              plotlyOutput(outputId = 'int_DR_plot', width = 1075, height = 800)))
+                          ),
+                          box(height = 900, width = 900, solidHeader = TRUE, status = "primary", title = 'benchmarking metrics', align = 'center',
+                              plotOutput(outputId = 'benchmark', width = 1400, height = 800)
+                          )
+                          
+                          
+                  )),
+          tabItem(tabName = "Features",
+                  column(12 ,
+                         box(height = 900, width = 900, solidHeader = FALSE, status = "primary", title = 'Feature scatter plots',
+                             splitLayout(cellWidths = c("25%", "75%"),
+                                         box(height = 820, width = 300, title = 'Feature plot',
+                                             uiOutput(outputId = 'assay_selector'),
+                                             uiOutput(outputId = 'features_selector'),
+                                             uiOutput(outputId = 'reduction_feature'),
+                                             actionButton(inputId = 'plot_feature', label = 'Plot')
+                                         ),
+                                         box(height = 820, width = 550, align = "center",
+                                             plotOutput(outputId = 'feature_plot', width = 800, height = 800)
+                                         )
+                             )
+                         ),
+                         box(height = 900, width = 900, solidHeader = FALSE, status = "primary", title = 'Feature violin plots',
+                             splitLayout(cellWidths = c("25%", "75%"),
+                                         box(height = 820, width = 300, title = 'Violin plot',
+                                             uiOutput(outputId = 'features_selector_vln'),
+                                             uiOutput(outputId = 'cluster_selector_vln'),
+                                             uiOutput(outputId = 'cluster.column_vln'),
+                                             actionButton(inputId = 'plot_vln', label = 'Plot')
+                                         ),
+                                         box(height = 820, width = 550, align = "center",
+                                             plotOutput(outputId = 'vln_plot', width = 800, height = 800)
+                                         )
+                             )
+                         ),
+                         box(height = 900, width = 900, solidHeader = FALSE, status = "primary", title = 'Feature heatmap',
+                             splitLayout(cellWidths = c("25%", "75%"),
+                                         box(height = 820, width = 300, title = 'Violin plot',
+                                             uiOutput(outputId = 'features_selector_heat'),
+                                             uiOutput(outputId = 'cluster_selector_heat'),
+                                             uiOutput(outputId = 'cluster.column_heat'),
+                                             actionButton(inputId = 'plot_heat', label = 'Plot')
+                                         ),
+                                         box(height = 820, width = 550, align = "center",
+                                             plotOutput(outputId = 'heat_plot', width = 800, height = 800)
+                                         )
+                             )
                          )
-                     ),
-                     box(height = 900, width = 900, solidHeader = FALSE, status = "primary", title = 'Feature violin plots',
-                         splitLayout(cellWidths = c("25%", "75%"),
-                                     box(height = 820, width = 300, title = 'Violin plot',
-                                         uiOutput(outputId = 'features_selector_vln'),
-                                         uiOutput(outputId = 'cluster_selector_vln'),
-                                         uiOutput(outputId = 'cluster.column_vln'),
-                                         actionButton(inputId = 'plot_vln', label = 'Plot')
-                                     ),
-                                     box(height = 820, width = 550, align = "center",
-                                         plotOutput(outputId = 'vln_plot', width = 800, height = 800)
-                                     )
-                         )
-                     ),
-                     box(height = 900, width = 900, solidHeader = FALSE, status = "primary", title = 'Feature heatmap',
-                         splitLayout(cellWidths = c("25%", "75%"),
-                                     box(height = 820, width = 300, title = 'Violin plot',
-                                         uiOutput(outputId = 'features_selector_heat'),
-                                         uiOutput(outputId = 'cluster_selector_heat'),
-                                         uiOutput(outputId = 'cluster.column_heat'),
-                                         actionButton(inputId = 'plot_heat', label = 'Plot')
-                                     ),
-                                     box(height = 820, width = 550, align = "center",
-                                         plotOutput(outputId = 'heat_plot', width = 800, height = 800)
-                                     )
-                         )
-                     )
-            )
+                  )
           )
         )
       )
     )
   ),
   server <- function(input, output) {
-
+    
     options(shiny.maxRequestSize=1000*1024^2)
     
     forout_reactive <- reactiveValues()
     
     observeEvent(input$generate_metadata, {
       withProgress(message = 'Loading RDS file', {
-        print('start')
+        cat(crayon::cyan(paste0(Sys.time(), ': loading RDS file\n')))
         req(input$rds_file)
         direc <- input$rds_file
-        print('loading .rds file')
         x <- readRDS(file = as.character(direc$datapath))
-        print('.rds file loaded')
-        print('object attached')
+        cat(crayon::cyan(paste0(Sys.time(), ': RDS file loaded \n')))
         
         for(i in names(x@methods)[2:length(names(x@methods))]) {
           
@@ -135,7 +132,7 @@ shinyApp(
       forout_reactive$active.assay <- forout_reactive$assays[[input$assay]]
       
     })
-
+    
     observeEvent(forout_reactive$obj, {
       showNotification("Project now active", closeButton = TRUE)
     })
@@ -163,29 +160,19 @@ shinyApp(
                   label = 'Select reduction technique',
                   choices = choices, multiple = FALSE)
     })
-
+    
     observeEvent(input$plot_DR, {
       g <- forout_reactive$object
       print(input$reduction_technique)
       print(input$cluster_technique)
       print(input$cluster_column)
-      if(input$cluster_dimensions == '3D') {
-        p <- plot.reduced.dim(object = forout_reactive$obj, 
-                              reduction = input$reduction_technique, 
-                              assay = input$assay, 
-                              pt.size = input$pt_size, 
-                              clust.method = input$cluster_technique, 
-                              column = input$cluster_column, 
-                              dimensions = 3)
-      } else if (input$cluster_dimensions == '2D') {
-        p <- plot.reduced.dim(object = forout_reactive$obj, 
-                              reduction = input$reduction_technique, 
-                              assay = input$assay, 
-                              pt.size = input$pt_size, 
-                              clust.method = input$cluster_technique, 
-                              column = input$cluster_column, 
-                              dimensions = 2)
-      }
+      p <- IBRAP::plot.reduced.dim.interactive(object = forout_reactive$obj, 
+                                               reduction = input$reduction_technique, 
+                                               assay = input$assay, 
+                                               pt.size = input$pt_size, 
+                                               clust.method = input$cluster_technique, 
+                                               column = input$cluster_column, 
+                                               dimensions = 2)
       forout_reactive$DR_plot <- p
     })
     
@@ -198,15 +185,15 @@ shinyApp(
       g <- forout_reactive$obj
       h <- names(forout_reactive$active.assay@benchmark_results[[input$cluster_technique]])
       if(length(h) > 3) {
-        temp <- plot.benchmarking(object = g, 
-                                  assay = input$assay, 
-                                  clustering = input$cluster_technique, 
-                                  ARI = TRUE)
+        temp <- IBRAP::plot.benchmarking(object = g, 
+                                         assay = input$assay, 
+                                         clustering = input$cluster_technique, 
+                                         ARI = TRUE)
       } else {
-        temp <- plot.benchmarking(object = g, 
-                                  assay = input$assay, 
-                                  clustering = input$cluster_technique, 
-                                  ARI = FALSE)
+        temp <- IBRAP::plot.benchmarking(object = g, 
+                                         assay = input$assay, 
+                                         clustering = input$cluster_technique, 
+                                         ARI = FALSE)
       }
       
     })
@@ -224,11 +211,11 @@ shinyApp(
       print(input$assay)
       print(input$features)
       print(input$reduction_technique)
-      p <- plot.features.multiple(object = g, assay = input$assay, slot = 'normalised', 
-                                  reduction = input$reduction_technique, features = input$features)
+      p <- IBRAP::plot.features.multiple(object = g, assay = input$assay, slot = 'normalised', 
+                                         reduction = input$reduction_technique, features = input$features)
       forout_reactive$feature_plot <- p
       
-  })
+    })
     
     output$feature_plot <- renderPlot({
       forout_reactive$feature_plot
@@ -257,10 +244,10 @@ shinyApp(
     observeEvent(input$plot_vln, {
       g <- forout_reactive$obj
       print(g)
-      p <- plot.vln(object = g, assay = input$assay, 
-                    slot = 'normalised', 
-                    features = input$features_vln, 
-                    group.by = forout_reactive$active.assay@cluster_assignments[[input$cluster_technique_vln]][[input$cluster_column_vln]])
+      p <- IBRAP::plot.vln(object = g, assay = input$assay, 
+                           slot = 'normalised', 
+                           features = input$features_vln, 
+                           group.by = forout_reactive$active.assay@cluster_assignments[[input$cluster_technique_vln]][[input$cluster_column_vln]])
       forout_reactive$vln_plot <- p
     })
     
@@ -285,23 +272,26 @@ shinyApp(
     })
     
     output$cluster.column_heat <- renderUI({
+      
       selectInput(inputId = 'cluster.column_heat',
                   label = 'Select cluster column',
                   choices = colnames(forout_reactive$active.assay@cluster_assignments[[input$cluster_selector_heat]]), multiple = FALSE)
+      
     })
     
     output$heat_plot <- renderPlot({
       
       req(input$plot_heat)
       
-      plot.heatmap(object = forout_reactive$obj, 
-                   assay = input$assay, 
-                   slot = 'normalised', 
-                   features = input$features_heat, 
-                   group.by = forout_reactive$active.assay@cluster_assignments[[input$cluster_selector_heat]][[input$cluster.column_heat]])
+      IBRAP::plot.dot.plot(object = forout_reactive$obj,
+                           assay = input$assay,
+                           slot = 'normalised',
+                           features = input$features_heat, 
+                           clust.method = input$cluster_selector_heat, 
+                           column = input$cluster.column_heat)
       
     })
-
+    
     
   }
 )
