@@ -3,8 +3,10 @@
 #' 
 #' @param object An IBRAP S4 class object
 #' @param assay Character. Which assay within the object to access
+#' @param clustering Character. Which clustering benchmarking results to utilise
+#' @param ARI Boolean. Were the ARI-dependent metrices (ARI and NMI) calculated. 
 #' 
-#' @export
+#' @export plot.benchmark
 
 plot.benchmarking <- function(object, 
                               assay,
