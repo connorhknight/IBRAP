@@ -4,7 +4,16 @@
 \alias{plot.features}
 \title{Plot of reduced dimensions and features}
 \usage{
-\method{plot}{features}(object, assay, slot, reduction, features, pt_size = 5, cells = NULL)
+\method{plot}{features}(
+  object,
+  assay,
+  slot,
+  reduction,
+  features,
+  percentile = c(0, 1),
+  pt_size = 3,
+  cells = NULL
+)
 }
 \arguments{
 \item{object}{An IBRAP S4 class object}

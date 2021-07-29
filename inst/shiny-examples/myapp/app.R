@@ -56,6 +56,9 @@ shinyApp(
                                              uiOutput(outputId = 'assay_selector'),
                                              uiOutput(outputId = 'features_selector'),
                                              uiOutput(outputId = 'reduction_feature'),
+                                             h4('please indicate the percetile range, default = 0 - 1 (0%-100%)'),
+                                             numericInput(inputId = 'upper_percentile', value = 1, label = 'Upper percentile'),
+                                             numericInput(inputId = 'lower_percentile', value = 0, label = 'Lower percentile'),
                                              actionButton(inputId = 'plot_feature', label = 'Plot')
                                          ),
                                          box(height = 820, width = 550, align = "center",
@@ -212,8 +215,10 @@ shinyApp(
       print(input$assay)
       print(input$features)
       print(input$reduction_technique)
-      p <- plot.features(object = g, assay = input$assay, slot = 'normalised', 
+      p <- IBRAP::plot.features(object = g, assay = input$assay, slot = 'normalised', 
+                                percentile = c(as.numeric(input$lower_percentile), as.numeric(input$upper_percentile)),
                                 reduction = input$reduction_technique, features = input$features)
+      
       forout_reactive$feature_plot <- p
       
     })

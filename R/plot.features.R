@@ -20,7 +20,8 @@ plot.features <- function(object,
                           slot,
                           reduction,
                           features,
-                          pt_size = 5,
+                          percentile = c(0,1),
+                          pt_size = 3,
                           cells = NULL) {
   
   if(!is(object = object, class2 = 'IBRAP')) {
@@ -28,19 +29,19 @@ plot.features <- function(object,
     stop('object must be of class IBRAP\n')
     
   }
-  print('.')
+  
   if(!is.character(reduction)) {
     
     stop('reduction must be character string\n')
     
   }
-  print('.')
+  
   if(!assay %in% names(object@methods)) {
     
     stop('assay does not exist\n')
     
   }
-  print('.')
+  
   if(!reduction %in% names(c(object@methods[[assay]]@computational_reductions, 
                              object@methods[[assay]]@visualisation_reductions, 
                              object@methods[[assay]]@integration_reductions))) {
@@ -48,36 +49,31 @@ plot.features <- function(object,
     stop('reduction does not exist\n')
     
   }
-  print('.')
+  
   if(!is.character(features)) {
     
     stop('features must be character string \n')
     
   }
-  print('.')
+  
   ggarrange.tmp <- function(...) {
     
     egg::ggarrange(...)
     
   }
-  print('.')
+  
   plot.list <- list()
   
   for(x in features) {
-    print('.')
+    
     results <- as.data.frame(object@methods[[assay]]@visualisation_reductions[[reduction]])[,1:2]
-    print('.')
+    
     orig.colnames <- colnames(object@methods[[assay]]@visualisation_reductions[[reduction]][,1:2])
-    print('.')
-    print(object@methods[[assay]])
-    print('.')
-    print(object@methods[[assay]][[slot]])
-    print('.')
-    print(object@methods[[assay]][[slot]][x,])
+
     if(is.null(object@methods[[assay]][[slot]][x,])) {
-      print('.')
+      
       cat(crayon::cyan(paste0(Sys.time(), ': feature ', x, ' was not present in the defined assay, resorting to counts matrix', '\n')))
-      print('subset')
+
       iso <- object@methods[[1]]@counts[x,]
       
     } else {
@@ -85,18 +81,23 @@ plot.features <- function(object,
       iso <- object@methods[[assay]][[slot]][x,]
       
     }
-
+    
     colnames(results) <- c('red_1', 'red_2')
-    print('.')
+    
     results[,x] <- iso
-    print('.')
+    
     colnames(results)[3] <- 'feature'
-    print('.')
+    
     if(!is.null(cells)) {
       
       results <- results[cells,]
       
     }
+    
+    lower <- as.numeric(quantile(results$feature, percentile)[1])
+    upper <- as.numeric(quantile(results$feature, percentile)[2])
+    
+    results <- subset(x = results, results$feature > lower & results$feature < upper)
 
     plot.list[[x]] <- ggplot2::ggplot(data = results[order(results$feature),], 
                                       ggplot2::aes(x = red_1, y = red_2)) + 

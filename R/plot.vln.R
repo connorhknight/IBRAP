@@ -14,7 +14,7 @@
 #' 
 #' @return A violin plot of defined gene expression and groups
 #'
-#' @export plot.features
+#' @export plot.vln
 
 plot.vln <- function(object, 
                      assay,
