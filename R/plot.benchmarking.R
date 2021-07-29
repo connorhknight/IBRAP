@@ -6,7 +6,7 @@
 #' @param clustering Character. Which clustering benchmarking results to utilise
 #' @param ARI Boolean. Were the ARI-dependent metrices (ARI and NMI) calculated. 
 #' 
-#' @export plot.benchmark
+#' @export plot.benchmarking
 
 plot.benchmarking <- function(object, 
                               assay,
