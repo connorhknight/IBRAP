@@ -4,6 +4,7 @@ library(plotly)
 library(cowplot)
 library(SingleCellExperiment)
 library(egg)
+library(IBRAP)
 
 shinyApp(
   ui <- dashboardPage(
@@ -38,11 +39,11 @@ shinyApp(
                                               numericInput(inputId = 'pt_size', label = 'Point size', value = 5, min = 0.01, max = 10),
                                               br(),
                                               actionButton(inputId = 'plot_DR', label = 'Plot')),
-                                          box(height = 820, width = 550, align = "center",
+                                          box(align = "center",
                                               plotlyOutput(outputId = 'int_DR_plot', width = 1075, height = 800)))
                           ),
                           box(height = 900, width = 900, solidHeader = TRUE, status = "primary", title = 'benchmarking metrics', align = 'center',
-                              plotOutput(outputId = 'benchmark', width = 1400, height = 800)
+                              plotOutput(outputId = 'benchmark', width = 875, height = 800)
                           )
                           
                           
@@ -211,8 +212,8 @@ shinyApp(
       print(input$assay)
       print(input$features)
       print(input$reduction_technique)
-      p <- IBRAP::plot.features.multiple(object = g, assay = input$assay, slot = 'normalised', 
-                                         reduction = input$reduction_technique, features = input$features)
+      p <- plot.features(object = g, assay = input$assay, slot = 'normalised', 
+                                reduction = input$reduction_technique, features = input$features)
       forout_reactive$feature_plot <- p
       
     })
