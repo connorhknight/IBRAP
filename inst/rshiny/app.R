@@ -39,7 +39,7 @@ shinyApp(
                                               numericInput(inputId = 'pt_size', label = 'Point size', value = 5, min = 0.01, max = 10),
                                               br(),
                                               actionButton(inputId = 'plot_DR', label = 'Plot')),
-                                          box(align = "center", height = 900, width = 900, align = 'center',
+                                          box(align = "center", height = 900, width = 820, align = 'center',
                                               plotlyOutput(outputId = 'int_DR_plot')))
                           ),
                           box(height = 900, width = 900, solidHeader = TRUE, status = "primary", title = 'benchmarking metrics', align = 'center',
@@ -155,7 +155,7 @@ shinyApp(
       req(forout_reactive$active.assay)
       selectInput(inputId = 'cluster_column',
                   label = 'Select cell assignment column',
-                  choices = unlist(names(forout_reactive$active.assay@cluster_assignments[[as.character(input$cluster_technique)]])), 
+                  choices = suppressWarnings(colnames(forout_reactive$active.assay@cluster_assignments[[as.character(input$cluster_technique)]])), 
                   multiple = FALSE)
     })
     
@@ -241,7 +241,7 @@ shinyApp(
     output$cluster.column_vln <- renderUI({
       selectInput(inputId = 'cluster_column_vln',
                   label = 'Select cluster column',
-                  choices = colnames(forout_reactive$active.assay@cluster_assignments[[input$cluster_technique_vln]]), multiple = FALSE)
+                  choices = suppressWarnings(colnames(forout_reactive$active.assay@cluster_assignments[[input$cluster_technique_vln]])), multiple = FALSE)
     })
     
     observeEvent(input$plot_vln, {
@@ -279,7 +279,7 @@ shinyApp(
       
       selectInput(inputId = 'cluster.column_heat',
                   label = 'Select cluster column',
-                  choices = colnames(forout_reactive$active.assay@cluster_assignments[[input$cluster_selector_heat]]), multiple = FALSE)
+                  choices = suppressWarnings(colnames(forout_reactive$active.assay@cluster_assignments[[input$cluster_selector_heat]])), multiple = FALSE)
       
     })
     
