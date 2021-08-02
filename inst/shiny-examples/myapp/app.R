@@ -43,7 +43,7 @@ shinyApp(
                                               plotlyOutput(outputId = 'int_DR_plot', width = 1075, height = 800)))
                           ),
                           box(height = 900, width = 900, solidHeader = TRUE, status = "primary", title = 'benchmarking metrics', align = 'center',
-                              plotOutput(outputId = 'benchmark', width = 875, height = 800)
+                              plotOutput(outputId = 'benchmark')
                           )
                           
                           
@@ -56,9 +56,11 @@ shinyApp(
                                              uiOutput(outputId = 'assay_selector'),
                                              uiOutput(outputId = 'features_selector'),
                                              uiOutput(outputId = 'reduction_feature'),
-                                             h4('please indicate the percetile range, default = 0 - 1 (0%-100%)'),
+                                             h4('please indicate the percetile range,'),
+                                             h4(' default = 0 - 1 (0%-100%)'),
                                              numericInput(inputId = 'upper_percentile', value = 1, label = 'Upper percentile'),
                                              numericInput(inputId = 'lower_percentile', value = 0, label = 'Lower percentile'),
+                                             numericInput(inputId = 'feature_ptsize', value = 3, label = 'Point size'),
                                              actionButton(inputId = 'plot_feature', label = 'Plot')
                                          ),
                                          box(height = 820, width = 550, align = "center",
@@ -167,9 +169,7 @@ shinyApp(
     
     observeEvent(input$plot_DR, {
       g <- forout_reactive$object
-      print(input$reduction_technique)
-      print(input$cluster_technique)
-      print(input$cluster_column)
+      
       p <- IBRAP::plot.reduced.dim.interactive(object = forout_reactive$obj, 
                                                reduction = input$reduction_technique, 
                                                assay = input$assay, 
@@ -204,20 +204,17 @@ shinyApp(
     
     output$features_selector <- renderUI({
       choices <- rownames(forout_reactive$obj@methods[[1]]@counts)
-      selectizeInput(inputId = 'features', label = 'Identify features', 
-                     choices = choices, selected = NULL, multiple = TRUE, 
-                     options = list(create = TRUE))
+      suppressWarnings(selectizeInput(inputId = 'features', label = 'Identify features', 
+                                      choices = choices, selected = NULL, multiple = TRUE, 
+                                      options = list(create = TRUE)))
     })
     
     observeEvent(input$plot_feature, {
       g <- forout_reactive$obj
-      print(g)
-      print(input$assay)
-      print(input$features)
-      print(input$reduction_technique)
+      
       p <- IBRAP::plot.features(object = g, assay = input$assay, slot = 'normalised', 
                                 percentile = c(as.numeric(input$lower_percentile), as.numeric(input$upper_percentile)),
-                                reduction = input$reduction_technique, features = input$features)
+                                pt_size = input$feature_ptsize, reduction = input$reduction_technique, features = input$features)
       
       forout_reactive$feature_plot <- p
       
@@ -229,9 +226,9 @@ shinyApp(
     
     output$features_selector_vln <- renderUI({
       choices <- rownames(forout_reactive$obj@methods[[1]]@counts)
-      selectizeInput(inputId = 'features_vln', label = 'Identify features',
-                     choices = choices, selected = NULL, multiple = TRUE, 
-                     options = list(create = TRUE))
+      suppressWarnings(selectizeInput(inputId = 'features_vln', label = 'Identify features',
+                                      choices = choices, selected = NULL, multiple = TRUE, 
+                                      options = list(create = TRUE)))
     })
     
     output$cluster_selector_vln <- renderUI({
@@ -249,11 +246,12 @@ shinyApp(
     
     observeEvent(input$plot_vln, {
       g <- forout_reactive$obj
-      print(g)
-      p <- IBRAP::plot.vln(object = g, assay = input$assay, 
+      
+      p <- plot.vln(object = g, assay = input$assay, 
                            slot = 'normalised', 
                            features = input$features_vln, 
                            group.by = forout_reactive$active.assay@cluster_assignments[[input$cluster_technique_vln]][[input$cluster_column_vln]])
+      
       forout_reactive$vln_plot <- p
     })
     
@@ -264,9 +262,9 @@ shinyApp(
     output$features_selector_heat <- renderUI({
       
       choices <- rownames(forout_reactive$obj@methods[[1]]@counts)
-      selectizeInput(inputId = 'features_heat', label = 'Identify features', 
-                     choices = choices, selected = NULL, multiple = TRUE, 
-                     options = list(create = TRUE))
+      suppressWarnings(selectizeInput(inputId = 'features_heat', label = 'Identify features', 
+                                      choices = choices, selected = NULL, multiple = TRUE, 
+                                      options = list(create = TRUE)))
       
     })
     

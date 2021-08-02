@@ -75,9 +75,13 @@ plot.vln <- function(object,
     
   }
   
-  if(!is.character(title)) {
+  if(!is.null(title)) {
     
-    stop('title must be character string \n')
+    if(!is.character(title)) {
+      
+      stop('title must be character string \n')
+      
+    }
     
   }
   

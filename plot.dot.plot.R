@@ -125,39 +125,43 @@ plot.dot.plot <- function(object, assay, slot='normalised', clust.method, column
     
     sub_result <- result[result$variable == d,]
     
-    apply(X = sub_result[,1:ncol(sub_result)-1], MARGIN = 2, FUN = mean)
+    sub_result <- apply(X = sub_result[,1:ncol(sub_result)-1], MARGIN = 2, FUN = as.numeric)
     
-    df[count,1:sum(ncol(df)-1)] <- apply(X = sub_result[,1:ncol(sub_result)-1], MARGIN = 2, FUN = mean)
+    df[count,1:sum(ncol(df)-1)] <- apply(X = sub_result, MARGIN = 2, FUN = mean)
     
-    df2[count,1:sum(ncol(df)-1)] <- apply(X = sub_result[,1:ncol(sub_result)-1], MARGIN = 2, FUN = calc_nonzero)
+    df2[count,1:sum(ncol(df)-1)] <- apply(X = sub_result, MARGIN = 2, FUN = calc_nonzero)
     
     count <- count + 1
     
   }
   
-  tmp <- data.frame(expression = numeric(), cluster = character(), percent_expressing = numeric(), gene = character())
+  tmp <- data.frame(expression = numeric(), 
+                    assignments = character(), 
+                    `percentage of cells` = numeric(), 
+                    genes = character())
   
   count <- 0
   count2 <- ncol(df)-1
   
-  for(x in seq_along(1:nrow(df))) {
+  for(x in df$variable) {
     
-    tmp[sum(count + 1):count2,'gene expression'] <- as.numeric(t(df[x,1:sum(ncol(df)-1)])[,1])
+    tmp[sum(count + 1):count2,'expression'] <- as.numeric(t(df[df$variable == x,1:sum(ncol(df)-1)])[,1])
     
-    tmp[sum(count + 1):count2,'cluster assignments'] <- as.character(x)
+    tmp[sum(count + 1):count2,'assignments'] <- as.character(x)
     
     tmp[sum(count + 1):count2,'genes'] <- colnames(df)[1:sum(ncol(df)-1)]
     
-    tmp[sum(count + 1):count2,'percentage of cells (%)'] <- as.numeric(t(df2[x,1:sum(ncol(df2)-1)])[,1])
+    tmp[sum(count + 1):count2,'percentage.of.cells'] <- as.numeric(t(df2[df$variable == x,1:sum(ncol(df2)-1)])[,1])
     
     count <- count + ncol(df)-1
     count2 <- count2 + ncol(df)-1
     
   }
   
-  ggplot2::ggplot(data = tmp, mapping = ggplot2::aes(x = `cluster assignments`, y = genes, col = `gene expression`, size = `percentage of cells (%)`)) + 
+  ggplot2::ggplot(data = tmp, mapping = ggplot2::aes(x = `assignments`, y = genes, col = `expression`, size = `percentage.of.cells`)) + 
     ggplot2::geom_point() + 
     ggplot2::theme_classic() + 
-    ggplot2::scale_color_gradient(low = 'gray93', high = 'mediumorchid4')
+    ggplot2::scale_color_gradient(low = 'gray93', high = 'mediumorchid4') +
+    ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90, vjust = 0.5, hjust=1))
   
 }
