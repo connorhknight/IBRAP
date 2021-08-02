@@ -7,5 +7,5 @@
 prepare.reticulate()
 }
 \description{
-This function checks if IBRAPs dependent
+This function checks if IBRAPs dependent packages in python are installed
 }
