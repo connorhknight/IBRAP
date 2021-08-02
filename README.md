@@ -3,6 +3,12 @@
 
 ## Tutorial
 
+### Installation
+
+if (!requireNamespace("BiocManager", quietly=TRUE))
+    install.packages("BiocManager")
+BiocManager::install(c("kstreet13/slingshot", "scran", "scuttle", "SC3", "SingleCellExperiment", "PCAtools", "topGO")
+
 ### Pre-processing for droplet-based technology:
 
 Since droplet-based technology is becoming the majorly used technology in scRNA-seq we have adopted 2 novel methods that aim to rectify their specific problems. WARNING: Do not use these methods if you are not using a drople-based method.  
