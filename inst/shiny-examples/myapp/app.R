@@ -39,8 +39,8 @@ shinyApp(
                                               numericInput(inputId = 'pt_size', label = 'Point size', value = 5, min = 0.01, max = 10),
                                               br(),
                                               actionButton(inputId = 'plot_DR', label = 'Plot')),
-                                          box(align = "center",
-                                              plotlyOutput(outputId = 'int_DR_plot', width = 1075, height = 800)))
+                                          box(align = "center", height = 900, width = 900, align = 'center',
+                                              plotlyOutput(outputId = 'int_DR_plot')))
                           ),
                           box(height = 900, width = 900, solidHeader = TRUE, status = "primary", title = 'benchmarking metrics', align = 'center',
                               plotOutput(outputId = 'benchmark')
