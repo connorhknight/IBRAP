@@ -7,7 +7,7 @@
 #'
 #' @param ... arguments to pass to shiny::runApp
 #'
-#' @export run,IBRAP.rshiny
+#' @export run.IBRAP.rshiny
 
 run.IBRAP.rshiny <- function(...) {
   
