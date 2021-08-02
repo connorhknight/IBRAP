@@ -11,7 +11,7 @@
 #' @param reduction Character. String defining the name of the reduction to provide for BBKNN. Default = 'pca'
 #' @param reduction.save Character. What should the harmony reduction be saved as. Default = 'harmony'
 #' @param dims.use Numerical. Number of dimensions of the provided reduction to input into harmony, NULL equates to all dimensions. Default = NULL
-#' @param ... Arguments to be passed to PCAtools::pca
+#' @param ... Arguments to be passed to harmony::HarmonyMatrix
 #' 
 #' @return PCA reductions contained within the computational_reduction list in the defined assays
 #'
