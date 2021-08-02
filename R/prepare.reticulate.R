@@ -3,7 +3,7 @@
 #' 
 #' @title Installs or identifies if python modules are installed
 #'
-#' @description This function checks if IBRAPs dependent  
+#' @description This function checks if IBRAPs dependent packages in python are installed
 #' 
 #' @export
 
@@ -81,20 +81,19 @@ prepare.reticulate <- function() {
   
   ####################################################
   
-  if(isFALSE(reticulate::py_module_available('dbmap'))){
+  if(isFALSE(reticulate::py_module_available('louvain'))){
     
-    reticulate::py_install('nmslib', pip = T)
-    reticulate::py_install('dbmap', pip = T)
+    reticulate::py_install('louvain', pip = T)
     
   }
   
-  if(isFALSE(reticulate::py_module_available('dbmap'))) {
+  if(isFALSE(reticulate::py_module_available('louvain'))) {
     
-    cat(crayon::cyan('dbMAP is not install, please try manually.\n'))
+    cat(crayon::cyan('louvain is not install, please try manually.\n'))
     
   } else {
     
-    cat(crayon::cyan('dbMAP installed.\n'))
+    cat(crayon::cyan('louvain installed.\n'))
     
   }
   

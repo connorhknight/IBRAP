@@ -1,3 +1,16 @@
+#' @name remove.hvgs
+#' @aliases remove.hvgs
+#' 
+#' @title Remove highly variable genes
+#' 
+#' @description This function removes highly variable genes from method-assays
+#' 
+#' @param object An IBRAP S4 class object
+#' @param assay Character vector. Which assays to access
+#' @param hvgs.omit List of character vectors. A list of genes to remove from HVG list.
+#' 
+#' @export
+
 remove.hvgs <- function(object, assay, hvgs.omit) {
   
   if(!is(object, 'IBRAP')) {
