@@ -27,7 +27,7 @@ perform.harmony(
 
 \item{dims.use}{Numerical. Number of dimensions of the provided reduction to input into harmony, NULL equates to all dimensions. Default = NULL}
 
-\item{...}{Arguments to be passed to PCAtools::pca}
+\item{...}{Arguments to be passed to harmony::HarmonyMatrix}
 }
 \value{
 PCA reductions contained within the computational_reduction list in the defined assays

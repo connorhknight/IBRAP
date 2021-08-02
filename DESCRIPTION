@@ -15,7 +15,7 @@ LazyData: true
 RoxygenNote: 7.1.1
 Imports: 
     crayon (>= 1.4.1),
-    seurat (>= 4.0.3),
+    Seurat (>= 4.0.3),
     cluster (>= 2.1.2),
     clValid (>= 0.7),
     mclust (>= 5.4.7),
