@@ -5,12 +5,24 @@
 
 ### Installation. Run the following commands in the R environment
 
+```
+devtools::install_github("connorhknight/IBRAP")
+
+```
+
+```
 if (!requireNamespace("BiocManager", quietly=TRUE))
     install.packages("BiocManager")
-BiocManager::install(c("kstreet13/slingshot", "scran", "scuttle", "SC3", "SingleCellExperiment", "PCAtools", "topGO")
+BiocManager::install(c("kstreet13/slingshot", "scran", "scuttle", "SC3", "SingleCellExperiment", "PCAtools", "topGO","shinydashboard"))
+
+```
 
 ##Install other dependencies. Will check for necessary packages and will try to install if not found.
+
+```
 prepare.reticulate()
+
+```
 
 ### Pre-processing for droplet-based technology:
 
