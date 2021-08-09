@@ -1,9 +1,9 @@
-#' @name perform.seurat.cluster
-#' @aliases perform.seurat.cluster
+#' @name perform.graph.cluster
+#' @aliases perform.graph.cluster
 #' 
-#' @title Performs Seurat clustering
+#' @title Performs graph-based clustering
 #'
-#' @description Performs Seurat clustering on defined method-assays and supplied reductions or graphs. 
+#' @description Performs graph-based clustering on previously generated neighbouhood graphs. 
 #' 
 #' @param object IBRAP S4 class object
 #' @param assay Character. String containing indicating which assay to use
@@ -17,15 +17,15 @@
 #'
 #' @export
 
-perform.seurat.cluster <- function(object, 
-                                   assay,
-                                   neighbours, 
-                                   algorithm=1,
-                                   cluster.df.name,
-                                   res=c(0.1,0.2,0.3,0.4,0.5,
-                                         0.6,0.7,0.8,0.9,1,
-                                         1.1,1.2,1.3,1.4,1.5), 
-                                   ...) {
+perform.graph.cluster <- function(object, 
+                                  assay,
+                                  neighbours, 
+                                  algorithm=1,
+                                  cluster.df.name.suffix = '',
+                                  res=c(0.1,0.2,0.3,0.4,0.5,
+                                        0.6,0.7,0.8,0.9,1,
+                                        1.1,1.2,1.3,1.4,1.5), 
+                                  ...) {
   
   if(!is(object = object, class2 = 'IBRAP')) {
     
@@ -85,52 +85,83 @@ perform.seurat.cluster <- function(object,
     
   }
   
+  if(algorithm==1) {
+    
+    algo.name <- 'louvain'
+    
+  }
+  
+  if(algorithm==2) {
+    
+    algo.name <- 'louvainMLR'
+    
+  }
+  
+  if(algorithm==3) {
+    
+    algo.name <- 'SLM'
+    
+  }
+  
+  if(algorithm==4) {
+    
+    algo.name <- 'leiden'
+    
+  }
+  
   for(p in assay) {
     
     count <- 1
-
-      for(t in neighbours) {
-
-        cat(crayon::cyan(paste0(Sys.time(), ': calculating Seurat clusters for assay: ', p, ' using graph: ', t, '\n')))
+    
+    for(t in neighbours) {
+      
+      cat(crayon::cyan(paste0(Sys.time(), ': calculating Seurat clusters for assay: ', p, ' using graph: ', t, '\n')))
+      
+      tmp <- suppressWarnings(Seurat::CreateSeuratObject(counts = object@methods[[p]]@counts))
+      
+      orig.name <- names(tmp@meta.data)
+      
+      tmp@graphs[['neighbourhood_graph']] <- suppressWarnings(Seurat::as.Graph(x = object@methods[[p]]@neighbours[[t]]$connectivities))
+      
+      cat(crayon::cyan(paste0(Sys.time(), ': graph added\n')))
+      
+      tmp <- suppressWarnings(Seurat::FindClusters(object = tmp, resolution = res, graph.name = 'neighbourhood_graph', 
+                                                   algorithm = algorithm, verbose = FALSE, ...))
+      
+      cat(crayon::cyan(paste0(Sys.time(), ': clusters identified\n')))
+      
+      post.name <- names(tmp@meta.data)
+      
+      post.name <- post.name[!post.name %in% orig.name]
+      
+      post.name <- post.name[1:length(post.name)-1]
+      
+      new.clusters <- tmp@meta.data[,post.name]
+      
+      if(!is.data.frame(new.clusters)) {
         
-        tmp <- suppressWarnings(Seurat::CreateSeuratObject(counts = object@methods[[p]]@counts))
+        new.clusters <- as.data.frame(new.clusters)
         
-        orig.name <- names(tmp@meta.data)
+        rownames(new.clusters) <- rownames(tmp@meta.data)
         
-        tmp@graphs[['neighbourhood_graph']] <- suppressWarnings(Seurat::as.Graph(x = object@methods[[p]]@neighbours[[t]]$connectivities))
-        
-        cat(crayon::cyan(paste0(Sys.time(), ': graph added\n')))
-        
-        tmp <- suppressWarnings(Seurat::FindClusters(object = tmp, resolution = res, graph.name = 'neighbourhood_graph', 
-                                                     algorithm = algorithm, verbose = FALSE, ...))
-        
-        cat(crayon::cyan(paste0(Sys.time(), ': clusters identified\n')))
-        
-        post.name <- names(tmp@meta.data)
-        
-        post.name <- post.name[!post.name %in% orig.name]
-        
-        post.name <- post.name[1:length(post.name)-1]
-        
-        new.clusters <- tmp@meta.data[,post.name]
-        
-        if(!is.data.frame(new.clusters)) {
-          
-          new.clusters <- as.data.frame(new.clusters)
-          
-          rownames(new.clusters) <- rownames(tmp@meta.data)
-          
-          colnames(new.clusters) <- as.character('res_', res)
-          
-        }
-        
-        object@methods[[p]]@cluster_assignments[[cluster.df.name[count]]] <- new.clusters
-        
-        cat(crayon::cyan(paste0(Sys.time(), ': seurat clusters added\n')))
-        
-        count <- count + 1
+        colnames(new.clusters) <- as.character('res_', res)
         
       }
+      
+      if('_' %in% unlist(strsplit(x = cluster.df.name.suffix, split = ''))) {
+        
+        cat(crayon::cyan(paste0(Sys.time(), ': _ cannot be used in cluster.df.name.suffix, replacing with - \n')))
+        cluster.df.name.suffix <- sub(pattern = '_', replacement = '-', x = cluster.df.name.suffix)
+        
+      }
+      
+      object@methods[[p]]@cluster_assignments[[paste0(t, ':', algo.name, cluster.df.name.suffix)]] <- new.clusters
+      
+      cat(crayon::cyan(paste0(Sys.time(), ': seurat clusters added\n')))
+      
+      count <- count + 1
+      
+    }
     
   }
   

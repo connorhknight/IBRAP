@@ -8,7 +8,7 @@
 #' @param object IBRAP S4 class object
 #' @param assay Character. String containing indicating which assay to use
 #' @param reduction Character. String defining the name of the reduction to provide for BBKNN. Default = NULL
-#' @param graph.name Character. What should the BBKNN graph be named. Default = 'bbknn
+#' @param graph.name.suffix Character. Should a suffix be added to the end of bbknn as the graph name, i.e. parameter changes?
 #' @param batch Character. Column name in metadata indicating batch. Can be multiple.
 #' @param approx Character. Employs annoy's approximate neighbour finding. Useful for large datasets but may increase correction. 
 #' @param metric. Character. Which distance metric to use when approx is TRUE, options: 'angular', 'euclidean', 'manhattan' or 'hamming'. Default = 'euclidean'
@@ -21,7 +21,7 @@
 #' @param local_connectivity Numerical. How many nearest neighbours of each cell are assumed to be fully connected. Default = 1
 #' @param generate.diffmap Boolean. Should diffusion maps be generated from the neighourhood graphs, these will be stored in computational_reductions and can be used for umap generation and further neighbourhood generation. Default = TRUE
 #' @param n_comps Numerical. How many components should be generated for the diffusion maps. Default = 15
-#' @param diffmap.name Character. What should the diffusion maps be named. 
+#' @param diffmap.name.sufix Character. Should a suffix be added to the end of bbknn:diffmap as the reduction name, i.e. parameter changes?
 #' 
 #' @return BBKNN connectivity graph contained in graphs in the indicated method-assays
 #'
@@ -30,7 +30,7 @@
 perform.bbknn <- function(object,
                           assay,
                           reduction,
-                          graph.name = 'bbknn',
+                          graph.name.suffix = '',
                           batch,
                           approx = FALSE,
                           metric = 'euclidean',
@@ -43,7 +43,7 @@ perform.bbknn <- function(object,
                           local_connectivity= 1,
                           generate.diffmap = FALSE,
                           n_comps = 15,
-                          diffmap.name) {
+                          diffmap.name.suffix='') {
   
   if(!is(object = object, class2 = 'IBRAP')) {
     
@@ -88,9 +88,9 @@ perform.bbknn <- function(object,
     
   }
   
-  if(!is.character(graph.name)) {
+  if(!is.character(graph.name.suffix)) {
     
-    stop('graph.name must be character string\n')
+    stop('graph.name.suffix must be character string\n')
     
   }
   
@@ -155,6 +155,28 @@ perform.bbknn <- function(object,
   if(!is.numeric(local_connectivity)) {
     
     stop('local_connectivity must be numerical\n')
+    
+  }
+  
+  if(!is.logical(generate.diffmap)) {
+    
+    stop('generate.diffmap should be boolean. either TRUE/FALSE\n')
+    
+  }
+  
+  if(isTRUE(generate.diffmap)) {
+    
+    if(!is.numeric(n_comps)) {
+      
+      stop('n_comps must be numerical \n')
+      
+    }
+    
+    if(!is.character(diffmap.name.suffix)) {
+      
+      stop('diffmap.name.suffix \n')
+      
+    }
     
   }
   
@@ -268,9 +290,31 @@ perform.bbknn <- function(object,
       graph.list[['connectivities']] <- connectivities
       graph.list[['distances']] <- distances
       
-      object@methods[[p]]@neighbours[[graph.name[count]]] <- graph.list
+      if('_' %in% unlist(x = strsplit(graph.name.suffix, split = ''))) {
+        
+        cat(crayon::cyan(paste0(Sys.time(), ': _ cannot be used in graph.name.suffix, replacing with -\n')))
+        
+        graph.name.suffix <- sub(pattern = '_', replacement = '-', x = diffmap.name.suffix)
+        
+      }
       
-      object@methods[[p]]@computational_reductions[[diffmap.name[count]]] <- diffmap
+      object@methods[[p]]@neighbours[[paste0(r, '_bbknn_bbknn', graph.name.suffix[count])]] <- graph.list
+      
+      cat(crayon::cyan(paste0(Sys.time(), ': bbknn results added to IBRAP object\n')))
+      
+      if(isTRUE(generate.diffmap)) {
+        
+        if('_' %in% (strsplit(x = diffmap.name.suffix, split = ''))) {
+          
+          cat(crayon::cyan(paste0(Sys.time(), ': _ cannot be used in diffmap.name.suffix, replacing with -\n')))
+          
+          diffmap.name.suffix <- sub(pattern = '_', replacement = '-', x = diffmap.name.suffix)
+          
+        }
+        
+        object@methods[[p]]@computational_reductions[[paste0(r, '_bbknn_bbknn:diffmap', diffmap.name.suffix[count])]] <- diffmap
+        
+      }
 
       count <- count + 1
       

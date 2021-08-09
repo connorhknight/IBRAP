@@ -9,8 +9,10 @@
 #' @param assay Character. String containing indicating which assay to use
 #' @param reduction Character. String defining which reduction to supply to the UMAP algorithm. Default = NULL
 #' @param graph Character. If you wish to UMAP project a previously created connectivity graph (i.e. BBKNN output) supply the graph name here with reductions set to NULL. Default = NULL
+#' @param reduction.name.suffix Character. What should be appended to the end of umap as the reduction name. 
 #' @param n.dims Numerical. The number of Scanorama dimensions to be produced. Default = 50
 #' @param n_components Numerical. How many UMAP dimensions should be produced, if you are supplying graphs, only 2 dimensions can be produced. Default = 3
+#' @param n_neighbors Numerical. How many neighbours should be identified per cell. A higher value typically returns more accurate results. Default = 
 #' @param ... Numerical. Arguments to be passed to Seurat::RunUMAP
 #' 
 #' @return UMAP reduction saved in the visualisation_reductions section in the supplied method-assays
@@ -21,10 +23,10 @@ perform.umap <- function(object,
                          assay,
                          reduction=NULL,
                          graph=NULL,
-                         reduction.save='umap',
+                         reduction.name.suffix='',
                          n.dims=NULL, 
-                         n_components = 3L, 
-                         n_neighbors = 30L,
+                         n_components = 2, 
+                         n_neighbors = 30,
                          metric = 'cosine',
                          min_dist = 0.3,
                          ...) {
@@ -52,9 +54,9 @@ perform.umap <- function(object,
     
   }
   
-  if(!is.character(reduction.save)) {
+  if(!is.character(reduction.name.suffix)) {
     
-    stop('reduction.save must be character string \n')
+    stop('reduction.name.suffix must be character string \n')
     
   }
   
@@ -70,6 +72,13 @@ perform.umap <- function(object,
     
   }
   
+  if('_' %in% unlist(strsplit(x = reduction.name.suffix, split = ''))) {
+    
+    cat(crayon::cyan(paste0(Sys.time(), ': _ cannot be used in reduction.name.suffix, replacing with - \n')))
+    reduction.name.suffix <- sub(pattern = '_', replacement = '-', x = reduction.name.suffix)
+    
+  }
+  
   for(u in assay) {
     
     if(is.null(reduction) & !is.null(graph)) {
@@ -81,8 +90,6 @@ perform.umap <- function(object,
       for (g in graph) {
         
         cat(crayon::cyan(paste0(Sys.time(), ': processing ', g, ' for assay: ', u,'\n')))
-        
-        red.save <- reduction.save[count]
         
         seuobj <- suppressWarnings(Seurat::CreateSeuratObject(counts = object@methods[[u]]@counts))
         
@@ -109,7 +116,7 @@ perform.umap <- function(object,
         
         colnames(red.iso) <- unlist(dim.names)
         
-        object@methods[[u]]@visualisation_reductions[[red.save]] <- red.iso
+        object@methods[[u]]@visualisation_reductions[[paste0(g, ':umap', reduction.name.suffix)]] <- red.iso
         
         count <- count + 1
         
@@ -175,8 +182,6 @@ perform.umap <- function(object,
         
         dim <- n.dims[[count]]
         
-        red.save <- reduction.save[count]
-        
         red <- reduction.list[[i]]
         
         if(is.null(dim)) {
@@ -213,7 +218,7 @@ perform.umap <- function(object,
         
         colnames(red.iso) <- unlist(dim.names)
         
-        object@methods[[u]]@visualisation_reductions[[red.save]] <- red.iso
+        object@methods[[u]]@visualisation_reductions[[paste0(i, '_umap', reduction.name.suffix)]] <- red.iso
         
         count <- count + 1
         

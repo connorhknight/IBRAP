@@ -28,22 +28,46 @@ shinyApp(
         tabItems(
           tabItem(tabName = "Clustering",
                   column( 12,
-                          box(height = 900, width = 900, solidHeader = TRUE, status = "primary", title = 'Clustering plots',
+                          box(height = 900, width = 900, solidHeader = TRUE, status = "primary", title = 'Plotting Cell Labels',
                               splitLayout(cellWidths = c("25%", "75%"),
-                                          box(height = 820, width = 300, title = 'Select metadata',
-                                              h4('Select between methods here:'),
+                                          box(height = 820, width = 300, title = 'Points Labelling',
+                                              h5('Select between cell label dataframes:'),
                                               uiOutput(outputId = 'cluster_selector'),
                                               hr(),
-                                              h4('Generate a dimensionality reduced plot:'),
+                                              h5('Select which column to use within the dataframe:'),
                                               uiOutput(outputId = 'cluster.column'),
-                                              numericInput(inputId = 'pt_size', label = 'Point size', value = 5, min = 0.01, max = 10),
-                                              br(),
-                                              actionButton(inputId = 'plot_DR', label = 'Plot')),
-                                          box(align = "center", height = 900, width = 820, align = 'center',
-                                              plotlyOutput(outputId = 'int_DR_plot')))
+                                              hr(),
+                                              h5('Specify the point size:'),
+                                              numericInput(inputId = 'pt_size', label = 'Point size', value = 3),
+                                              actionButton(inputId = 'plot_DR', label = 'Plot'),
+                                              hr(),
+                                              p(tags$div('Interactive dimensionality reductions plots can be generated here. ', tags$br(),
+                                                         'You can specify the method-assay & dimensionality reduction', tags$br(),
+                                                         'embeddings in the panel to the left under the rds file upload.', tags$br(),
+                                                         'Cell labelling is conducted above. Dataframes that were contained', tags$br(),
+                                                         'within @cluster_assignments can be selected. Next, you can select', tags$br(),
+                                                         'the column from within that dataframe using the select dataframe ', tags$br(),
+                                                         'column drop down menu. Finally, specify the size of you would like', tags$br(),
+                                                         'the points to be.'))
+                                              ),
+                                          box(align = "center", height = 820, width = 820, align = 'center',
+                                              plotlyOutput(outputId = 'int_DR_plot', width = '100%', height = 800)))
                           ),
                           box(height = 900, width = 900, solidHeader = TRUE, status = "primary", title = 'benchmarking metrics', align = 'center',
-                              plotOutput(outputId = 'benchmark')
+                              plotOutput(outputId = 'benchmark', width = '100%'),
+                              hr(),
+                              h3('Either 5 (ground truth available) or 3 (ground truth unavailable) benchmarking metrices are provided', align = "left"),
+                              br(),
+                              p(strong('No ground truth metrices:'), align = "left"),
+                              p(' - ASW, Average Silhouette Width determines the separation of a cluster to its closest neighbour cluster', align = "left"),
+                              p(' - Dunn Index evaluates the compactness of a cluster and its distance to its closest neighbour cluster', align = "left"),
+                              p(' - connectivity determines how connecetd the cluster assignments points are to eachother', align = "left"),
+                              br(),
+                              p(strong('WARNING: these metrices are for guidance purposes and will not identify optimal cluster assignments without investigation, especially in respect to sub-populations of larger cell types.'), align = "left"),
+                              br(),
+                              p(strong('Ground truth metrices:'), align = "left"),
+                              p(' - ARI, Adjusted Rand Index measures the agreement between the cluster assignments between the ground truth and novel assignments, this metric is adjusted for randomness', align = "left"),
+                              p(' - NMI, Normalised Mutual Information functions similarly to ARI however it is adjusted for cluster sizes', align = "left"),
                           )
                           
                           
@@ -52,12 +76,11 @@ shinyApp(
                   column(12 ,
                          box(height = 900, width = 900, solidHeader = FALSE, status = "primary", title = 'Feature scatter plots',
                              splitLayout(cellWidths = c("25%", "75%"),
-                                         box(height = 820, width = 300, title = 'Feature plot',
+                                         box(height = 820, width = 300,
                                              uiOutput(outputId = 'assay_selector'),
                                              uiOutput(outputId = 'features_selector'),
                                              uiOutput(outputId = 'reduction_feature'),
-                                             h4('please indicate the percetile range,'),
-                                             h4(' default = 0 - 1 (0%-100%)'),
+                                             p('Please indicate the percetile range, default = 0-1 (0%-100%)'),
                                              numericInput(inputId = 'upper_percentile', value = 1, label = 'Upper percentile'),
                                              numericInput(inputId = 'lower_percentile', value = 0, label = 'Lower percentile'),
                                              numericInput(inputId = 'feature_ptsize', value = 3, label = 'Point size'),
@@ -68,7 +91,7 @@ shinyApp(
                                          )
                              )
                          ),
-                         box(height = 900, width = 900, solidHeader = FALSE, status = "primary", title = 'Feature violin plots',
+                         box(height = 900, width = 900, solidHeader = FALSE, status = "primary",
                              splitLayout(cellWidths = c("25%", "75%"),
                                          box(height = 820, width = 300, title = 'Violin plot',
                                              uiOutput(outputId = 'features_selector_vln'),
@@ -81,9 +104,9 @@ shinyApp(
                                          )
                              )
                          ),
-                         box(height = 900, width = 900, solidHeader = FALSE, status = "primary", title = 'Feature heatmap',
+                         box(height = 900, width = 900, solidHeader = FALSE, status = "primary",
                              splitLayout(cellWidths = c("25%", "75%"),
-                                         box(height = 820, width = 300, title = 'Violin plot',
+                                         box(height = 820, width = 300, title = 'Dot plot',
                                              uiOutput(outputId = 'features_selector_heat'),
                                              uiOutput(outputId = 'cluster_selector_heat'),
                                              uiOutput(outputId = 'cluster.column_heat'),
@@ -128,6 +151,7 @@ shinyApp(
     })
     
     output$active_assay <- renderUI({
+      
       req(forout_reactive$assay.names)
       selectInput(inputId = 'assay', choices = forout_reactive$assay.names, label = 'Select assay:')
       
@@ -140,31 +164,85 @@ shinyApp(
     })
     
     observeEvent(forout_reactive$obj, {
+      
       showNotification("Project now active", closeButton = TRUE)
+      
     })
+    
+    output$reduction_selector <- renderUI({
+      
+      req(forout_reactive$active.assay)
+      choices <- names(forout_reactive$active.assay@visualisation_reductions)
+      selectInput(inputId = 'reduction_technique',
+                  label = 'Select reduction technique',
+                  choices = choices, multiple = FALSE)
+      
+    })
+    
+    observeEvent(eventExpr = input$reduction_technique, {
+      
+      temp <- function(x) {
+        
+        n <- sum(length(x)-1)
+        r <- head(x, n=n)
+        return(r)
+        
+      }
+      
+      print('.')
+      
+      red <- input$reduction_technique
+      
+      ff <- unlist(lapply(X = lapply(X = strsplit(x = names(forout_reactive$active.assay@cluster_assignments), split = '_'), FUN = temp), FUN = paste0, collapse = '_'))
+      
+      f <- unlist(lapply(X = lapply(X = strsplit(x = red, split = '_'), FUN = temp), FUN = paste0, collapse = '_'))
+      
+      print(names(forout_reactive$active.assay@cluster_assignments)[f == ff])
+      
+      forout_reactive$allowed_labels <- names(forout_reactive$active.assay@cluster_assignments)[f == ff]
+      
+    })
+    
+    # label_constrictor <- reactive(x = {
+    #   
+    #   temp <- function(x) {
+    #     
+    #     n <- sum(length(x)-1)
+    #     r <- head(x, n=n)
+    #     return(r)
+    #     
+    #   }
+    #   
+    #   req(input$reduction_technique)
+    #   
+    #   print('.')
+    #   
+    #   red <- input$reduction_technique
+    #   
+    #   ff <- unlist(lapply(X = lapply(X = strsplit(x = names(forout_reactive$active.assay@cluster_assignments), split = '_'), FUN = temp), FUN = paste0, collapse = '_'))
+    #   
+    #   f <- unlist(lapply(X = lapply(X = strsplit(x = red, split = '_'), FUN = temp), FUN = paste0, collapse = '_'))
+    #   
+    #   print(names(forout_reactive$active.assay@cluster_assignments)[f == ff])
+    #   
+    #   names(forout_reactive$active.assay@cluster_assignments)[f == ff]
+    #   
+    # })
     
     output$cluster_selector <- renderUI({
       req(forout_reactive$active.assay)
-      choices <- names(forout_reactive$active.assay@cluster_assignments)
+      choices <- forout_reactive$allowed_labels
       selectInput(inputId = 'cluster_technique',
-                  label = 'Select cell assignments ',
+                  label = 'Select dataframe from @cluster_assignments',
                   choices = choices, multiple = FALSE)
     })
     
     output$cluster.column <- renderUI({
       req(forout_reactive$active.assay)
       selectInput(inputId = 'cluster_column',
-                  label = 'Select cell assignment column',
+                  label = 'Select dataframe column',
                   choices = suppressWarnings(colnames(forout_reactive$active.assay@cluster_assignments[[as.character(input$cluster_technique)]])), 
                   multiple = FALSE)
-    })
-    
-    output$reduction_selector <- renderUI({
-      req(forout_reactive$active.assay)
-      choices <- names(forout_reactive$active.assay@visualisation_reductions)
-      selectInput(inputId = 'reduction_technique',
-                  label = 'Select reduction technique',
-                  choices = choices, multiple = FALSE)
     })
     
     observeEvent(input$plot_DR, {

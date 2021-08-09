@@ -10,7 +10,7 @@
 #' @param slot Character. String defining which slot in the assay to supply to Scanorama. Default = NULL
 #' @param split.by Character. indicating the metadata column containing the batch to split the assay by. 
 #' @param n.dims Numerical. The number of Scanorama dimensions to be produced. Default = 50
-#' @param reduction.save Character. What should the Scanorama reduction be saved as. Default = 'scanorama'
+#' @param reduction.save.suffix Character. Should a suffix be added to the end of scanorama, This cannot include underscores.
 #' @param batch_size Numerical. The batch size used in the alignment vector computation. Useful when integrating large datasets. Default = 5000
 #' @param approx Boolean. Use appoximate nearest neighbours within python, speeds up runtime. Default = TRUE
 #' @param sigma Numerical. Correction smoothing parameter on Gaussian kernel. Default = 15
@@ -28,7 +28,7 @@ perform.scanorama <- function(object,
                               slot = 'norm.scaled',
                               split.by, 
                               n.dims = 50, 
-                              reduction.save='scanorama', 
+                              reduction.save.suffix='', 
                               batch_size = 5000, 
                               approx = TRUE, 
                               sigma = 15, 
@@ -83,9 +83,9 @@ perform.scanorama <- function(object,
     
   }
   
-  if(!is.character(reduction.save)) {
+  if(!is.character(reduction.save.suffix)) {
     
-    stop('reduction.save must be character string\n')
+    stop('reduction.save.suffix must be character string\n')
     
   }
   
@@ -193,10 +193,16 @@ perform.scanorama <- function(object,
       dims[[x]] <- transposed
     }
     
+    if('_' %in% unlist(strsplit(x = reduction.save.suffix, split = ''))) {
+      
+      reduction.save.suffix <- sub(pattern = '_', replacement = '-', x = reduction.save.suffix)
+      
+    }
+    
     cat(crayon::cyan(paste0(Sys.time(), ': combining samples\n')))
     combined <- do.call('cbind', dims)
     cat(crayon::cyan(paste0(Sys.time(), ': samples concatenated\n')))
-    object@methods[[p]]@integration_reductions[[reduction.save]] <- t(combined)
+    object@methods[[p]]@integration_reductions[[paste0('scanorama', reduction.save.suffix)]] <- t(combined)
     
   }
   

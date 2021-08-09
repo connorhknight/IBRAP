@@ -14,17 +14,39 @@
 #' 
 #' @export
 
-perform.seurat.neighbours <- function(object, 
-                                      assay, 
-                                      reduction, 
-                                      neighbour.name,
-                                      dims=NULL, 
-                                      k.param=20,
-                                      prune.SNN=1/15, 
-                                      nn.method='annoy', 
-                                      n.trees = 50,
-                                      nn.eps=0.0, 
-                                      annoy.metric='euclidean') {
+perform.nn.v2 <- function(object, 
+                          assay, 
+                          reduction, 
+                          neighbour.name.suffix = '',
+                          dims=NULL, 
+                          k.param=20,
+                          prune.SNN=1/15, 
+                          nn.method='annoy', 
+                          n.trees = 50,
+                          nn.eps=0.0, 
+                          annoy.metric='euclidean') {
+  
+  if(!is(object = object, class2 = 'IBRAP')) {
+    
+    stop('object must be of class IBRAP\n')
+    
+  }
+  
+  for(x in assay) {
+    
+    if(!x %in% names(object@methods)) {
+      
+      stop(paste0(x, ' is not contained within methods \n'))
+      
+    }
+    
+  }
+  
+  if(!is.character(neighbour.name.suffix)) {
+    
+    stop('neighbour.name.suffix must be a character string \n')
+    
+  }
   
   if(!is.list(dims)) {
     
@@ -185,9 +207,16 @@ perform.seurat.neighbours <- function(object,
       
       conn <- seuobj@graphs[[2]]
       
-      object@methods[[p]]@neighbours[[neighbour.name[count]]][['connectivities']] <- conn
+      if('_' %in% unlist(strsplit(x = neighbour.name.suffix, split = ''))) {
+        
+        cat(crayon::cyan(paste0(Sys.time(), ': _ cannot be used in neighbour.save.suffix, replacing with - \n')))
+        neighbour.name.suffix <- sub(pattern = '_', replacement = '-', x = neighbour.name.suffix)
+        
+      }
       
-      cat(crayon::cyan(paste0(Sys.time(), ': results saved as ', neighbour.name[count], '\n')))
+      object@methods[[p]]@neighbours[[paste0(g, '_nn.v2', neighbour.name.suffix)]][['connectivities']] <- conn
+      
+      cat(crayon::cyan(paste0(Sys.time(), ': results saved as ', paste0(g, '_nn.v2', neighbour.name.suffix), '\n')))
       
       count <- count + 1
       

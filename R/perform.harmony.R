@@ -9,7 +9,7 @@
 #' @param assay Character. String containing indicating which assay to use
 #' @param vars.use Character. A string of the column nmae that contains variables to regress. 
 #' @param reduction Character. String defining the name of the reduction to provide for BBKNN. Default = 'pca'
-#' @param reduction.save Character. What should the harmony reduction be saved as. Default = 'harmony'
+#' @param reduction.save.suffix Character. What should be appended to the end of harmony as the reduction name
 #' @param dims.use Numerical. Number of dimensions of the provided reduction to input into harmony, NULL equates to all dimensions. Default = NULL
 #' @param ... Arguments to be passed to harmony::HarmonyMatrix
 #' 
@@ -21,7 +21,7 @@ perform.harmony <- function(object,
                             assay, 
                             vars.use, 
                             reduction = 'pca', 
-                            reduction.save = 'harmony',
+                            reduction.save.suffix = '',
                             dims.use = NULL, 
                             ...) {
   
@@ -81,9 +81,9 @@ perform.harmony <- function(object,
     
   }
   
-  if(!is.character(reduction.save)) {
+  if(!is.character(reduction.save.suffix)) {
     
-    stop('reduction.save must be character string(s)\n')
+    stop('reduction.save.suffix must be character string(s)\n')
     
   }
   
@@ -158,8 +158,6 @@ perform.harmony <- function(object,
       
       red <- reduction.list[[g]]
       
-      red.save <- reduction.save[[count]]
-      
       dims <- dims.use[[count]]
       
       if(is.null(dims)) {
@@ -168,11 +166,18 @@ perform.harmony <- function(object,
         
       }
       
+      if('_' %in% unlist(strsplit(x = reduction.save.suffix, split = ''))) {
+        
+        cat(crayon::cyan(paste0(Sys.time(), ': _ cannot be used in reduction.save.suffix, replacing with - \n')))
+        reduction.save.suffix <- sub(pattern = '_', replacement = '-', x = reduction.save.suffix)
+        
+      }
+      
       cat(crayon::cyan(paste0(Sys.time(), ': initialising harmony for assay: ', p, ', reduction: ', g, '\n')))
       
       harm <- harmony::HarmonyMatrix(data_mat = red[,dims], meta_data = object@sample_metadata, vars_use = vars.use, do_pca = FALSE, verbose = TRUE, ...)
       
-      object@methods[[p]]@integration_reductions[[red.save]] <- harm
+      object@methods[[p]]@integration_reductions[[paste0(r, '_harmony', reduction.save.suffix)]] <- harm
       
       count <- count + 1
       

@@ -9,10 +9,10 @@ perform.umap(
   assay,
   reduction = NULL,
   graph = NULL,
-  reduction.save = "umap",
+  reduction.name.suffix = "",
   n.dims = NULL,
-  n_components = 3L,
-  n_neighbors = 30L,
+  n_components = 2,
+  n_neighbors = 30,
   metric = "cosine",
   min_dist = 0.3,
   ...
@@ -27,9 +27,13 @@ perform.umap(
 
 \item{graph}{Character. If you wish to UMAP project a previously created connectivity graph (i.e. BBKNN output) supply the graph name here with reductions set to NULL. Default = NULL}
 
+\item{reduction.name.suffix}{Character. What should be appended to the end of umap as the reduction name.}
+
 \item{n.dims}{Numerical. The number of Scanorama dimensions to be produced. Default = 50}
 
 \item{n_components}{Numerical. How many UMAP dimensions should be produced, if you are supplying graphs, only 2 dimensions can be produced. Default = 3}
+
+\item{n_neighbors}{Numerical. How many neighbours should be identified per cell. A higher value typically returns more accurate results. Default =}
 
 \item{...}{Numerical. Arguments to be passed to Seurat::RunUMAP}
 }

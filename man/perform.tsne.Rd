@@ -8,7 +8,7 @@ perform.tsne(
   object,
   assay,
   reduction = NULL,
-  reduction.save = "tsne",
+  reduction.name.suffix = "",
   n.dims = NULL,
   n_components = 3,
   ...
@@ -21,7 +21,7 @@ perform.tsne(
 
 \item{reduction}{Character. String defining which reduction to supply to the t-SNE algorithm. Default = NULL}
 
-\item{reduction.save}{Character. What should the reduction be saved as. Default = 'tsne'}
+\item{reduction.name.suffix}{Character. What should be appended to the end of tsne as the reduction name.}
 
 \item{n.dims}{Numerical. How many dimensions of the supplied reduction be used, Null equates to all dimensions. Default = NULL}
 

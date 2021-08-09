@@ -10,7 +10,7 @@ perform.scanorama(
   slot = "norm.scaled",
   split.by,
   n.dims = 50,
-  reduction.save = "scanorama",
+  reduction.save.suffix = "",
   batch_size = 5000,
   approx = TRUE,
   sigma = 15,
@@ -31,7 +31,7 @@ perform.scanorama(
 
 \item{n.dims}{Numerical. The number of Scanorama dimensions to be produced. Default = 50}
 
-\item{reduction.save}{Character. What should the Scanorama reduction be saved as. Default = 'scanorama'}
+\item{reduction.save.suffix}{Character. Should a suffix be added to the end of scanorama, This cannot include underscores.}
 
 \item{batch_size}{Numerical. The batch size used in the alignment vector computation. Useful when integrating large datasets. Default = 5000}
 

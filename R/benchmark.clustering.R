@@ -139,13 +139,6 @@ benchmark.clustering <- function(object,
       
       cat(crayon::cyan(paste0(Sys.time(), ': benchmarking for assay: ', l, ' cluster dataframe: ', k, '\n')))
       
-      print(count)
-      print(reduction[count])
-      print(n.dims)
-      print(reduction.list[[reduction[count]]])
-      
-      print(reduction.list[[reduction[count]]][,n.dims])
-      
       reduction_sub <- reduction.list[[reduction[count]]][,n.dims]
       
       count <- count + 1
@@ -244,7 +237,7 @@ benchmark.clustering <- function(object,
       } else {
         
         results <- cbind(sil.results, dunn.results, conn.results)
-        rownames(results) <- colnames(all.clusters)
+        rownames(results) <- colnames(clusters)
         colnames(results) <- c(paste0(k, '_sil.results'), paste0(k, '_dunn.results'), paste0(k, '_conn.results'))
         object@methods[[l]]@benchmark_results[[k]] <- as.data.frame(results)
         

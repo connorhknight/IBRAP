@@ -8,7 +8,7 @@
 #' @param object IBRAP S4 class object
 #' @param assay Character. String containing indicating which assay to use
 #' @param reduction Character. String defining which reduction to supply to the t-SNE algorithm. Default = NULL
-#' @param reduction.save Character. What should the reduction be saved as. Default = 'tsne'
+#' @param reduction.name.suffix Character. What should be appended to the end of tsne as the reduction name.
 #' @param n.dims Numerical. How many dimensions of the supplied reduction be used, Null equates to all dimensions. Default = NULL
 #' @param n_components Numerical. How many tsne dimensions should be produced, if you are supplying graphs, only 2 dimensions can be produced. Default = 3
 #' @param ... Numerical. Arguments to be passed to ProjectionBasedClustering::tSNE
@@ -20,7 +20,7 @@
 perform.tsne <- function(object, 
                          assay,
                          reduction=NULL,
-                         reduction.save='tsne', 
+                         reduction.name.suffix='', 
                          n.dims=NULL,
                          n_components = 3, 
                          ...) {
@@ -69,7 +69,7 @@ perform.tsne <- function(object,
     
   }
   
-  if(!is.character(reduction.save)) {
+  if(!is.character(reduction)) {
     
     stop(paste0('reduction.save must be character string\n'))
     
@@ -123,21 +123,21 @@ perform.tsne <- function(object,
       
       red <- reduction.list[[r]]
       
-      red.save <- reduction.save[count]
-      
       dim <- n.dims[[count]]
       
-      cat(crayon::cyan(paste0(Sys.time(), ': rocessing', r, 'for assay:', g,'\n')))
+      cat(crayon::cyan(paste0(Sys.time(), ': processing ', r, 'for assay:', g,'\n')))
       
       if(!is.null(dim)) {
         
         c <- ProjectionBasedClustering::tSNE(DataOrDistances = red[,dim], 
-                                             OutputDimension = n_components, Iterations = 1000, verbose = TRUE, ...)$ProjectedPoints
+                                             OutputDimension = n_components, Iterations = 1000, 
+                                             verbose = TRUE,...)$ProjectedPoints
         
       } else {
         
         c <- ProjectionBasedClustering::tSNE(DataOrDistances = red, 
-                                             OutputDimension = n_components, Iterations = 1000, verbose = TRUE, ...)$ProjectedPoints
+                                             OutputDimension = n_components, Iterations = 1000, 
+                                             verbose = TRUE, ...)$ProjectedPoints
         
       }
       
@@ -155,7 +155,14 @@ perform.tsne <- function(object,
       
       rownames(c) <- colnames(object)
       
-      object@methods[[g]]@visualisation_reductions[[red.save]] <- c
+      if('_' %in% unlist(strsplit(x = reduction.name.suffix, split = ''))) {
+        
+        cat(crayon::cyan(paste0(Sys.time(), ': _ cannot be used in reduction.name.suffix, replacing with - \n')))
+        reduction.name.suffix <- sub(pattern = '_', replacement = '-', x = reduction.name.suffix)
+        
+      }
+      
+      object@methods[[g]]@visualisation_reductions[[paste0(r, '_tsne', reduction.name.suffix)]] <- c
       
       cat(crayon::cyan(paste0(Sys.time(), ': t-SNE data added\n')))
       

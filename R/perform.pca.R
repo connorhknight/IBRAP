@@ -77,7 +77,7 @@ perform.pca <- function(object,
     eig[,2] <- factor(x = temp, levels = unique(temp))
     colnames(eig) <- c ('Variance', 'PCs')
 
-    p <- ggplot2::ggplot(data = eig[n.pcs,], mapping = ggplot2::aes(x = PCs, y = Variance)) + 
+    p <- ggplot2::ggplot(data = eig[n.pcs,], mapping = ggplot2::aes(x = 1:PCs, y = Variance)) + 
       ggplot2::geom_point() + 
       egg::theme_article() + 
       ggplot2::ylab('Explained Variance (%)') +
@@ -88,7 +88,7 @@ perform.pca <- function(object,
     
     cat(crayon::cyan(paste0(Sys.time(), ': PCA completed\n')))
     
-    object@methods[[t]]@computational_reductions[[reduction.save]] <- as.matrix(a$rotated[,n.pcs])
+    object@methods[[t]]@computational_reductions[[reduction.save]] <- as.matrix(a$rotated[,1:n.pcs])
     
   }
   

@@ -8,7 +8,7 @@ perform.bbknn(
   object,
   assay,
   reduction,
-  graph.name = "bbknn",
+  graph.name.suffix = "",
   batch,
   approx = FALSE,
   metric = "euclidean",
@@ -21,7 +21,7 @@ perform.bbknn(
   local_connectivity = 1,
   generate.diffmap = FALSE,
   n_comps = 15,
-  diffmap.name
+  diffmap.name.suffix = ""
 )
 }
 \arguments{
@@ -31,7 +31,7 @@ perform.bbknn(
 
 \item{reduction}{Character. String defining the name of the reduction to provide for BBKNN. Default = NULL}
 
-\item{graph.name}{Character. What should the BBKNN graph be named. Default = 'bbknn}
+\item{graph.name.suffix}{Character. Should a suffix be added to the end of bbknn as the graph name, i.e. parameter changes?}
 
 \item{batch}{Character. Column name in metadata indicating batch. Can be multiple.}
 
@@ -55,9 +55,9 @@ perform.bbknn(
 
 \item{n_comps}{Numerical. How many components should be generated for the diffusion maps. Default = 15}
 
-\item{diffmap.name}{Character. What should the diffusion maps be named.}
-
 \item{metric.}{Character. Which distance metric to use when approx is TRUE, options: 'angular', 'euclidean', 'manhattan' or 'hamming'. Default = 'euclidean'}
+
+\item{diffmap.name.sufix}{Character. Should a suffix be added to the end of bbknn:diffmap as the reduction name, i.e. parameter changes?}
 }
 \value{
 BBKNN connectivity graph contained in graphs in the indicated method-assays

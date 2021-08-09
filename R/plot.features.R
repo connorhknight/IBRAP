@@ -97,7 +97,7 @@ plot.features <- function(object,
     lower <- as.numeric(quantile(results$feature, percentile)[1])
     upper <- as.numeric(quantile(results$feature, percentile)[2])
     
-    results <- subset(x = results, results$feature > lower & results$feature < upper)
+    results <- subset(x = results, results$feature >= lower & results$feature <= upper)
 
     plot.list[[x]] <- ggplot2::ggplot(data = results[order(results$feature),], 
                                       ggplot2::aes(x = red_1, y = red_2)) + 

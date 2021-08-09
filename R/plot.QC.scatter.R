@@ -66,7 +66,10 @@ plot.QC.scatter <- function(object,
   
   p <- ggplot2::ggplot(data = new.df, mapping = ggplot2::aes(x = x, y = y, col = project)) + 
     ggplot2::geom_point() + ggplot2::theme_classic() + ggplot2::ggtitle(paste0(x,'_vs_',y)) + 
-    ggplot2::ylab(y) + ggplot2::xlab(x) + ggplot2::labs(color='identifier') + ggplot2::scale_color_manual(values=cols.proj)
+    ggplot2::ylab(y) + ggplot2::xlab(x) + 
+    ggplot2::labs(color='identifier') + 
+    ggplot2::scale_color_manual(values=cols.proj) + 
+    ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5))
   
   print(p)
   

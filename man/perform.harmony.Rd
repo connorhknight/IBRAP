@@ -9,7 +9,7 @@ perform.harmony(
   assay,
   vars.use,
   reduction = "pca",
-  reduction.save = "harmony",
+  reduction.save.suffix = "",
   dims.use = NULL,
   ...
 )
@@ -23,7 +23,7 @@ perform.harmony(
 
 \item{reduction}{Character. String defining the name of the reduction to provide for BBKNN. Default = 'pca'}
 
-\item{reduction.save}{Character. What should the harmony reduction be saved as. Default = 'harmony'}
+\item{reduction.save.suffix}{Character. What should be appended to the end of harmony as the reduction name}
 
 \item{dims.use}{Numerical. Number of dimensions of the provided reduction to input into harmony, NULL equates to all dimensions. Default = NULL}
 

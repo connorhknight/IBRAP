@@ -1,4 +1,4 @@
-#' @name perform.scanpy.neighbours
+#' @name perform.nn.v1
 #'
 #' @param object IBRAP S4 class object
 #' @param assay Character. String containing indicating which assay to use
@@ -15,23 +15,35 @@
 #'
 #' @export
 
-perform.scanpy.neighbours <- function(object, 
-                                      assay,
-                                      reduction,
-                                      neighbour.name,
-                                      n_neighbors = 15, 
-                                      dims = 0, 
-                                      random_state = 0, 
-                                      method = 'umap', 
-                                      metric='euclidean',
-                                      generate.diffmap = FALSE,
-                                      n_comps = 15,
-                                      diffmap.name = NULL
-                                      ) {
+perform.nn.v1 <- function(object, 
+                          assay,
+                          reduction,
+                          neighbour.name.suffix = '',
+                          n_neighbors = 15, 
+                          dims = 0, 
+                          random_state = 0, 
+                          method = 'umap', 
+                          metric='euclidean',
+                          generate.diffmap = FALSE,
+                          n_comps = 15,
+                          diffmap.name.suffix = ''
+) {
   
   if(!is(object, 'IBRAP')) {
     
     stop('object must be of class IBRAP\n')
+    
+  }
+  
+  if(!is.character(neighbour.name.suffix)) {
+    
+    stop('neighbour.name.suffix must be character string \n')
+    
+  }
+  
+  if(!is.character(diffmap.name.suffix)) {
+    
+    stop('diffmap.name.suffix must be character string \n')
     
   }
   
@@ -42,13 +54,6 @@ perform.scanpy.neighbours <- function(object,
       stop(paste0(x, ' not in object@methods\n'))
       
     }
-    
-  }
-  
-  
-  if(length(neighbour.name) != length(reduction)) {
-    
-    stop('n of neighbour.name is not equal to the n of supplied reductions \n')
     
   }
   
@@ -119,24 +124,6 @@ perform.scanpy.neighbours <- function(object,
   if(!is.numeric(n_comps)) {
     
     stop('n_comps must be numerical \n')
-    
-  }
-  
-  if(!is.null(diffmap.name)) {
-    
-    if(!is.character(diffmap.name)) {
-      
-      stop('diffmap.name must be character \n')
-      
-    } else if (is.character(diffmap.name)) {
-      
-      if(length(diffmap.name) != length(neighbour.name)) {
-        
-        stop('n of diffmap.name must be equal to n of neighbour.name \n')
-        
-      }
-      
-    }
     
   }
   
@@ -227,7 +214,7 @@ perform.scanpy.neighbours <- function(object,
         cat(crayon::cyan(paste0(Sys.time(), ': diffusion map calculated\n')))
         
         diffmap <- as.matrix(scobj$obsm[['X_diffmap']])
-
+        
         DC_names <- list()
         
         counter <- 1
@@ -246,28 +233,43 @@ perform.scanpy.neighbours <- function(object,
         rownames(diffmap) <- colnames(object)
         
       }
-
+      
       cat(crayon::cyan(paste0(Sys.time(), ': neighbours calculated\n')))
       
       conn <- as(as.matrix(scobj$obsp[['connectivities']]), 'dgCMatrix')
       colnames(conn) <- colnames(object)
       rownames(conn) <- colnames(object)
       
-      object@methods[[p]]@neighbours[[neighbour.name[count]]][['connectivities']] <- conn
+      if('_' %in% unlist(strsplit(x = neighbour.name.suffix, split = ''))) {
+        
+        cat(crayon::cyan(paste0(Sys.time(), ': _ cannot be used in neighbour.name.suffix, replacing with - \n')))
+        neighbour.name.suffix <- sub(pattern = '_', replacement = '-', x = neighbour.name.suffix)
+        
+      }
+      
+      object@methods[[p]]@neighbours[[paste0(g, '_nn.v1', neighbour.name.suffix)]][['connectivities']] <- conn
       
       dis <- as(as.matrix(scobj$obsp[['distances']]), 'dgCMatrix')
       colnames(dis) <- colnames(object)
       rownames(dis) <- colnames(object)
       
-      object@methods[[p]]@neighbours[[neighbour.name[count]]][['distances']] <- dis
+      object@methods[[p]]@neighbours[[paste0(g, '_nn.v1', neighbour.name.suffix)]][['distances']] <- dis
       
-      cat(crayon::cyan(paste0(Sys.time(), ': results saved as ', neighbour.name[count], '\n')))
+      cat(crayon::cyan(paste0(Sys.time(), ': results saved as ', paste0(g, '_nn.v1', neighbour.name.suffix), '\n')))
       
       if(isTRUE(generate.diffmap)) {
         
-        object@methods[[p]]@computational_reductions[[diffmap.name[count]]] <- diffmap
+        if('_' %in% unlist(strsplit(x = diffmap.name.suffix, split = ''))) {
+          
+          cat(crayon::cyan(paste0(Sys.time(), ': _ cannot be used in diffmap.name.suffix, replacing with - \n')))
+          
+          diffmap.name.suffix <- sub(pattern = '_', replacement = '-', x = diffmap.name.suffix)
+          
+        }
         
-        cat(crayon::cyan(paste0(Sys.time(), ': diffmap saved as ', diffmap.name[count], '\n')))
+        object@methods[[p]]@computational_reductions[[paste0(g, '_nn.v1:diffmap', diffmap.name.suffix)]] <- diffmap
+        
+        cat(crayon::cyan(paste0(Sys.time(), ': diffmap saved as ', paste0(g, '_nn.v1', diffmap.name.suffix), '\n')))
         
       }
       
