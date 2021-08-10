@@ -77,7 +77,7 @@ perform.pca <- function(object,
     eig[,2] <- factor(x = temp, levels = unique(temp))
     colnames(eig) <- c ('Variance', 'PCs')
 
-    p <- ggplot2::ggplot(data = eig[n.pcs,], mapping = ggplot2::aes(x = 1:PCs, y = Variance)) + 
+    p <- ggplot2::ggplot(data = eig[n.pcs,], mapping = ggplot2::aes(x = 1:n.pcs, y = Variance)) + 
       ggplot2::geom_point() + 
       egg::theme_article() + 
       ggplot2::ylab('Explained Variance (%)') +
