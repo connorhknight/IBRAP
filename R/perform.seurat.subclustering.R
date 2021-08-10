@@ -1,5 +1,5 @@
-#' @name perform.seurat.subclustering
-#' @aliases perform.seurat.subclustering
+#' @name perform.graph.subclustering
+#' @aliases perform.graph.subclustering
 #' 
 #' @title Seurat subclustering
 #'
@@ -18,14 +18,14 @@
 #'
 #' @export
 
-perform.seurat.subclustering <- function(object, 
-                                         assay, 
-                                         clust.method, 
-                                         column, 
-                                         clusters, 
-                                         neighbours, 
-                                         algorithm, 
-                                         res = 0.6, ...) {
+perform.graph.subclustering <- function(object, 
+                                        assay, 
+                                        clust.method, 
+                                        column, 
+                                        clusters, 
+                                        neighbours, 
+                                        algorithm, 
+                                        res = 0.6, ...) {
   
   if(!is(object, 'IBRAP')) {
     

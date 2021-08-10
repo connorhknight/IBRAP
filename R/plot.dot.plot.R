@@ -109,7 +109,7 @@ plot.dot.plot <- function(object, assay, slot='normalised', clust.method, column
   result <- cbind(expr, assignment[,column])
   colnames(result) <- c(old.names, 'variable')
   result <- as.data.frame(result)
-  df <- result[1:length(unique(result$variable)),]
+  df <- as.data.frame(result[1:length(unique(result$variable)),])
   df[,ncol(df)] <- unique(result$variable)
   df2 <- df
   
@@ -121,15 +121,21 @@ plot.dot.plot <- function(object, assay, slot='normalised', clust.method, column
     
   }
   
-  for(d in df[,ncol(df)]) {
+  for(d in unique(df[,ncol(df)])) {
+    
+    print(d)
     
     sub_result <- result[result$variable == d,]
-    
+
     sub_result <- apply(X = sub_result[,1:ncol(sub_result)-1], MARGIN = 2, FUN = as.numeric)
     
-    df[count,1:sum(ncol(df)-1)] <- apply(X = sub_result, MARGIN = 2, FUN = mean)
-    
-    df2[count,1:sum(ncol(df)-1)] <- apply(X = sub_result, MARGIN = 2, FUN = calc_nonzero)
+    if(nrow(result[result$variable == d,])>1) {
+      
+      df[count,1:sum(ncol(df)-1)] <- apply(X = sub_result, MARGIN = 2, FUN = mean)
+      
+      df2[count,1:sum(ncol(df)-1)] <- apply(X = sub_result, MARGIN = 2, FUN = calc_nonzero)
+      
+    }
     
     count <- count + 1
     

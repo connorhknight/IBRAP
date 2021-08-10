@@ -1,7 +1,7 @@
-#' @name perform.scanpy.normalisation
-#' @aliases perform.scanpy.normalisation
+#' @name perform.scanpy
+#' @aliases perform.scanpy
 #' 
-#' @title Performs Scanpy normalisation
+#' @title Performs Scanpy normalisation, hvg selection, scaling and variance stabilisation and regression. 
 #'
 #' @description A new method-assay is produced. Raw counts are normalised and HVGs identified using Scanpy
 #' 
@@ -32,31 +32,31 @@
 #'
 #' @export
 
-perform.scanpy.normalisation <- function(object, 
-                                         assay='RAW', 
-                                         slot='counts', 
-                                         new.assay.name='SCANPY', 
-                                         target_sum = 1e6, 
-                                         exclude_highly_expressed = FALSE,  
-                                         max_fraction = 0.05, 
-                                         key_added = 'scanpy_norm_factor',
-                                         log1 = TRUE,
-                                         
-                                         n_top_genes = 1500, 
-                                         max_mean = 6, 
-                                         min_mean = 0.0125, 
-                                         min_disp = 0.5, 
-                                         span = 0.3, 
-                                         n_bins = 20, 
-                                         flavor = 'seurat', 
-                                         batch_key = NULL,
-                                         
-                                         do.scale=TRUE,
-                                         vars.to.regress=NULL, 
-                                         n_jobs = NULL, 
-                                         zero_center = TRUE, 
-                                         max_value = NULL, 
-                                         obsm = NULL
+perform.scanpy <- function(object, 
+                           assay='RAW', 
+                           slot='counts', 
+                           new.assay.name='SCANPY', 
+                           target_sum = 1e6, 
+                           exclude_highly_expressed = FALSE,  
+                           max_fraction = 0.05, 
+                           key_added = 'scanpy_norm_factor',
+                           log1 = TRUE,
+                           
+                           n_top_genes = 1500, 
+                           max_mean = 6, 
+                           min_mean = 0.0125, 
+                           min_disp = 0.5, 
+                           span = 0.3, 
+                           n_bins = 20, 
+                           flavor = 'seurat', 
+                           batch_key = NULL,
+                           
+                           do.scale=TRUE,
+                           vars.to.regress=NULL, 
+                           n_jobs = NULL, 
+                           zero_center = TRUE, 
+                           max_value = NULL, 
+                           obsm = NULL
 ) {
   
   if(!is(object = object, class2 = 'IBRAP')) {

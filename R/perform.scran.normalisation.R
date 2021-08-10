@@ -1,7 +1,7 @@
-#' @name perform.scran.normalisation
-#' @aliases perform.scran.normalisation
+#' @name perform.scran
+#' @aliases perform.scran
 #' 
-#' @title Performs Scran normalisation
+#' @title Performs Scran normalisation, hvg selection, scaling and variance stabilisation and regression. 
 #'
 #' @description A new method-assay is produced. Raw counts are normalised and HVGs identified using Scran 
 #' 
@@ -21,17 +21,17 @@
 #'
 #' @export
 
-perform.scran.normalisation <- function(object, 
-                                        assay = 'RAW',
-                                        slot = 'counts',
-                                        batch=NULL,
-                                        vars.to.regress=NULL,
-                                        do.scale=FALSE,
-                                        do.center=TRUE,
-                                        new.assay.name = 'SCRAN',
-                                        n.genes=1500,
-                                        max.cluster.size = 1000,
-                                        center_size_factors=TRUE) {
+perform.scran <- function(object, 
+                          assay = 'RAW',
+                          slot = 'counts',
+                          batch=NULL,
+                          vars.to.regress=NULL,
+                          do.scale=FALSE,
+                          do.center=TRUE,
+                          new.assay.name = 'SCRAN',
+                          n.genes=1500,
+                          max.cluster.size = 1000,
+                          center_size_factors=TRUE) {
   
   if(!is(object = object, class2 = 'IBRAP')) {
     
@@ -140,19 +140,19 @@ perform.scran.normalisation <- function(object,
   seuobj <- Seurat::CreateSeuratObject(counts = object@methods[[assay]]@counts)
   
   if(!is.null(vars.to.regress)) {
-
+    
     vars.to.regress.df <- as.data.frame(object@sample_metadata[,vars.to.regress])
     colnames(vars.to.regress.df) <- vars.to.regress
     rownames(vars.to.regress.df) <- colnames(object)
-
+    
     vars.to.regress.df <- vars.to.regress.df[match(rownames(seuobj@meta.data), rownames(vars.to.regress.df)),]
     seuobj@meta.data <- cbind(seuobj@meta.data,vars.to.regress.df)
-
+    
     colnames(seuobj@meta.data) <- c(names(seuobj@meta.data)[1:sum(length(names(seuobj@meta.data))-length(vars.to.regress))], vars.to.regress)
-
+    
     seuobj@assays$RNA@data <- as(.normalised, 'dgCMatrix')[top.hvgs,]
     seuobj <- Seurat::ScaleData(object = seuobj, vars.to.regress=vars.to.regress, do.scale=do.scale, do.center=do.center)
-
+    
   } else {
     
     seuobj <- Seurat::ScaleData(object = seuobj, do.scale=do.scale, do.center=do.center)

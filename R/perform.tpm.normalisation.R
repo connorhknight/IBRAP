@@ -1,9 +1,9 @@
-#' @name perform.tpm.normalisation
-#' @aliases perform.tpm.normalisation
+#' @name perform.tpm
+#' @aliases perform.tpm
 #' 
 #' @title Performs TPM normalisation
 #'
-#' @description A new method-assay is produced. Raw counts are normalised and HVGs identified using TPM and Scran, respectively.  
+#' @description Performs TPM normalisation, scran hvg selection, scaling and variance stabilisation and regression. 
 #' 
 #' @param object IBRAP S4 class object
 #' @param assay Character. String containing indicating which assay to use
@@ -18,14 +18,14 @@
 #'
 #' @export
 
-perform.tpm.normalisation <- function(object, 
-                                      assay = 'RAW', 
-                                      slot = 'counts',
-                                      n.genes = 1500,
-                                      do.scale = FALSE,
-                                      do.center = TRUE,
-                                      vars.to.regress = NULL,
-                                      new.assay.name = 'TPM') {
+perform.tpm <- function(object, 
+                        assay = 'RAW', 
+                        slot = 'counts',
+                        n.genes = 1500,
+                        do.scale = FALSE,
+                        do.center = TRUE,
+                        vars.to.regress = NULL,
+                        new.assay.name = 'TPM') {
   
   if(!is(object = object, class2 = 'IBRAP')) {
     

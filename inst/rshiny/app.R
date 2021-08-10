@@ -49,7 +49,7 @@ shinyApp(
                                                          'the column from within that dataframe using the select dataframe ', tags$br(),
                                                          'column drop down menu. Finally, specify the size of you would like', tags$br(),
                                                          'the points to be.'))
-                                              ),
+                                          ),
                                           box(align = "center", height = 820, width = 820, align = 'center',
                                               plotlyOutput(outputId = 'int_DR_plot', width = '100%', height = 800)))
                           ),
@@ -199,7 +199,7 @@ shinyApp(
       
       print(names(forout_reactive$active.assay@cluster_assignments)[f == ff])
       
-      forout_reactive$allowed_labels <- names(forout_reactive$active.assay@cluster_assignments)[f == ff]
+      forout_reactive$allowed_labels <- c(names(forout_reactive$active.assay@cluster_assignments)[f == ff], 'metadata')
       
     })
     
@@ -326,9 +326,9 @@ shinyApp(
       g <- forout_reactive$obj
       
       p <- plot.vln(object = g, assay = input$assay, 
-                           slot = 'normalised', 
-                           features = input$features_vln, 
-                           group.by = forout_reactive$active.assay@cluster_assignments[[input$cluster_technique_vln]][[input$cluster_column_vln]])
+                    slot = 'normalised', 
+                    features = input$features_vln, 
+                    group.by = forout_reactive$active.assay@cluster_assignments[[input$cluster_technique_vln]][[input$cluster_column_vln]])
       
       forout_reactive$vln_plot <- p
     })
@@ -365,12 +365,12 @@ shinyApp(
       
       req(input$plot_heat)
       
-      IBRAP::plot.dot.plot(object = forout_reactive$obj,
-                           assay = input$assay,
-                           slot = 'normalised',
-                           features = input$features_heat, 
-                           clust.method = input$cluster_selector_heat, 
-                           column = input$cluster.column_heat)
+      plot.dot.plot(object = forout_reactive$obj,
+                    assay = input$assay,
+                    slot = 'normalised',
+                    features = input$features_heat, 
+                    clust.method = input$cluster_selector_heat, 
+                    column = input$cluster.column_heat)
       
     })
     

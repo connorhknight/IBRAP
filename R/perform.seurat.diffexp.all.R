@@ -1,5 +1,5 @@
-#' @name perform.seurat.diffexp.all
-#' @aliases perform.seurat.diffexp.all
+#' @name perform.diffexp.all
+#' @aliases perform.diffexp.all
 #' 
 #' @title Perform differential expression one cluster vs all
 #'
@@ -17,12 +17,12 @@
 #' @export
 #' 
 
-perform.seurat.diffexp.all <- function(object, 
-                                   assay = NULL,
-                                   test = 'wilcox', 
-                                   identity = NULL,
-                                   latent.vars = NULL,
-                                   ...) {
+perform.diffexp.all <- function(object, 
+                                assay = NULL,
+                                test = 'wilcox', 
+                                identity = NULL,
+                                latent.vars = NULL,
+                                ...) {
   
   if(!is(object, 'IBRAP')) {
     
@@ -67,7 +67,7 @@ perform.seurat.diffexp.all <- function(object,
     stop('Please provide the cell identities \n')
     
   }
-
+  
   
   if(!is.null(latent.vars)) {
     
@@ -91,7 +91,7 @@ perform.seurat.diffexp.all <- function(object,
     met <- merge(seuobj@meta.data, object@sample_metadata, by = 0)
     rownames(met) <- colnames(seuobj)
     seuobj@meta.data <- met
-
+    
     results <- Seurat::FindAllMarkers(object = seuobj, test.use = test, latent.vars = latent.vars, ...)
     
   } else {

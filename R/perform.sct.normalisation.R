@@ -1,9 +1,9 @@
-#' @name perform.sct.normalisation
-#' @aliases perform.sct.normalisation
+#' @name perform.sct
+#' @aliases perform.sct
 #' 
 #' @title Performs SCTransform
 #'
-#' @description A new method-assay is produced. Raw counts are normalised and HVGs identified using SCTransform 
+#' @description Performs SCTransform normalisation, hvg selection, scaling and variance stabilisation and regression.  
 #' 
 #' @param object IBRAP S4 class object
 #' @param assay A character string containing indicating which assay to use
@@ -18,11 +18,11 @@
 #'
 #' @export
 
-perform.sct.normalisation <- function(object, 
-                                      assay,
-                                      slot,
-                                      new.assay.name = 'SCT',
-                                      ...) {
+perform.sct <- function(object, 
+                        assay,
+                        slot,
+                        new.assay.name = 'SCT',
+                        ...) {
   
   if(!is(object = object, class2 = 'IBRAP')) {
     
@@ -64,7 +64,7 @@ perform.sct.normalisation <- function(object,
   seuratobj@meta.data <- cbind(seuratobj@meta.data, object@sample_metadata)
   cat(crayon::cyan(paste0(Sys.time(), ': initiating SCTransform\n')))
   seuratobj <- Seurat::SCTransform(object = seuratobj, ...)
-
+  
   .highly.variable.genes <- as.character(seuratobj@assays$SCT@var.features)
   .counts <- as(object = as.matrix(seuratobj@assays$SCT@counts), Class = 'dgCMatrix')
   .normalised <- as(as.matrix(seuratobj@assays$SCT@data), Class = 'dgCMatrix')

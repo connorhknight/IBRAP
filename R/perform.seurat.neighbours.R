@@ -1,4 +1,4 @@
-#' @name perform.seurat.neighbours
+#' @name perform.nn.v2
 #'
 #' @param object IBRAP S4 class object
 #' @param assay Character. String containing indicating which assay to use
