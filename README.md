@@ -1,4 +1,4 @@
-![ibrap_logo](/figures/logo_small.png)
+<img src="https://github.com/connorhknight/IBRAP/blob/main/figures/logo_small.png" width="300" height="100">
 
 ---------------------------------------------------------------------------------------------------------------------------------------------
 
