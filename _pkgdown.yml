@@ -1,0 +1,78 @@
+navbar:
+  structure:
+    left:
+    - intro
+    - reference
+    - articles
+    - tutorials
+    - news
+    right: github
+  components:
+    reference:
+      text: Reference
+      href: reference/index.html
+    articles:
+      text: Articles
+      menu:
+      - text: Installing & Preparing IBRAP
+        href: articles/installing_ibrap.html
+      - text: Analysing 4516 pancreatic cells
+        href: articles/using_IBRAP.html
+
+reference:
+- title: All functions
+  contents:
+  - '`IBRAP-object`'
+  - '`Read10X_output`'
+  - '`add.cell.cycle`'
+  - '`add.feature.score`'
+  - '`benchmark.clustering`'
+  - '`createIBRAPobject`'
+  - '`feature_metadata`'
+  - '`filter_IBRAP`'
+  - '`find_percentage_genes`'
+  - '`methods-object`'
+  - '`perform.GO.enrichment`'
+  - '`perform.bbknn`'
+  - '`perform.decontX`'
+  - '`perform.diffexp`'
+  - '`perform.diffexp.all`'
+  - '`perform.graph.cluster`'
+  - '`perform.graph.subclustering`'
+  - '`perform.harmony`'
+  - '`perform.lvish`'
+  - '`perform.pca`'
+  - '`perform.reduction.kmeans`'
+  - '`perform.sc3.reduction.cluster`'
+  - '`perform.sc3.slot.cluster`'
+  - '`perform.scanorama`'
+  - '`perform.scanpy`'
+  - '`perform.scran`'
+  - '`perform.scrublet`'
+  - '`perform.sct`'
+  - '`perform.singleR.annotation`'
+  - '`perform.slingshot.trajectory`'
+  - '`perform.tpm`'
+  - '`perform.tsne`'
+  - '`perform.umap`'
+  - '`plot.GO.output`'
+  - '`plot.QC.scatter`'
+  - '`plot.QC.vln`'
+  - '`plot.dot.plot`'
+  - '`plot.features`'
+  - '`plot.reduced.dim`'
+  - '`plot.reduced.dim.interactive`'
+  - '`plot.slingshot`'
+  - '`plot.vln`'
+  - '`prepare.reticulate`'
+  - '`remove.hvgs`'
+  - '`run.IBRAP.rshiny`'
+
+
+articles:
+- title: All vignettes
+  desc: ~
+  contents:
+  - '`installing_ibrap`'
+  - '`using_IBRAP`'
+
