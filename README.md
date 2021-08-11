@@ -1,4 +1,4 @@
-<img src="https://github.com/connorhknight/IBRAP/blob/main/logo_small.png" width="300" height="100">
+knitr::include_graphics(path = )
 
 ---------------------------------------------------------------------------------------------------------------------------------------------
 
