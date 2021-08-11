@@ -1,4 +1,4 @@
-<img src="https://github.com/connorhknight/IBRAP/man/figures/logo_small.png" width="300" height="100">
+<img src="https://github.com/connorhknight/IBRAP/tree/main/man/figures/logo_small.png" width="300" height="100">
 
 ---------------------------------------------------------------------------------------------------------------------------------------------
 
