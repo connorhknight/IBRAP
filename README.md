@@ -13,13 +13,13 @@ https://connorhknight.github.io/IBRAP/
 ### Installation. Run the following commands in the R environment
 
 ```
-devtools::install_github("connorhknight/IBRAP")
+if (!requireNamespace("BiocManager", quietly=TRUE))
+    install.packages("BiocManager")
+BiocManager::install(c("slingshot", "celda","scran", "scuttle", "SC3", "SingleCellExperiment", "PCAtools", "topGO","shinydashboard"))
 ```
 
 ```
-if (!requireNamespace("BiocManager", quietly=TRUE))
-    install.packages("BiocManager")
-BiocManager::install(c("slingshot", "scran", "scuttle", "SC3", "SingleCellExperiment", "PCAtools", "topGO","shinydashboard"))
+devtools::install_github("connorhknight/IBRAP")
 ```
 
 ##Install other dependencies. Will check for necessary packages and will try to install if not found.
