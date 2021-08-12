@@ -25,7 +25,7 @@ reference:
   - '`IBRAP-object`'
   - '`Read10X_output`'
   - '`add.cell.cycle`'
-  - '`add.feature.score`'wa
+  - '`add.feature.score`'
   - '`benchmark.clustering`'
   - '`createIBRAPobject`'
   - '`feature_metadata`'

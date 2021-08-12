@@ -81,22 +81,16 @@
 
       </header><div class="row">
   <div class="contents col-md-9">
-
-<p>knitr::include_graphics(path = )</p>
-<hr>
-<p><strong>I</strong>ntegrated <strong>B</strong>enchmarking single-cell <strong>R</strong>NA-sequencing <strong>A</strong>utomated <strong>P</strong>ipeline endeavours to make optimal bioinformatic pipelines preconstructed into an ease-of-use tool, alongside providing gold-standard metrics to assess their effectiveness.</p>
-<p>IBRAP vignettes, function references and more can be found on the following link:</p>
-<p><a href="https://connorhknight.github.io/IBRAP/" class="external-link uri">https://connorhknight.github.io/IBRAP/</a></p>
 <div id="tutorial" class="section level2">
 <h2 class="hasAnchor">
 <a href="#tutorial" class="anchor" aria-hidden="true"></a>Tutorial</h2>
 <div id="installation-run-the-following-commands-in-the-r-environment" class="section level3">
 <h3 class="hasAnchor">
 <a href="#installation-run-the-following-commands-in-the-r-environment" class="anchor" aria-hidden="true"></a>Installation. Run the following commands in the R environment</h3>
-<pre><code>devtools::install_github("connorhknight/IBRAP")</code></pre>
 <pre><code>if (!requireNamespace("BiocManager", quietly=TRUE))
     install.packages("BiocManager")
-BiocManager::install(c("slingshot", "scran", "scuttle", "SC3", "SingleCellExperiment", "PCAtools", "topGO","shinydashboard"))</code></pre>
+BiocManager::install(c("slingshot", "celda","scran", "scuttle", "SC3", "SingleCellExperiment", "PCAtools", "topGO","shinydashboard"))</code></pre>
+<pre><code>devtools::install_github("connorhknight/IBRAP")</code></pre>
 <p>##Install other dependencies. Will check for necessary packages and will try to install if not found.</p>
 <pre><code><a href="reference/prepare.reticulate.html">prepare.reticulate()</a></code></pre>
 </div>
@@ -304,7 +298,6 @@ panc &lt;- perform.lvish(object = panc,
 </div>
 </div>
 </div>
-
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
