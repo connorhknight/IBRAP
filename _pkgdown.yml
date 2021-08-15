@@ -21,6 +21,8 @@ navbar:
 
 reference:
 - title: All functions
+  desc: >
+  
   contents:
   - '`IBRAP-object`'
   - '`Read10X_output`'

@@ -18,6 +18,7 @@
 
 benchmark.intergation <- function(object, batch, assays, reduction, result.names, n.components = 2) {
   
+  if(!is(object = object, class2 = 'IBRAP')) {
     
     stop('object must be of class IBRAP \n')
     

@@ -1,3 +1,10 @@
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
 ## Tutorial
 
 ### Installation. Run the following commands in the R environment
