@@ -5,19 +5,19 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Analysing 4516 pancreatic cells • IBRAP</title>
+<title>Getting Started • IBRAP</title>
 <!-- favicons --><link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
 <link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
 <link rel="apple-touch-icon" type="image/png" sizes="180x180" href="../apple-touch-icon.png">
 <link rel="apple-touch-icon" type="image/png" sizes="120x120" href="../apple-touch-icon-120x120.png">
 <link rel="apple-touch-icon" type="image/png" sizes="76x76" href="../apple-touch-icon-76x76.png">
 <link rel="apple-touch-icon" type="image/png" sizes="60x60" href="../apple-touch-icon-60x60.png">
-<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous">
+<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- Bootstrap --><link href="https://cdnjs.cloudflare.com/ajax/libs/bootswatch/3.4.0/cerulean/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="../bootstrap-toc.css">
 <script src="../bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
-<script src="../pkgdown.js"></script><meta property="og:title" content="Analysing 4516 pancreatic cells">
+<script src="../pkgdown.js"></script><meta property="og:title" content="Getting Started">
 <meta property="og:description" content="IBRAP">
 <meta property="og:image" content="/logo.png">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
@@ -60,7 +60,10 @@
       <a href="../articles/installing_ibrap.html">Installing &amp; Preparing IBRAP</a>
     </li>
     <li>
-      <a href="../articles/using_IBRAP.html">Analysing 4516 pancreatic cells</a>
+      <a href="../articles/using_IBRAP.html">Getting Started</a>
+    </li>
+    <li>
+      <a href="../articles/data_transform.html">Data Transformation</a>
     </li>
   </ul>
 </li>
@@ -78,7 +81,7 @@
       </header><script src="using_IBRAP_files/header-attrs-2.10.1/header-attrs.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
-      <h1 data-toc-skip>Analysing 4516 pancreatic cells</h1>
+      <h1 data-toc-skip>Getting Started</h1>
                         <h4 data-toc-skip class="author">Connor H Knight</h4>
             
             <h4 data-toc-skip class="date">11/08/2021</h4>
@@ -90,211 +93,90 @@
 
     
     
-<p>Vignettes are long form documentation commonly included in packages. Because they are part of the distribution of the package, they need to be as compact as possible. The <code>html_vignette</code> output type provides a custom style sheet (and tweaks some options) to ensure that the resulting html is as small as possible. The <code>html_vignette</code> format:</p>
-<ul>
-<li>Never uses retina figures</li>
-<li>Has a smaller default figure size</li>
-<li>Uses a custom CSS stylesheet instead of the default Twitter Bootstrap style</li>
-</ul>
-<div id="vignette-info" class="section level2">
+<div id="analysing-2994-bone-marrow-mononuclear-cells-bmmc-from-a-single-sample-" class="section level1">
+<h1 class="hasAnchor">
+<a href="#analysing-2994-bone-marrow-mononuclear-cells-bmmc-from-a-single-sample-" class="anchor" aria-hidden="true"></a>Analysing 2994 Bone Marrow Mononuclear Cells (BMMC) from a single sample.</h1>
+<p>To demonstrate IBRAP we enlisted a sample produced by <a href="https://insight.jci.org/articles/view/124928" class="external-link">Oetjen</a> <em>et al</em>. This can be downloaded using the following link:</p>
+<p><a href="https://www.dropbox.com/sh/f2hhztiyzo04yt9/AACeK5nZBcQ7Fnz02hgF6GG5a?dl=0" class="external-link uri">https://www.dropbox.com/sh/f2hhztiyzo04yt9/AACeK5nZBcQ7Fnz02hgF6GG5a?dl=0</a></p>
+<div id="initiating-the-ibrap-s4-object" class="section level2">
 <h2 class="hasAnchor">
-<a href="#vignette-info" class="anchor" aria-hidden="true"></a>Vignette Info</h2>
-<p>Note the various macros within the <code>vignette</code> section of the metadata block above. These are required in order to instruct R how to build the vignette. Note that you should change the <code>title</code> field and the <code>\VignetteIndexEntry</code> to match the title of your vignette.</p>
+<a href="#initiating-the-ibrap-s4-object" class="anchor" aria-hidden="true"></a>Initiating the IBRAP S4 object</h2>
+<p>Since our datasets are produced by 10x genomics and aligned using CellRanger, 3 subsequent files are produced to integrate these files into a count matrix.</p>
+<pre><code>
+bmmc &lt;- Read10X_output(directory = '~Downloads/marrow_A', 
+                       matrix.file = 'matrix.mtx', 
+                       genes.file = 'genes.tsv', 
+                       barcodes.file = 'barcodes.tsv')
+                       </code></pre>
+<p>Droplet-based technologies are normally accompanied by specific conundra that requires omission, namely: multiplets and ambient RNA. With IBRAP you can apply a python package called scrublet (perform.scrublet()) and decontX (perform.decontX()) from the celda package in R for removal, respectively. We supply our count matrix to the functions. There is no defined order of applciation, but logically we assume scrublet removal followed by decontX.</p>
+<pre><code>
+# We simply supply our generated count matrix to both functions
+bmmc &lt;- perform.scrublet(counts = bmmc)
+
+bmmc &lt;- perform.decontX(counts = bmmc)
+</code></pre>
+<p>Now we can initiate our IBRAP class object ready for downstream analyses. Refer to methods-object and IBRAP-object for further detail.</p>
+<pre><code>
+# whilst creating the object we begin filtering the cells and genes using min.cells and min.features
+bmmc &lt;- createIBRAPobject(counts = bmmc,
+                          original.project = 'bmmc',
+                          method.name = 'RAW',
+                          min.cells = 3,
+                          min.features = 200)
+                          </code></pre>
 </div>
-<div id="styles" class="section level2">
+<div id="quality-control" class="section level2">
 <h2 class="hasAnchor">
-<a href="#styles" class="anchor" aria-hidden="true"></a>Styles</h2>
-<p>The <code>html_vignette</code> template includes a basic CSS theme. To override this theme you can specify your own CSS in the document metadata as follows:</p>
-<pre><code>output: 
-  rmarkdown::html_vignette:
-    css: mystyles.css</code></pre>
-</div>
-<div id="figures" class="section level2">
-<h2 class="hasAnchor">
-<a href="#figures" class="anchor" aria-hidden="true"></a>Figures</h2>
-<p>The figure sizes have been customised so that you can easily put two images side-by-side.</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">10</span><span class="op">)</span>
-<span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="fl">10</span><span class="op">:</span><span class="fl">1</span><span class="op">)</span></code></pre></div>
-<p><img src="using_IBRAP_files/figure-html/unnamed-chunk-1-1.png" width="700"><img src="using_IBRAP_files/figure-html/unnamed-chunk-1-2.png" width="700"></p>
-<p>You can enable figure captions by <code>fig_caption: yes</code> in YAML:</p>
-<pre><code>output:
-  rmarkdown::html_vignette:
-    fig_caption: yes</code></pre>
-<p>Then you can use the chunk option <code>fig.cap = "Your figure caption."</code> in <strong>knitr</strong>.</p>
-</div>
-<div id="more-examples" class="section level2">
-<h2 class="hasAnchor">
-<a href="#more-examples" class="anchor" aria-hidden="true"></a>More Examples</h2>
-<p>You can write math expressions, e.g. <span class="math inline">\(Y = X\beta + \epsilon\)</span>, footnotes<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a>, and tables, e.g. using <code><a href="https://rdrr.io/pkg/knitr/man/kable.html" class="external-link">knitr::kable()</a></code>.</p>
+<a href="#quality-control" class="anchor" aria-hidden="true"></a>Quality Control</h2>
+<p>Current best practices for quality assuring scRNA-seq datasets are outlined in numerous <a href="https://www.embopress.org/doi/full/10.15252/msb.20188746" class="external-link">publications</a>. Including:</p>
 <table class="table">
+<colgroup>
+<col width="13%">
+<col width="86%">
+</colgroup>
 <thead><tr class="header">
-<th align="left"></th>
-<th align="right">mpg</th>
-<th align="right">cyl</th>
-<th align="right">disp</th>
-<th align="right">hp</th>
-<th align="right">drat</th>
-<th align="right">wt</th>
-<th align="right">qsec</th>
-<th align="right">vs</th>
-<th align="right">am</th>
-<th align="right">gear</th>
-<th align="right">carb</th>
+<th align="left">QC.Metric</th>
+<th align="left">Description</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td align="left">Mazda RX4</td>
-<td align="right">21.0</td>
-<td align="right">6</td>
-<td align="right">160.0</td>
-<td align="right">110</td>
-<td align="right">3.90</td>
-<td align="right">2.620</td>
-<td align="right">16.46</td>
-<td align="right">0</td>
-<td align="right">1</td>
-<td align="right">4</td>
-<td align="right">4</td>
+<td align="left">Mitochondrial Fraction</td>
+<td align="left">An abnormally high mitochondrail fraction indicates improper wet lab preparation</td>
 </tr>
 <tr class="even">
-<td align="left">Mazda RX4 Wag</td>
-<td align="right">21.0</td>
-<td align="right">6</td>
-<td align="right">160.0</td>
-<td align="right">110</td>
-<td align="right">3.90</td>
-<td align="right">2.875</td>
-<td align="right">17.02</td>
-<td align="right">0</td>
-<td align="right">1</td>
-<td align="right">4</td>
-<td align="right">4</td>
+<td align="left">Total RNA</td>
+<td align="left">Low RNA quanitity indicates droplets containing no cells whereas, disproportionately high RNA indicates a droplet containing more than one cell</td>
 </tr>
 <tr class="odd">
-<td align="left">Datsun 710</td>
-<td align="right">22.8</td>
-<td align="right">4</td>
-<td align="right">108.0</td>
-<td align="right">93</td>
-<td align="right">3.85</td>
-<td align="right">2.320</td>
-<td align="right">18.61</td>
-<td align="right">1</td>
-<td align="right">1</td>
-<td align="right">4</td>
-<td align="right">1</td>
-</tr>
-<tr class="even">
-<td align="left">Hornet 4 Drive</td>
-<td align="right">21.4</td>
-<td align="right">6</td>
-<td align="right">258.0</td>
-<td align="right">110</td>
-<td align="right">3.08</td>
-<td align="right">3.215</td>
-<td align="right">19.44</td>
-<td align="right">1</td>
-<td align="right">0</td>
-<td align="right">3</td>
-<td align="right">1</td>
-</tr>
-<tr class="odd">
-<td align="left">Hornet Sportabout</td>
-<td align="right">18.7</td>
-<td align="right">8</td>
-<td align="right">360.0</td>
-<td align="right">175</td>
-<td align="right">3.15</td>
-<td align="right">3.440</td>
-<td align="right">17.02</td>
-<td align="right">0</td>
-<td align="right">0</td>
-<td align="right">3</td>
-<td align="right">2</td>
-</tr>
-<tr class="even">
-<td align="left">Valiant</td>
-<td align="right">18.1</td>
-<td align="right">6</td>
-<td align="right">225.0</td>
-<td align="right">105</td>
-<td align="right">2.76</td>
-<td align="right">3.460</td>
-<td align="right">20.22</td>
-<td align="right">1</td>
-<td align="right">0</td>
-<td align="right">3</td>
-<td align="right">1</td>
-</tr>
-<tr class="odd">
-<td align="left">Duster 360</td>
-<td align="right">14.3</td>
-<td align="right">8</td>
-<td align="right">360.0</td>
-<td align="right">245</td>
-<td align="right">3.21</td>
-<td align="right">3.570</td>
-<td align="right">15.84</td>
-<td align="right">0</td>
-<td align="right">0</td>
-<td align="right">3</td>
-<td align="right">4</td>
-</tr>
-<tr class="even">
-<td align="left">Merc 240D</td>
-<td align="right">24.4</td>
-<td align="right">4</td>
-<td align="right">146.7</td>
-<td align="right">62</td>
-<td align="right">3.69</td>
-<td align="right">3.190</td>
-<td align="right">20.00</td>
-<td align="right">1</td>
-<td align="right">0</td>
-<td align="right">4</td>
-<td align="right">2</td>
-</tr>
-<tr class="odd">
-<td align="left">Merc 230</td>
-<td align="right">22.8</td>
-<td align="right">4</td>
-<td align="right">140.8</td>
-<td align="right">95</td>
-<td align="right">3.92</td>
-<td align="right">3.150</td>
-<td align="right">22.90</td>
-<td align="right">1</td>
-<td align="right">0</td>
-<td align="right">4</td>
-<td align="right">2</td>
-</tr>
-<tr class="even">
-<td align="left">Merc 280</td>
-<td align="right">19.2</td>
-<td align="right">6</td>
-<td align="right">167.6</td>
-<td align="right">123</td>
-<td align="right">3.92</td>
-<td align="right">3.440</td>
-<td align="right">18.30</td>
-<td align="right">1</td>
-<td align="right">0</td>
-<td align="right">4</td>
-<td align="right">4</td>
+<td align="left">Total Genes</td>
+<td align="left">likewise, a low or high number of genes typically correspond with total RNA</td>
 </tr>
 </tbody>
 </table>
-<p>Also a quote using <code>&gt;</code>:</p>
-<blockquote>
-<p>“He who gives up [code] safety for [code] speed deserves neither.” (<a href="https://twitter.com/hadleywickham/status/504368538874703872" class="external-link">via</a>)</p>
-</blockquote>
+<p>The total RNA and Total genes are calculated upon the creation of the IBRAP object. However, percentage mitochondrial genes requires a second function since mitochondrial genes have a varying prefix in datasets. Thus, we use find_percentage_genes():</p>
+<pre><code>
+bmmc &lt;- find_percentage_genes(object = celseq2, pattern = '^MT-',
+                              assay = 'RAW', 
+                              slot = 'counts',
+                              column.name = 'RAW_percent.mt')
+                              </code></pre>
+<p>We can visualise this information in two ways: using violin plots (plot.qc.vln()) or comparing two metrices with scatter plots (plot.qc.scatter()). The latter enables us to observe correlations between the metrices.</p>
+<pre><code>
+plot.QC.vln(object = celseq2, 
+            metadata.columns = c('RAW_total.features', 
+                                 'RAW_total.counts', 
+                                 'RAW_percent.mt'))
+                                 </code></pre>
+<p>Filtration is subsequently applied to remove problematic cells.</p>
+<pre><code>
+bmmc &lt;- filter_IBRAP(RAW_total.features &lt; 2500 &amp; RAW_total.counts &gt; 200 &amp; RAW_percent.mt &lt; 8)
+</code></pre>
 </div>
-<div class="footnotes">
-<hr>
-<ol>
-<li id="fn1"><p>A footnote here.<a href="#fnref1" class="footnote-back">↩︎</a></p></li>
-</ol>
+<div id="data-transformation" class="section level2">
+<h2 class="hasAnchor">
+<a href="#data-transformation" class="anchor" aria-hidden="true"></a>Data Transformation</h2>
+<p>To accommodate downstream analyses, we must promote a normal distribution and numerical scaling in our data.</p>
+</div>
 </div>
   </div>
 
@@ -310,7 +192,7 @@
 
       <footer><div class="copyright">
   <p></p>
-<p>Developed by The package maintainer.</p>
+<p>Developed by Connor Knight.</p>
 </div>
 
 <div class="pkgdown">

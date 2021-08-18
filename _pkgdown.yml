@@ -4,7 +4,6 @@ navbar:
     - intro
     - reference
     - articles
-    - tutorials
     - news
     right: github
   components:
@@ -16,8 +15,10 @@ navbar:
       menu:
       - text: Installing & Preparing IBRAP
         href: articles/installing_ibrap.html
-      - text: Analysing 4516 pancreatic cells
+      - text: Getting Started
         href: articles/using_IBRAP.html
+      - text: Data Transformation
+        href: articles/data_transform.html
 
 reference:
 - title: All functions
@@ -70,7 +71,15 @@ reference:
   - '`remove.hvgs`'
   - '`run.IBRAP.rshiny`'
 
+template:
+  params:
+    bootswatch: cerulean
 
+home:
+  links:
+  - text: Report bugs here 
+    href: https://github.com/connorhknight/IBRAP/issues
+  
 articles:
 - title: All vignettes
   desc: ~

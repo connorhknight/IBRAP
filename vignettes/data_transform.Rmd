@@ -1,0 +1,59 @@
+---
+title: "Data Transformation"
+author: "Connor H Knight"
+date: "11/08/2021"
+output: 
+    html_document:
+    toc: true
+    toc_depth: 3
+    theme: united
+vignette: >
+  %\VignetteIndexEntry{Data Transformation}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+# Data Transformation
+
+## What is included
+
+Data transformation in IBRAP incorporates multiple steps from packages:
+ - counts normalisation which redistributes data to fit a normal distribution
+ - most genes in the dataset do not exhibit much variation and thus facilitate a fake closeness between cells and wastes computational resources. Therefore, highly variable genes are subset in decreasing order to a cut-off. Default = 1500
+ - 
+
+## Which packages are incorporated
+
+### end-bias datasets (i.e. 3 prime or 5 prime)
+
+Scanpy 
+
+perform.scanpy()
+
+Scanpy can either be log1 or log2 transformed which alters the result. By default scanpy uses log1. Next, either seurat v2, seurat v3, or cellranger style gene selection can be applied. Finally, data is scaled. 
+
+SCTransform
+
+perform.sct()
+
+Seurat developers originally utilised a fairly basic normalisation method. Recently, they released SCTransform which includes general linear modelling to optimise negative binomial regression of data. This algorithm included normalisation, gene selection, and scaling all in one function noromally. 
+
+Scran
+
+perform.scran()
+
+Scran pools similar cells together to produce a scaling factor that is applied to the pools, this enables a more cell type-specific normalisaton. A similar variance analysis identifes genes and seurats scaling function is applied. 
+
+All of the prior methods provide a different methodology for normalising end-bias data. However, full-length data is still presented in scRNA-seq studies. 
+
+### full-length datasets
+
+perform.tpm()
+
+To accommodate full-length datasets we incorporated a a transcript per million normalisation that accounts for gene length. We included scrans gene selection and seurats scaling function to complete the transformation. 

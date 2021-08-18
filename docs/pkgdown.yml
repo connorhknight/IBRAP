@@ -2,7 +2,8 @@ pandoc: 2.11.2
 pkgdown: 1.6.1.9001
 pkgdown_sha: ce9781a15c7ea07df9fb17a11295ba4abec0b54b
 articles:
+  data_transform: data_transform.html
   installing_ibrap: installing_ibrap.html
   using_IBRAP: using_IBRAP.html
-last_built: 2021-08-11T18:58Z
+last_built: 2021-08-18T21:39Z
 

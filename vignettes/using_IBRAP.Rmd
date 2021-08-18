@@ -1,10 +1,14 @@
 ---
-title: "Analysing 4516 pancreatic cells"
+title: "Getting Started"
 author: "Connor H Knight"
 date: "11/08/2021"
-output: rmarkdown::html_vignette
+output: 
+    html_document:
+    toc: true
+    toc_depth: 3
+    theme: united
 vignette: >
-  %\VignetteIndexEntry{Analysing 4516 pancreatic cells}
+  %\VignetteIndexEntry{Getting Started}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -15,51 +19,95 @@ knitr::opts_chunk$set(
   comment = "#>"
 )
 ```
+# Analysing 2994 Bone Marrow Mononuclear Cells (BMMC) from a single sample.
 
-Vignettes are long form documentation commonly included in packages. Because they are part of the distribution of the package, they need to be as compact as possible. The `html_vignette` output type provides a custom style sheet (and tweaks some options) to ensure that the resulting html is as small as possible. The `html_vignette` format:
+To demonstrate IBRAP we enlisted a sample produced by [Oetjen](https://insight.jci.org/articles/view/124928) *et al*. This can be downloaded using the following link:  
 
-- Never uses retina figures
-- Has a smaller default figure size
-- Uses a custom CSS stylesheet instead of the default Twitter Bootstrap style
+https://www.dropbox.com/sh/f2hhztiyzo04yt9/AACeK5nZBcQ7Fnz02hgF6GG5a?dl=0
 
-## Vignette Info
+## Initiating the IBRAP S4 object
 
-Note the various macros within the `vignette` section of the metadata block above. These are required in order to instruct R how to build the vignette. Note that you should change the `title` field and the `\VignetteIndexEntry` to match the title of your vignette.
+Since our datasets are produced by 10x genomics and aligned using CellRanger, 3 subsequent files are produced to integrate these files into a count matrix.
 
-## Styles
-
-The `html_vignette` template includes a basic CSS theme. To override this theme you can specify your own CSS in the document metadata as follows:
-
-    output: 
-      rmarkdown::html_vignette:
-        css: mystyles.css
-
-## Figures
-
-The figure sizes have been customised so that you can easily put two images side-by-side. 
-
-```{r, fig.show='hold'}
-plot(1:10)
-plot(10:1)
 ```
 
-You can enable figure captions by `fig_caption: yes` in YAML:
-
-    output:
-      rmarkdown::html_vignette:
-        fig_caption: yes
-
-Then you can use the chunk option `fig.cap = "Your figure caption."` in **knitr**.
-
-## More Examples
-
-You can write math expressions, e.g. $Y = X\beta + \epsilon$, footnotes^[A footnote here.], and tables, e.g. using `knitr::kable()`.
-
-```{r, echo=FALSE, results='asis'}
-knitr::kable(head(mtcars, 10))
+bmmc <- Read10X_output(directory = '~Downloads/marrow_A', 
+                       matrix.file = 'matrix.mtx', 
+                       genes.file = 'genes.tsv', 
+                       barcodes.file = 'barcodes.tsv')
+                       
 ```
 
-Also a quote using `>`:
+Droplet-based technologies are normally accompanied by specific conundra that requires omission, namely: multiplets and ambient RNA. With IBRAP you can apply a python package called scrublet (perform.scrublet()) and decontX (perform.decontX()) from the celda package in R for removal, respectively. We supply our count matrix to the functions. There is no defined order of applciation, but logically we assume scrublet removal followed by decontX. 
 
-> "He who gives up [code] safety for [code] speed deserves neither."
-([via](https://twitter.com/hadleywickham/status/504368538874703872))
+```
+
+# We simply supply our generated count matrix to both functions
+bmmc <- perform.scrublet(counts = bmmc)
+
+bmmc <- perform.decontX(counts = bmmc)
+
+```
+Now we can initiate our IBRAP class object ready for downstream analyses. Refer to methods-object and IBRAP-object for further detail. 
+
+```
+
+# whilst creating the object we begin filtering the cells and genes using min.cells and min.features
+bmmc <- createIBRAPobject(counts = bmmc,
+                          original.project = 'bmmc',
+                          method.name = 'RAW',
+                          min.cells = 3,
+                          min.features = 200)
+                          
+```
+
+## Quality Control
+
+Current best practices for quality assuring scRNA-seq datasets are outlined in numerous [publications](https://www.embopress.org/doi/full/10.15252/msb.20188746). Including:
+
+```{r table2, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'}
+df <- data.frame(`QC Metric` = c('Mitochondrial Fraction', 'Total RNA', 'Total Genes'), Description = c('An abnormally high mitochondrail fraction indicates improper wet lab preparation', 'Low RNA quanitity indicates droplets containing no cells whereas, disproportionately high RNA indicates a droplet containing more than one cell', 'likewise, a low or high number of genes typically correspond with total RNA'))
+
+knitr::kable(df)
+```
+
+The total RNA and Total genes are calculated upon the creation of the IBRAP object. However, percentage mitochondrial genes requires a second function since mitochondrial genes have a varying prefix in datasets. Thus, we use find_percentage_genes():
+
+```
+
+bmmc <- find_percentage_genes(object = celseq2, pattern = '^MT-',
+                              assay = 'RAW', 
+                              slot = 'counts',
+                              column.name = 'RAW_percent.mt')
+                              
+```
+
+We can visualise this information in two ways: using violin plots (plot.qc.vln()) or comparing two metrices with scatter plots (plot.qc.scatter()). The latter enables us to observe correlations between the metrices. 
+
+```
+
+plot.QC.vln(object = celseq2, 
+            metadata.columns = c('RAW_total.features', 
+                                 'RAW_total.counts', 
+                                 'RAW_percent.mt'))
+                                 
+```
+
+Filtration is subsequently applied to remove problematic cells.
+
+```
+
+bmmc <- filter_IBRAP(RAW_total.features < 2500 & RAW_total.counts > 200 & RAW_percent.mt < 8)
+
+```
+
+## Data Transformation
+
+To accommodate downstream analyses, we must promote a normal distribution and numerical scaling in our data.
+
+
+
+
+
+
+
