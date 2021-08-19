@@ -65,6 +65,14 @@ perform.pca <- function(object,
     
   }
   
+  ggarrange.tmp <- function(...) {
+    
+    egg::ggarrange(...)
+    
+  }
+  
+  list.of.figs <- list()
+  
   for(t in assay) {
     
     mat <- object@methods[[t]][[slot]][rownames(object@methods[[t]][[slot]]) %in% object@methods[[t]]@highly.variable.genes,]
@@ -77,20 +85,20 @@ perform.pca <- function(object,
     eig[,2] <- factor(x = temp, levels = unique(temp))
     colnames(eig) <- c ('Variance', 'PCs')
 
-    p <- ggplot2::ggplot(data = eig[1:n.pcs,], mapping = ggplot2::aes(x = PCs, y = Variance)) + 
+    list.of.figs[[t]] <- ggplot2::ggplot(data = eig[1:n.pcs,], mapping = ggplot2::aes(x = PCs, y = Variance)) + 
       ggplot2::geom_point() + 
       egg::theme_article() + 
       ggplot2::ylab('Explained Variance (%)') +
       ggplot2::ggtitle(t) + 
       ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90, vjust = 0.5, hjust=1), plot.title = ggplot2::element_text(hjust = 0.5))
     
-    print(p)
-    
     cat(crayon::cyan(paste0(Sys.time(), ': PCA completed\n')))
     
     object@methods[[t]]@computational_reductions[[reduction.save]] <- as.matrix(a$rotated[,1:n.pcs])
     
   }
+  
+  print(do.call('ggarrange.tmp', c(plots = list.of.figs, ncol = length(list.of.figs))))
   
   return(object)
   

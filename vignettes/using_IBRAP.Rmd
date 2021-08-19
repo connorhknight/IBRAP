@@ -75,7 +75,7 @@ The total RNA and Total genes are calculated upon the creation of the IBRAP obje
 
 ```
 
-bmmc <- find_percentage_genes(object = celseq2, pattern = '^MT-',
+bmmc <- find_percentage_genes(object = bmmc, pattern = '^MT-',
                               assay = 'RAW', 
                               slot = 'counts',
                               column.name = 'RAW_percent.mt')
@@ -86,16 +86,32 @@ We can visualise this information in two ways: using violin plots (plot.qc.vln()
 
 ```
 
-plot.QC.vln(object = celseq2, 
+plot.QC.vln(object = bmmc, 
             metadata.columns = c('RAW_total.features', 
                                  'RAW_total.counts', 
                                  'RAW_percent.mt'))
                                  
 ```
 
-```{r}
+```{r, echo=FALSE}
 
 knitr::include_graphics(path = 'vln_qc_pre.png')
+
+```
+
+```
+
+plot.qc.scatter(object = bmmc, 
+                y = 'RAW_total.counts', 
+                x = 'RAW_percent.mt', 
+                split.by = 'original.project'
+                )
+
+```
+
+```{r, echo=FALSE}
+
+knitr::include_graphics(path = 'scatter_qc_pre.png')
 
 ```
 
@@ -109,7 +125,39 @@ bmmc <- filter_IBRAP(RAW_total.features < 2500 & RAW_total.counts > 200 & RAW_pe
 
 ## Data Transformation
 
-To accommodate downstream analyses, we must promote a normal distribution and numerical scaling in our data.
+To accommodate downstream analyses, we must promote a normal distribution and numerical scaling in our data. We included four separate [normalisation](https://www.embopress.org/doi/full/10.15252/msb.20188746) methods that are applied as such:
+
+```
+
+bmmc <- perform.sct(object = bmmc, 
+                    assay = 'RAW', 
+                    slot = 'counts')
+
+bmmc <- perform.scran(object = bmmc, 
+                      assay = 'RAW', 
+                      slot = 'counts', 
+                      vars.to.regress = 'RAW_total.counts', do.scale = T)
+
+bmmc <- perform.scanpy(object = bmmc, 
+                       vars.to.regress = 'RAW_total.counts', do.scale = T)
+
+```
+
+Please refer to the above hyperlink to understand why we only used 3 out of 4 methods for this 10x dataset. 
+
+Each normalisation function produces a new method-assay which contains the results. Any downstream analyses will be stored in these separate compartments, respective to the normalisation method. i.e. object@methods contains all of the method assays. 
+
+## Linear Dimensionaly Reduction
+
+Now that our data has been appropriately transformed we can reduce the number of dimensions using Principal Component Analysis (PCA). Reduction methods summarise as much information from the higher dimensions into lower dimensions as possible. 
+
+```
+
+bmmc <- perform.pca(object = bmmc, 
+                    assay = c('SCT', 'SCRAN', 'SCANPY'), 
+                    n.pcs = 1:50, reduction.save = 'pca')
+
+```
 
 
 
