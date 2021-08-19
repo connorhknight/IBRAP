@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Produce counts matrix from CellRanger output — Read10X_output • IBRAP</title>
+<title>Benchmarks the cluster assignmentws — benchmark.intergation • IBRAP</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -46,8 +46,8 @@
 
 
 
-<meta property="og:title" content="Produce counts matrix from CellRanger output — Read10X_output" />
-<meta property="og:description" content="Concatenates the three output files of CellRanger alignment." />
+<meta property="og:title" content="Benchmarks the cluster assignmentws — benchmark.intergation" />
+<meta property="og:description" content="Adopting scones method of Average Silhouette Width determination between batches. A depleted value is superior." />
 <meta property="og:image" content="/logo.png" />
 
 
@@ -131,56 +131,57 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Produce counts matrix from CellRanger output</h1>
+    <h1>Benchmarks the cluster assignmentws</h1>
     
-    <div class="hidden name"><code>Read10X_output.Rd</code></div>
+    <div class="hidden name"><code>benchmark.intergation.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Concatenates the three output files of CellRanger alignment.</p>
+    <p>Adopting scones method of Average Silhouette Width determination between batches. A depleted value is superior.</p>
     </div>
 
-    <div class="ref-usage sourceCode"><pre class='sourceCode r'><code><span class='fu'>Read10X_output</span><span class='op'>(</span><span class='va'>directory</span>, <span class='va'>matrix.file</span>, <span class='va'>genes.file</span>, <span class='va'>barcodes.file</span>, <span class='va'>make.feat.unique</span><span class='op'>)</span></code></pre></div>
+    <div class="ref-usage sourceCode"><pre class='sourceCode r'><code><span class='fu'>benchmark.intergation</span><span class='op'>(</span>
+  <span class='va'>object</span>,
+  <span class='va'>batch</span>,
+  <span class='va'>assays</span>,
+  <span class='va'>reduction</span>,
+  <span class='va'>result.names</span>,
+  n.components <span class='op'>=</span> <span class='fl'>2</span>
+<span class='op'>)</span></code></pre></div>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>directory</th>
-      <td><p>Absolute pathway to directory containing the three files</p></td>
+      <th>object</th>
+      <td><p>IBRAP S4 class object</p></td>
     </tr>
     <tr>
-      <th>matrix.file</th>
-      <td><p>Specify .mtx file name. Default = matrix.mtx</p></td>
+      <th>batch</th>
+      <td><p>Character. Whcih column in the metadata dataframe contains the batches.</p></td>
     </tr>
     <tr>
-      <th>genes.file</th>
-      <td><p>Specify file name for genes. Default = genes.tsv</p></td>
+      <th>reduction</th>
+      <td><p>Character. Which reduction(s) should be used to observe integration.</p></td>
     </tr>
     <tr>
-      <th>barcodes.file</th>
-      <td><p>Specify file name for barcodes. Default = barcodes.tsv</p></td>
+      <th>result.names</th>
+      <td><p>Character. A vector of names for the benchmarking results.</p></td>
     </tr>
     <tr>
-      <th>make.feat.unique</th>
-      <td><p>Should non-unique gene names be made unique.</p></td>
+      <th>n.components</th>
+      <td><p>Numerical. How many components of the reduced embeddings should be used. Default = 2</p></td>
+    </tr>
+    <tr>
+      <th>assay</th>
+      <td><p>Character. String containing indicating which assay to use</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>Sparse matrix of counts</p>
+    <p>Benchmarking scores for the supplied integrations</p>
 
-    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <div class="ref-examples sourceCode"><pre class='sourceCode r'><code><span class='r-in'><span class='fu'>Read10X_output</span><span class='op'>(</span>directory <span class='op'>=</span> <span class='st'>'path/to/folder/'</span>, matrix.file <span class='op'>=</span> <span class='st'>'matrix.mtx'</span>, genes.file <span class='op'>=</span> <span class='st'>'genes.tsv'</span>, barcodes.file <span class='op'>=</span> <span class='st'>'barcodes.tsv'</span>, make.feat.unique <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span></span>
-<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #00BBBB;'>2021-08-19 14:55:26: expected file: matrix.mtx</span></span>
-<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #00BBBB;'>2021-08-19 14:55:26: expected file: genes.tsv</span></span>
-<span class='r-out co'><span class='r-pr'>#&gt;</span> <span style='color: #00BBBB;'>2021-08-19 14:55:26: expected file: barcodes.tsv</span></span>
-<span class='r-out co'><span class='r-pr'>#&gt;</span> </span>
-<span class='r-wrn co'><span class='r-pr'>#&gt;</span> <span class='warning'>Warning: </span>cannot open file 'path/to/folder//genes.tsv': No such file or directory</span>
-<span class='r-err co'><span class='r-pr'>#&gt;</span> <span class='error'>Error in file(file, "rt")</span> cannot open the connection</span>
-<span class='r-in'></span>
-</code></pre></div>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
