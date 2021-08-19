@@ -93,6 +93,12 @@ plot.QC.vln(object = celseq2,
                                  
 ```
 
+```{r}
+
+knitr::include_graphics(path = 'vln_qc_pre.png')
+
+```
+
 Filtration is subsequently applied to remove problematic cells.
 
 ```
