@@ -8,7 +8,7 @@
 #' @param object IBRAP S4 class object
 #' @param assay Character. String containing indicating which assay to use
 #' @param reduction Character. String defining which reduction to supply to the LargeVis algorithm. Default = NULL
-#' @param reduction.save Character. What should the reduction be saved as. Default = 'lvish'
+#' @param reduction.suffix Character. what should be appended to the end of lvish, cannot contain _. 
 #' @param n.dims Numerical. How many dimensions of the supplied reduction be used, Null equates to all dimensions. Default = NULL
 #' @param n_components Numerical. How many tsne dimensions should be produced, if you are supplying graphs, only 2 dimensions can be produced. Default = 3
 #' @param ... Numerical. Arguments to be passed to uwot::lvish
@@ -20,7 +20,7 @@
 perform.lvish <- function(object, 
                           assay,
                           reduction='pca',
-                          reduction.save='lvish',
+                          reduction.suffix='',
                           n.dim=NULL, 
                           n_components = 3, 
                           ...) {
@@ -148,7 +148,15 @@ perform.lvish <- function(object,
       
       colnames(c) <- unlist(dim.names)
       
-      object@methods[[u]]@visualisation_reductions[[red.save]] <- c
+      if('_' %in% unlist(strsplit(x = reduction.suffix, split = ''))) {
+        
+        cat(crayon::cyan(paste0(Sys.time(), ': _ cannot be used in reduction.suffix, replacing with - \n')))
+        
+        reduction.suffix <- sub(pattern = '_', replacement = '-', x = reduction.suffix)
+        
+      }
+      
+      object@methods[[u]]@visualisation_reductions[[paste0(r, '_lvish', reduction.suffix)]] <- c
       
     }
     

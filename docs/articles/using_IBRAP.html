@@ -167,10 +167,7 @@ plot.QC.vln(object = bmmc,
                                  'RAW_total.counts', 
                                  'RAW_percent.mt'))
                                  </code></pre>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R">
-<span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/include_graphics.html" class="external-link">include_graphics</a></span><span class="op">(</span>path <span class="op">=</span> <span class="st">'vln_qc_pre.png'</span><span class="op">)</span></code></pre></div>
-<p><img src="vln_qc_pre.png" width="500"></p>
+<p><img src="vln_qc_pre.png" width="150%" height="150%"></p>
 <pre><code>
 plot.qc.scatter(object = bmmc, 
                 y = 'RAW_total.counts', 
@@ -178,10 +175,7 @@ plot.qc.scatter(object = bmmc,
                 split.by = 'original.project'
                 )
 </code></pre>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R">
-<span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/include_graphics.html" class="external-link">include_graphics</a></span><span class="op">(</span>path <span class="op">=</span> <span class="st">'scatter_qc_pre.png'</span><span class="op">)</span></code></pre></div>
-<p><img src="scatter_qc_pre.png" width="350"></p>
+<p><img src="scatter_qc_pre.png" width="150%" height="150%"></p>
 <p>Filtration is subsequently applied to remove problematic cells.</p>
 <pre><code>
 bmmc &lt;- filter_IBRAP(RAW_total.features &lt; 2500 &amp; RAW_total.counts &gt; 200 &amp; RAW_percent.mt &lt; 8)
@@ -205,14 +199,18 @@ bmmc &lt;- perform.scanpy(object = bmmc,
                        vars.to.regress = 'RAW_total.counts', do.scale = T)
 </code></pre>
 <p>Please refer to the above hyperlink to understand why we only used 3 out of 4 methods for this 10x dataset.</p>
+<p>Each normalisation function produces a new method-assay which contains the results. Any downstream analyses will be stored in these separate compartments, respective to the normalisation method. i.e. <a href="mailto:object@methods" class="email">object@methods</a> contains all of the method assays. Hereon, function will iterate through the indicated method-assays and any other inputs within the assays.</p>
 </div>
 <div id="linear-dimensionaly-reduction" class="section level2">
 <h2 class="hasAnchor">
 <a href="#linear-dimensionaly-reduction" class="anchor" aria-hidden="true"></a>Linear Dimensionaly Reduction</h2>
 <p>Now that our data has been appropriately transformed we can reduce the number of dimensions using Principal Component Analysis (PCA). Reduction methods summarise as much information from the higher dimensions into lower dimensions as possible.</p>
 <pre><code>
-
+bmmc &lt;- perform.pca(object = bmmc, 
+                    assay = c('SCT', 'SCRAN', 'SCANPY'), 
+                    n.pcs = 1:50, reduction.save = 'pca')
 </code></pre>
+<p><img src="PCA_screeplot.png" width="150%" height="150%"></p>
 </div>
 </div>
   </div>

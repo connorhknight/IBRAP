@@ -93,7 +93,7 @@ plot.QC.vln(object = bmmc,
                                  
 ```
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, out.width="150%", out.height="150%"}
 
 knitr::include_graphics(path = 'vln_qc_pre.png')
 
@@ -109,7 +109,7 @@ plot.qc.scatter(object = bmmc,
 
 ```
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, out.width="150%", out.height="150%"}
 
 knitr::include_graphics(path = 'scatter_qc_pre.png')
 
@@ -145,7 +145,7 @@ bmmc <- perform.scanpy(object = bmmc,
 
 Please refer to the above hyperlink to understand why we only used 3 out of 4 methods for this 10x dataset. 
 
-Each normalisation function produces a new method-assay which contains the results. Any downstream analyses will be stored in these separate compartments, respective to the normalisation method. i.e. object@methods contains all of the method assays. 
+Each normalisation function produces a new method-assay which contains the results. Any downstream analyses will be stored in these separate compartments, respective to the normalisation method. i.e. object@methods contains all of the method assays. Hereon, function will iterate through the indicated method-assays and any other inputs within the assays. 
 
 ## Linear Dimensionaly Reduction
 
@@ -156,6 +156,12 @@ Now that our data has been appropriately transformed we can reduce the number of
 bmmc <- perform.pca(object = bmmc, 
                     assay = c('SCT', 'SCRAN', 'SCANPY'), 
                     n.pcs = 1:50, reduction.save = 'pca')
+
+```
+
+```{r, echo=FALSE, out.width="150%", out.height="150%"}
+
+knitr::include_graphics(path = 'PCA_screeplot.png')
 
 ```
 
