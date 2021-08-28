@@ -19,6 +19,8 @@ navbar:
         href: articles/using_IBRAP.html
       - text: Data Transformation
         href: articles/data_transform.html
+      - text: Clustering Methods
+        href: articles/clustering_method.html
 
 reference:
 - title: All functions

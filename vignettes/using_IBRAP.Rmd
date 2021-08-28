@@ -149,7 +149,7 @@ Each normalisation function produces a new method-assay which contains the resul
 
 ## Linear Dimensionaly Reduction
 
-Now that our data has been appropriately transformed we can reduce the number of dimensions using Principal Component Analysis (PCA). Reduction methods summarise as much information from the higher dimensions into lower dimensions as possible. 
+Now that our data has been appropriately transformed we can reduce the number of dimensions using Principal Component Analysis (PCA) perform.pca(). Reduction methods summarise as much information from the higher dimensions into lower dimensions as possible. 
 
 ```
 
@@ -159,15 +159,79 @@ bmmc <- perform.pca(object = bmmc,
 
 ```
 
+The produce principal components (PCs) contain a different explained variance, high variance PCs contain the most information between points and low provide the opposite. Furthermore, low variation PCs create a false closeness between cell points and thus require exclusion from *some* downstream analyses. A simple way to identify the number of PCs to retain is to plot them in descending order and find the elbow point. The elbow point being the bend in the plot of points. 
+
 ```{r, echo=FALSE, out.width="150%", out.height="150%"}
 
 knitr::include_graphics(path = 'PCA_screeplot.png')
 
 ```
 
+For these assays, the elbow point is around 10-12 PCs. 
 
+## Generating Neighbourhood Graphs 
 
+IBRAP enlists two neighbourhood graph generators: 
+ - perform.nn.v1() which is derived scanpys neighbourhood graph function.
+ - perform.nn.v2() which is seurats version. 
+ 
+The main difference is that v1 uses UMAPs method of finding neighbours and all edge weights equate to one. Whereas, v2 uses the Louvain algorithm to maximise modularity (network closeness) and edge weights are jacquard similarity between neighbours. 
 
+Scanpy also integrated an ease-of-use function to generate diffusion maps generated from the neighbourhood graph. This is an equivalent to PCA but is thought to represent cellular trajectories. We can generate these diffusion maps by setting the generate.diffmap parameter to TRUE. Since we need to generate neighourhood graphs for the diffusion maps too, there is a little repetition in functon application.
+
+```
+# here we generate the neighbour graph for PCA and produce a diffusion map from the PCA-neighbour graph
+
+bmmc <- perform.nn.v1(object = bmmc, assay = c('SCT', 'SCRAN', 'SCANPY'), 
+                      reduction = c('pca'), 
+                      dims = list(0), 
+                      generate.diffmap = T)
+                      
+# the next function generates neighbours for the diffusion map
+                      
+bmmc <- perform.nn.v1(object = bmmc, 
+                      assay = c('SCT', 'SCRAN', 'SCANPY'), 
+                      reduction = c('pca_nn.v1:diffmap'), 
+                      dims = list(0),
+                      generate.diffmap = F)
+                      
+# this last function finds the neighbour graph for pca and the difusion map using seurats version
+# v2 does not produce diffusion maps
+
+bmmc <- perform.nn.v2(object = bmmc, 
+                      assay = c('SCT', 'SCRAN', 'SCANPY'), 
+                      reduction = c('pca', 'pca_nn.v1:diffmap'), 
+                      dims = list(0,0))
+                          
+```
+
+Finally, using our neighbourhood graph we must cluster close networks together to infer individual cell types. perform.graph.cluster() provides either:
+- Louvain algorithm (1)
+- Louvain algorithm with multilevel refinement (2)
+- Smart Local Moving (SLM) (3)
+- Leiden (4)
+
+```
+
+bmmc <- perform.seurat.cluster(object = bmmc, 
+                               assay = c('SCT', 'SCRAN', 'SCANPY'), 
+                               neighbours = c("pca", "pca_nn.v1:diffmap"), 
+                               algorithm = 1)
+
+```
+
+There are alternative clustering methods including in IBRAP which can be seen at 
+
+## Non-linear Reduction
+
+Since we have reduced our dataset into a manageable size, produce neighbourhood graphs and clustered communities, we need to visualise our data. scRNA-seq contains many zeros which makes a sparse matrix, this renders linear reduction methods inappropriate for visualisation. Therefore, we resort to non-linear reductions.
+
+IBRAP integrated the ability to perform 3 methods:
+- UMAP
+- t-SNE
+- lvish (a LargeVis adaptation)
+
+For this tutorial we will focus on UMAP. 
 
 
 

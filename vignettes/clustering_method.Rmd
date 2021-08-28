@@ -1,0 +1,47 @@
+---
+title: "Clustering Method"
+author: "Connor H Knight"
+date: "11/08/2021"
+output: 
+    html_document:
+    toc: true
+    toc_depth: 3
+    theme: united
+vignette: >
+  %\VignetteIndexEntry{Clustering Methods}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Available Methods
+
+Within IBRAP we have 7 possible clustering methods:
+ - kmeans/PAM 
+ - SC3 consensus clustering 
+ - Louvain
+ - Louvain with multilevel refinements (LouvainMR)
+ - Smart Local Moving (SLM)
+ - Leiden 
+ 
+## Kmeans/PAM
+
+perform.reduction.kmeans() applies either the kmeans or PAM algorithm to supplied reduced embeddings and iterates through a defined number of clusters. This method is applied to reduced embeddings, such as: t-SNE, UMAP or lvish. 
+
+## SC3 consensus clustering
+
+perform.sc3.slot.cluster() is applied to tranformed counts matrices which can be used on a single sample or when minimal or no batch effects are present in multiple samples. perform.sc3.reduction.cluster() can be applied when batch effects are present across samples and required omission. However, the algorithm was not designed to function on reduced embeddings and thus may be unreliable. 
+
+## Louvain, LouvainMR, SLM, and Leiden
+
+### Neighbourhood Graphs 
+
+These algorithms are designed to function on k-nearest neighbour matrices. There are two versions available: perform.nn.v1() or perform.nn.v2(). These produces items within your method assay under neighbours. 
+v1 provides the ability to produce diffusion map graphs from the neighbourhood graph object (this is not possible with v2) which function as an alternative to PCA embeddings and is known to represent cellular trajectories in visualisaton reductions. subsequently, new neighbourhood graphs are required on the diffusion map embedding (this is shown in the main tutorial: Getting Started)
+
+### Clusterin the Neighbourhood Graphs
+
+perform.graph.cluster() is then performed using a selected algrith of choice and produces results according to resolutions (typically 0.1-1.5, a lower value identifies less clusters; define the algorithm paramete to change the cluster method)

@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Data Transformation • IBRAP</title>
+<title>Clustering Method • IBRAP</title>
 <!-- favicons --><link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
 <link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
 <link rel="apple-touch-icon" type="image/png" sizes="180x180" href="../apple-touch-icon.png">
@@ -17,7 +17,7 @@
 <script src="../bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
-<script src="../pkgdown.js"></script><meta property="og:title" content="Data Transformation">
+<script src="../pkgdown.js"></script><meta property="og:title" content="Clustering Method">
 <meta property="og:description" content="IBRAP">
 <meta property="og:image" content="/logo.png">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
@@ -81,52 +81,48 @@
 
       
 
-      </header><script src="data_transform_files/header-attrs-2.10.1/header-attrs.js"></script><div class="row">
+      </header><script src="clustering_method_files/header-attrs-2.10.1/header-attrs.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
-      <h1 data-toc-skip>Data Transformation</h1>
+      <h1 data-toc-skip>Clustering Method</h1>
                         <h4 data-toc-skip class="author">Connor H Knight</h4>
             
             <h4 data-toc-skip class="date">11/08/2021</h4>
       
       
-      <div class="hidden name"><code>data_transform.Rmd</code></div>
+      <div class="hidden name"><code>clustering_method.Rmd</code></div>
 
     </div>
 
     
     
-<div id="data-transformation" class="section level1">
-<h1 class="hasAnchor">
-<a href="#data-transformation" class="anchor" aria-hidden="true"></a>Data Transformation</h1>
-<div id="what-is-included" class="section level2">
+<div id="available-methods" class="section level2">
 <h2 class="hasAnchor">
-<a href="#what-is-included" class="anchor" aria-hidden="true"></a>What is included</h2>
-<p>Data transformation in IBRAP incorporates multiple steps from packages: - counts normalisation which redistributes data to fit a normal distribution ready for downstream statistical analyses. - most genes in the dataset do not exhibit much variation and thus facilitate a fake closeness between cells and wastes computational resources. Therefore, highly variable genes are identified and subset in decreasing order to a cut-off. Default = 1500 - scaling is also applied as a pre-requisite for reduction methods such as, PCA. Scaling redistributes the data within a scale, i.e. -1-1.</p>
+<a href="#available-methods" class="anchor" aria-hidden="true"></a>Available Methods</h2>
+<p>Within IBRAP we have 7 possible clustering methods: - kmeans/PAM - SC3 consensus clustering - Louvain - Louvain with multilevel refinements (LouvainMR) - Smart Local Moving (SLM) - Leiden</p>
 </div>
-<div id="which-packages-are-incorporated" class="section level2">
+<div id="kmeanspam" class="section level2">
 <h2 class="hasAnchor">
-<a href="#which-packages-are-incorporated" class="anchor" aria-hidden="true"></a>Which packages are incorporated</h2>
-<div id="end-bias-datasets-i-e--3-prime-or-5-prime" class="section level3">
-<h3 class="hasAnchor">
-<a href="#end-bias-datasets-i-e--3-prime-or-5-prime" class="anchor" aria-hidden="true"></a>end-bias datasets (i.e. 3 prime or 5 prime)</h3>
-<p>Scanpy</p>
-<p>perform.scanpy()</p>
-<p>Scanpy can either be log1 or log2 transformed which alters the result. By default scanpy uses log1. Next, either seurat v2, seurat v3, or cellranger style gene selection can be applied. Finally, data is scaled.</p>
-<p>SCTransform</p>
-<p>perform.sct()</p>
-<p>Seurat developers originally utilised a fairly basic normalisation method. Recently, they released SCTransform which includes general linear modelling to optimise negative binomial regression of data. This algorithm included normalisation, gene selection, and scaling all in one function noromally.</p>
-<p>Scran</p>
-<p>perform.scran()</p>
-<p>Scran pools similar cells together to produce a scaling factor that is applied to the pools, this enables a more cell type-specific normalisaton. A similar variance analysis identifes genes and seurats scaling function is applied.</p>
-<p>All of the prior methods provide a different methodology for normalising end-bias data. However, full-length data is still presented in scRNA-seq studies.</p>
+<a href="#kmeanspam" class="anchor" aria-hidden="true"></a>Kmeans/PAM</h2>
+<p>perform.reduction.kmeans() applies either the kmeans or PAM algorithm to supplied reduced embeddings and iterates through a defined number of clusters. This method is applied to reduced embeddings, such as: t-SNE, UMAP or lvish.</p>
 </div>
-<div id="full-length-datasets" class="section level3">
-<h3 class="hasAnchor">
-<a href="#full-length-datasets" class="anchor" aria-hidden="true"></a>full-length datasets</h3>
-<p>perform.tpm()</p>
-<p>To accommodate full-length datasets we incorporated a a transcript per million normalisation that accounts for gene length. We included scrans gene selection and seurats scaling function to complete the transformation.</p>
+<div id="sc3-consensus-clustering" class="section level2">
+<h2 class="hasAnchor">
+<a href="#sc3-consensus-clustering" class="anchor" aria-hidden="true"></a>SC3 consensus clustering</h2>
+<p>perform.sc3.slot.cluster() is applied to tranformed counts matrices which can be used on a single sample or when minimal or no batch effects are present in multiple samples. perform.sc3.reduction.cluster() can be applied when batch effects are present across samples and required omission. However, the algorithm was not designed to function on reduced embeddings and thus may be unreliable.</p>
 </div>
+<div id="louvain-louvainmr-slm-and-leiden" class="section level2">
+<h2 class="hasAnchor">
+<a href="#louvain-louvainmr-slm-and-leiden" class="anchor" aria-hidden="true"></a>Louvain, LouvainMR, SLM, and Leiden</h2>
+<div id="neighbourhood-graphs" class="section level3">
+<h3 class="hasAnchor">
+<a href="#neighbourhood-graphs" class="anchor" aria-hidden="true"></a>Neighbourhood Graphs</h3>
+<p>These algorithms are designed to function on k-nearest neighbour matrices. There are two versions available: perform.nn.v1() or perform.nn.v2(). These produces items within your method assay under neighbours. v1 provides the ability to produce diffusion map graphs from the neighbourhood graph object (this is not possible with v2) which function as an alternative to PCA embeddings and is known to represent cellular trajectories in visualisaton reductions. subsequently, new neighbourhood graphs are required on the diffusion map embedding (this is shown in the main tutorial: Getting Started)</p>
+</div>
+<div id="clusterin-the-neighbourhood-graphs" class="section level3">
+<h3 class="hasAnchor">
+<a href="#clusterin-the-neighbourhood-graphs" class="anchor" aria-hidden="true"></a>Clusterin the Neighbourhood Graphs</h3>
+<p>perform.graph.cluster() is then performed using a selected algrith of choice and produces results according to resolutions (typically 0.1-1.5, a lower value identifies less clusters; define the algorithm paramete to change the cluster method)</p>
 </div>
 </div>
   </div>
