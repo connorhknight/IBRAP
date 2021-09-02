@@ -135,33 +135,75 @@ perform.scanorama <- function(object,
   scanorama <- reticulate::import('scanorama', convert = FALSE)
   cat(crayon::cyan(paste0(Sys.time(), ': python modules loaded\n')))
   
+  temp <- function(x) {
+    
+    return(paste(x, collapse = '_'))
+    
+  }
+  
   count <- 1
   
   for(p in assay) {
     
-    cat(crayon::cyan(paste0(Sys.time(), ': initialising scanorama for assay: ', p, '\n')))
-    
-    list.matrix <- list()
-    column.names <- list()
-    sep <- unique(object@sample_metadata[,split.by])
-    mat <- object@methods[[p]][[slot]]
-    counter <- 1
-    
-    for(x in sep) {
-      column.names[[counter]] <- colnames(mat[,object@sample_metadata[,split.by] == x])
-      list.matrix[[counter]] <- t(mat[,object@sample_metadata[,split.by] == x])
-      counter <- counter + 1
+    if(length(split.by) > 1) {
+      
+      df <- object@sample_metadata[,split.by]
+      df <- as.data.frame(apply(X = df, MARGIN = 1, FUN = temp))
+      
+      cat(crayon::cyan(paste0(Sys.time(), ': initialising scanorama for assay: ', p, '\n')))
+      
+      list.matrix <- list()
+      column.names <- list()
+      sep <- unique(df[,1])
+      mat <- object@methods[[p]][[slot]]
+      counter <- 1
+      
+      for(x in sep) {
+        
+        column.names[[counter]] <- colnames(mat[,df[,1] == x])
+        list.matrix[[counter]] <- t(mat[,df[,1] == x])
+        counter <- counter + 1
+        
+      }
+      
+      cat(crayon::cyan(paste0(Sys.time(), ': matrices isolated\n')))
+      gene.list <- list()
+      
+      for(x in 1:length(sep)) {
+        gene.list[[x]] <- rownames(mat[,df[,1] == x])
+      }
+      
+      cat(crayon::cyan(paste0(Sys.time(), ': genes identified\n')))
+      cat(crayon::cyan(paste0(Sys.time(), ': corrections starting\n')))
+      
+    } else {
+      
+      cat(crayon::cyan(paste0(Sys.time(), ': initialising scanorama for assay: ', p, '\n')))
+      
+      list.matrix <- list()
+      column.names <- list()
+      sep <- unique(object@sample_metadata[,split.by])
+      mat <- object@methods[[p]][[slot]]
+      counter <- 1
+      
+      for(x in sep) {
+        column.names[[counter]] <- colnames(mat[,object@sample_metadata[,split.by] == x])
+        list.matrix[[counter]] <- t(mat[,object@sample_metadata[,split.by] == x])
+        counter <- counter + 1
+      }
+      
+      cat(crayon::cyan(paste0(Sys.time(), ': matrices isolated\n')))
+      gene.list <- list()
+      
+      for(x in 1:length(sep)) {
+        gene.list[[x]] <- rownames(mat[,object@sample_metadata[,split.by] == x])
+      }
+      
+      cat(crayon::cyan(paste0(Sys.time(), ': genes identified\n')))
+      cat(crayon::cyan(paste0(Sys.time(), ': corrections starting\n')))
+      
     }
     
-    cat(crayon::cyan(paste0(Sys.time(), ': matrices isolated\n')))
-    gene.list <- list()
-    
-    for(x in 1:length(sep)) {
-      gene.list[[x]] <- rownames(mat[,object@sample_metadata[,split.by] == x])
-    }
-    
-    cat(crayon::cyan(paste0(Sys.time(), ': genes identified\n')))
-    cat(crayon::cyan(paste0(Sys.time(), ': corrections starting\n')))
     integrated.corrected.data <- scanorama$correct(datasets_full = reticulate::r_to_py(list.matrix), 
                                                    genes_list = reticulate::r_to_py(gene.list), 
                                                    dimred = as.integer(n.dims), 

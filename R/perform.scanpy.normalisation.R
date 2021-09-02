@@ -372,6 +372,8 @@ perform.scanpy <- function(object,
     
   }
   
+  object@sample_metadata <- cbind(object@sample_metadata, cell_metadata(assay = as.matrix(.counts), col.prefix = new.assay.name))
+  
   object@methods[[new.assay.name]] <- new(Class = 'methods',
                                           counts = as(.counts, 'dgCMatrix'), 
                                           normalised = as(.normalised, 'dgCMatrix'), 

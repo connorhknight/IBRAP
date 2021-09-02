@@ -159,6 +159,8 @@ perform.scran <- function(object,
     
   }
   
+  object@sample_metadata <- cbind(object@sample_metadata, cell_metadata(assay = as.matrix(.counts), col.prefix = new.assay.name))
+  
   .norm.scaled <- seuobj@assays$RNA@scale.data
   
   object@methods[[new.assay.name]] <- new(Class = 'methods',

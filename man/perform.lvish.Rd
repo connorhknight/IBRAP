@@ -8,7 +8,7 @@ perform.lvish(
   object,
   assay,
   reduction = "pca",
-  reduction.save = "lvish",
+  reduction.suffix = "",
   n.dim = NULL,
   n_components = 3,
   ...
@@ -21,7 +21,7 @@ perform.lvish(
 
 \item{reduction}{Character. String defining which reduction to supply to the LargeVis algorithm. Default = NULL}
 
-\item{reduction.save}{Character. What should the reduction be saved as. Default = 'lvish'}
+\item{reduction.suffix}{Character. what should be appended to the end of lvish, cannot contain _.}
 
 \item{n_components}{Numerical. How many tsne dimensions should be produced, if you are supplying graphs, only 2 dimensions can be produced. Default = 3}
 

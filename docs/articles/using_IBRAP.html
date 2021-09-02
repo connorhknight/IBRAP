@@ -187,7 +187,7 @@ bmmc &lt;- filter_IBRAP(RAW_total.features &lt; 2500 &amp; RAW_total.counts &gt;
 <div id="data-transformation" class="section level2">
 <h2 class="hasAnchor">
 <a href="#data-transformation" class="anchor" aria-hidden="true"></a>Data Transformation</h2>
-<p>To accommodate downstream analyses, we must promote a normal distribution and numerical scaling in our data. We included four separate <a href="https://www.embopress.org/doi/full/10.15252/msb.20188746" class="external-link">normalisation</a> methods that are applied as such:</p>
+<p>To accommodate downstream analyses, we must promote a normal distribution and numerical scaling in our data. We included four separate <a href="https://connorhknight.github.io/IBRAP/articles/data_transform.html" class="external-link">normalisation</a> methods that are applied as such:</p>
 <pre><code>
 bmmc &lt;- perform.sct(object = bmmc, 
                     assay = 'RAW', 
@@ -253,7 +253,7 @@ bmmc &lt;- perform.seurat.cluster(object = bmmc,
                                neighbours = c("pca", "pca_nn.v1:diffmap"), 
                                algorithm = 1)
 </code></pre>
-<p>There are alternative clustering methods including in IBRAP which can be seen at</p>
+<p>There are alternative <a href="https://connorhknight.github.io/IBRAP/articles/clustering_method.html" class="external-link">clustering methods</a>) are described in an alternate article</p>
 </div>
 <div id="non-linear-reduction" class="section level2">
 <h2 class="hasAnchor">

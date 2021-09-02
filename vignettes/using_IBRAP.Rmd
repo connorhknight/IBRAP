@@ -125,7 +125,7 @@ bmmc <- filter_IBRAP(RAW_total.features < 2500 & RAW_total.counts > 200 & RAW_pe
 
 ## Data Transformation
 
-To accommodate downstream analyses, we must promote a normal distribution and numerical scaling in our data. We included four separate [normalisation](https://www.embopress.org/doi/full/10.15252/msb.20188746) methods that are applied as such:
+To accommodate downstream analyses, we must promote a normal distribution and numerical scaling in our data. We included four separate [normalisation](https://connorhknight.github.io/IBRAP/articles/data_transform.html) methods that are applied as such:
 
 ```
 
@@ -220,7 +220,7 @@ bmmc <- perform.seurat.cluster(object = bmmc,
 
 ```
 
-There are alternative clustering methods including in IBRAP which can be seen at 
+There are alternative [clustering methods](https://connorhknight.github.io/IBRAP/articles/clustering_method.html) are described in an alternate article
 
 ## Non-linear Reduction
 

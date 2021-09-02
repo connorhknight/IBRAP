@@ -127,13 +127,13 @@ benchmark.intergation <- function(object, batch, assays, reduction, result.names
       
       dist <- as.matrix(dist(reduction.list[[t]][, seq_len(n.components)]))
       
-      if(isTRUE(anyNA(as.numeric(pancreas@sample_metadata[,batch])))) {
+      if(isTRUE(anyNA(as.numeric(object@sample_metadata[,batch])))) {
         
         count <- 1
         
-        batch_tmp <- pancreas@sample_metadata[,batch]
+        batch_tmp <- object@sample_metadata[,batch]
         
-        for(d in unique(pancreas@sample_metadata[,batch])) {
+        for(d in unique(object@sample_metadata[,batch])) {
           
           batch_tmp[batch_tmp==d] <- count
           
@@ -145,11 +145,11 @@ benchmark.intergation <- function(object, batch, assays, reduction, result.names
         
       } else {
         
-        batch_tmp <- as.numeric(pancreas@sample_metadata[,batch])
+        batch_tmp <- as.numeric(object@sample_metadata[,batch])
         
       }
 
-      object@methods[[p]]@benchmark_results$batches[[paste0(p, '_', result.names[counter])]] <- summary(cluster::silhouette(as.numeric(batches), dist))$avg.width
+      object@methods[[p]]@benchmark_results[['integration']][[paste0(p, '_', result.names[counter])]] <- summary(cluster::silhouette(as.numeric(batch_tmp), dist))$avg.width
       
       counter <- counter + 1
       

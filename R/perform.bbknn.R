@@ -100,9 +100,13 @@ perform.bbknn <- function(object,
     
   }
   
-  if(!batch %in% colnames(object@sample_metadata)) {
+  for(r in batch) {
     
-    stop(crayon::cyan('batch does not exist\n'))
+    if(!r %in% colnames(object@sample_metadata)) {
+      
+      stop(crayon::cyan(paste0(r, ' in batch does not exist\n')))
+      
+    }
     
   }
   
@@ -216,7 +220,7 @@ perform.bbknn <- function(object,
         cat(crayon::cyan(paste0(Sys.time(), ': initialising BBKNN for assay: ', p,  ', reduction: ', r, '\n')))
         
         sc$external$pp$bbknn(scobj,
-                             batch_key = as.character(batch),
+                             batch_key = reticulate::r_to_py(as.character(batch)),
                              approx = as.logical(FALSE),
                              metric = as.character(metric),
                              neighbors_within_batch = as.integer(neighbors_within_batch),
@@ -233,7 +237,7 @@ perform.bbknn <- function(object,
         cat(crayon::cyan(paste0(Sys.time(), ': initialising BBKNN for assay: ', p,  ', reduction: ', r, '\n')))
         
         sc$external$pp$bbknn(scobj,
-                             batch_key= as.character(batch),
+                             batch_key= reticulate::r_to_py(as.character(batch)),
                              approx = as.logical(FALSE),
                              metric = as.character(metric),
                              neighbors_within_batch = as.integer(neighbors_within_batch),
