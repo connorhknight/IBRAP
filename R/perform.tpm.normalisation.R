@@ -162,7 +162,7 @@ perform.tpm <- function(object,
   
   .norm.scaled <- seuobj@assays$RNA@scale.data
   
-  object@sample_metadata <- cbind(object@sample_metadata, cell_metadata(assay = as.matrix(.counts), col.prefix = new.assay.name))
+  object@sample_metadata <- cbind(object@sample_metadata, cell_metadata(assay = as.matrix(.normalised), col.prefix = new.assay.name))
   
   object@methods[[new.assay.name]] <- new(Class = 'methods',
                                           counts = Matrix::Matrix(.counts, sparse = T), 

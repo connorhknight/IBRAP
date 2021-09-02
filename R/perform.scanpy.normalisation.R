@@ -238,8 +238,8 @@ perform.scanpy <- function(object,
   
   sc <- reticulate::import('scanpy')
   scobj <- sc$AnnData(X = t(as.matrix(object@methods[[assay]][[slot]])))
-  scobj$obs_names <- as.factor(colnames(object))
-  scobj$var_names <- as.factor(rownames(object))
+  scobj$obs_names <- as.factor(colnames(object@methods[[assay]][[slot]]))
+  scobj$var_names <- as.factor(rownames(object@methods[[assay]][[slot]]))
   
   if(length(names(object@sample_metadata)) >= 1) {
     scobj$obs <- object@sample_metadata
@@ -372,7 +372,7 @@ perform.scanpy <- function(object,
     
   }
   
-  object@sample_metadata <- cbind(object@sample_metadata, cell_metadata(assay = as.matrix(.counts), col.prefix = new.assay.name))
+  object@sample_metadata <- cbind(object@sample_metadata, cell_metadata(assay = as.matrix(.normalised), col.prefix = new.assay.name))
   
   object@methods[[new.assay.name]] <- new(Class = 'methods',
                                           counts = as(.counts, 'dgCMatrix'), 

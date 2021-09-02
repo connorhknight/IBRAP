@@ -70,7 +70,7 @@ perform.sct <- function(object,
   .normalised <- as(as.matrix(seuratobj@assays$SCT@data), Class = 'dgCMatrix')
   .norm.scaled <- as.matrix(seuratobj@assays$SCT@scale.data)
   feat.meta <- feature_metadata(assay = as.matrix(.counts), col.prefix = new.assay.name)
-  object@sample_metadata <- cbind(object@sample_metadata, cell_metadata(assay = as.matrix(.counts), col.prefix = new.assay.name))
+  object@sample_metadata <- cbind(object@sample_metadata, cell_metadata(assay = as.matrix(.normalised), col.prefix = new.assay.name))
   object@methods[[new.assay.name]] <- new(Class = 'methods',
                                           counts = .counts, 
                                           normalised = .normalised, 

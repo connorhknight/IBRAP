@@ -84,7 +84,7 @@ plot.QC.vln <- function(object,
       ggplot2::scale_fill_manual(values=cols.proj)
     count <- count + 1
   }
-  
+
   do.call(what = 'ggarrange.tmp', args = list(plots = plots.list, nrow=1, ncol=length(plots.list)))
   
 }
