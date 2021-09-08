@@ -147,7 +147,7 @@
   <span class='va'>object</span>,
   <span class='va'>assay</span>,
   reduction <span class='op'>=</span> <span class='st'>"pca"</span>,
-  reduction.save <span class='op'>=</span> <span class='st'>"lvish"</span>,
+  reduction.suffix <span class='op'>=</span> <span class='st'>""</span>,
   n.dim <span class='op'>=</span> <span class='cn'>NULL</span>,
   n_components <span class='op'>=</span> <span class='fl'>3</span>,
   <span class='va'>...</span>
@@ -169,8 +169,8 @@
       <td><p>Character. String defining which reduction to supply to the LargeVis algorithm. Default = NULL</p></td>
     </tr>
     <tr>
-      <th>reduction.save</th>
-      <td><p>Character. What should the reduction be saved as. Default = 'lvish'</p></td>
+      <th>reduction.suffix</th>
+      <td><p>Character. what should be appended to the end of lvish, cannot contain _.</p></td>
     </tr>
     <tr>
       <th>n_components</th>

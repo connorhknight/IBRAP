@@ -24,10 +24,7 @@ perform.scanpy(
   batch_key = NULL,
   do.scale = TRUE,
   vars.to.regress = NULL,
-  n_jobs = NULL,
-  zero_center = TRUE,
-  max_value = NULL,
-  obsm = NULL
+  do.centre = TRUE
 )
 }
 \arguments{
@@ -61,19 +58,11 @@ perform.scanpy(
 
 \item{batch_key}{Character. Which column in the metadata identifies the batches of the cells. Default = NULL}
 
-\item{do.scale}{Boolean. Whether the gene expression should be scaled. Default = TRUE}
+\item{do.scale}{Boolean. Whether the gene expression should be centred. Default = TRUE}
 
 \item{vars.to.regress}{Character. A single or multiple columns of information in the metadata that should be regressed from the dataset. Default = NULL}
 
-\item{n_jobs}{Numerical. The number of jobs that should be performed in parallel. Default = NULL}
-
-\item{max_value}{Numerical. Clip to this value after scaling. Default = NULL}
-
-\item{obsm}{Numerical. Which value to scale data against. Default = NULL}
-
 \item{flavour}{Character. Choosing which HVG selection method to use when, options: 'seurat', 'cell_ranger', 'seurat_v3'. Default = 'seurat'}
-
-\item{zero_centre}{Boolean. Should the gene expression be centred arouynd 0. Default = TRUE}
 }
 \value{
 Produces a new 'methods' assay containing normalised, scaled and HVGs.

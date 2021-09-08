@@ -23,18 +23,15 @@ knitr::opts_chunk$set(
 
 To demonstrate IBRAP we enlisted a sample produced by [Oetjen](https://insight.jci.org/articles/view/124928) *et al*. This can be downloaded using the following link:  
 
-https://www.dropbox.com/sh/f2hhztiyzo04yt9/AACeK5nZBcQ7Fnz02hgF6GG5a?dl=0
+https://www.dropbox.com/s/3wj4f48x7txuyrp/BMMC.rds?dl=0
 
-## Initiating the IBRAP S4 object
+## Chapter 1: Initiating the IBRAP S4 object
 
 Since our datasets are produced by 10x genomics and aligned using CellRanger, 3 subsequent files are produced to integrate these files into a count matrix.
 
 ```
 
-bmmc <- Read10X_output(directory = '~Downloads/marrow_A', 
-                       matrix.file = 'matrix.mtx', 
-                       genes.file = 'genes.tsv', 
-                       barcodes.file = 'barcodes.tsv')
+bmmc <- readRDS(file.choose())
                        
 ```
 
@@ -61,7 +58,7 @@ bmmc <- createIBRAPobject(counts = bmmc,
                           
 ```
 
-## Quality Control
+## Chapter 2: Quality Control
 
 Current best practices for quality assuring scRNA-seq datasets are outlined in numerous [publications](https://www.embopress.org/doi/full/10.15252/msb.20188746). Including:
 
@@ -123,7 +120,7 @@ bmmc <- filter_IBRAP(RAW_total.features < 2500 & RAW_total.counts > 200 & RAW_pe
 
 ```
 
-## Data Transformation
+## Chapter 3: Data Transformation
 
 To accommodate downstream analyses, we must promote a normal distribution and numerical scaling in our data. We included four separate [normalisation](https://connorhknight.github.io/IBRAP/articles/data_transform.html) methods that are applied as such:
 
@@ -147,7 +144,7 @@ Please refer to the above hyperlink to understand why we only used 3 out of 4 me
 
 Each normalisation function produces a new method-assay which contains the results. Any downstream analyses will be stored in these separate compartments, respective to the normalisation method. i.e. object@methods contains all of the method assays. Hereon, function will iterate through the indicated method-assays and any other inputs within the assays. 
 
-## Linear Dimensionaly Reduction
+## Chapter 4: Linear Dimensionaly Reduction
 
 Now that our data has been appropriately transformed we can reduce the number of dimensions using Principal Component Analysis (PCA) perform.pca(). Reduction methods summarise as much information from the higher dimensions into lower dimensions as possible. 
 
@@ -169,7 +166,7 @@ knitr::include_graphics(path = 'PCA_screeplot.png')
 
 For these assays, the elbow point is around 10-12 PCs. 
 
-## Generating Neighbourhood Graphs 
+## Chapter 5: Generating Neighbourhood Graphs & Clustering
 
 IBRAP enlists two neighbourhood graph generators: 
  - perform.nn.v1() which is derived scanpys neighbourhood graph function.
@@ -213,16 +210,16 @@ Finally, using our neighbourhood graph we must cluster close networks together t
 
 ```
 
-bmmc <- perform.seurat.cluster(object = bmmc, 
+bmmc <- perform.graph.cluster(object = bmmc, 
                                assay = c('SCT', 'SCRAN', 'SCANPY'), 
                                neighbours = c("pca", "pca_nn.v1:diffmap"), 
                                algorithm = 1)
 
 ```
 
-There are alternative [clustering methods](https://connorhknight.github.io/IBRAP/articles/clustering_method.html) are described in an alternate article
+There are alternative [clustering methods](https://connorhknight.github.io/IBRAP/articles/clustering_method.html) that are described in an alternate article
 
-## Non-linear Reduction
+## Chapter 6: Non-linear Reduction
 
 Since we have reduced our dataset into a manageable size, produce neighbourhood graphs and clustered communities, we need to visualise our data. scRNA-seq contains many zeros which makes a sparse matrix, this renders linear reduction methods inappropriate for visualisation. Therefore, we resort to non-linear reductions.
 
@@ -233,5 +230,165 @@ IBRAP integrated the ability to perform 3 methods:
 
 For this tutorial we will focus on UMAP. 
 
+```
 
+bmmc <- perform.umap(object = samp, 
+                     assay = c('SCT', 'SCRAN', 'SCANPY'), 
+                     reduction = c('pca', 'pca_nn.v1:diffmap'), 
+                     n.dims = list(1:10,NULL))
+
+```
+
+After generating reductions and cell assignments you may wish to benchmark these assignments, this is demonstrated in this tutorial
+
+## Chapter 7: Visualising Clustering Results
+
+Since IBRAP has integrated several pipelines we must begin to visualise the differences between results. 
+
+We performed Louvain graph clustering from two different neighbourhood graphs which can causes varied results. Therefore we should observe the difference between these values. 
+
+```
+
+plot1 <- plot.reduced.dim(object = samp, 
+                          reduction = 'pca_umap', 
+                          assay = 'SCT', 
+                          clust.method = 'pca_nn.v1:louvain', 
+                          column = 'neighbourhood_graph_res.0.7', pt.size = 0.1) + 
+  ggplot2::ggtitle('neighbour_v1') + 
+  ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5))
+
+plot2 <- plot.reduced.dim(object = samp, 
+                          reduction = 'pca_umap', 
+                          assay = 'SCT', 
+                          clust.method = 'pca_nn.v2:louvain', 
+                          column = 'neighbourhood_graph_res.0.6', pt.size = 0.1) + 
+  ggplot2::ggtitle('neighbour_v2') + 
+  ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5))
+
+plot1 + plot2
+
+```
+
+```{r, echo=FALSE, out.width="150%", out.height="150%"}
+
+knitr::include_graphics(path = 'umap_plots_neighbours.png')
+
+```
+
+We also produce these results using different normalisation methods, lets observe the difference between these. 
+
+```
+
+plot3 <- plot.reduced.dim(object = samp, 
+                          reduction = 'pca_umap', 
+                          assay = 'SCT', 
+                          clust.method = 'pca_nn.v1:louvain', 
+                          column = 'neighbourhood_graph_res.0.7', pt.size = 0.1) + 
+  ggplot2::ggtitle('SCT_neighbour_v1') + 
+  ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5))
+
+plot4 <- plot.reduced.dim(object = samp, 
+                          reduction = 'pca_umap', 
+                          assay = 'SCRAN', 
+                          clust.method = 'pca_nn.v1:louvain', 
+                          column = 'neighbourhood_graph_res.0.7', pt.size = 0.1) + 
+  ggplot2::ggtitle('SCRAN_neighbour_v1') + 
+  ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5))
+
+plot5 <- plot.reduced.dim(object = samp, 
+                          reduction = 'pca_umap', 
+                          assay = 'SCANPY', 
+                          clust.method = 'pca_nn.v1:louvain', 
+                          column = 'neighbourhood_graph_res.0.7', pt.size = 0.1) + 
+  ggplot2::ggtitle('SCANPY_neighbour_v1') + 
+  ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5))
+
+plot3 + plot4 + plot5
+
+```
+
+```{r, echo=FALSE, out.width="150%", out.height="150%"}
+
+knitr::include_graphics(path = 'diff_norm_method.png')
+
+```
+
+We shall proceed using the SCT neighbourhood graph version 1. We have clustered our cells however, now we must identify the biology. 
+
+## Chapter 8: Biological Analysis 
+
+To understand the biology driving the clustering we can tackle it in two ways: differential expression analyses or visualisation
+
+Differential expression analyses can be performed either 1 cluster compared against all other cells or 1 cluster against 1 other cluster. In this tutorial we will use the 1 v all function. 
+
+```
+
+DE_res <- perform.diffexp.all(object = samp, 
+                              assay = 'SCT', 
+                              test = 'MAST', 
+                              identity = as.vector(samp@methods$SCT@cluster_assignments$`pca_nn.v1:louvain`$neighbourhood_graph_res.0.7))
+
+```
+
+These results then enable us to distinguish the unique markers that are bing expressed by each cluster. 
+
+If the driving biology remains unclear from a differential expression analysis we may utilise visualisation. We have included 4 different methods of visualisation: feature plots, violin plots, dot plots, and heatmaps. 
+
+In this case, we can use featuer plots:
+
+```
+
+plot.features(object = samp, assay = 'SCT', reduction = 'pca_umap', 
+              features = c('JCHAIN','MS4A1','MME','IRF8','HLA-DRA','LYZ',
+                           'ELANE','ALAS2','CD34','NKG7','CCR7','IL7R','GZMK'), 
+              pt_size = 1, 
+              slot = 'normalised')
+
+```
+
+```{r, echo=FALSE, out.width="150%", out.height="150%"}
+
+knitr::include_graphics(path = 'Feature_plots.png')
+
+```
+
+Next, we must indicate which cell type belongs to which clusters
+
+```
+
+clusters[clusters == '18'] <- 'plasma'
+clusters[clusters == '17'] <- 'immature B cells'
+clusters[clusters == '11'] <- 'pro B cells'
+clusters[clusters == '14'] <- 'dendritic cells'
+clusters[clusters == '15'] <- 'dendritic cells'
+clusters[clusters == '1'] = 'monocytes/macrophage'
+clusters[clusters == '10'] = 'monocytes/macrophage'
+clusters[clusters == '6'] = 'neutrophil'
+clusters[clusters == '5'] = 'erythrocytes'
+clusters[clusters == '8'] = 'erythrocytes'
+clusters[clusters == '9'] = 'erythrocytes'
+clusters[clusters == '12'] = 'erythrocytes'
+clusters[clusters == '16'] = 'erythrocytes'
+clusters[clusters == '3'] = 'HSPCs'
+clusters[clusters == '4'] = 'NK cells'
+clusters[clusters == '0'] = 'CD4+ T cells'
+clusters[clusters == '2'] = 'CD8+ naive T cells'
+clusters[clusters == '13'] = 'CD8+ naive T cells'
+clusters[clusters == '7'] = 'CD8+ cytotoxic T cells'
+
+samp@sample_metadata$celltypes <- clusters
+
+plot.reduced.dim(object = samp, 
+                 reduction = 'pca_umap', 
+                 assay = 'SCT', 
+                 clust.method = 'metadata', 
+                 column = 'celltypes')
+
+```
+
+```{r, echo=FALSE, out.width="150%", out.height="150%"}
+
+knitr::include_graphics(path = 'cell_types.png')
+
+```
 

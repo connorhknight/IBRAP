@@ -141,23 +141,17 @@ plot.reduced.dim <- function(object,
     results <- as.data.frame(reduction.list[[reduction]])
     
     assay.met <- object@methods[[assay]]@cluster_assignments[[clust.method]]
-    
-    print(assay.met)
-    
+
     assay.met <- assay.met[match(rownames(results), rownames(assay.met)),]
     
     orig.names <- colnames(results)
     
     results <- cbind(results, assay.met[,column])
-    
-    print(c(orig.names, 'variable'))
-    
+
     colnames(results) <- c(orig.names, 'variable')
     
     rownames(results) <- colnames(object)
-    
-    print(head(results))
-    
+
     if(!is.null(cells)) {
       
       results <- results[cells,]

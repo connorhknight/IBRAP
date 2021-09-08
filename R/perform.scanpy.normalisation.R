@@ -23,10 +23,7 @@
 #' @param batch_key Character. Which column in the metadata identifies the batches of the cells. Default = NULL
 #' @param do.scale Boolean. Whether the gene expression should be scaled. Default = TRUE
 #' @param vars.to.regress Character. A single or multiple columns of information in the metadata that should be regressed from the dataset. Default = NULL
-#' @param n_jobs Numerical. The number of jobs that should be performed in parallel. Default = NULL
-#' @param zero_centre Boolean. Should the gene expression be centred arouynd 0. Default = TRUE
-#' @param max_value Numerical. Clip to this value after scaling. Default = NULL
-#' @param obsm Numerical. Which value to scale data against. Default = NULL
+#' @param do.scale Boolean. Whether the gene expression should be centred. Default = TRUE
 #' 
 #' @return Produces a new 'methods' assay containing normalised, scaled and HVGs.
 #'
@@ -53,10 +50,7 @@ perform.scanpy <- function(object,
                            
                            do.scale=TRUE,
                            vars.to.regress=NULL, 
-                           n_jobs = NULL, 
-                           zero_center = TRUE, 
-                           max_value = NULL, 
-                           obsm = NULL
+                           do.centre=TRUE
 ) {
   
   if(!is(object = object, class2 = 'IBRAP')) {
@@ -196,43 +190,9 @@ perform.scanpy <- function(object,
     
   }
   
-  if(!is.null(n_jobs)) {
+  if(!is.logical(do.centre)) {
     
-    if(!is.numeric(n_jobs)) {
-      
-      stop('n_jobs must be numerical\n')
-      
-    }
-    
-  }
-  
-  if(!is.null(zero_center)) {
-    
-    if(!is.logical(zero_center)) {
-      
-      stop('zero_center must be logical: TRUE/FALSE\n')
-      
-    }
-    
-  }
-  
-  if(!is.null(max_value)) {
-    
-    if(!is.numeric(max_value)) {
-      
-      stop('max_value must be numerical\n')
-      
-    }
-    
-  }
-  
-  if(!is.null(obsm)) {
-    
-    if(!is.character(obsm)) {
-      
-      stop('obsm must be numerical\n')
-      
-    }
+    stop('do.centre must be logical: TRUE/FALSE\n')
     
   }
   
@@ -282,8 +242,8 @@ perform.scanpy <- function(object,
   }
   
   .normalised <- t(scobj$X)
-  rownames(.normalised) <- rownames(object)
-  colnames(.normalised) <- colnames(object)
+  rownames(.normalised) <- rownames(object@methods$RAW@counts)
+  colnames(.normalised) <- colnames(object@methods$RAW@counts)
   
   cat(crayon::cyan(paste0(Sys.time(), ': computing highly variable genes\n')))
   
@@ -332,7 +292,14 @@ perform.scanpy <- function(object,
     
   }
   
-  .highly.variable.genes <- rownames(object)[scobj$var[['highly_variable']]]
+  .highly.variable.genes <- rownames(object@methods$RAW@counts)[scobj$var[['highly_variable']]]
+  
+  seuobj <- suppressWarnings(Seurat::CreateSeuratObject(counts = .normalised[.highly.variable.genes,]))
+  seuobj@meta.data <- object@sample_metadata
+  seuobj <- Seurat::ScaleData(object = seuobj, 
+                              do.scale=do.scale,
+                              vars.to.regress=vars.to.regress, 
+                              do.centre=do.centre)
   
   scobj2 <- sc$AnnData(X = t(.normalised[.highly.variable.genes,]))
   
@@ -340,37 +307,7 @@ perform.scanpy <- function(object,
     scobj2$obs <- object@sample_metadata
   }
   
-  if(!is.null(do.scale)) {
-    
-    if(!is.null(vars.to.regress)) {
-      if(!is.null(n_jobs)) {
-        sc$pp$regress_out(adata = scobj2, keys = vars.to.regress, n_jobs = as.integer(n_jobs))
-      } else {
-        sc$pp$regress_out(adata = scobj2, keys = vars.to.regress)
-      }
-    }
-    
-    if(!is.null(max_value) & !is.null(obsm)) {
-      sc$pp$scale(scobj2, zero_center = as.logical(zero_center), max_value = as.integer(max_value), obsm = as.character(obsm))
-    } else if(!is.null(max_value)) {
-      sc$pp$scale(scobj2, zero_center = as.logical(zero_center), max_value = as.integer(max_value))
-    } else if(!is.null(obsm)) {
-      sc$pp$scale(scobj2, zero_center = as.logical(zero_center), obsm = as.character(obsm))
-    } else {
-      sc$pp$scale(scobj2)
-    }
-    
-    .norm.scaled <- t(scobj2$X)
-    colnames(.norm.scaled) <- colnames(object)
-    rownames(.norm.scaled) <- rownames(object)[rownames(object) %in% .highly.variable.genes]
-    
-  } else {
-    
-    .norm.scaled <- .normalised[.highly.variable.genes,]
-    colnames(.norm.scaled) <- colnames(object)
-    rownames(.norm.scaled) <- rownames(object)[rownames(object) %in% .highly.variable.genes]
-    
-  }
+  .norm.scaled <- seuobj@assays$RNA@scale.data
   
   object@sample_metadata <- cbind(object@sample_metadata, cell_metadata(assay = as.matrix(.normalised), col.prefix = new.assay.name))
   

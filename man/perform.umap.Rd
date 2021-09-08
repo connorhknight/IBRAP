@@ -29,7 +29,7 @@ perform.umap(
 
 \item{reduction.name.suffix}{Character. What should be appended to the end of umap as the reduction name.}
 
-\item{n.dims}{Numerical. The number of Scanorama dimensions to be produced. Default = 50}
+\item{n.dims}{Numerical. The number of UMAP dimensions to be produced. Must be supplied in list format relative to the order of reductions}
 
 \item{n_components}{Numerical. How many UMAP dimensions should be produced, if you are supplying graphs, only 2 dimensions can be produced. Default = 3}
 
