@@ -29,11 +29,11 @@ Within IBRAP we have 7 possible clustering methods:
  
 ## Kmeans/PAM
 
-perform.reduction.kmeans() applies either the kmeans or PAM algorithm to supplied reduced embeddings and iterates through a defined number of clusters. This method is applied to reduced embeddings, such as: t-SNE, UMAP or lvish. 
+[perform.reduction.kmeans()](https://connorhknight.github.io/IBRAP/reference/perform.reduction.kmeans.html) applies either the kmeans or PAM algorithm to supplied reduced embeddings and iterates through a defined number of clusters. This method is applied to reduced embeddings, such as: t-SNE, UMAP or lvish. 
 
 ## SC3 consensus clustering
 
-perform.sc3.slot.cluster() is applied to tranformed counts matrices which can be used on a single sample or when minimal or no batch effects are present in multiple samples. perform.sc3.reduction.cluster() can be applied when batch effects are present across samples and required omission. However, the algorithm was not designed to function on reduced embeddings and thus may be unreliable. 
+[perform.sc3.slot.cluster()](https://connorhknight.github.io/IBRAP/reference/perform.sc3.slot.cluster.html) is applied to tranformed counts matrices which can be used on a single sample or when minimal or no batch effects are present in multiple samples. [perform.sc3.reduction.cluster()](https://connorhknight.github.io/IBRAP/reference/perform.sc3.reduction.cluster.html) can be applied when batch effects are present across samples and required omission. However, the algorithm was not designed to function on reduced embeddings and thus may be unreliable. 
 
 ## Louvain, LouvainMR, SLM, and Leiden
 
@@ -44,4 +44,4 @@ v1 provides the ability to produce diffusion map graphs from the neighbourhood g
 
 ### Clusterin the Neighbourhood Graphs
 
-perform.graph.cluster() is then performed using a selected algrith of choice and produces results according to resolutions (typically 0.1-1.5, a lower value identifies less clusters; define the algorithm paramete to change the cluster method)
+[perform.graph.cluster()](file:///Users/knight05/Results/scRNA-seq/IBRAP_development/IBRAP/docs/reference/perform.graph.cluster.html) is then performed using a selected algrith of choice and produces results according to resolutions (typically 0.1-1.5, a lower value identifies less clusters; define the algorithm paramete to change the cluster method)

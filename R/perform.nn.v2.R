@@ -1,4 +1,10 @@
 #' @name perform.nn.v2
+#' @aliases perform.nn.v1
+#' 
+#' @title Performs Seurats nearest neighbour algorithm
+#' 
+#' @description Neighbourhood graph generator utilised by Seurat
+#' 
 #'
 #' @param object IBRAP S4 class object
 #' @param assay Character. String containing indicating which assay to use

@@ -99,13 +99,13 @@
 </li>
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-    Articles
+    Tutorials
      
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/installing_ibrap.html">Installing &amp; Preparing IBRAP</a>
+      <a href="../articles/installing_ibrap.html">Installation</a>
     </li>
     <li>
       <a href="../articles/using_IBRAP.html">Getting Started</a>
@@ -115,6 +115,9 @@
     </li>
     <li>
       <a href="../articles/clustering_method.html">Clustering Methods</a>
+    </li>
+    <li>
+      <a href="../articles/integration.html">Data Integration</a>
     </li>
   </ul>
 </li>
@@ -163,10 +166,7 @@
   batch_key <span class='op'>=</span> <span class='cn'>NULL</span>,
   do.scale <span class='op'>=</span> <span class='cn'>TRUE</span>,
   vars.to.regress <span class='op'>=</span> <span class='cn'>NULL</span>,
-  n_jobs <span class='op'>=</span> <span class='cn'>NULL</span>,
-  zero_center <span class='op'>=</span> <span class='cn'>TRUE</span>,
-  max_value <span class='op'>=</span> <span class='cn'>NULL</span>,
-  obsm <span class='op'>=</span> <span class='cn'>NULL</span>
+  do.centre <span class='op'>=</span> <span class='cn'>TRUE</span>
 <span class='op'>)</span></code></pre></div>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -234,31 +234,15 @@
     </tr>
     <tr>
       <th>do.scale</th>
-      <td><p>Boolean. Whether the gene expression should be scaled. Default = TRUE</p></td>
+      <td><p>Boolean. Whether the gene expression should be centred. Default = TRUE</p></td>
     </tr>
     <tr>
       <th>vars.to.regress</th>
       <td><p>Character. A single or multiple columns of information in the metadata that should be regressed from the dataset. Default = NULL</p></td>
     </tr>
     <tr>
-      <th>n_jobs</th>
-      <td><p>Numerical. The number of jobs that should be performed in parallel. Default = NULL</p></td>
-    </tr>
-    <tr>
-      <th>max_value</th>
-      <td><p>Numerical. Clip to this value after scaling. Default = NULL</p></td>
-    </tr>
-    <tr>
-      <th>obsm</th>
-      <td><p>Numerical. Which value to scale data against. Default = NULL</p></td>
-    </tr>
-    <tr>
       <th>flavour</th>
       <td><p>Character. Choosing which HVG selection method to use when, options: 'seurat', 'cell_ranger', 'seurat_v3'. Default = 'seurat'</p></td>
-    </tr>
-    <tr>
-      <th>zero_centre</th>
-      <td><p>Boolean. Should the gene expression be centred arouynd 0. Default = TRUE</p></td>
     </tr>
     </table>
 

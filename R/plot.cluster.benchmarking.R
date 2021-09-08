@@ -1,17 +1,17 @@
-#' @name plot.benchmarking
-#' @aliases plot.benchmarking
+#' @name plot.cluster.benchmarking
+#' @aliases plot.cluster.benchmarking
 #' 
 #' @param object An IBRAP S4 class object
 #' @param assay Character. Which assay within the object to access
 #' @param clustering Character. Which clustering benchmarking results to utilise
 #' @param ARI Boolean. Were the ARI-dependent metrices (ARI and NMI) calculated. 
 #' 
-#' @export plot.benchmarking
+#' @export plot.cluster.benchmarking
 
-plot.benchmarking <- function(object, 
-                              assay,
-                              clustering, 
-                              ARI){
+plot.cluster.benchmarking <- function(object, 
+                                      assay,
+                                      clustering, 
+                                      ARI){
   
   if(!is(object, 'IBRAP')) {
     
@@ -39,7 +39,7 @@ plot.benchmarking <- function(object,
     
   } else {
     
-    if(!clustering %in% names(object@methods[[assay]]@benchmark_results)) {
+    if(!clustering %in% names(object@methods[[assay]]@benchmark_results$clustering)) {
       
       stop('clustering not contained within benchmark_results \n')
       
@@ -61,7 +61,7 @@ plot.benchmarking <- function(object,
   
   clust.bench <- object@methods[[assay]]@benchmark_results[[clustering]]
   clust.bench <- as.data.frame(clust.bench)
-
+  
   clust.bench[,'cluster_index'] <- rownames(clust.bench)
   
   if(ARI == TRUE) {
@@ -75,13 +75,13 @@ plot.benchmarking <- function(object,
   }
   
   colnames(clust.bench) <- labels
-
+  
   list.plot <- list()
   
   for(o in 1:sum(length(labels)-2)) {
     
     label <- labels[as.numeric(o)]
-
+    
     fig <- ggplot2::ggplot(clust.bench, ggplot2::aes_string(x = 'cluster_index', y = as.character(label), group = 1)) +
       ggplot2::geom_point() +
       ggplot2::geom_line() + 
@@ -101,6 +101,6 @@ plot.benchmarking <- function(object,
     ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90, vjust = 0.5, hjust=1))
   
   list.plot[[as.numeric(sum(length(labels)-1))]] <- last.fig
-
+  
   do.call('ggarrange.tmp', c(plots = list.plot, ncol = 5))
 }

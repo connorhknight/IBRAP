@@ -51,13 +51,13 @@
 </li>
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-    Articles
+    Tutorials
      
     <span class="caret"></span>
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
-      <a href="../articles/installing_ibrap.html">Installing &amp; Preparing IBRAP</a>
+      <a href="../articles/installing_ibrap.html">Installation</a>
     </li>
     <li>
       <a href="../articles/using_IBRAP.html">Getting Started</a>
@@ -67,6 +67,9 @@
     </li>
     <li>
       <a href="../articles/clustering_method.html">Clustering Methods</a>
+    </li>
+    <li>
+      <a href="../articles/integration.html">Data Integration</a>
     </li>
   </ul>
 </li>
@@ -104,12 +107,12 @@
 <div id="kmeanspam" class="section level2">
 <h2 class="hasAnchor">
 <a href="#kmeanspam" class="anchor" aria-hidden="true"></a>Kmeans/PAM</h2>
-<p>perform.reduction.kmeans() applies either the kmeans or PAM algorithm to supplied reduced embeddings and iterates through a defined number of clusters. This method is applied to reduced embeddings, such as: t-SNE, UMAP or lvish.</p>
+<p><a href="https://connorhknight.github.io/IBRAP/reference/perform.reduction.kmeans.html" class="external-link">perform.reduction.kmeans()</a> applies either the kmeans or PAM algorithm to supplied reduced embeddings and iterates through a defined number of clusters. This method is applied to reduced embeddings, such as: t-SNE, UMAP or lvish.</p>
 </div>
 <div id="sc3-consensus-clustering" class="section level2">
 <h2 class="hasAnchor">
 <a href="#sc3-consensus-clustering" class="anchor" aria-hidden="true"></a>SC3 consensus clustering</h2>
-<p>perform.sc3.slot.cluster() is applied to tranformed counts matrices which can be used on a single sample or when minimal or no batch effects are present in multiple samples. perform.sc3.reduction.cluster() can be applied when batch effects are present across samples and required omission. However, the algorithm was not designed to function on reduced embeddings and thus may be unreliable.</p>
+<p><a href="https://connorhknight.github.io/IBRAP/reference/perform.sc3.slot.cluster.html" class="external-link">perform.sc3.slot.cluster()</a> is applied to tranformed counts matrices which can be used on a single sample or when minimal or no batch effects are present in multiple samples. <a href="https://connorhknight.github.io/IBRAP/reference/perform.sc3.reduction.cluster.html" class="external-link">perform.sc3.reduction.cluster()</a> can be applied when batch effects are present across samples and required omission. However, the algorithm was not designed to function on reduced embeddings and thus may be unreliable.</p>
 </div>
 <div id="louvain-louvainmr-slm-and-leiden" class="section level2">
 <h2 class="hasAnchor">
@@ -122,7 +125,7 @@
 <div id="clusterin-the-neighbourhood-graphs" class="section level3">
 <h3 class="hasAnchor">
 <a href="#clusterin-the-neighbourhood-graphs" class="anchor" aria-hidden="true"></a>Clusterin the Neighbourhood Graphs</h3>
-<p>perform.graph.cluster() is then performed using a selected algrith of choice and produces results according to resolutions (typically 0.1-1.5, a lower value identifies less clusters; define the algorithm paramete to change the cluster method)</p>
+<p><a href="file:///Users/knight05/Results/scRNA-seq/IBRAP_development/IBRAP/docs/reference/perform.graph.cluster.html">perform.graph.cluster()</a> is then performed using a selected algrith of choice and produces results according to resolutions (typically 0.1-1.5, a lower value identifies less clusters; define the algorithm paramete to change the cluster method)</p>
 </div>
 </div>
   </div>

@@ -34,19 +34,19 @@ Data transformation in IBRAP incorporates multiple steps from packages:
 
 Scanpy 
 
-perform.scanpy()
+[perform.scanpy()](https://connorhknight.github.io/IBRAP/reference/perform.scanpy.html)
 
 Scanpy can either be log1 or log2 transformed which alters the result. By default scanpy uses log1. Next, either seurat v2, seurat v3, or cellranger style gene selection can be applied. Finally, data is scaled. 
 
 SCTransform
 
-perform.sct()
+[perform.sct()](https://connorhknight.github.io/IBRAP/reference/perform.sct.html)
 
 Seurat developers originally utilised a fairly basic normalisation method. Recently, they released SCTransform which includes general linear modelling to optimise negative binomial regression of data. This algorithm included normalisation, gene selection, and scaling all in one function noromally. 
 
 Scran
 
-perform.scran()
+[perform.scran()](https://connorhknight.github.io/IBRAP/reference/perform.scran.html)
 
 Scran pools similar cells together to produce a scaling factor that is applied to the pools, this enables a more cell type-specific normalisaton. A similar variance analysis identifes genes and seurats scaling function is applied. 
 
@@ -54,6 +54,6 @@ All of the prior methods provide a different methodology for normalising end-bia
 
 ### full-length datasets
 
-perform.tpm()
+[perform.tpm()](https://connorhknight.github.io/IBRAP/reference/perform.tpm.html)
 
 To accommodate full-length datasets we incorporated a a transcript per million normalisation that accounts for gene length. We included scrans gene selection and seurats scaling function to complete the transformation. 

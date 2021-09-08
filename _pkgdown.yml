@@ -10,10 +10,13 @@ navbar:
     reference:
       text: Reference
       href: reference/index.html
+    installation:
+      text: Installation
+      href: articles/installing_ibrap.html
     articles:
-      text: Articles
+      text: Tutorials
       menu:
-      - text: Installing & Preparing IBRAP
+      - text: Installation
         href: articles/installing_ibrap.html
       - text: Getting Started
         href: articles/using_IBRAP.html
@@ -21,11 +24,12 @@ navbar:
         href: articles/data_transform.html
       - text: Clustering Methods
         href: articles/clustering_method.html
+      - text: Data Integration
+        href: articles/integration.html
 
 reference:
 - title: All functions
   desc: >
-  
   contents:
   - '`IBRAP-object`'
   - '`Read10X_output`'
@@ -38,6 +42,8 @@ reference:
   - '`find_percentage_genes`'
   - '`methods-object`'
   - '`perform.GO.enrichment`'
+  - '`perform.nn.v1`'
+  - '`perform.nn.v2`'
   - '`perform.bbknn`'
   - '`perform.decontX`'
   - '`perform.diffexp`'
@@ -88,4 +94,7 @@ articles:
   contents:
   - '`installing_ibrap`'
   - '`using_IBRAP`'
+  - '`data_transform`'
+  - '`clustering_method`'
+  - '`integration`'
 

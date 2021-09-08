@@ -1,4 +1,9 @@
 #' @name perform.nn.v1
+#' @aliases perform.nn.v1
+#' 
+#' @title Performs Scanpy nearest neighbour algorithm
+#' 
+#' @description Neighbourhood graph generator utilised by Scanpy
 #'
 #' @param object IBRAP S4 class object
 #' @param assay Character. String containing indicating which assay to use
