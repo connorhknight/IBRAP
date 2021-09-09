@@ -10,9 +10,6 @@ navbar:
     reference:
       text: Reference
       href: reference/index.html
-    installation:
-      text: Installation
-      href: articles/installing_ibrap.html
     articles:
       text: Tutorials
       menu:
@@ -26,6 +23,12 @@ navbar:
         href: articles/clustering_method.html
       - text: Data Integration
         href: articles/integration.html
+      - text: RShiny Application
+        href: articles/RShiny_app.html
+      - text: Trajectory Inference
+        href: articles/trajectory.html
+      - text: Automated Annotation
+        href: articles/singleR_annotation.html
 
 reference:
 - title: All functions
@@ -97,4 +100,7 @@ articles:
   - '`data_transform`'
   - '`clustering_method`'
   - '`integration`'
+  - '`RShiny_app`'
+  - '`trajectory`'
+  - '`singleR_annotation`'
 

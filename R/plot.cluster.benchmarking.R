@@ -59,7 +59,7 @@ plot.cluster.benchmarking <- function(object,
     
   }
   
-  clust.bench <- object@methods[[assay]]@benchmark_results[[clustering]]
+  clust.bench <- object@methods[[assay]]@benchmark_results$clustering[[clustering]]
   clust.bench <- as.data.frame(clust.bench)
   
   clust.bench[,'cluster_index'] <- rownames(clust.bench)
@@ -102,5 +102,14 @@ plot.cluster.benchmarking <- function(object,
   
   list.plot[[as.numeric(sum(length(labels)-1))]] <- last.fig
   
-  do.call('ggarrange.tmp', c(plots = list.plot, ncol = 5))
+  if(ARI == TRUE) {
+    
+    do.call('ggarrange.tmp', c(plots = list.plot, ncol = 5))
+    
+  } else {
+    
+    do.call('ggarrange.tmp', c(plots = list.plot, ncol = 3))
+    
+  }
+  
 }

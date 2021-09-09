@@ -1,0 +1,95 @@
+---
+title: "Automated Annotation"
+author: "Connor H Knight"
+date: "11/08/2021"
+output: 
+    html_document:
+    toc: true
+    toc_depth: 3
+    theme: united
+vignette: >
+  %\VignetteIndexEntry{Automated Annotation}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r klippy, echo=FALSE, include=TRUE}
+klippy::klippy(tooltip_message = 'Click to copy', tooltip_success = 'Done', position = c('bottom', 'right'))
+```
+
+# Automated cell type annotation
+
+Well-analysed reference maps are currently emerging in single-cell data. To take advantage of this, reference-based cell type annotation algorithms are being developed. Thus, we included SingleR into IBRAP which enables the user to bypass downstream analyses and annotate new datasets more rapidly. 
+
+A pre-requisite for autmoated annotation is intuitive - the reference sample must have correct cell type labels. 
+
+For this analysis we will use pancreatic cell samples analysed using smartseq2 and celseq2, these can be aquired from the following links:
+
+https://www.dropbox.com/s/eckh3b6i12351mr/smartseq2.rds?dl=0
+https://www.dropbox.com/s/iyzrrqbx086fhl6/celseq2.rds?dl=0
+
+We can annotate either dataset using the other. In this tutorial, we will use the smartseq2 sample as a reference to annotate the cekseq2 sample. 
+
+```{r, eval=F, echo=T}
+
+celseq2_items <- readRDS(file.choose())
+smartseq2_items <- readRDS(file.choose())
+
+celseq2 <- createIBRAPobject(counts = celseq2_items$counts,
+                             meta.data = celseq2_items$celseq2_metadata,
+                             original.project = 'celseq2',
+                             method.name = 'RAW',
+                             min.cells = 3,
+                             min.features = 200)
+
+celseq2 <- perform.singleR.annotation(object = celseq2_items, 
+                                      assay = 'RAW', 
+                                      slot = 'counts', 
+                                      ref = as.matrix(smartseq2_items$counts), 
+                                      log.transform = T, 
+                                      ref.labels = smartseq2_items$celseq_metadata$celltype)
+
+```
+
+SingleR annotation results will be added the object@sample_metadata. Two columns are produced one with labels and another with pruned labels. The difference is that the pruned labels will add an X for cells that it is not highly certain of whereas, the labels one will label every cell with its closest cell type - even if it is not highly certain. We can now observe the results: 
+
+```{r, eval=F, echo=T}
+
+celseq2 <- perform.sct(object = celseq2, 
+                    assay = 'RAW', 
+                    slot = 'counts')
+
+celseq2 <- perform.pca(object = celseq2, 
+                    assay = 'SCT', 
+                    n.pcs = 50, reduction.save = 'pca')
+
+celseq2 <- perform.umap(object = celseq2, 
+                     assay = 'SCT', 
+                     reduction = 'pca', 
+                     n_components = 3, 
+                     n.dims = list(1:10))
+
+plot1 <- plot.reduced.dim(object = celseq2, reduction = 'pca_umap', assay = 'SCT', clust.method = 'metadata', column = 'singleR_pruned_labels_1', pt.size = 0.1)
+
+plot2 <- plot.reduced.dim(object = celseq2, reduction = 'pca_umap', assay = 'SCT', clust.method = 'metadata', column = 'singleR_labels_1', pt.size = 0.1)
+
+plot1 + plot2
+
+```
+
+```{r, echo=FALSE, out.width="150%", out.height="150%"}
+
+knitr::include_graphics(path = 'singleR_ann.png')
+
+```
+
+
+
+

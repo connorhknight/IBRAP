@@ -19,17 +19,29 @@ knitr::opts_chunk$set(
   comment = "#>"
 )
 ```
+
+```{r klippy, echo=FALSE, include=TRUE}
+klippy::klippy(tooltip_message = 'Click to copy', tooltip_success = 'Done', position = c('bottom', 'right'))
+```
+
 # Analysing 2994 Bone Marrow Mononuclear Cells (BMMC) from a single sample.
 
 To demonstrate IBRAP we enlisted a sample produced by [Oetjen](https://insight.jci.org/articles/view/124928) *et al*. This can be downloaded using the following link:  
 
 https://www.dropbox.com/s/3wj4f48x7txuyrp/BMMC.rds?dl=0
 
+```{r, eval=F, echo=T}
+
+bmmc <- readRDS(file.choose())
+  
+                       
+```
+
 ## Chapter 1: Cleaning droplet-based datasdets
 
 Droplet-based technologies are normally accompanied by specific conundra that requires omission, namely: multiplets and ambient RNA. With IBRAP you can apply a python package called scrublet (perform.scrublet()) and decontX (perform.decontX()) from the celda package in R for removal, respectively. We supply our count matrix to the functions. There is no defined order of applciation, but logically we assume scrublet removal followed by decontX. 
 
-```
+```{r, eval=F, echo=T}
 
 # We simply supply our generated count matrix to both functions
 
@@ -55,15 +67,9 @@ knitr::include_graphics(path = 'decontX.png')
 
 Since our datasets are produced by 10x genomics and aligned using CellRanger, 3 subsequent files are produced to integrate these files into a count matrix.
 
-```
-
-bmmc <- readRDS(file.choose())
-                       
-```
-
 Now we can initiate our IBRAP class object ready for downstream analyses. Refer to methods-object and IBRAP-object for further detail. 
 
-```
+```{r, eval=F, echo=T}
 
 # whilst creating the object we begin filtering the cells and genes using min.cells and min.features
 bmmc <- createIBRAPobject(counts = bmmc,
@@ -86,7 +92,7 @@ knitr::kable(df)
 
 The total RNA and Total genes are calculated upon the creation of the IBRAP object. However, percentage mitochondrial genes requires a second function since mitochondrial genes have a varying prefix in datasets. Thus, we use find_percentage_genes():
 
-```
+```{r, eval=F, echo=T}
 
 bmmc <- find_percentage_genes(object = bmmc, pattern = '^MT-',
                               assay = 'RAW', 
@@ -97,7 +103,7 @@ bmmc <- find_percentage_genes(object = bmmc, pattern = '^MT-',
 
 We can visualise this information in two ways: using violin plots (plot.qc.vln()) or comparing two metrices with scatter plots (plot.qc.scatter()). The latter enables us to observe correlations between the metrices. 
 
-```
+```{r, eval=F, echo=T}
 
 plot.QC.vln(object = bmmc, 
             metadata.columns = c('RAW_total.features', 
@@ -112,7 +118,7 @@ knitr::include_graphics(path = 'vln_qc_pre.png')
 
 ```
 
-```
+```{r, eval=F, echo=T}
 
 plot.qc.scatter(object = bmmc, 
                 y = 'RAW_total.counts', 
@@ -130,7 +136,7 @@ knitr::include_graphics(path = 'scatter_qc_pre.png')
 
 Filtration is subsequently applied to remove problematic cells.
 
-```
+```{r, eval=F, echo=T}
 
 bmmc <- filter_IBRAP(RAW_total.features < 2500 & RAW_total.counts > 200 & RAW_percent.mt < 8)
 
@@ -140,7 +146,7 @@ bmmc <- filter_IBRAP(RAW_total.features < 2500 & RAW_total.counts > 200 & RAW_pe
 
 To accommodate downstream analyses, we must promote a normal distribution and numerical scaling in our data. We included four separate [normalisation](https://connorhknight.github.io/IBRAP/articles/data_transform.html) methods that are applied as such:
 
-```
+```{r, eval=F, echo=T}
 
 bmmc <- perform.sct(object = bmmc, 
                     assay = 'RAW', 
@@ -164,7 +170,7 @@ Each normalisation function produces a new method-assay which contains the resul
 
 Now that our data has been appropriately transformed we can reduce the number of dimensions using Principal Component Analysis (PCA) perform.pca(). Reduction methods summarise as much information from the higher dimensions into lower dimensions as possible. 
 
-```
+```{r, eval=F, echo=T}
 
 bmmc <- perform.pca(object = bmmc, 
                     assay = c('SCT', 'SCRAN', 'SCANPY'), 
@@ -192,7 +198,7 @@ The main difference is that v1 uses UMAPs method of finding neighbours and all e
 
 Scanpy also integrated an ease-of-use function to generate diffusion maps generated from the neighbourhood graph. This is an equivalent to PCA but is thought to represent cellular trajectories. We can generate these diffusion maps by setting the generate.diffmap parameter to TRUE. Since we need to generate neighourhood graphs for the diffusion maps too, there is a little repetition in functon application.
 
-```
+```{r, eval=F, echo=T}
 # here we generate the neighbour graph for PCA and produce a diffusion map from the PCA-neighbour graph
 
 bmmc <- perform.nn.v1(object = bmmc, assay = c('SCT', 'SCRAN', 'SCANPY'), 
@@ -224,7 +230,7 @@ Finally, using our neighbourhood graph we must cluster close networks together t
 - Smart Local Moving (SLM) (3)
 - Leiden (4)
 
-```
+```{r, eval=F, echo=T}
 
 bmmc <- perform.graph.cluster(object = bmmc, 
                                assay = c('SCT', 'SCRAN', 'SCANPY'), 
@@ -246,7 +252,7 @@ IBRAP integrated the ability to perform 3 methods:
 
 For this tutorial we will focus on UMAP. 
 
-```
+```{r, eval=F, echo=T}
 
 bmmc <- perform.umap(object = samp, 
                      assay = c('SCT', 'SCRAN', 'SCANPY'), 
@@ -263,7 +269,7 @@ Since IBRAP has integrated several pipelines we must begin to visualise the diff
 
 We performed Louvain graph clustering from two different neighbourhood graphs which can causes varied results. Therefore we should observe the difference between these values. 
 
-```
+```{r, eval=F, echo=T}
 
 plot1 <- plot.reduced.dim(object = samp, 
                           reduction = 'pca_umap', 
@@ -293,7 +299,7 @@ knitr::include_graphics(path = 'umap_plots_neighbours.png')
 
 We also produce these results using different normalisation methods, lets observe the difference between these. 
 
-```
+```{r, eval=F, echo=T}
 
 plot3 <- plot.reduced.dim(object = samp, 
                           reduction = 'pca_umap', 
@@ -337,7 +343,7 @@ A large number of results will be produced using IBRAP therefore it is beneficia
 
 To set up the function, supply the dataframes contained within the @cluster_assignments you wish to benchmark under clustering. Next, include the corresponding reductions for them, normally this will be a umap reduction. For example, if clustering and the umap were calculated using PCA these should be paired. 
 
-```
+```{r, eval=F, echo=T}
 
 samp <- benchmark.clustering(object = samp, assay = c('SCT', 'SCRAN', 'SCANPY'), 
                              clustering = c("pca_nn.v1:louvain","pca_nn.v1:diffmap_nn.v1:louvain",
@@ -349,21 +355,13 @@ samp <- benchmark.clustering(object = samp, assay = c('SCT', 'SCRAN', 'SCANPY'),
 
 ```
 
-We can visualise the results of the benchmarking using the following funciton: 
-
-```
-
-
-
-```
-
 ## Chapter 10: Biological Analysis 
 
 To understand the biology driving the clustering we can tackle it in two ways: differential expression analyses or visualisation
 
 Differential expression analyses can be performed either 1 cluster compared against all other cells or 1 cluster against 1 other cluster. In this tutorial we will use the 1 v all function. 
 
-```
+```{r, eval=F, echo=T}
 
 DE_res <- perform.diffexp.all(object = samp, 
                               assay = 'SCT', 
@@ -378,7 +376,7 @@ If the driving biology remains unclear from a differential expression analysis w
 
 In this case, we can use feature plots:
 
-```
+```{r, eval=F, echo=T}
 
 plot.features(object = samp, assay = 'SCT', reduction = 'pca_umap', 
               features = c('JCHAIN','MS4A1','MME','IRF8','HLA-DRA','LYZ',
@@ -396,7 +394,7 @@ knitr::include_graphics(path = 'Feature_plots.png')
 
 Next, we must indicate which cell type belongs to which clusters
 
-```
+```{r, eval=F, echo=T}
 
 clusters[clusters == '18'] <- 'plasma'
 clusters[clusters == '17'] <- 'immature B cells'

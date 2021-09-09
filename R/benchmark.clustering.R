@@ -245,7 +245,7 @@ benchmark.clustering <- function(object,
     }
   }
   
-  cat(crayon::cyan(paste0(Sys.time(), ': completed calcualting benchmarking metrices')))
+  cat(crayon::cyan(paste0(Sys.time(), ': completed calculating benchmarking metrices \n')))
   
   return(object)
   

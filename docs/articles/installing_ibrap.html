@@ -71,6 +71,15 @@
     <li>
       <a href="../articles/integration.html">Data Integration</a>
     </li>
+    <li>
+      <a href="../articles/RShiny_app.html">RShiny Application</a>
+    </li>
+    <li>
+      <a href="../articles/trajectory.html">Trajectory Inference</a>
+    </li>
+    <li>
+      <a href="../articles/singleR_annotation.html">Automated Annotation</a>
+    </li>
   </ul>
 </li>
       </ul>
@@ -84,7 +93,9 @@
 
       
 
-      </header><div class="row">
+      </header><script src="installing_ibrap_files/clipboard-1.7.1/clipboard.min.js"></script><link href="installing_ibrap_files/primer-tooltips-1.4.0/build.css" rel="stylesheet">
+<link href="installing_ibrap_files/klippy-0.0.0.9500/css/klippy.min.css" rel="stylesheet">
+<script src="installing_ibrap_files/klippy-0.0.0.9500/js/klippy.min.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Installing &amp; Preparing IBRAP</h1>
@@ -99,18 +110,25 @@
 
     
     
-<div id="installing-ibrap" class="section level3">
+<script>
+  addClassKlippyTo("pre.r, pre.markdown");
+  addKlippy('right', 'bottom', 'auto', '1', 'Click to copy', 'Done');
+</script><div id="installing-ibrap" class="section level3">
 <h3 class="hasAnchor">
 <a href="#installing-ibrap" class="anchor" aria-hidden="true"></a>Installing IBRAP</h3>
 <p>IBRAP depends on more than 100 other packages, thus the installation process may take some time and some manual intervention</p>
 <p>Firstly, some Bioconductor packages must be installed:</p>
-<pre><code>if (!requireNamespace("BiocManager", quietly=TRUE))
-    install.packages("BiocManager")
-BiocManager::install(c("celda", "slingshot", "scran", "scuttle", "SC3", "SingleCellExperiment", "PCAtools", "topGO","shinydashboard"))</code></pre>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R">
+<span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"BiocManager"</span>, quietly<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span>
+    <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"BiocManager"</span><span class="op">)</span>
+<span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BiocManager/man/install.html" class="external-link">install</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"celda"</span>, <span class="st">"slingshot"</span>, <span class="st">"scran"</span>, <span class="st">"scuttle"</span>, <span class="st">"SC3"</span>, <span class="st">"SingleCellExperiment"</span>, <span class="st">"PCAtools"</span>, <span class="st">"topGO"</span>,<span class="st">"shinydashboard"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <p>These are packages that are not automatically installed using the subsequent command.</p>
 <p>Next, we install IBRAP and its dependencies:</p>
-<pre><code>install.packages('devtools')
-devtools::install_github('connorhknight/IBRAP')</code></pre>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R">
+<span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">'devtools'</span><span class="op">)</span>
+<span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org//reference/remote-reexports.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">'connorhknight/IBRAP'</span><span class="op">)</span></code></pre></div>
 <p>Once installed, you can enjoy a toolbox of the most commonly used scRNA-seq components, fully integrated.</p>
 </div>
   </div>

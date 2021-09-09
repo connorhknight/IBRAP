@@ -17,25 +17,33 @@ knitr::opts_chunk$set(
 )
 ```
 
+```{r klippy, echo=FALSE, include=TRUE}
+klippy::klippy(tooltip_message = 'Click to copy', tooltip_success = 'Done', position = c('bottom', 'right'))
+```
+
 ### Installing IBRAP 
 
 IBRAP depends on more than 100 other packages, thus the installation process may take some time and some manual intervention 
 
 Firstly, some Bioconductor packages must be installed: 
 
-```
+```{r, eval=F, echo=T}
+
 if (!requireNamespace("BiocManager", quietly=TRUE))
     install.packages("BiocManager")
 BiocManager::install(c("celda", "slingshot", "scran", "scuttle", "SC3", "SingleCellExperiment", "PCAtools", "topGO","shinydashboard"))
+
 ```
 
 These are packages that are not automatically installed using the subsequent command. 
 
 Next, we install IBRAP and its dependencies:
 
-```
+```{r, eval=F, echo=T}
+
 install.packages('devtools')
 devtools::install_github('connorhknight/IBRAP')
+
 ```
 
 Once installed, you can enjoy a toolbox of the most commonly used scRNA-seq components, fully integrated. 

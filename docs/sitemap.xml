@@ -4,6 +4,9 @@
     <loc>/404.html</loc>
   </url>
   <url>
+    <loc>/articles/Rshiny_app.html</loc>
+  </url>
+  <url>
     <loc>/articles/clustering_method.html</loc>
   </url>
   <url>
@@ -17,6 +20,12 @@
   </url>
   <url>
     <loc>/articles/integration.html</loc>
+  </url>
+  <url>
+    <loc>/articles/singleR_annotation.html</loc>
+  </url>
+  <url>
+    <loc>/articles/trajectory.html</loc>
   </url>
   <url>
     <loc>/articles/using_IBRAP.html</loc>

@@ -39,22 +39,15 @@ shinyApp(
                                               hr(),
                                               h5('Specify the point size:'),
                                               numericInput(inputId = 'pt_size', label = 'Point size', value = 3),
-                                              actionButton(inputId = 'plot_DR', label = 'Plot'),
-                                              hr(),
-                                              p(tags$div('Interactive dimensionality reductions plots can be generated here. ', tags$br(),
-                                                         'You can specify the method-assay & dimensionality reduction', tags$br(),
-                                                         'embeddings in the panel to the left under the rds file upload.', tags$br(),
-                                                         'Cell labelling is conducted above. Dataframes that were contained', tags$br(),
-                                                         'within @cluster_assignments can be selected. Next, you can select', tags$br(),
-                                                         'the column from within that dataframe using the select dataframe ', tags$br(),
-                                                         'column drop down menu. Finally, specify the size of you would like', tags$br(),
-                                                         'the points to be.'))
+                                              actionButton(inputId = 'plot_DR', label = 'Plot')
                                           ),
                                           box(align = "center", height = 820, width = 820, align = 'center',
                                               plotlyOutput(outputId = 'int_DR_plot', width = '100%', height = 800)))
                           ),
-                          box(height = 900, width = 900, solidHeader = TRUE, status = "primary", title = 'benchmarking metrics', align = 'center',
+                          box(height = 1350, width = 900, solidHeader = TRUE, status = "primary", title = 'benchmarking metrics', align = 'center',
                               plotOutput(outputId = 'benchmark', width = '100%'),
+                              hr(),
+                              plotOutput(outputId = 'integration_benchmarking', width = '100%'),
                               hr(),
                               h3('Either 5 (ground truth available) or 3 (ground truth unavailable) benchmarking metrices are provided', align = "left"),
                               br(),
@@ -68,6 +61,8 @@ shinyApp(
                               p(strong('Ground truth metrices:'), align = "left"),
                               p(' - ARI, Adjusted Rand Index measures the agreement between the cluster assignments between the ground truth and novel assignments, this metric is adjusted for randomness', align = "left"),
                               p(' - NMI, Normalised Mutual Information functions similarly to ARI however it is adjusted for cluster sizes', align = "left"),
+                              br(),
+                              p('The boxplot (if present) describes the ASW between batches if batch correction was performed. A higher value indicates higher batch effects whilst a lower demonstrates less.', align = "left"),
                           )
                           
                           
@@ -189,45 +184,15 @@ shinyApp(
         
       }
       
-      print('.')
-      
       red <- input$reduction_technique
       
       ff <- unlist(lapply(X = lapply(X = strsplit(x = names(forout_reactive$active.assay@cluster_assignments), split = '_'), FUN = temp), FUN = paste0, collapse = '_'))
       
       f <- unlist(lapply(X = lapply(X = strsplit(x = red, split = '_'), FUN = temp), FUN = paste0, collapse = '_'))
       
-      print(names(forout_reactive$active.assay@cluster_assignments)[f == ff])
-      
       forout_reactive$allowed_labels <- c(names(forout_reactive$active.assay@cluster_assignments)[f == ff], 'metadata')
       
     })
-    
-    # label_constrictor <- reactive(x = {
-    #   
-    #   temp <- function(x) {
-    #     
-    #     n <- sum(length(x)-1)
-    #     r <- head(x, n=n)
-    #     return(r)
-    #     
-    #   }
-    #   
-    #   req(input$reduction_technique)
-    #   
-    #   print('.')
-    #   
-    #   red <- input$reduction_technique
-    #   
-    #   ff <- unlist(lapply(X = lapply(X = strsplit(x = names(forout_reactive$active.assay@cluster_assignments), split = '_'), FUN = temp), FUN = paste0, collapse = '_'))
-    #   
-    #   f <- unlist(lapply(X = lapply(X = strsplit(x = red, split = '_'), FUN = temp), FUN = paste0, collapse = '_'))
-    #   
-    #   print(names(forout_reactive$active.assay@cluster_assignments)[f == ff])
-    #   
-    #   names(forout_reactive$active.assay@cluster_assignments)[f == ff]
-    #   
-    # })
     
     output$cluster_selector <- renderUI({
       req(forout_reactive$active.assay)
@@ -265,18 +230,31 @@ shinyApp(
     output$benchmark <- renderPlot({
       req(input$cluster_technique != 'metadata')
       g <- forout_reactive$obj
-      h <- names(forout_reactive$active.assay@benchmark_results[[input$cluster_technique]])
+      h <- names(forout_reactive$active.assay@benchmark_results$clustering[[input$cluster_technique]])
       if(length(h) > 3) {
-        temp <- IBRAP::plot.benchmarking(object = g, 
-                                         assay = input$assay, 
-                                         clustering = input$cluster_technique, 
-                                         ARI = TRUE)
+        temp <- plot.cluster.benchmarking(object = g, 
+                                          assay = input$assay, 
+                                          clustering = input$cluster_technique, 
+                                          ARI = TRUE)
       } else {
-        temp <- IBRAP::plot.benchmarking(object = g, 
-                                         assay = input$assay, 
-                                         clustering = input$cluster_technique, 
-                                         ARI = FALSE)
+        temp <- plot.cluster.benchmarking(object = g, 
+                                          assay = input$assay, 
+                                          clustering = input$cluster_technique, 
+                                          ARI = FALSE)
       }
+      
+    })
+    
+    output$integration_benchmarking <- renderPlot({
+      req(forout_reactive$obj)
+      
+      if(is.null(pancreas_bench@methods$SCT@benchmark_results$integration)) {
+        
+        return(NULL)
+        
+      }
+      
+      p <- plot.integration.benchmarking(object = forout_reactive$obj, assay = input$assay)
       
     })
     

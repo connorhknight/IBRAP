@@ -24,7 +24,7 @@ plot.slingshot <- function(result,
                            lineages = FALSE,
                            pt_size = 0.1, 
                            line_size = 0.1,
-                           relevant = TRUE,
+                           relevant = FALSE,
                            Pseudotime = FALSE,
                            Expression = FALSE,
                            object = NULL,
@@ -43,7 +43,7 @@ plot.slingshot <- function(result,
     
     clusters <- as.character(clusters)
     
-    if(length(clusters) != nrow(test@clusterLabels)) {
+    if(length(clusters) != nrow(result$assignments@clusterLabels)) {
       
       stop('supplied clusters must be the same length as number of cells contained in results \n')
       
@@ -78,7 +78,15 @@ plot.slingshot <- function(result,
   if(is.null(clusters)) {
     
     clusters <- slingshot::slingClusterLabels(result$assignments)
-    clusters <- apply(clusters, 1, which.max)
+    clusters_2 <- apply(clusters, 1, which.max)
+    
+    for(x in seq_along(colnames(clusters))) { 
+      
+      clusters_2[clusters_2==x] <- colnames(clusters)[x]
+      
+    }
+    
+    clusters <- clusters_2
     
   }
   
@@ -156,8 +164,8 @@ plot.slingshot <- function(result,
     
     for(d in clust_centres$clusters) {
       
-      centre_1[[count]] <- mean(red_whole[red_whole[,'clusters'] == d,][,1])
-      centre_2[[count]] <- mean(red_whole[red_whole[,'clusters'] == d,][,2])
+      centre_1[[count]] <- mean(as.numeric(red_whole[red_whole[,'clusters'] == d,][,1]))
+      centre_2[[count]] <- mean(as.numeric(red_whole[red_whole[,'clusters'] == d,][,2]))
       
       count <- count + 1
 
@@ -167,13 +175,12 @@ plot.slingshot <- function(result,
     clust_centres[,'dim2'] <- unlist(centre_2)
     
     if(isFALSE(Pseudotime) && isFALSE(Expression)) {
-
-      df <- data.frame(dim1 = red[,1], dim2 = red[,2], cluster = as.character(red[,3]))
+ 
+      df <- data.frame(dim1 = as.numeric(red[,1]), dim2 = as.numeric(red[,2]), cluster = as.character(red[,3]))
       
       p <- ggplot2::ggplot(data = df, mapping = ggplot2::aes(x = dim1, y = dim2, col = cluster)) + 
         ggplot2::geom_point(size = pt_size, ...) + 
         ggplot2::theme_classic() +
-        ggplot2::theme(legend.position = 'none') +
         ggplot2::scale_color_manual(values = colorspace::qualitative_hcl(n = length(unique(df[,3])), palette = 'Dark 3'))
       
       if (isFALSE(lineages)) {
@@ -185,18 +192,10 @@ plot.slingshot <- function(result,
         
       } else if (isTRUE(lineages)) {
         
-        print(x)
-        
         lineage_i <- slingshot::slingLineages(result$assignments)[[x]]
-        
-        print(lineage_i)
-        
-        print(clust_centres)
         
         coord <- clust_centres[lineage_i %in% clust_centres[,'clusters'],]
 
-        print(coord)
-        
         p <- p + ggplot2::geom_line(data = coord, mapping = ggplot2::aes(group = 1), color = 'black')
         
       }
@@ -205,7 +204,9 @@ plot.slingshot <- function(result,
       
     } else if(isTRUE(Pseudotime) && isFALSE(Expression)) {
       
-      df <- data.frame(dim1 = red[,1], dim2 = red[,2], pseudotime = pseudotime_x, cluster = as.character(red[,3]))
+      df <- data.frame(dim1 = as.numeric(red[,1]), dim2 = as.numeric(red[,2]), 
+                       pseudotime = pseudotime_x, cluster = as.character(red[,3]))
+
       p <- ggplot2::ggplot(data = df, mapping = ggplot2::aes(x = dim1, y = dim2, col = pseudotime)) + 
         ggplot2::geom_point(size = pt_size, ...) + 
         ggplot2::theme(legend.title.align=0.5) +
@@ -250,7 +251,9 @@ plot.slingshot <- function(result,
     
   } else if (isFALSE(Pseudotime) && isTRUE(Expression)) {
     
-    df <- data.frame(dim1 = red[,1], dim2 = red[,2], expression = expr, cluster = as.character(red[,3]))
+    df <- data.frame(dim1 = as.numeric(red[,1]), dim2 = as.numeric(red[,2]), 
+                     expression = as.numeric(expr), cluster = as.character(red[,3]))
+
     p <- ggplot2::ggplot(data = df, mapping = ggplot2::aes(x = dim1, y = dim2, col = expression)) + 
       ggplot2::geom_point(size = pt_size, ...) + 
       ggplot2::theme(legend.title.align=0.5) +

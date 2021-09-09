@@ -20,6 +20,10 @@ knitr::opts_chunk$set(
 )
 ```
 
+```{r klippy, echo=FALSE, include=TRUE}
+klippy::klippy(tooltip_message = 'Click to copy', tooltip_success = 'Done', position = c('bottom', 'right'))
+```
+
 # Integrating Multiple Datasets 
 
 Most analyses require more than a single sample. Especially, in meta-analyses. 
@@ -31,7 +35,7 @@ https://www.dropbox.com/s/iyzrrqbx086fhl6/celseq2.rds?dl=0
 
 ## Creating IBRAP objects
 
-```
+```{r, eval=F, echo=T}
 
 celseq2_items <- readRDS(file.choose())
 smartseq2_items <- readRDS(file.choose())
@@ -57,7 +61,7 @@ smartseq2 <- createIBRAPobject(counts = smartseq2,
 
 Datasets are then merged together. WARNING: Datasets can only be merged straight after their cvreation with no downstream results.
 
-```
+```{r, eval=F, echo=T}
 
 pancreas <- merge(x = celseq2, y = smartseq2)
 
@@ -67,7 +71,7 @@ pancreas <- merge(x = celseq2, y = smartseq2)
 
 We then continue our analysis as normal:
 
-```
+```{r, eval=F, echo=T}
 
 pancreas <- perform.sct(object = pancreas, 
                         assay = 'RAW', 
@@ -136,7 +140,7 @@ Lets begin the integration techniques
 
 ## Integration Application $ Visualisaiton
 
-```
+```{r, eval=F, echo=T}
 
 pancreas <- perform.bbknn(object = pancreas, 
                           assay = c('SCT', 'SCANPY', 'SCRAN'), 
@@ -227,7 +231,7 @@ Alternatively to just visualising the data we can also apply Average Silhouette 
 
 previously we calcualted the UMAP reductions for the uncorrected PCA and the corrected: harmony, bbknn, and scanorama data. We can use the UMAP reductions to assess the effectiveness of the data using this function:
 
-```
+```{r, eval=F, echo=T}
 
 pancreas <- benchmark.intergation(object = pancreas, 
                                   batch = 'original.project', assays = c('SCT','SCRAN','SCANPY'), 
