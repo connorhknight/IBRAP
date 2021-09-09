@@ -100,7 +100,7 @@ articles:
   - '`data_transform`'
   - '`clustering_method`'
   - '`integration`'
-  - '`RShiny_app`'
+  - '`application`'
   - '`trajectory`'
   - '`singleR_annotation`'
 
