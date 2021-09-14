@@ -9,7 +9,7 @@ navbar:
   components:
     reference:
       text: Reference
-      href: reference/index.html
+      href: articles/index.html
     articles:
       text: Tutorials
       menu:
