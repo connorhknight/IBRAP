@@ -25,7 +25,7 @@ These tools are incorporated into the following pipeline:
 
 ```{r}
 
-knitr::include_graphics(path = 'man/figures/workflow.png')
+knitr::include_graphics(path = 'workflow.png')
 
 ```
 
@@ -33,7 +33,7 @@ Our currently integrated tools are the following:
 
 ```{r}
 
-knitr::include_graphics(path = 'man/figures/new_tools_table.png')
+knitr::include_graphics(path = 'new_tools_table.png')
 
 ```
 
