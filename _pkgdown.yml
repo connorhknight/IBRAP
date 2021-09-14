@@ -8,7 +8,7 @@ navbar:
     right: github
   components:
     reference:
-      text: Reference
+      text: Functions
       href: reference/index.html
     articles:
       text: Tutorials
