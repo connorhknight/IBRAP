@@ -64,6 +64,7 @@ reference:
   - '`perform.scran`'
   - '`perform.scrublet`'
   - '`perform.sct`'
+  - '`perform.seurat.integration`'
   - '`perform.singleR.annotation`'
   - '`perform.slingshot.trajectory`'
   - '`perform.tpm`'
