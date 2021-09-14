@@ -24,7 +24,7 @@ navbar:
       - text: Data Integration
         href: articles/integration.html
       - text: RShiny Application
-        href: articles/RShiny_app.html
+        href: articles/application.html
       - text: Trajectory Inference
         href: articles/trajectory.html
       - text: Automated Annotation
