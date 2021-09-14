@@ -4,9 +4,6 @@
     <loc>/404.html</loc>
   </url>
   <url>
-    <loc>/articles/Rshiny_app.html</loc>
-  </url>
-  <url>
     <loc>/articles/application.html</loc>
   </url>
   <url>
@@ -59,9 +56,6 @@
   </url>
   <url>
     <loc>/reference/benchmark.integration.html</loc>
-  </url>
-  <url>
-    <loc>/reference/benchmark.intergation.html</loc>
   </url>
   <url>
     <loc>/reference/cell_metadata.html</loc>
