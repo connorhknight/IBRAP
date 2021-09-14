@@ -306,7 +306,7 @@ perform.seurat.integration <- function(object,
         
         normalise <- function(...) {
           
-          IBRAP::perform.scran(...)
+          perform.scran(...)
           
         }
         
@@ -314,7 +314,7 @@ perform.seurat.integration <- function(object,
         
         normalise <- function(...) {
           
-          IBRAP::perform.scanpy(...)
+          perform.scanpy(...)
           
         }
         
@@ -322,7 +322,7 @@ perform.seurat.integration <- function(object,
         
         normalise <- function(...) {
           
-          IBRAP::perform.tpm(...)
+          perform.tpm(...)
           
         }      
         
@@ -396,7 +396,7 @@ perform.seurat.integration <- function(object,
       
       if(is.null(reduction.name.suffix)) {
         
-        object@methods[[a]]@integration_reductions[['seurat_pca']] <- tmp.obj@methods[[1]]@computational_reductions[[1]]
+        object@methods[[a]]@integration_reductions[[paste0(toupper(reduction), '_pca')]] <- tmp.obj@methods[[1]]@computational_reductions[[1]]
         
       } else if(!is.null(reduction.name.suffix)) {
         
@@ -480,7 +480,7 @@ perform.seurat.integration <- function(object,
       
       if(is.null(reduction.name.suffix)) {
         
-        object@methods[[a]]@integration_reductions[['seurat_pca']] <- tmp.obj@methods[[1]]@computational_reductions[[1]]
+        object@methods[[a]]@integration_reductions[[paste0(toupper(reduction), '_pca')]] <- tmp.obj@methods[[1]]@computational_reductions[[1]]
         
       } else if(!is.null(reduction.name.suffix)) {
         

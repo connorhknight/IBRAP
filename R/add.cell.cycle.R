@@ -14,10 +14,12 @@
 #' 
 #' @return IBRAP S4 class object containing cell cycle assignments and scores for each cell in the metadata
 #' 
-#' @examples object <- add.cell.cycle(object = object, 
-#                                     assay = 'RAW', 
-#                                     slot = 'counts', 
-#                                     transform = TRUE)
+#' @examples 
+#' 
+#' object <- add.cell.cycle(object = object, 
+#                           assay = 'RAW', 
+#                           slot = 'counts', 
+#                           transform = TRUE)
 #' 
 #' @export
 

@@ -24,6 +24,7 @@ IBRAP S4 class object containing highly varaible genes within the source assay
 Subsets gene names that match the pattern supplied. The percentage fraction of this gene group is then calculated.
 }
 \examples{
+
 object <- find_percentage_genes(object = object, pattern = '^MT-',
 
 }
