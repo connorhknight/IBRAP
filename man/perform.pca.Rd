@@ -35,3 +35,10 @@ PCA reductions contained within the computational_reduction list in the defined 
 \description{
 Performs PCA reduction on defined method-assays. Data should be HVG subset, normalised and scaled (in the norm.scaled assay)
 }
+\examples{
+
+object <- perform.pca(object = object, 
+                      assay = c('SCT', 'SCRAN', 'SCANPY'), 
+                      n.pcs = 50, reduction.save = 'pca')
+
+}

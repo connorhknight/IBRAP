@@ -26,6 +26,11 @@
 #' @param do.scale Boolean. Whether the gene expression should be centred. Default = TRUE
 #' 
 #' @return Produces a new 'methods' assay containing normalised, scaled and HVGs.
+#' 
+#' @examples 
+#' 
+#' object <- perform.scanpy(object = object, 
+#'                          vars.to.regress = 'RAW_total.counts', do.scale = T)
 #'
 #' @export
 

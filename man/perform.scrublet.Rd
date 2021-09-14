@@ -51,3 +51,8 @@ Doublet-omitted sparse matrix
 \description{
 Removes doublets from dataset.
 }
+\examples{
+
+object <- perform.scrublet(counts = counts)
+
+}

@@ -15,6 +15,17 @@
 #' @usage add.cell.cycle(object = obj, assay = 'RAW', slot = 'counts')
 #' 
 #' @return IBRAP S4 class object containing module scores for each cell in the metadata
+#' 
+#' @examples # object <- add.feature.score(object = object, 
+#                                          assay = 'RAW', 
+#                                          slot = 'counts',
+#                                          transform = TRUE, 
+#                                          features = c('BAG3', 'BLOC1S5-TXNDC5', 'CALU', 'DNAJB1', 'DUSP1', 'EGR1', 
+#                                                      'FOS', 'FOSB', 'HIF1A', 'HSP90AA1', 'HSP90AB1', 'HSP90AB2P', 
+#                                                      'HSP90AB3P', 'HSP90B1', 'HSPA1A', 'HSPA1B', 'HSPA6', 'HSPB1', 
+#                                                      'HSPH1', 'IER2', 'JUN', 'JUNB', 'NFKBIA', 'NFKBIZ', 'RGS2', 
+#                                                      'SLC2A3', 'SOCS3', 'UBC', 'ZFAND2A', 'ZFP36', 'ZFP36L1'), 
+#                                          column.name = 'StressScore')
 #'
 #' @export
 

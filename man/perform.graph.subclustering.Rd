@@ -43,3 +43,11 @@ A new column within the defined cluster_assignment dataframe containing original
 \description{
 Seurat subclustering
 }
+\examples{
+
+object <- perform.graph.subclustering(object = object, assay = 'SCT', 
+                                      clust.method = 'pca_nn.v1:louvain', 
+                                      column = 'resolution_0.5', clusters = c(1,5,9), 
+                                      neighbours = 'pca_nn.v1:', algorithm = 1)
+
+}

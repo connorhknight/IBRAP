@@ -1,5 +1,5 @@
-#' @name benchmark.intergation
-#' @aliases benchmark.intergation
+#' @name benchmark.integration
+#' @aliases benchmark.integration
 #' 
 #' @title Benchmarks the cluster assignmentws
 #'
@@ -13,6 +13,16 @@
 #' @param n.components Numerical. How many components of the reduced embeddings should be used. Default = 2
 #' 
 #' @return Benchmarking scores for the supplied integrations
+#' 
+#' @examples object <- benchmark.intergation(object = object, 
+#'                                           batch = 'original.project', 
+#'                                           assays = c('SCT','SCRAN','SCANPY'), 
+#'                                           reduction = c('pca_umap', 'pca_harmony_umap', 
+#'                                                         'scanorama_umap', 'pca_bbknn_bbknn:umap',
+#'                                                         'CCA_pca_umap'), 
+#'                                           result.names = c('uncorrected', 'harmony', 
+#'                                                            'scanorama', 'bbknn', 'cca'), 
+#'                                           n.components = 2)
 #'
 #' @export
 

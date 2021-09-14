@@ -43,3 +43,20 @@ UMAP reduction saved in the visualisation_reductions section in the supplied met
 \description{
 Performs UMAP reduction on defined method-assays and supplied reductions or graphs.
 }
+\examples{
+
+# How to perform umap reduction on a previous reduction 
+object <- perform.umap(object = object, 
+                       assay = c('SCT', 'SCRAN', 'SCANPY'), 
+                       reduction = c('pca'), 
+                       n_components = 2, 
+                       n.dims = list(1:12))
+                       
+# How to perfrom umap reduction on neighbourhood graphs
+object <- perform.umap(object = object, 
+                       assay = c('SCT', 'SCRAN', 'SCANPY'), 
+                       graph = 'pca_bbknn_bbknn')
+                      
+                      
+
+}

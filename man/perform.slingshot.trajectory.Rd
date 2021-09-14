@@ -38,3 +38,12 @@ A SingleshotDataSet class results object containing cellular lineages/curves
 \description{
 Generates slingshot trajectory inference on the defined reduction and clustering
 }
+\examples{
+
+traj_res <- perform.slingshot.trajectory(object = object, reduction = 'pca_umap', 
+                                         assay = 'SCT', clust.method = 'metadata', 
+                                         column = 'celltype')
+                                         
+plot.slingshot(result = traj_red, object = traj, assay = 'SCT', relevant = F, Pseudotime = T)
+
+}

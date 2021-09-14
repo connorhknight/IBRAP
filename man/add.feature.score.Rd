@@ -25,3 +25,7 @@ IBRAP S4 class object containing module scores for each cell in the metadata
 \description{
 Produces a module score per cell for the supplied genes
 }
+\examples{
+# object <- add.feature.score(object = object, 
+
+}

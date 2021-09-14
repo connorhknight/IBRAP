@@ -47,3 +47,16 @@ perform.nn.v1(
 \description{
 Neighbourhood graph generator utilised by Scanpy
 }
+\examples{
+
+# generates a diffusion map
+object <- perform.nn.v1(object = object, assay = c('SCT', 'SCRAN', 'SCANPY'), 
+                        reduction = c('pca_harmony','scanorama'),
+                        dims = list(0,0), generate.diffmap = T)
+                        
+# does not generates a diffusion map
+object <- perform.nn.v1(object = object, assay = c('SCT', 'SCRAN', 'SCANPY'), 
+                        reduction = c('pca_harmony','scanorama'),
+                        dims = list(0,0))
+
+}

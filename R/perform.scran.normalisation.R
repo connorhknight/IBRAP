@@ -18,6 +18,13 @@
 #' @param center_size_factors Boolean Should size factor variance be centred. Default = TRUE
 #' 
 #' @return Produces a new 'methods' assay containing normalised, scaled and HVGs.
+#' 
+#' @examples 
+#' 
+#' object <- perform.scran(object = object, 
+#'                         assay = 'RAW', 
+#'                         slot = 'counts', 
+#'                         vars.to.regress = 'RAW_total.counts', do.scale = T)
 #'
 #' @export
 

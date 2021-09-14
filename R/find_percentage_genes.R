@@ -14,6 +14,10 @@
 #' @usage find_percentage_genes(object = obj, pattern = '^MT-', assay = 'RAW', slot = 'RAW', column.name = 'RAW_percent.mt')
 #' 
 #' @return IBRAP S4 class object containing highly varaible genes within the source assay
+#' 
+#' @examples object <- find_percentage_genes(object = object, pattern = '^MT-',
+#                                            assay = 'RAW', slot = 'counts',
+#                                            column.name = 'RAW_percent.mt')
 #'
 #' @export
 

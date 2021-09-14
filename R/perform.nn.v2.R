@@ -1,11 +1,10 @@
 #' @name perform.nn.v2
-#' @aliases perform.nn.v1
+#' @aliases perform.nn.v2
 #' 
 #' @title Performs Seurats nearest neighbour algorithm
 #' 
 #' @description Neighbourhood graph generator utilised by Seurat
 #' 
-#'
 #' @param object IBRAP S4 class object
 #' @param assay Character. String containing indicating which assay to use
 #' @param reduction Character. String defining which reduction to supply to the clustering algorithm.
@@ -17,6 +16,12 @@
 #' @param n.trees Numerical. More trees facilitates hgiher precision when using 'annoy' method. Default = 20
 #' @param nn.eps Numerical. Margin of error when performing nearest neighbour search whilst using rann method. 0 would imply an exact search. Default = 0.0
 #' @param annoy.metric Character. Distance metric for annoy method. Options: 'euclidean', 'cosine', 'manhattan', 'hamming'. Default = 'euclidean'
+#' 
+#' @examples 
+#' 
+#' object <- perform.nn.v1(object = object, assay = c('SCT', 'SCRAN', 'SCANPY'), 
+#'                         reduction = c('pca_bbknn_bbknn:diffmap','pca_harmony_nn.v1:diffmap', 'scanorama_nn.v1:diffmap'), 
+#'                         dims = list(0,0,0))
 #' 
 #' @export
 

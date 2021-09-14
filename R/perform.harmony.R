@@ -14,6 +14,15 @@
 #' @param ... Arguments to be passed to harmony::HarmonyMatrix
 #' 
 #' @return PCA reductions contained within the computational_reduction list in the defined assays
+#' 
+#' @examples
+#' 
+#' object <- perform.harmony(object = object, 
+#'                           assay = c('SCRAN', 'SCT', 'SCANPY'), 
+#'                           vars.use = 'original.project', 
+#'                           reduction = c('pca'),  
+#'                           max.iter.harmony = 100,
+#'                           dims.use = list(NULL))
 #'
 #' @export
 

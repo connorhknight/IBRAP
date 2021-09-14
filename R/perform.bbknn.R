@@ -24,7 +24,21 @@
 #' @param diffmap.name.sufix Character. Should a suffix be added to the end of bbknn:diffmap as the reduction name, i.e. parameter changes?
 #' 
 #' @return BBKNN connectivity graph contained in graphs in the indicated method-assays
-#'
+#' 
+#' @examples 
+#' 
+#' # This example will generate a diffusion map as well 
+#' object <- perform.bbknn(object = object, 
+#'                         assay = c('SCT', 'SCANPY', 'SCRAN'), 
+#'                         reduction = c('pca'),
+#'                         batch = 'tech', generate.diffmap = T)
+#'                           
+#' #' # This example will generate a diffusion map as well 
+#' object <- perform.bbknn(object = object, 
+#'                         assay = c('SCT', 'SCANPY', 'SCRAN'), 
+#'                         reduction = c('pca'),
+#'                         batch = 'tech')
+#'                         
 #' @export
 
 perform.bbknn <- function(object,

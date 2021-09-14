@@ -28,6 +28,10 @@
 #' @usage perform.scrublet(counts = counts, expected_doublet_rate = 0.025)
 #' 
 #' @return Doublet-omitted sparse matrix
+#' 
+#' @examples 
+#' 
+#' object <- perform.scrublet(counts = counts)
 #'
 #' @export
 

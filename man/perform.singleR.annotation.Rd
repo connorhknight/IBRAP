@@ -41,3 +41,8 @@ Produces a new 'methods' assay containing normalised, scaled and HVGs.
 \description{
 SingleR iterates through singular cells and iterates through probabilitiy comparisons to identify which cell type the query cell is likely to be. If a probably cell type cannot be discovered then
 }
+\examples{
+
+object <- perform.singleR.annotation(object = object, ref = reference_matrix, ref.labels = metadata_reference$celltype)
+
+}

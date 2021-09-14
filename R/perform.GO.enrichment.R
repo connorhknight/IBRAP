@@ -20,6 +20,14 @@
 #' @param n.top.pathways Numerical. How many top pathways per group should be retained. Default = 10
 #' 
 #' @return A dataframe containing the top enriched pathways for each cluster
+#' 
+#' @examples 
+#' 
+#' SCT_DE <- perform.seurat.diffexp.all(object = object, assay = 'SCT', test = 'MAST', identity = object@sample_metadata$celltype, latent.vars = 'original.project')
+#' 
+#' SCT_DE_GO <- perform.GO.enrichment(result = SCT_DE)
+#' 
+#' plot.GO.output(result = SCT_DE_GO) + ggplot2::ggtitle(label = 'SCT')
 #'
 #' @export
 #' 

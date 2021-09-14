@@ -65,3 +65,18 @@ BBKNN connectivity graph contained in graphs in the indicated method-assays
 \description{
 Performs BBKNN integration on defined method-assays and reductions contained within. This is performed on reductions.
 }
+\examples{
+
+# This example will generate a diffusion map as well 
+object <- perform.bbknn(object = object, 
+                        assay = c('SCT', 'SCANPY', 'SCRAN'), 
+                        reduction = c('pca'),
+                        batch = 'tech', generate.diffmap = T)
+                          
+#' # This example will generate a diffusion map as well 
+object <- perform.bbknn(object = object, 
+                        assay = c('SCT', 'SCANPY', 'SCRAN'), 
+                        reduction = c('pca'),
+                        batch = 'tech')
+                        
+}

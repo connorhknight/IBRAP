@@ -20,6 +20,14 @@
 #' @param seed Numerical. The seed to use when integrating these datasets. Default = 12345
 #' 
 #' @return Scanorama reduction saved in the supplied method-assays
+#' 
+#' @examples 
+#' 
+#' object <- perform.scanorama(object = object, 
+#'                             assay = c('SCT', 'SCRAN', 'SCANPY'), 
+#'                             slot = 'norm.scaled', 
+#'                             split.by = 'original.project', 
+#'                             n.dims = 50)
 #'
 #' @export
 

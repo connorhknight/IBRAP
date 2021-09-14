@@ -8,6 +8,6 @@ setMethod(f = '$', signature = 'IBRAP',
           function(x, 
                    name){
             
-            x@sample_metadata[[name]]
+            as.list(x@sample_metadata)[[name]]
             
           })

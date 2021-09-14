@@ -126,15 +126,32 @@ As we can see there are profound differences between the samples due to technica
 
 ## Integration Techniques
 
-We have included 3 integration techniques. However, there are a few differences between them:
- - bbknn & harmony both funciton on the reduced embeddings of the samples, i.e. PCA reduction
- - harmony is much more customisable with numerous adjustable parameters
- - bbknn is much more straight forward with less adjustable parameters 
- - scanorama functions on transformed + scaled + HVG subset matrices, i.e. norm.scaled
- - scanorama is more automated aswell as bbknn
- - harmony and scanorama both produce reduced embeddings which are stored in the integration_reduction slots
- - bbknn produces a k-nearest neighbour corrected graph which constrains its useability to functions that accept graphs. 
- - since bbknn is already preducing the k-nearest neighbour graphs, it can also produce a batch corected diffusion map. 
+We have included 4 integration techniques:
+
+Seurat
+
+- functions on normalised counts
+- can either reduced embeddings with canonical correlation analysis, reciprocal PCA, or recipricol LSI 
+- integrates samples one-by-one projecting new samples each time
+- produces a new integrated pca reduction
+
+Scanorama
+
+- Uses normalised, scaled and HVG subset matrices
+- integrates datasets in order of similarity
+- produces a new scanorama reduced embedding
+
+BBKNN
+
+- uses a reduced embeddings (such as PCA) as input 
+- uses UMAP to correct batches
+- produces a neighbourhood graph that can be fed into graph-based clustering and umap generation
+
+Harmony
+
+- uses a reduced embeddings (such as PCA) as input 
+- iteratively corrects batch effects present within dataset until no further correction can be made
+- produces a harmony reduced embedding that can be fed downstream
  
 Lets begin the integration techniques
 
@@ -170,52 +187,67 @@ pancreas <- perform.umap(object = pancreas, assay = c('SCT', 'SCRAN', 'SCANPY'),
 
 plot.list <- list()
 
-plot.list[[1]] <- plot.reduced.dim(object = pancreas, reduction = 'pca_harmony_umap', assay = 'SCT',
+plot.list[[1]] <- plot.reduced.dim(object = object.tmp, reduction = 'pca_harmony_umap', assay = 'SCT',
                                    clust.method = 'metadata', column = 'original.project', pt.size = 0.1) + 
   ggplot2::ggtitle('SCT_harmony') + 
   ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5))
 
-plot.list[[2]] <- plot.reduced.dim(object = pancreas, reduction = 'pca_harmony_umap', assay = 'SCRAN',
+plot.list[[2]] <- plot.reduced.dim(object = object.tmp, reduction = 'pca_harmony_umap', assay = 'SCRAN',
                                    clust.method = 'metadata', column = 'original.project', pt.size = 0.1) + 
   ggplot2::ggtitle('SCRAN_harmony') + 
   ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5))
 
-plot.list[[3]] <- plot.reduced.dim(object = pancreas, reduction = 'pca_harmony_umap', assay = 'SCANPY',
+plot.list[[3]] <- plot.reduced.dim(object = object.tmp, reduction = 'pca_harmony_umap', assay = 'SCANPY',
                                    clust.method = 'metadata', column = 'original.project', pt.size = 0.1) + 
   ggplot2::ggtitle('SCANPY_harmony') + 
   ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5))
 
-plot.list[[4]] <- plot.reduced.dim(object = pancreas, reduction = 'scanorama_umap', assay = 'SCT',
+plot.list[[4]] <- plot.reduced.dim(object = object.tmp, reduction = 'scanorama_umap', assay = 'SCT',
                                    clust.method = 'metadata', column = 'original.project', pt.size = 0.1) + 
   ggplot2::ggtitle('SCT_harmony') + 
   ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5))
 
-plot.list[[5]] <- plot.reduced.dim(object = pancreas, reduction = 'scanorama_umap', assay = 'SCRAN',
+plot.list[[5]] <- plot.reduced.dim(object = object.tmp, reduction = 'scanorama_umap', assay = 'SCRAN',
                                    clust.method = 'metadata', column = 'original.project', pt.size = 0.1) + 
   ggplot2::ggtitle('SCRAN_harmony') + 
   ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5))
 
-plot.list[[6]] <- plot.reduced.dim(object = pancreas, reduction = 'scanorama_umap', assay = 'SCANPY',
+plot.list[[6]] <- plot.reduced.dim(object = object.tmp, reduction = 'scanorama_umap', assay = 'SCANPY',
                                    clust.method = 'metadata', column = 'original.project', pt.size = 0.1) + 
   ggplot2::ggtitle('SCANPY_harmony') + 
   ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5))
 
-plot.list[[7]] <- plot.reduced.dim(object = pancreas, reduction = 'pca_bbknn_bbknn:umap', assay = 'SCT',
+plot.list[[7]] <- plot.reduced.dim(object = object.tmp, reduction = 'pca_bbknn_bbknn:umap', assay = 'SCT',
                                    clust.method = 'metadata', column = 'original.project', pt.size = 0.1) + 
   ggplot2::ggtitle('SCT_bbknn') + 
   ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5))
 
-plot.list[[8]] <- plot.reduced.dim(object = pancreas, reduction = 'pca_bbknn_bbknn:umap', assay = 'SCRAN',
+plot.list[[8]] <- plot.reduced.dim(object = object.tmp, reduction = 'pca_bbknn_bbknn:umap', assay = 'SCRAN',
                                    clust.method = 'metadata', column = 'original.project', pt.size = 0.1) + 
   ggplot2::ggtitle('SCRAN_bbknn') + 
   ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5))
 
-plot.list[[9]] <- plot.reduced.dim(object = pancreas, reduction = 'pca_bbknn_bbknn:umap', assay = 'SCANPY',
+plot.list[[9]] <- plot.reduced.dim(object = object.tmp, reduction = 'pca_bbknn_bbknn:umap', assay = 'SCANPY',
                                    clust.method = 'metadata', column = 'original.project', pt.size = 0.1) + 
   ggplot2::ggtitle('SCANPY_bbknn') + 
   ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5))
 
-egg::ggarrange(plots = plot.list, nrow = 3, ncol = 3)
+plot.list[[10]] <- plot.reduced.dim(object = object.tmp, reduction = 'CCA_pca_umap', assay = 'SCT',
+                                   clust.method = 'metadata', column = 'original.project', pt.size = 0.1) + 
+  ggplot2::ggtitle('SCT_cca') + 
+  ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5))
+
+plot.list[[11]] <- plot.reduced.dim(object = object.tmp, reduction = 'CCA_pca_umap', assay = 'SCRAN',
+                                    clust.method = 'metadata', column = 'original.project', pt.size = 0.1) + 
+  ggplot2::ggtitle('SCRAN_cca') + 
+  ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5))
+
+plot.list[[12]] <- plot.reduced.dim(object = object.tmp, reduction = 'CCA_pca_umap', assay = 'SCANPY',
+                                    clust.method = 'metadata', column = 'original.project', pt.size = 0.1) + 
+  ggplot2::ggtitle('SCANPY_cca') + 
+  ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5))
+
+egg::ggarrange(plots = plot.list, nrow = 4, ncol = 3)
 
 ```
 
@@ -236,8 +268,8 @@ previously we calcualted the UMAP reductions for the uncorrected PCA and the cor
 pancreas <- benchmark.intergation(object = pancreas, 
                                   batch = 'original.project', assays = c('SCT','SCRAN','SCANPY'), 
                                   reduction = c('pca_umap', 'pca_harmony_umap', 
-                                                'scanorama_umap', 'pca_bbknn_bbknn:umap'), 
-                                  result.names = c('uncorrected', 'harmony', 'scanorama', 'bbknn'), 
+                                                'scanorama_umap', 'pca_bbknn_bbknn:umap', 'CCA_pca_umap'), 
+                                  result.names = c('uncorrected', 'harmony', 'scanorama', 'bbknn', 'cca'), 
                                   n.components = 2)
 
 ```

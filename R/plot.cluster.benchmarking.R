@@ -6,6 +6,14 @@
 #' @param clustering Character. Which clustering benchmarking results to utilise
 #' @param ARI Boolean. Were the ARI-dependent metrices (ARI and NMI) calculated. 
 #' 
+#' @examples 
+#' 
+#' # To plot if you supplied ground truth labels during becnhmarking
+#' plot.cluster.benchmarking(object = object, assay = 'SCT', clustering = 'pca_nn.v1:louvain', ARI = T)
+#' 
+#' # To plot if you didn't supplied ground truth labels during becnhmarking
+#' plot.cluster.benchmarking(object = object, assay = 'SCT', clustering = 'pca_nn.v1:louvain', ARI = F)
+#' 
 #' @export plot.cluster.benchmarking
 
 plot.cluster.benchmarking <- function(object, 

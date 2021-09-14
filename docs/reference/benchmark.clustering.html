@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Benchmarks the cluster assignmentws — benchmark.clustering • IBRAP</title>
+<title>Benchmarks the cluster assignments — benchmark.clustering • IBRAP</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -46,7 +46,7 @@
 
 
 
-<meta property="og:title" content="Benchmarks the cluster assignmentws — benchmark.clustering" />
+<meta property="og:title" content="Benchmarks the cluster assignments — benchmark.clustering" />
 <meta property="og:description" content="Supervised (ARI and NMI) and unsupervised (ASW, Dunn Index, and Connectivity) benchmarking metrics are calculated for cluster assignments. assays, clustering and reduction for distance calculations are iterated through." />
 <meta property="og:image" content="/logo.png" />
 
@@ -146,7 +146,7 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Benchmarks the cluster assignmentws</h1>
+    <h1>Benchmarks the cluster assignments</h1>
     
     <div class="hidden name"><code>benchmark.clustering.Rd</code></div>
     </div>
@@ -202,6 +202,31 @@
 
     <p>Benchmarking scores for the supplied cluster assignments</p>
 
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <div class="ref-examples sourceCode"><pre class='sourceCode r'><code><span class='r-in'></span>
+<span class='r-in'><span class='co'># without ground truth labels </span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='va'>object</span> <span class='op'>&lt;-</span> <span class='fu'>benchmark.clustering</span><span class='op'>(</span>object <span class='op'>=</span> <span class='va'>object</span>, assay <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>'SCT'</span>, <span class='st'>'SCRAN'</span>, <span class='st'>'SCANPY'</span><span class='op'>)</span>, </span>
+<span class='r-in'>                                         clustering <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"pca_harmony_nn.v1:louvain"</span>,</span>
+<span class='r-in'>                                                        <span class='st'>"pca_harmony_nn.v2:louvain"</span><span class='op'>)</span>, </span>
+<span class='r-in'>                                         reduction <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>'pca_harmony_umap'</span>,</span>
+<span class='r-in'>                                                       <span class='st'>'pca_harmony_umap'</span></span>
+<span class='r-in'>                                         <span class='op'>)</span>, </span>
+<span class='r-in'>                                         n.dims <span class='op'>=</span> <span class='fl'>1</span><span class='op'>:</span><span class='fl'>2</span><span class='op'>)</span></span>
+<span class='r-err co'><span class='r-pr'>#&gt;</span> <span class='error'>Error in is(object = object, class2 = "IBRAP")</span> object 'object' not found</span>
+<span class='r-in'></span>
+<span class='r-in'><span class='co'># With ground truth labels </span></span>
+<span class='r-in'></span>
+<span class='r-in'><span class='va'>object</span> <span class='op'>&lt;-</span> <span class='fu'>benchmark.clustering</span><span class='op'>(</span>object <span class='op'>=</span> <span class='va'>object</span>, assay <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>'SCT'</span>, <span class='st'>'SCRAN'</span>, <span class='st'>'SCANPY'</span><span class='op'>)</span>, </span>
+<span class='r-in'>                                         clustering <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"pca_harmony_nn.v1:louvain"</span>,</span>
+<span class='r-in'>                                                        <span class='st'>"pca_harmony_nn.v2:louvain"</span><span class='op'>)</span>, </span>
+<span class='r-in'>                                         reduction <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>'pca_harmony_umap'</span>,</span>
+<span class='r-in'>                                                       <span class='st'>'pca_harmony_umap'</span></span>
+<span class='r-in'>                                         <span class='op'>)</span>, </span>
+<span class='r-in'>                                         n.dims <span class='op'>=</span> <span class='fl'>1</span><span class='op'>:</span><span class='fl'>2</span>, ground.truth <span class='op'>=</span> <span class='va'>metadata</span><span class='op'>$</span><span class='va'>celltypes</span><span class='op'>)</span></span>
+<span class='r-err co'><span class='r-pr'>#&gt;</span> <span class='error'>Error in is(object = object, class2 = "IBRAP")</span> object 'object' not found</span>
+<span class='r-in'></span>
+</code></pre></div>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

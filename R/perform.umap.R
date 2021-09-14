@@ -16,6 +16,22 @@
 #' @param ... Numerical. Arguments to be passed to Seurat::RunUMAP
 #' 
 #' @return UMAP reduction saved in the visualisation_reductions section in the supplied method-assays
+#' 
+#' @examples 
+#' 
+#' # How to perform umap reduction on a previous reduction 
+#' object <- perform.umap(object = object, 
+#'                        assay = c('SCT', 'SCRAN', 'SCANPY'), 
+#'                        reduction = c('pca'), 
+#'                        n_components = 2, 
+#'                        n.dims = list(1:12))
+#'                        
+#' # How to perfrom umap reduction on neighbourhood graphs
+#' object <- perform.umap(object = object, 
+#'                        assay = c('SCT', 'SCRAN', 'SCANPY'), 
+#'                        graph = 'pca_bbknn_bbknn')
+#'                       
+#'                       
 #'
 #' @export
 

@@ -14,6 +14,12 @@
 #' @param ... Arguments to be passed to PCAtools::pca
 #' 
 #' @return PCA reductions contained within the computational_reduction list in the defined assays
+#' 
+#' @examples 
+#' 
+#' object <- perform.pca(object = object, 
+#'                       assay = c('SCT', 'SCRAN', 'SCANPY'), 
+#'                       n.pcs = 50, reduction.save = 'pca')
 #'
 #' @export
 

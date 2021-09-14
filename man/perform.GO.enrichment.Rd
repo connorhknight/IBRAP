@@ -53,3 +53,12 @@ A dataframe containing the top enriched pathways for each cluster
 \description{
 Performs gene ontology enrichment for individual cluster differential expression results.
 }
+\examples{
+
+SCT_DE <- perform.seurat.diffexp.all(object = object, assay = 'SCT', test = 'MAST', identity = object@sample_metadata$celltype, latent.vars = 'original.project')
+
+SCT_DE_GO <- perform.GO.enrichment(result = SCT_DE)
+
+plot.GO.output(result = SCT_DE_GO) + ggplot2::ggtitle(label = 'SCT')
+
+}

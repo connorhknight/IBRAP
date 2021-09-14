@@ -15,6 +15,14 @@
 #' @param ... arguments to be passed to slingshot::slingshot
 #' 
 #' @return A SingleshotDataSet class results object containing cellular lineages/curves
+#' 
+#' @examples 
+#' 
+#' traj_res <- perform.slingshot.trajectory(object = object, reduction = 'pca_umap', 
+#'                                          assay = 'SCT', clust.method = 'metadata', 
+#'                                          column = 'celltype')
+#'                                          
+#' plot.slingshot(result = traj_red, object = traj, assay = 'SCT', relevant = F, Pseudotime = T)
 #'
 #' @export
 

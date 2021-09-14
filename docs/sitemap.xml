@@ -58,6 +58,9 @@
     <loc>/reference/benchmark.clustering.html</loc>
   </url>
   <url>
+    <loc>/reference/benchmark.integration.html</loc>
+  </url>
+  <url>
     <loc>/reference/benchmark.intergation.html</loc>
   </url>
   <url>
@@ -158,6 +161,9 @@
   </url>
   <url>
     <loc>/reference/perform.sct.html</loc>
+  </url>
+  <url>
+    <loc>/reference/perform.seurat.cca.html</loc>
   </url>
   <url>
     <loc>/reference/perform.singleR.annotation.html</loc>

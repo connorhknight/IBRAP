@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Performs PCA reduction — perform.pca • IBRAP</title>
+<title>Performs Seurat Integration — perform.seurat.cca • IBRAP</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -46,8 +46,8 @@
 
 
 
-<meta property="og:title" content="Performs PCA reduction — perform.pca" />
-<meta property="og:description" content="Performs PCA reduction on defined method-assays. Data should be HVG subset, normalised and scaled (in the norm.scaled assay)" />
+<meta property="og:title" content="Performs Seurat Integration — perform.seurat.cca" />
+<meta property="og:description" content="Performs Seurat integration on the supplied assay names. Results are saved under integration_reductions" />
 <meta property="og:image" content="/logo.png" />
 
 
@@ -146,23 +146,39 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Performs PCA reduction</h1>
+    <h1>Performs Seurat Integration</h1>
     
-    <div class="hidden name"><code>perform.pca.Rd</code></div>
+    <div class="hidden name"><code>perform.seurat.cca.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Performs PCA reduction on defined method-assays. Data should be HVG subset, normalised and scaled (in the norm.scaled assay)</p>
+    <p>Performs Seurat integration on the supplied assay names. Results are saved under integration_reductions</p>
     </div>
 
-    <div class="ref-usage sourceCode"><pre class='sourceCode r'><code><span class='fu'>perform.pca</span><span class='op'>(</span>
+    <div class="ref-usage sourceCode"><pre class='sourceCode r'><code><span class='fu'>perform.seurat.integration</span><span class='op'>(</span>
   <span class='va'>object</span>,
   <span class='va'>assay</span>,
-  slot <span class='op'>=</span> <span class='st'>"norm.scaled"</span>,
-  plot.var <span class='op'>=</span> <span class='cn'>TRUE</span>,
-  n.pcs <span class='op'>=</span> <span class='fl'>50</span>,
-  reduction.save <span class='op'>=</span> <span class='st'>"pca"</span>,
-  <span class='va'>...</span>
+  <span class='va'>normalisation.method</span>,
+  <span class='va'>batch</span>,
+  reduction.name.suffix <span class='op'>=</span> <span class='cn'>NULL</span>,
+  nfeatures <span class='op'>=</span> <span class='fl'>2000</span>,
+  reduction <span class='op'>=</span> <span class='st'>"cca"</span>,
+  anchors.dims <span class='op'>=</span> <span class='fl'>1</span><span class='op'>:</span><span class='fl'>30</span>,
+  l2.norm <span class='op'>=</span> <span class='cn'>T</span>,
+  k.anchor <span class='op'>=</span> <span class='fl'>5</span>,
+  k.filter <span class='op'>=</span> <span class='fl'>200</span>,
+  k.score <span class='op'>=</span> <span class='fl'>30</span>,
+  max.features <span class='op'>=</span> <span class='fl'>200</span>,
+  nn.method <span class='op'>=</span> <span class='st'>"annoy"</span>,
+  n.trees <span class='op'>=</span> <span class='fl'>50</span>,
+  anchor.eps <span class='op'>=</span> <span class='fl'>0</span>,
+  features <span class='op'>=</span> <span class='cn'>NULL</span>,
+  features.to.integrate <span class='op'>=</span> <span class='cn'>NULL</span>,
+  integrate.dims <span class='op'>=</span> <span class='fl'>1</span><span class='op'>:</span><span class='fl'>30</span>,
+  k.weight <span class='op'>=</span> <span class='fl'>100</span>,
+  sd.weight <span class='op'>=</span> <span class='fl'>1</span>,
+  sample.tree <span class='op'>=</span> <span class='cn'>NULL</span>,
+  integrate.eps <span class='op'>=</span> <span class='fl'>0</span>
 <span class='op'>)</span></code></pre></div>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -177,39 +193,85 @@
       <td><p>Character. String containing indicating which assay to use</p></td>
     </tr>
     <tr>
-      <th>slot</th>
-      <td><p>Character. String indicating which slot within the assay should be sourced</p></td>
+      <th>batch</th>
+      <td><p>Character. Which column in the metadata defines the batches</p></td>
     </tr>
     <tr>
-      <th>plot.var</th>
-      <td><p>Boolean. Should the explained variance of PCs be plotted</p></td>
+      <th>nfeatures</th>
+      <td><p>Numerical. How many features should be found as integration anchors. Default = 3000</p></td>
     </tr>
     <tr>
-      <th>n.pcs</th>
-      <td><p>Numerical. How many principal components should be produced. Default = 50</p></td>
+      <th>reduction</th>
+      <td><p>Character. Which reduction method to use: cca = canonical correlation analysis, rpca = reciprocal PCA, rlsi = Reciprocal LSE. Default = cca</p></td>
     </tr>
     <tr>
-      <th>reduction.save</th>
-      <td><p>Character. What should this reduction be saved as in computation_reduction. Default = 'pca'</p></td>
+      <th>l2.norm</th>
+      <td><p>Logical. Perform L2 normalization on the CCA cell embeddings after dimensional reduction. Default = TRUE</p></td>
     </tr>
     <tr>
-      <th>...</th>
-      <td><p>Arguments to be passed to PCAtools::pca</p></td>
+      <th>k.anchor</th>
+      <td><p>Numerical. How many neighbors (k) to use when picking anchors. Default = 5</p></td>
+    </tr>
+    <tr>
+      <th>k.filter</th>
+      <td><p>Numerical. How many neighbors (k) to use when filtering anchors. Default = 200</p></td>
+    </tr>
+    <tr>
+      <th>k.score</th>
+      <td><p>Numerical. How many neighbors (k) to use when scoring anchors. Default = 30</p></td>
+    </tr>
+    <tr>
+      <th>nn.method</th>
+      <td><p>Character. Method for nearest neighbor finding. Options include: rann, annoy. Default = annoy</p></td>
+    </tr>
+    <tr>
+      <th>anchor.eps</th>
+      <td><p>Numerical. Error bound on the neighbor finding algorithm (from RANN/Annoy) when finding integration genes.</p></td>
+    </tr>
+    <tr>
+      <th>features</th>
+      <td><p>Character. Vector of features to use when computing the PCA to determine the weights. Only set if you want a different set from those used in the anchor finding process. Default = NULL</p></td>
+    </tr>
+    <tr>
+      <th>features.to.integrate</th>
+      <td><p>Character. Vector of features to integrate. By default, will use the features used in anchor finding. Default = NULL</p></td>
+    </tr>
+    <tr>
+      <th>integrate.dims</th>
+      <td><p>Numerical. Number of dimensions to use in the anchor weighting procedure. Default = 1:30</p></td>
+    </tr>
+    <tr>
+      <th>k.weight</th>
+      <td><p>Numerical. Number of neighbors to consider when weighting anchors. Default = 100</p></td>
+    </tr>
+    <tr>
+      <th>sd.weight</th>
+      <td><p>Numerical. Controls the bandwidth of the Gaussian kernel for weighting. Default = 1</p></td>
+    </tr>
+    <tr>
+      <th>sample.tree</th>
+      <td><p>Character. Specify the order of integration. If NULL, will compute automatically. Default = NULL</p></td>
+    </tr>
+    <tr>
+      <th>integrate.eps</th>
+      <td><p>Numerical. Error bound on the neighbor finding algorithm (from RANN)</p></td>
+    </tr>
+    <tr>
+      <th>max.features.</th>
+      <td><p>Numerical. The maximum number of features to use when specifying the neighborhood search space in the anchor filtering. Default = 200</p></td>
+    </tr>
+    <tr>
+      <th>n.tree</th>
+      <td><p>Numerical. More trees gives higher precision when using annoy approximate nearest neighbor search. Default = 50</p></td>
     </tr>
     </table>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>PCA reductions contained within the computational_reduction list in the defined assays</p>
+    <p>Produces a new 'methods' assay containing normalised, scaled and HVGs.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <div class="ref-examples sourceCode"><pre class='sourceCode r'><code><span class='r-in'></span>
-<span class='r-in'><span class='va'>object</span> <span class='op'>&lt;-</span> <span class='fu'>perform.pca</span><span class='op'>(</span>object <span class='op'>=</span> <span class='va'>object</span>, </span>
-<span class='r-in'>                      assay <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>'SCT'</span>, <span class='st'>'SCRAN'</span>, <span class='st'>'SCANPY'</span><span class='op'>)</span>, </span>
-<span class='r-in'>                      n.pcs <span class='op'>=</span> <span class='fl'>50</span>, reduction.save <span class='op'>=</span> <span class='st'>'pca'</span><span class='op'>)</span></span>
-<span class='r-err co'><span class='r-pr'>#&gt;</span> <span class='error'>Error in is(object = object, class2 = "IBRAP")</span> object 'object' not found</span>
-<span class='r-in'></span>
-</code></pre></div>
+    <div class="ref-examples sourceCode"></div>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

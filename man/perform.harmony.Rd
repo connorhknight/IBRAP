@@ -35,3 +35,13 @@ PCA reductions contained within the computational_reduction list in the defined 
 \description{
 Performs Harmony integration on defined method-assays and reductions contained within. This is performed on reductions.
 }
+\examples{
+
+object <- perform.harmony(object = object, 
+                          assay = c('SCRAN', 'SCT', 'SCANPY'), 
+                          vars.use = 'original.project', 
+                          reduction = c('pca'),  
+                          max.iter.harmony = 100,
+                          dims.use = list(NULL))
+
+}

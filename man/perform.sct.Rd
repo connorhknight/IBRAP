@@ -29,3 +29,10 @@ Produces a new 'methods' assay containing normalised, scaled and HVGs.
 \description{
 Performs SCTransform normalisation, hvg selection, scaling and variance stabilisation and regression.
 }
+\examples{
+
+object <- perform.sct(object = object, 
+                      assay = 'RAW', 
+                      slot = 'counts')
+
+}

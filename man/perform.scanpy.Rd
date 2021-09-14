@@ -70,3 +70,9 @@ Produces a new 'methods' assay containing normalised, scaled and HVGs.
 \description{
 A new method-assay is produced. Raw counts are normalised and HVGs identified using Scanpy
 }
+\examples{
+
+object <- perform.scanpy(object = object, 
+                         vars.to.regress = 'RAW_total.counts', do.scale = T)
+
+}

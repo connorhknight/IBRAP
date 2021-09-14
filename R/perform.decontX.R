@@ -19,6 +19,8 @@
 #' @usage perform.decontX(counts = counts)
 #' 
 #' @return Doublet-omitted sparse matrix
+#' 
+#' @examples counts <- perform.decontx(counts = counts)
 #'
 #' @export
 

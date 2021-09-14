@@ -16,6 +16,10 @@
 #' @param ... arguments to be passed to singleR::SingleR
 #' 
 #' @return Produces a new 'methods' assay containing normalised, scaled and HVGs.
+#' 
+#' @examples 
+#' 
+#' object <- perform.singleR.annotation(object = object, ref = reference_matrix, ref.labels = metadata_reference$celltype)
 #'
 #' @export
 

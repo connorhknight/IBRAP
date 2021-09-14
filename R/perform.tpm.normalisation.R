@@ -15,6 +15,11 @@
 #' @param new.assay.name Character. What should the new assay be called. Default = 'SCRAN'
 #' 
 #' @return Produces a new 'methods' assay containing normalised, scaled and HVGs.
+#' 
+#' @examples 
+#' 
+#' object <- perform.scanpy(object = object, 
+#'                          vars.to.regress = 'RAW_total.counts', do.scale = T)
 #'
 #' @export
 

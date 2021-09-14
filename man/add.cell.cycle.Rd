@@ -21,3 +21,7 @@ IBRAP S4 class object containing cell cycle assignments and scores for each cell
 \description{
 Scores each cell in which cell cycle stage it is currently in.
 }
+\examples{
+object <- add.cell.cycle(object = object, 
+
+}

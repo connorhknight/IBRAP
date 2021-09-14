@@ -25,3 +25,12 @@ IBRAP S4 class object containing raw counts and metadata
 \description{
 Creates and produces project metadata into an IBRAP S4 class object
 }
+\examples{
+object <- createIBRAPobject(counts = counts,
+                                      meta.data = metadata_df,
+                                      original.project = 'bmmc',
+                                      method.name = 'RAW',
+                                      min.cells = 3,
+                                      min.features = 200)
+
+}

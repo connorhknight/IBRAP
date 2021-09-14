@@ -17,6 +17,18 @@
 #' @param generate.diffmap Boolean. Should diffusion maps be generated from the neighourhood graphs, these will be stored in computational_reductions and can be used for umap generation and further neighbourhood generation. Default = TRUE
 #' @param n_comps Numerical. How many components should be generated for the diffusion maps. Default = 15
 #' @param diffmap.name Character. What should the diffusion maps be named. 
+#' 
+#' @examples 
+#' 
+#' # generates a diffusion map
+#' object <- perform.nn.v1(object = object, assay = c('SCT', 'SCRAN', 'SCANPY'), 
+#'                         reduction = c('pca_harmony','scanorama'),
+#'                         dims = list(0,0), generate.diffmap = T)
+#'                         
+#' # does not generates a diffusion map
+#' object <- perform.nn.v1(object = object, assay = c('SCT', 'SCRAN', 'SCANPY'), 
+#'                         reduction = c('pca_harmony','scanorama'),
+#'                         dims = list(0,0))
 #'
 #' @export
 

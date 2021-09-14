@@ -38,3 +38,9 @@ Produces a new 'methods' assay containing normalised, scaled and HVGs.
 \description{
 Performs TPM normalisation, scran hvg selection, scaling and variance stabilisation and regression.
 }
+\examples{
+
+object <- perform.scanpy(object = object, 
+                         vars.to.regress = 'RAW_total.counts', do.scale = T)
+
+}

@@ -53,3 +53,12 @@ Scanorama reduction saved in the supplied method-assays
 \description{
 Performs Scanorama integration on defined method-assays and reductions contained within. This is performed on reductions.
 }
+\examples{
+
+object <- perform.scanorama(object = object, 
+                            assay = c('SCT', 'SCRAN', 'SCANPY'), 
+                            slot = 'norm.scaled', 
+                            split.by = 'original.project', 
+                            n.dims = 50)
+
+}

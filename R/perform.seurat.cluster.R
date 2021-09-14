@@ -15,6 +15,35 @@
 #' 
 #' @return Cluster assignments using the list of resolutions provided contained within cluster_assignments under cluster.df.name
 #'
+#' @examples 
+#' 
+#' object <- perform.nn.v1(object = object, assay = c('SCT', 'SCRAN', 'SCANPY'), 
+#'                         reduction = c('pca_harmony','scanorama'), 
+#'                         dims = list(0,0), generate.diffmap = T)
+#' 
+#' object <- perform.nn.v1(object = object, assay = c('SCT', 'SCRAN', 'SCANPY'), 
+#'                         reduction = c('pca_bbknn_bbknn:diffmap','pca_harmony_nn.v1:diffmap', 'scanorama_nn.v1:diffmap'), 
+#'                         dims = list(0,0,0))
+#' 
+#' object <- perform.nn.v2(object = object, assay = c('SCT', 'SCRAN', 'SCANPY'), 
+#'                        reduction = c('pca_harmony','scanorama','pca_bbknn_bbknn:diffmap',
+#'                                      'pca_harmony_nn.v1:diffmap', 'scanorama_nn.v1:diffmap'), 
+#'                        dims = list(0,0,0,0,0))
+#'                        
+#' object <- perform.graph.cluster(object = object, assay = c('SCT', 'SCRAN', 'SCANPY'), 
+#'                                 neighbours = c("pca_bbknn_bbknn",
+#'                                                "pca_harmony_nn.v1",
+#'                                                "scanorama_nn.v1",
+#'                                                "pca_bbknn_bbknn:diffmap_nn.v1",
+#'                                                "pca_harmony_nn.v1:diffmap_nn.v1",
+#'                                                "scanorama_nn.v1:diffmap_nn.v1",
+#'                                                "pca_harmony_nn.v2",
+#'                                                "scanorama_nn.v2",
+#'                                                "pca_bbknn_bbknn:diffmap_nn.v2",
+#'                                                "pca_harmony_nn.v1:diffmap_nn.v2",
+#'                                                "scanorama_nn.v1:diffmap_nn.v2" ), 
+#'                                 algorithm = 1)
+#'
 #' @export
 
 perform.graph.cluster <- function(object, 

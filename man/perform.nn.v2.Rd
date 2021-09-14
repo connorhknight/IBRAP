@@ -2,7 +2,6 @@
 % Please edit documentation in R/perform.nn.v2.R
 \name{perform.nn.v2}
 \alias{perform.nn.v2}
-\alias{perform.nn.v1}
 \title{Performs Seurats nearest neighbour algorithm}
 \usage{
 perform.nn.v2(
@@ -44,4 +43,11 @@ perform.nn.v2(
 }
 \description{
 Neighbourhood graph generator utilised by Seurat
+}
+\examples{
+
+object <- perform.nn.v1(object = object, assay = c('SCT', 'SCRAN', 'SCANPY'), 
+                        reduction = c('pca_bbknn_bbknn:diffmap','pca_harmony_nn.v1:diffmap', 'scanorama_nn.v1:diffmap'), 
+                        dims = list(0,0,0))
+
 }

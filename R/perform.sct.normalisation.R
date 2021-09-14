@@ -15,6 +15,12 @@
 #' @param min_cells Numerical value of minimum cells required for a gene to not be filtered. Default = 3
 #' 
 #' @return Produces a new 'methods' assay containing normalised, scaled and HVGs.
+#' 
+#' @examples 
+#' 
+#' object <- perform.sct(object = object, 
+#'                       assay = 'RAW', 
+#'                       slot = 'counts')
 #'
 #' @export
 

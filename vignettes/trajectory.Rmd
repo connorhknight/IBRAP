@@ -30,6 +30,8 @@ Trajectory inference analysis calculates the developmental trajectory of cells. 
 
 For this tutorial we will observe the developmental trajectory of alpha cells in the pancreas. You can download this data using the following link:
 
+https://www.dropbox.com/s/qs3pp0aq0t2voyz/trajectory_alpha_cells.rds?dl=0
+
 ```{r, eval=F, echo=T}
 
 traj_data <- readRDS(file.choose())

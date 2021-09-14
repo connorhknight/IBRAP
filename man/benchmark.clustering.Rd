@@ -2,7 +2,7 @@
 % Please edit documentation in R/benchmark.clustering.R
 \name{benchmark.clustering}
 \alias{benchmark.clustering}
-\title{Benchmarks the cluster assignmentws}
+\title{Benchmarks the cluster assignments}
 \usage{
 benchmark.clustering(
   object,
@@ -34,4 +34,27 @@ Benchmarking scores for the supplied cluster assignments
 }
 \description{
 Supervised (ARI and NMI) and unsupervised (ASW, Dunn Index, and Connectivity) benchmarking metrics are calculated for cluster assignments. assays, clustering and reduction for distance calculations are iterated through.
+}
+\examples{
+
+# without ground truth labels 
+
+object <- benchmark.clustering(object = object, assay = c('SCT', 'SCRAN', 'SCANPY'), 
+                                         clustering = c("pca_harmony_nn.v1:louvain",
+                                                        "pca_harmony_nn.v2:louvain"), 
+                                         reduction = c('pca_harmony_umap',
+                                                       'pca_harmony_umap'
+                                         ), 
+                                         n.dims = 1:2)
+
+# With ground truth labels 
+
+object <- benchmark.clustering(object = object, assay = c('SCT', 'SCRAN', 'SCANPY'), 
+                                         clustering = c("pca_harmony_nn.v1:louvain",
+                                                        "pca_harmony_nn.v2:louvain"), 
+                                         reduction = c('pca_harmony_umap',
+                                                       'pca_harmony_umap'
+                                         ), 
+                                         n.dims = 1:2, ground.truth = metadata$celltypes)
+
 }

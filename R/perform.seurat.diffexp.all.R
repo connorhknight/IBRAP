@@ -13,6 +13,12 @@
 #' @param ... arguments to pass to Seurat::FindMarkers
 #' 
 #' @return A dataframe containing differentially expression genes and other information
+#' 
+#' @example 
+#' 
+#' SCT_DE <- perform.seurat.diffexp.all(object = object, assay = 'SCT', test = 'MAST', identity = object@sample_metadata$celltype, latent.vars = 'original.project')
+#' SCRAN_DE <- perform.seurat.diffexp.all(object = object, assay = 'SCRAN', test = 'MAST', identity = object@sample_metadata$celltype, latent.vars = 'original.project')
+#' SCANPY_DE <- perform.seurat.diffexp.all(object = object, assay = 'SCRAN', test = 'MAST', identity = object@sample_metadata$celltype, latent.vars = 'original.project')
 #'
 #' @export
 #' 

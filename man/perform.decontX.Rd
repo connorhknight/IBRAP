@@ -33,3 +33,7 @@ Doublet-omitted sparse matrix
 \description{
 Removes ambient RNA from datasets
 }
+\examples{
+counts <- perform.decontx(counts = counts)
+
+}

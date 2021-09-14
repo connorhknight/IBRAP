@@ -1,7 +1,7 @@
 #' @name benchmark.clustering
 #' @aliases benchmark.clustering
 #' 
-#' @title Benchmarks the cluster assignmentws
+#' @title Benchmarks the cluster assignments
 #'
 #' @description Supervised (ARI and NMI) and unsupervised (ASW, Dunn Index, and Connectivity) benchmarking metrics are calculated for cluster assignments. assays, clustering and reduction for distance calculations are iterated through. 
 #' 
@@ -14,6 +14,28 @@
 #' @param ground.truth Vector. If available, supply the vector in the same order as colnames of the ground truth, i.e. true cell type labels. If this is not supplied, only unsupervised methods will be supplied. Default = NULL
 #' 
 #' @return Benchmarking scores for the supplied cluster assignments 
+#' 
+#' @examples 
+#' 
+#' # without ground truth labels 
+#' 
+#' object <- benchmark.clustering(object = object, assay = c('SCT', 'SCRAN', 'SCANPY'), 
+#'                                          clustering = c("pca_harmony_nn.v1:louvain",
+#'                                                         "pca_harmony_nn.v2:louvain"), 
+#'                                          reduction = c('pca_harmony_umap',
+#'                                                        'pca_harmony_umap'
+#'                                          ), 
+#'                                          n.dims = 1:2)
+#' 
+#' # With ground truth labels 
+#' 
+#' object <- benchmark.clustering(object = object, assay = c('SCT', 'SCRAN', 'SCANPY'), 
+#'                                          clustering = c("pca_harmony_nn.v1:louvain",
+#'                                                         "pca_harmony_nn.v2:louvain"), 
+#'                                          reduction = c('pca_harmony_umap',
+#'                                                        'pca_harmony_umap'
+#'                                          ), 
+#'                                          n.dims = 1:2, ground.truth = metadata$celltypes)
 #'
 #' @export
 

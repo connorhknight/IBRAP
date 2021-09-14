@@ -48,6 +48,8 @@ setMethod(f = 'merge', signature = 'IBRAP',
             .sample_metadata <- sample.list[[1]]
             .feature_metadata <- as.data.frame(items[[1]]@methods[[1]]@feature_metadata)
             
+            pb <- progress::progress_bar$new(total = sum(length(y)*4)+1)
+            
             for(t in 2:length(items)) {
               
               if(!isUnique(c(colnames(.counts), colnames(counts.list[[t]])))) {
@@ -59,15 +61,22 @@ setMethod(f = 'merge', signature = 'IBRAP',
                 
               }
               
+              pb$tick()
+              
               .counts <- merge(x = .counts, y = counts.list[[t]], by = 'row.names', all = T)
               rownames(.counts) <- .counts$Row.names
               .counts$Row.names <- NULL
               
+              pb$tick()
+              
               .sample_metadata <- rbind(.sample_metadata, sample.list[[t]])
+              
+              pb$tick()
               
               .feature_metadata <- merge(.feature_metadata, 
                                          as.data.frame(items[[t]]@methods[[1]]@feature_metadata), 
                                          by = 'row.names', all = T)
+              
               .feature_metadata[is.na(.feature_metadata)] <- 0
               rownames(.feature_metadata) <- .feature_metadata$Row.names
               .feature_metadata$Row.names <- NULL
@@ -75,6 +84,8 @@ setMethod(f = 'merge', signature = 'IBRAP',
               .feature_metadata$total.counts.x <- .feature_metadata[,2] + .feature_metadata[,4]
               .feature_metadata <- .feature_metadata[,1:2]
               colnames(.feature_metadata) <- c('total.cells', 'total.counts')
+              
+              pb$tick()
 
             }
             
@@ -83,6 +94,8 @@ setMethod(f = 'merge', signature = 'IBRAP',
             .counts <- Matrix::Matrix(data = as.matrix(.counts), sparse = T)
             .sample_metadata[match(colnames(.counts), rownames(.sample_metadata)),]
             .feature_metadata[match(rownames(.counts), rownames(.feature_metadata)),]
+            
+            pb$tick()
             
             new.method <- list()
             
@@ -94,6 +107,8 @@ setMethod(f = 'merge', signature = 'IBRAP',
             ibrap <- new(Class = 'IBRAP',
                          methods = new.method, 
                          sample_metadata = .sample_metadata)
+            
+            pb$finished
             
             return(ibrap)
             
