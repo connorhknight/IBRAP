@@ -1,9 +1,21 @@
-```{r setup, include = FALSE}
-knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>",
-  fig.align="center"
-)
+---
+title: "Introduction Page"
+author: "Connor H Knight"
+date: "11/08/2021"
+output: 
+    html_document:
+    toc: true
+    toc_depth: 3
+    theme: united
+vignette: >
+  %\VignetteIndexEntry{Introduction Page}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
 ```
 #### Integrated Benchmarking scRNA-seq Analytical Pipeline
 
