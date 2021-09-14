@@ -30,8 +30,8 @@ Most analyses require more than a single sample. Especially, in meta-analyses.
 
 You can download the data for this tutorial using the following links:
 
-https://www.dropbox.com/s/eckh3b6i12351mr/smartseq2.rds?dl=0
-https://www.dropbox.com/s/iyzrrqbx086fhl6/celseq2.rds?dl=0
+https://www.dropbox.com/s/heughk2kl0lg6qc/smartseq2.rds?dl=0
+https://www.dropbox.com/s/txlq7875wkthb3y/celseq2.rds?dl=0
 
 ## Creating IBRAP objects
 
