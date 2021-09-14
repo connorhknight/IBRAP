@@ -75,7 +75,13 @@ perform.pca <- function(object,
   
   for(t in assay) {
     
-    mat <- object@methods[[t]][[slot]][rownames(object@methods[[t]][[slot]]) %in% object@methods[[t]]@highly.variable.genes,]
+    if(is.null(object@methods[[t]]@highly.variable.genes)) {
+      
+      stop(paste0('no variable features have been identified for assay: ', t))
+      
+    }
+    
+    mat <- as.matrix(object@methods[[t]][[slot]][rownames(object@methods[[t]][[slot]]) %in% object@methods[[t]]@highly.variable.genes,])
     
     cat(crayon::cyan(paste0(Sys.time(), ': initialising PCA for assay:', t, '\n')))
     a <- PCAtools::pca(mat = mat, center = F, scale = F, ...)

@@ -50,6 +50,15 @@ setMethod(f = 'merge', signature = 'IBRAP',
             
             for(t in 2:length(items)) {
               
+              if(!isUnique(c(colnames(.counts), colnames(counts.list[[t]])))) {
+                
+                names <- make.unique(c(colnames(.counts), colnames(counts.list[[t]])))
+                
+                colnames(.counts) <- names[1:ncol(.counts)]
+                colnames(counts.list[[t]]) <- names(sum(ncol(.counts)+1):ncol(counts.list[[t]]))
+                
+              }
+              
               .counts <- merge(x = .counts, y = counts.list[[t]], by = 'row.names', all = T)
               rownames(.counts) <- .counts$Row.names
               .counts$Row.names <- NULL

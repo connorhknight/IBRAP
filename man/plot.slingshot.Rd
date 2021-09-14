@@ -10,7 +10,7 @@
   lineages = FALSE,
   pt_size = 0.1,
   line_size = 0.1,
-  relevant = TRUE,
+  relevant = FALSE,
   Pseudotime = FALSE,
   Expression = FALSE,
   object = NULL,

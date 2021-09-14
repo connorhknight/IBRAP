@@ -20,6 +20,7 @@
 
 createIBRAPobject <- function(counts, 
                               original.project, 
+                              add.suffix = FALSE,
                               method.name = 'RAW', 
                               meta.data = NULL,
                               min.cells=NULL,
@@ -71,7 +72,11 @@ createIBRAPobject <- function(counts,
     
   }
   
-  colnames(counts) <- paste0(original.project, '_', colnames(counts))
+  if(isTRUE(add.suffix)) {
+    
+    colnames(counts) <- paste0(original.project, '_', colnames(counts))
+    
+  }
   
   if(!is.null(min.features)) {
     

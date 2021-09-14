@@ -31,6 +31,8 @@ perform.scran(
 
 \item{do.scale}{Boolean. Whether to scale the features variance. Default = TRUE}
 
+\item{do.center}{Boolean. Whether to centre features to zero. Default = TRUE}
+
 \item{new.assay.name}{Character. What should the new assay be called. Default = 'SCRAN'}
 
 \item{n.genes}{Numerical. Top number of genes to retain when finding HVGs. Default = 1500}
@@ -38,8 +40,6 @@ perform.scran(
 \item{max.cluster.size}{Numerical. When performing quickCluster, what is the maximum size the clusters can be. Default = 1000}
 
 \item{center_size_factors}{Boolean Should size factor variance be centred. Default = TRUE}
-
-\item{do.centre}{Boolean. Whether to centre features to zero. Default = TRUE}
 }
 \value{
 Produces a new 'methods' assay containing normalised, scaled and HVGs.

@@ -11,7 +11,7 @@
 #' @param batch Character. Which column in the metadata defines the batches. Default = NULL
 #' @param vars.to.regress Character. Which column in the metadata should be regressed. Default = NULL
 #' @param do.scale Boolean. Whether to scale the features variance. Default = TRUE
-#' @param do.centre Boolean. Whether to centre features to zero. Default = TRUE
+#' @param do.center Boolean. Whether to centre features to zero. Default = TRUE
 #' @param new.assay.name Character. What should the new assay be called. Default = 'SCRAN'
 #' @param n.genes Numerical. Top number of genes to retain when finding HVGs. Default = 1500
 #' @param max.cluster.size Numerical. When performing quickCluster, what is the maximum size the clusters can be. Default = 1000
@@ -169,6 +169,8 @@ perform.scran <- function(object,
                                           norm.scaled = as.matrix(.norm.scaled),
                                           highly.variable.genes = top.hvgs,
                                           feature_metadata = feat.meta)
+  
   cat(crayon::cyan(paste0(Sys.time(), ': Scran normalisation completed \n')))
+  
   return(object)
 }

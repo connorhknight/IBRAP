@@ -75,6 +75,18 @@ perform.scanorama <- function(object,
     
     stop('split.by must be character string\n')
     
+  } else if(is.character(split.by)) {
+    
+    for(x in split.by) {
+      
+      if(!x %in% names(object@sample_metadata)) {
+        
+        stop(paste0(x, ' is not contained within object@sample_metadata'))
+        
+      }
+      
+    }
+    
   }
   
   if(!is.numeric(n.dims)) {

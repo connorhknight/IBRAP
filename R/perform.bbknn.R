@@ -80,7 +80,7 @@ perform.bbknn <- function(object,
       if(!x %in% names(c(object@methods[[i]]@computational_reductions, object@methods[[i]]@visualisation_reductions, 
                          object@methods[[i]]@integration_reductions))) {
         
-        stop(paste0('reduction: ', x, ' does not exist\n'))
+        stop(paste0('reduction: ', x, '  does not exist\n'))
         
       }
       
@@ -202,8 +202,28 @@ perform.bbknn <- function(object,
       scobj$obsm$update(X_pca = object@methods[[p]]@computational_reductions[[reduction[count]]])
       
       if(length(colnames(as.data.frame(object@sample_metadata))) >= 1) {
-
-        scobj$obs <- pd$DataFrame(data = as.data.frame(object@sample_metadata))
+        
+        if(length(batch) > 1) {
+          
+          temp <- function(x) {
+            
+            return(paste(x, collapse = '_'))
+            
+          }
+          
+          df <- object@sample_metadata[,batch]
+          df2 <- apply(X = df, MARGIN = 1, FUN = temp)
+          df <- cbind(df, batch = df2)
+          
+          batch <- 'batch'
+          
+          scobj$obs <- pd$DataFrame(data = as.data.frame(df))  
+          
+        } else {
+          
+          scobj$obs <- pd$DataFrame(data = as.data.frame(object@sample_metadata))  
+          
+        }
         
       }
       
