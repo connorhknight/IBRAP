@@ -299,20 +299,19 @@ perform.scanpy <- function(object,
   
   .highly.variable.genes <- rownames(object@methods$RAW@counts)[scobj$var[['highly_variable']]]
   
-  seuobj <- suppressWarnings(Seurat::CreateSeuratObject(counts = .normalised[.highly.variable.genes,]))
-  seuobj@meta.data <- object@sample_metadata
-  seuobj <- Seurat::ScaleData(object = seuobj, 
-                              do.scale=do.scale,
-                              vars.to.regress=vars.to.regress, 
-                              do.center=do.center)
-  
   scobj2 <- sc$AnnData(X = t(.normalised[.highly.variable.genes,]))
   
   if(length(names(object@sample_metadata)) >= 1) {
     scobj2$obs <- object@sample_metadata
   }
   
-  .norm.scaled <- seuobj@assays$RNA@scale.data
+  sc$pp$regress_out(adata = scobj2, keys = vars.to.regress)
+  
+  sc$pp$scale(scobj2)
+  
+  .norm.scaled <- t(scobj2$X)
+  colnames(.norm.scaled) <- colnames(object)
+  rownames(.norm.scaled) <- .highly.variable.genes
   
   object@sample_metadata <- cbind(object@sample_metadata, cell_metadata(assay = as.matrix(.normalised), col.prefix = paste0('SCANPY', new.assay.suffix)))
   

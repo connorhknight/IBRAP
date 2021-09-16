@@ -90,14 +90,56 @@ perform.pca <- function(object,
     mat <- as.matrix(object@methods[[t]][[slot]][rownames(object@methods[[t]][[slot]]) %in% object@methods[[t]]@highly.variable.genes,])
     
     cat(crayon::cyan(paste0(Sys.time(), ': initialising PCA for assay:', t, '\n')))
-
     
+    ass <- strsplit(x = names(object@methods)[which(names(object@methods)==t)], split = '_')[[1]][1]
     
-    eig <- a$sdev^2/sum(a$sdev^2)
-    eig <- as.data.frame(eig*100)
-    temp <- as.character(colnames(a$rotated))
-    eig[,2] <- factor(x = temp, levels = unique(temp))
-    colnames(eig) <- c ('Variance', 'PCs')
+    if(ass %in% c('SCT','SCRAN','TPM')) {
+      
+      a <- PCAtools::pca(mat = mat, center = F, scale = F, ...)
+      eig <- a$sdev^2/sum(a$sdev^2)
+      eig <- as.data.frame(eig*100)
+      temp <- as.character(colnames(a$rotated))
+      eig[,2] <- factor(x = temp, levels = unique(temp))
+      colnames(eig) <- c ('Variance', 'PCs')
+      
+    } else if (ass == 'SCANPY') {
+      
+      scobj <- sc$AnnData(X = t(as.matrix(object@methods[[t]][['norm.scaled']])))
+      scobj$obs_names <- as.factor(colnames(object@methods[[t]][['norm.scaled']]))
+      scobj$var_names <- as.factor(rownames(object@methods[[t]][['norm.scaled']]))
+      
+      sc$tl$pca(data = scobj, n_comps = as.integer(n.pcs), use_highly_variable = as.logical(F))
+      
+      tmp <- scobj$obsm[['X_pca']]
+      rownames(tmp) <- colnames(object)
+      
+      pc.names <- list()
+      count <- 1
+      
+      for(x in 1:n.pcs) {
+        
+        pc.names[[count]] <- paste0('PC_',count)
+        
+        count <- count + 1
+        
+      }
+      
+    colnames(tmp) <- unlist(pc.names)
+    
+    eig <- as.data.frame(apply(X = tmp, MARGIN = 2, FUN = sd)^2/sum(apply(X = tmp, MARGIN = 2, FUN = sd)^2)*100)
+    eig[,2] <- factor(x = colnames(tmp), levels = unique(colnames(tmp)))
+    colnames(eig) <- c('Variance', 'PCs')
+      
+    } else {
+      
+      a <- PCAtools::pca(mat = mat, center = F, scale = F, ...)
+      eig <- a$sdev^2/sum(a$sdev^2)
+      eig <- as.data.frame(eig*100)
+      temp <- as.character(colnames(a$rotated))
+      eig[,2] <- factor(x = temp, levels = unique(temp))
+      colnames(eig) <- c('Variance', 'PCs')
+      
+    }
     
     list.of.figs[[t]] <- ggplot2::ggplot(data = eig[1:n.pcs,], mapping = ggplot2::aes(x = PCs, y = Variance)) + 
       ggplot2::geom_point() + 

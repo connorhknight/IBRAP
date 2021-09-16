@@ -28,7 +28,7 @@
 perform.sct <- function(object, 
                         assay,
                         slot,
-                        new.assay.suffix = 'SCT',
+                        new.assay.suffix = '',
                         ...) {
   
   if(!is(object = object, class2 = 'IBRAP')) {

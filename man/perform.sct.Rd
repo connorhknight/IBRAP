@@ -4,7 +4,7 @@
 \alias{perform.sct}
 \title{Performs SCTransform}
 \usage{
-perform.sct(object, assay, slot, new.assay.suffix = "SCT", ...)
+perform.sct(object, assay, slot, new.assay.suffix = "", ...)
 }
 \arguments{
 \item{object}{IBRAP S4 class object}
