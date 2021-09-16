@@ -90,13 +90,15 @@ perform.pca <- function(object,
     mat <- as.matrix(object@methods[[t]][[slot]][rownames(object@methods[[t]][[slot]]) %in% object@methods[[t]]@highly.variable.genes,])
     
     cat(crayon::cyan(paste0(Sys.time(), ': initialising PCA for assay:', t, '\n')))
-    a <- PCAtools::pca(mat = mat, center = F, scale = F, ...)
+
+    
+    
     eig <- a$sdev^2/sum(a$sdev^2)
     eig <- as.data.frame(eig*100)
     temp <- as.character(colnames(a$rotated))
     eig[,2] <- factor(x = temp, levels = unique(temp))
     colnames(eig) <- c ('Variance', 'PCs')
-
+    
     list.of.figs[[t]] <- ggplot2::ggplot(data = eig[1:n.pcs,], mapping = ggplot2::aes(x = PCs, y = Variance)) + 
       ggplot2::geom_point() + 
       egg::theme_article() + 

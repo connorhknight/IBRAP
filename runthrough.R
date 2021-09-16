@@ -72,19 +72,19 @@ sample <- add.feature.score(object = sample,
 
 #Run Normalisation, scaling, variance stabilisation, highly variable genes identification
 sample <- perform.sct(object = sample,
-                                    assay = 'RAW',
-                                    slot = 'counts',
-                                    vars.to.regress = 'RAW_percent.mt',
-                                    variable.features.n = 1500)
+                      assay = 'RAW',
+                      slot = 'counts',
+                      vars.to.regress = 'RAW_percent.mt',
+                      variable.features.n = 1500)
 
 sample <- perform.scran(object = sample,
-                                      assay = 'RAW',
-                                      slot = 'counts',
-                                      vars.to.regress = c('RAW_total.counts', 'RAW_percent.mt'), do.scale = T)
+                        assay = 'RAW',
+                        slot = 'counts',
+                        vars.to.regress = c('RAW_total.counts', 'RAW_percent.mt'), do.scale = T)
 
 sample <- perform.scanpy(object = sample,
-                                       vars.to.regress = c('RAW_total.counts', 'RAW_percent.mt'),
-                                       do.scale = T, log1 = F)
+                         vars.to.regress = c('RAW_total.counts', 'RAW_percent.mt'),
+                         do.scale = T, log1 = F)
 
 
 #Remove any unwanted genes from highly variable gene list (optional)
@@ -101,20 +101,20 @@ sample <- perform.pca(object = sample,
 #Run neighbour finding
 #Using scanpy with pca reductions
 sample <- perform.nn.v1(object = sample,
-                                    assay = c('SCT', 'SCRAN', 'SCANPY'),
-                                    reduction = c('pca'),
-                                    dims = list(0),
-                                    generate.diffmap = T)
+                        assay = c('SCT', 'SCRAN', 'SCANPY'),
+                        reduction = c('pca'),
+                        dims = list(0),
+                        generate.diffmap = T)
 
 #Using seurat with pca and diffmap reductions
 sample <- perform.nn.v2(object = sample, assay = c('SCT', 'SCRAN', 'SCANPY'),
-                                    reduction = c('pca','pca_nn.v1:diffmap'),
-                                    dims = list(0,0))
+                        reduction = c('pca','pca_nn.v1:diffmap'),
+                        dims = list(0,0))
 
 #Using scanpy with diffmap reductions
 sample <- perform.nn.v1(object = sample, assay = c('SCT', 'SCRAN', 'SCANPY'),
-                                    reduction = c('pca_nn.v1:diffmap'),
-                                    dims = list(0))
+                        reduction = c('pca_nn.v1:diffmap'),
+                        dims = list(0))
 
 #Neighbourhood graphs generated
 names(sample@methods$SCT@neighbours)
@@ -132,10 +132,10 @@ sample <- perform.umap(object = sample,
 
 #Run clustering
 sample <- perform.graph.cluster(object = sample, assay = c('SCT', 'SCRAN', 'SCANPY'),
-                                 neighbours = c("pca_nn.v1",
-                                                "pca_nn.v2",
-                                                "pca_nn.v1:diffmap_nn.v2",
-                                                "pca_nn.v1:diffmap_nn.v1"),
+                                neighbours = c("pca_nn.v1",
+                                               "pca_nn.v2",
+                                               "pca_nn.v1:diffmap_nn.v2",
+                                               "pca_nn.v1:diffmap_nn.v1"),
                                 algorithm = 1)
 #Cluster assignments
 names(sample@methods$SCT@cluster_assignments)
@@ -175,10 +175,10 @@ plot.features(object = sample, assay = 'SCT', slot = 'normalised',
 
 #Run Trajectory analysis
 traject_SC <- perform.slingshot.trajectory(object = sample,
-                                      reduction = 'pca_umap',
-                                      assay = 'SCT',
-                                      clust.method = 'pca_nn.v2:louvain',
-                                      column = 'neighbourhood_graph_res.0.6')
+                                           reduction = 'pca_umap',
+                                           assay = 'SCT',
+                                           clust.method = 'pca_nn.v2:louvain',
+                                           column = 'neighbourhood_graph_res.0.6')
 
 #Plot trajectory
 plot.slingshot(result = traject_SC,
