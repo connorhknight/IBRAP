@@ -12,7 +12,7 @@ perform.scran(
   vars.to.regress = NULL,
   do.scale = FALSE,
   do.center = TRUE,
-  new.assay.name = "SCRAN",
+  new.assay.suffix = "",
   n.genes = 1500,
   max.cluster.size = 1000,
   center_size_factors = TRUE
@@ -33,7 +33,7 @@ perform.scran(
 
 \item{do.center}{Boolean. Whether to centre features to zero. Default = TRUE}
 
-\item{new.assay.name}{Character. What should the new assay be called. Default = 'SCRAN'}
+\item{new.assay.suffix}{Character. What should the new assay be called. Default = 'SCRAN'}
 
 \item{n.genes}{Numerical. Top number of genes to retain when finding HVGs. Default = 1500}
 

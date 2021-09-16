@@ -19,6 +19,8 @@ perform.sct(object, assay, slot, new.assay.name = "SCT", ...)
 
 \item{do.center}{Whether to center residuals to have mean zero; default is TRUE}
 
+\item{vars.to.regress}{Character. Which data from `object@sample_metadata` should be regressed from the dataset.}
+
 \item{n.genes}{Numerical value of how many highly variable genes should be retained. Default = 1500}
 
 \item{min_cells}{Numerical value of minimum cells required for a gene to not be filtered. Default = 3}

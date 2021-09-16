@@ -12,7 +12,7 @@ perform.tpm(
   do.scale = FALSE,
   do.center = TRUE,
   vars.to.regress = NULL,
-  new.assay.name = "TPM"
+  new.assay.suffix = ""
 )
 }
 \arguments{
@@ -28,7 +28,7 @@ perform.tpm(
 
 \item{vars.to.regress}{Character. Which column in the metadata should be regressed. Default = NULL}
 
-\item{new.assay.name}{Character. What should the new assay be called. Default = 'SCRAN'}
+\item{new.assay.suffix}{Character. What should the new assay be called. Default = 'SCRAN'}
 
 \item{do.centre}{Boolean. Whether to centre features to zero. Default = TRUE}
 }

@@ -8,12 +8,12 @@ perform.scanpy(
   object,
   assay = "RAW",
   slot = "counts",
-  new.assay.name = "SCANPY",
+  new.assay.suffix = "",
   target_sum = 1e+06,
   exclude_highly_expressed = FALSE,
   max_fraction = 0.05,
   key_added = "scanpy_norm_factor",
-  log1 = TRUE,
+  log1 = FALSE,
   n_top_genes = 1500,
   max_mean = 6,
   min_mean = 0.0125,
@@ -24,7 +24,7 @@ perform.scanpy(
   batch_key = NULL,
   do.scale = TRUE,
   vars.to.regress = NULL,
-  do.centre = TRUE
+  do.center = TRUE
 )
 }
 \arguments{
@@ -33,8 +33,6 @@ perform.scanpy(
 \item{assay}{Character. String containing indicating which assay to use}
 
 \item{slot}{Character. String indicating which slot within the assay should be sourced}
-
-\item{new.assay.name}{Character. What should the new assay be called. Default = 'SCRAN'}
 
 \item{target_sum}{Numerical. What should the data be scaled to. Default = 1e6}
 
@@ -61,6 +59,8 @@ perform.scanpy(
 \item{do.scale}{Boolean. Whether the gene expression should be centred. Default = TRUE}
 
 \item{vars.to.regress}{Character. A single or multiple columns of information in the metadata that should be regressed from the dataset. Default = NULL}
+
+\item{new.assay.name}{Character. What should the new assay be called. Default = 'SCRAN'}
 
 \item{flavour}{Character. Choosing which HVG selection method to use when, options: 'seurat', 'cell_ranger', 'seurat_v3'. Default = 'seurat'}
 }
