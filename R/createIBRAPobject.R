@@ -45,20 +45,14 @@ createIBRAPobject <- function(counts,
     
   }
   
-  if(!is(object = counts, class2 = 'matrix')) {
-    
-    if (!is(object = counts, class2 = 'dgCMatrix')) {
-      
-      stop('counts must be in matrix or dgCMatrix format \n')
-      
-    }
-    
-  } 
-  
-  cat(crayon::cyan(paste0('Adding ', original.project, ' as barcode prefix\n')))
-  
   counts <- as.matrix(x = counts)
   
+  if(!is(object = counts, class2 = 'matrix')) {
+    
+    stop('counts could not be converted into a matrix\n')
+    
+  }
+ 
   if(!is.null(meta.data)) {
     
     if(!is.data.frame(meta.data)) {

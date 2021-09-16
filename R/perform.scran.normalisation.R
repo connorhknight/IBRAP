@@ -12,7 +12,7 @@
 #' @param vars.to.regress Character. Which column in the metadata should be regressed. Default = NULL
 #' @param do.scale Boolean. Whether to scale the features variance. Default = TRUE
 #' @param do.center Boolean. Whether to centre features to zero. Default = TRUE
-#' @param new.assay.name Character. What should the new assay be called. Default = 'SCRAN'
+#' @param new.assay.suffix Character. What should the new assay be called. Default = 'SCRAN'
 #' @param n.genes Numerical. Top number of genes to retain when finding HVGs. Default = 1500
 #' @param max.cluster.size Numerical. When performing quickCluster, what is the maximum size the clusters can be. Default = 1000
 #' @param center_size_factors Boolean Should size factor variance be centred. Default = TRUE
@@ -35,7 +35,7 @@ perform.scran <- function(object,
                           vars.to.regress=NULL,
                           do.scale=FALSE,
                           do.center=TRUE,
-                          new.assay.name = 'SCRAN',
+                          new.assay.suffix = '',
                           n.genes=1500,
                           max.cluster.size = 1000,
                           center_size_factors=TRUE) {
@@ -170,7 +170,15 @@ perform.scran <- function(object,
   
   .norm.scaled <- seuobj@assays$RNA@scale.data
   
-  object@methods[[new.assay.name]] <- new(Class = 'methods',
+  if('_' %in% unlist(strsplit(x = new.assay.suffix, split = ''))) {
+    
+    cat(crayon::cyan(paste0(Sys.time(), ': _ cannot be used in new.assay.suffix, replacing with - \n')))
+    
+    new.assay.suffix <- sub(pattern = '_', replacement = '-', x = new.assay.suffix)
+    
+  }
+  
+  object@methods[[paste0('SCRAN', new.assay.suffix)]] <- new(Class = 'methods',
                                           counts = as(.counts, 'dgCMatrix'), 
                                           normalised = as(.normalised, 'dgCMatrix'), 
                                           norm.scaled = as.matrix(.norm.scaled),

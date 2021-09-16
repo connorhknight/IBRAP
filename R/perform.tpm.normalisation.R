@@ -12,7 +12,7 @@
 #' @param do.scale Boolean. Whether to scale the features variance. Default = TRUE
 #' @param do.centre Boolean. Whether to centre features to zero. Default = TRUE
 #' @param vars.to.regress Character. Which column in the metadata should be regressed. Default = NULL
-#' @param new.assay.name Character. What should the new assay be called. Default = 'SCRAN'
+#' @param new.assay.suffix Character. What should the new assay be called. Default = 'SCRAN'
 #' 
 #' @return Produces a new 'methods' assay containing normalised, scaled and HVGs.
 #' 
@@ -30,7 +30,7 @@ perform.tpm <- function(object,
                         do.scale = FALSE,
                         do.center = TRUE,
                         vars.to.regress = NULL,
-                        new.assay.name = 'TPM') {
+                        new.assay.suffix = '') {
   
   if(!is(object = object, class2 = 'IBRAP')) {
     
@@ -169,7 +169,15 @@ perform.tpm <- function(object,
   
   object@sample_metadata <- cbind(object@sample_metadata, cell_metadata(assay = as.matrix(.normalised), col.prefix = new.assay.name))
   
-  object@methods[[new.assay.name]] <- new(Class = 'methods',
+  if('_' %in% unlist(strsplit(x = new.assay.suffix, split = ''))) {
+    
+    cat(crayon::cyan(paste0(Sys.time(), ': _ cannot be used in new.assay.suffix, replacing with - \n')))
+    
+    new.assay.suffix <- sub(pattern = '_', replacement = '-', x = new.assay.suffix)
+    
+  }
+  
+  object@methods[[paste0('TPM', new.assay.suffix)]] <- new(Class = 'methods',
                                           counts = Matrix::Matrix(.counts, sparse = T), 
                                           normalised = Matrix::Matrix(.normalised, sparse = T), 
                                           norm.scaled = as.matrix(.norm.scaled),

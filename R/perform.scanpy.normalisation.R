@@ -37,12 +37,12 @@
 perform.scanpy <- function(object, 
                            assay='RAW', 
                            slot='counts', 
-                           new.assay.name='SCANPY', 
+                           new.assay.suffix='', 
                            target_sum = 1e6, 
                            exclude_highly_expressed = FALSE,  
                            max_fraction = 0.05, 
                            key_added = 'scanpy_norm_factor',
-                           log1 = TRUE,
+                           log1 = FALSE,
                            
                            n_top_genes = 1500, 
                            max_mean = 6, 
@@ -55,7 +55,7 @@ perform.scanpy <- function(object,
                            
                            do.scale=TRUE,
                            vars.to.regress=NULL, 
-                           do.centre=TRUE
+                           do.center=TRUE
 ) {
   
   if(!is(object = object, class2 = 'IBRAP')) {
@@ -195,9 +195,9 @@ perform.scanpy <- function(object,
     
   }
   
-  if(!is.logical(do.centre)) {
+  if(!is.logical(do.center)) {
     
-    stop('do.centre must be logical: TRUE/FALSE\n')
+    stop('do.center must be logical: TRUE/FALSE\n')
     
   }
   
@@ -304,7 +304,7 @@ perform.scanpy <- function(object,
   seuobj <- Seurat::ScaleData(object = seuobj, 
                               do.scale=do.scale,
                               vars.to.regress=vars.to.regress, 
-                              do.centre=do.centre)
+                              do.center=do.center)
   
   scobj2 <- sc$AnnData(X = t(.normalised[.highly.variable.genes,]))
   
@@ -316,12 +316,20 @@ perform.scanpy <- function(object,
   
   object@sample_metadata <- cbind(object@sample_metadata, cell_metadata(assay = as.matrix(.normalised), col.prefix = new.assay.name))
   
-  object@methods[[new.assay.name]] <- new(Class = 'methods',
-                                          counts = as(.counts, 'dgCMatrix'), 
-                                          normalised = as(.normalised, 'dgCMatrix'), 
-                                          norm.scaled = as.matrix(.norm.scaled),
-                                          highly.variable.genes = .highly.variable.genes,
-                                          feature_metadata = feat.metadata)
+  if('_' %in% unlist(strsplit(x = new.assay.suffix, split = ''))) {
+    
+    cat(crayon::cyan(paste0(Sys.time(), ': _ cannot be used in new.assay.suffix, replacing with - \n')))
+    
+    new.assay.suffix <- sub(pattern = '_', replacement = '-', x = new.assay.suffix)
+    
+  }
+  
+  object@methods[[paste0('SCANPY', new.assay.suffix)]] <- new(Class = 'methods',
+                                                              counts = as(.counts, 'dgCMatrix'), 
+                                                              normalised = as(.normalised, 'dgCMatrix'), 
+                                                              norm.scaled = as.matrix(.norm.scaled),
+                                                              highly.variable.genes = .highly.variable.genes,
+                                                              feature_metadata = feat.metadata)
   
   cat(crayon::cyan(paste0(Sys.time(), ': Scanpy normalisation completed \n')))
   

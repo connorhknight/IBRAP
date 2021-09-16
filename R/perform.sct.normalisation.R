@@ -11,6 +11,7 @@
 #' @param new.assay.name Character. Name of new method-assay to be produced. Default = 'SCT'
 #' @param do.scale Whether to scale residuals to have unit variance; default is FALSE
 #' @param do.center Whether to center residuals to have mean zero; default is TRUE
+#' @param vars.to.regress Character. Which data from `object@sample_metadata` should be regressed from the dataset.
 #' @param n.genes Numerical value of how many highly variable genes should be retained. Default = 1500
 #' @param min_cells Numerical value of minimum cells required for a gene to not be filtered. Default = 3
 #' 
@@ -77,12 +78,22 @@ perform.sct <- function(object,
   .norm.scaled <- as.matrix(seuratobj@assays$SCT@scale.data)
   feat.meta <- feature_metadata(assay = as.matrix(.counts), col.prefix = new.assay.name)
   object@sample_metadata <- cbind(object@sample_metadata, cell_metadata(assay = as.matrix(.normalised), col.prefix = new.assay.name))
-  object@methods[[new.assay.name]] <- new(Class = 'methods',
+  
+  if('_' %in% unlist(strsplit(x = new.assay.suffix, split = ''))) {
+    
+    cat(crayon::cyan(paste0(Sys.time(), ': _ cannot be used in new.assay.suffix, replacing with - \n')))
+    
+    new.assay.suffix <- sub(pattern = '_', replacement = '-', x = new.assay.suffix)
+    
+  }
+  
+  object@methods[[paste0('SCT', new.assay.suffix)]] <- new(Class = 'methods',
                                           counts = .counts, 
                                           normalised = .normalised, 
                                           norm.scaled = .norm.scaled,
                                           highly.variable.genes = .highly.variable.genes,
                                           feature_metadata = feat.meta)
+  
   cat(crayon::cyan(paste0(Sys.time(), ': SCT normalisation completed\n')))
   return(object)
 }

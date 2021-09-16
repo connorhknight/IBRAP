@@ -166,6 +166,17 @@ Please refer to the above hyperlink to understand why we only used 3 out of 4 me
 
 Each normalisation function produces a new method-assay which contains the results. Any downstream analyses will be stored in these separate compartments, respective to the normalisation method. i.e. object@methods contains all of the method assays. Hereon, function will iterate through the indicated method-assays and any other inputs within the assays. For example, if you supply c('SCT','SCRAN','SCANPY') as assays and c('pca_umap', 'pca_t-SNE') as reductions. A function will perform firstly on 'pca_umap' in the 'SCT' assay, then the 'pca_t-SNE' in the 'SCT' assay. After these the function will move on to 'pca_umap' in the 'SCRAN' assay and so on.
 
+In some instances, certain genes require omission from the highly varaible genes. This can be achieved with the following function: 
+
+```{r, eval=F, echo=T}
+
+# This function finds all ribosomal genes and removes them from the HVG list of the three assays
+unwanted <- as.character(rownames(bmmc)[grepl("^RPL" ,x=rownames(bmmc))])
+bmmc <- remove.hvgs(object = bmmc, assay = c('SCT', 'SCRAN', 'SCANPY'), 
+                    hvgs.omit = list(unwanted,unwanted,unwanted))
+
+```
+
 ## Chapter 5: Linear Dimensionaly Reduction
 
 Now that our data has been appropriately transformed we can reduce the number of dimensions using Principal Component Analysis (PCA) perform.pca(). Reduction methods summarise as much information from the higher dimensions into lower dimensions as possible. 
@@ -174,7 +185,7 @@ Now that our data has been appropriately transformed we can reduce the number of
 
 bmmc <- perform.pca(object = bmmc, 
                     assay = c('SCT', 'SCRAN', 'SCANPY'), 
-                    n.pcs = 1:50, reduction.save = 'pca')
+                    n.pcs = 50, reduction.save = 'pca')
 
 ```
 
@@ -188,7 +199,7 @@ knitr::include_graphics(path = 'PCA_screeplot.png')
 
 For these assays, the elbow point is around 10-12 PCs. 
 
-## Chapter 6: Generating Neighbourhood Graphs & Clustering
+## Chapter 6: Generating Neighbourhood Graphs
 
 IBRAP enlists two neighbourhood graph generators: 
  - perform.nn.v1() which is derived scanpys neighbourhood graph function.
@@ -224,23 +235,6 @@ bmmc <- perform.nn.v2(object = bmmc,
                           
 ```
 
-Finally, using our neighbourhood graph we must cluster close networks together to infer individual cell types. perform.graph.cluster() provides either:
-- Louvain algorithm (1)
-- Louvain algorithm with multilevel refinement (2)
-- Smart Local Moving (SLM) (3)
-- Leiden (4)
-
-```{r, eval=F, echo=T}
-
-bmmc <- perform.graph.cluster(object = bmmc, 
-                               assay = c('SCT', 'SCRAN', 'SCANPY'), 
-                               neighbours = c("pca", "pca_nn.v1:diffmap"), 
-                               algorithm = 1)
-
-```
-
-There are alternative [clustering methods](https://connorhknight.github.io/IBRAP/articles/clustering_method.html) that are described in an alternate article
-
 ## Chapter 7: Non-linear Reduction
 
 Since we have reduced our dataset into a manageable size, produce neighbourhood graphs and clustered communities, we need to visualise our data. scRNA-seq contains many zeros which makes a sparse matrix, this renders linear reduction methods inappropriate for visualisation. Therefore, we resort to non-linear reductions.
@@ -261,9 +255,29 @@ bmmc <- perform.umap(object = samp,
 
 ```
 
+## Chapter 8: Clustering
+
+Finally, using our neighbourhood graph we must cluster close networks together to infer individual cell types. perform.graph.cluster() provides either:
+- Louvain algorithm (1)
+- Louvain algorithm with multilevel refinement (2)
+- Smart Local Moving (SLM) (3)
+- Leiden (4)
+
+```{r, eval=F, echo=T}
+
+bmmc <- perform.graph.cluster(object = bmmc, 
+                               assay = c('SCT', 'SCRAN', 'SCANPY'), 
+                               neighbours = c("pca", "pca_nn.v1:diffmap"), 
+                               algorithm = 1)
+
+```
+
+There are alternative [clustering methods](https://connorhknight.github.io/IBRAP/articles/clustering_method.html) that are described in an alternate article
+
+
 After generating reductions and cell assignments you may wish to benchmark these assignments, this is demonstrated in this tutorial
 
-## Chapter 8: Visualising Clustering Results
+## Chapter 9: Visualising Clustering Results
 
 Since IBRAP has integrated several pipelines we must begin to visualise the differences between results. 
 
@@ -337,7 +351,7 @@ knitr::include_graphics(path = 'diff_norm_method.png')
 
 We shall proceed using the SCT neighbourhood graph version 1. We have clustered our cells however, now we must identify the biology. 
 
-## Chapter 9: Benchmarking Clustering Results
+## Chapter 10: Benchmarking Clustering Results
 
 A large number of results will be produced using IBRAP therefore it is beneficial to observe the effectiveness of the clustering results. IBRAP contains a benchmarking function that enlists multiple metrices to assess clustering performance. These metrices are only informative however and will be unable to distinguish the best results (that is down to the user to decide). 
 
@@ -355,7 +369,7 @@ samp <- benchmark.clustering(object = samp, assay = c('SCT', 'SCRAN', 'SCANPY'),
 
 ```
 
-## Chapter 10: Biological Analysis 
+## Chapter 11: Biological Analysis 
 
 To understand the biology driving the clustering we can tackle it in two ways: differential expression analyses or visualisation
 
