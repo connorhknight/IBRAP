@@ -33,7 +33,7 @@ perform.scran(
 
 \item{do.center}{Boolean. Whether to centre features to zero. Default = TRUE}
 
-\item{new.assay.suffix}{Character. What should the new assay be called. Default = 'SCRAN'}
+\item{new.assay.suffix}{Character. What should be added as a suffix for SCRAN}
 
 \item{n.genes}{Numerical. Top number of genes to retain when finding HVGs. Default = 1500}
 

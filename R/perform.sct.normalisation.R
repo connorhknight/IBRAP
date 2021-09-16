@@ -8,7 +8,7 @@
 #' @param object IBRAP S4 class object
 #' @param assay A character string containing indicating which assay to use
 #' @param slot String indicating which slot within the assay should be sourced
-#' @param new.assay.name Character. Name of new method-assay to be produced. Default = 'SCT'
+#' @param new.assay.suffix Character. What should be added as a suffix for SCT
 #' @param do.scale Whether to scale residuals to have unit variance; default is FALSE
 #' @param do.center Whether to center residuals to have mean zero; default is TRUE
 #' @param vars.to.regress Character. Which data from `object@sample_metadata` should be regressed from the dataset.
@@ -62,7 +62,7 @@ perform.sct <- function(object,
   
   if(!is.character(new.assay.suffix)) {
     
-    stop('new.assay.name must be character string\n')
+    stop('new.assay.suffix must be character string\n')
     
   }
   
@@ -76,8 +76,8 @@ perform.sct <- function(object,
   .counts <- as(object = as.matrix(seuratobj@assays$SCT@counts), Class = 'dgCMatrix')
   .normalised <- as(as.matrix(seuratobj@assays$SCT@data), Class = 'dgCMatrix')
   .norm.scaled <- as.matrix(seuratobj@assays$SCT@scale.data)
-  feat.meta <- feature_metadata(assay = as.matrix(.counts), col.prefix = new.assay.name)
-  object@sample_metadata <- cbind(object@sample_metadata, cell_metadata(assay = as.matrix(.normalised), col.prefix = new.assay.name))
+  feat.meta <- feature_metadata(assay = as.matrix(.counts), col.prefix = paste0('SCT', new.assay.suffix))
+  object@sample_metadata <- cbind(object@sample_metadata, cell_metadata(assay = as.matrix(.normalised), col.prefix = paste0('SCT', new.assay.suffix)))
   
   if('_' %in% unlist(strsplit(x = new.assay.suffix, split = ''))) {
     

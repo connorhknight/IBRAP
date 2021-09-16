@@ -34,6 +34,8 @@ perform.scanpy(
 
 \item{slot}{Character. String indicating which slot within the assay should be sourced}
 
+\item{new.assay.suffix}{Character. What should be added as a suffix to 'SCANPY}
+
 \item{target_sum}{Numerical. What should the data be scaled to. Default = 1e6}
 
 \item{exclude_highly_expressed}{Boolean. Should highly expressed genes be excluded. Default = FALSE}
@@ -59,8 +61,6 @@ perform.scanpy(
 \item{do.scale}{Boolean. Whether the gene expression should be centred. Default = TRUE}
 
 \item{vars.to.regress}{Character. A single or multiple columns of information in the metadata that should be regressed from the dataset. Default = NULL}
-
-\item{new.assay.name}{Character. What should the new assay be called. Default = 'SCRAN'}
 
 \item{flavour}{Character. Choosing which HVG selection method to use when, options: 'seurat', 'cell_ranger', 'seurat_v3'. Default = 'seurat'}
 }

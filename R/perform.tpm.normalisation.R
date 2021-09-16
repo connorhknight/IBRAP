@@ -104,6 +104,14 @@ perform.tpm <- function(object,
     
   }
   
+  if('_' %in% unlist(strsplit(x = new.assay.suffix, split = ''))) {
+    
+    cat(crayon::cyan(paste0(Sys.time(), ': _ cannot be used in new.assay.suffix, replacing with - \n')))
+    
+    new.assay.suffix <- sub(pattern = '_', replacement = '-', x = new.assay.suffix)
+    
+  }
+  
   r$Gene.length <- r$end - r$start
   
   subset <- r[r$geneName %in% rownames(object),]
@@ -167,21 +175,16 @@ perform.tpm <- function(object,
   
   .norm.scaled <- seuobj@assays$RNA@scale.data
   
-  object@sample_metadata <- cbind(object@sample_metadata, cell_metadata(assay = as.matrix(.normalised), col.prefix = new.assay.name))
+  feat.meta <- feature_metadata(assay = .counts, col.prefix = paste0('SCRAN', new.assay.suffix))
   
-  if('_' %in% unlist(strsplit(x = new.assay.suffix, split = ''))) {
-    
-    cat(crayon::cyan(paste0(Sys.time(), ': _ cannot be used in new.assay.suffix, replacing with - \n')))
-    
-    new.assay.suffix <- sub(pattern = '_', replacement = '-', x = new.assay.suffix)
-    
-  }
+  object@sample_metadata <- cbind(object@sample_metadata, cell_metadata(assay = as.matrix(.normalised), col.prefix = paste0('TPM', new.assay.suffix)))
   
   object@methods[[paste0('TPM', new.assay.suffix)]] <- new(Class = 'methods',
                                           counts = Matrix::Matrix(.counts, sparse = T), 
                                           normalised = Matrix::Matrix(.normalised, sparse = T), 
                                           norm.scaled = as.matrix(.norm.scaled),
-                                          highly.variable.genes = .highly.variable.genes)
+                                          highly.variable.genes = .highly.variable.genes,
+                                          feature_metadata = feat.meta)
   
   cat(crayon::cyan(paste0(Sys.time(), ': TPM normalisation completed\n')))
   

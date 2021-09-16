@@ -13,7 +13,7 @@ perform.sct(object, assay, slot, new.assay.suffix = "SCT", ...)
 
 \item{slot}{String indicating which slot within the assay should be sourced}
 
-\item{new.assay.name}{Character. Name of new method-assay to be produced. Default = 'SCT'}
+\item{new.assay.suffix}{Character. What should be added as a suffix for SCT}
 
 \item{do.scale}{Whether to scale residuals to have unit variance; default is FALSE}
 

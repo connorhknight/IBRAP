@@ -8,7 +8,7 @@
 #' @param object IBRAP S4 class object
 #' @param assay Character. String containing indicating which assay to use
 #' @param slot Character. String indicating which slot within the assay should be sourced
-#' @param new.assay.name Character. What should the new assay be called. Default = 'SCRAN'
+#' @param new.assay.suffix Character. What should be added as a suffix to 'SCANPY
 #' @param target_sum Numerical. What should the data be scaled to. Default = 1e6
 #' @param exclude_highly_expressed Boolean. Should highly expressed genes be excluded. Default = FALSE
 #' @param max_fraction Numerical. If exclude_highly_expressed=True, consider cells as highly expressed that have more counts than max_fraction of the original total counts in at least one cell. Default = 0.05
@@ -89,7 +89,7 @@ perform.scanpy <- function(object,
   
   if(!is.character(new.assay.suffix)) {
     
-    stop('new.assay.name must be character string \n')
+    stop('new.assay.suffix must be character string \n')
     
   }
   
@@ -314,7 +314,7 @@ perform.scanpy <- function(object,
   
   .norm.scaled <- seuobj@assays$RNA@scale.data
   
-  object@sample_metadata <- cbind(object@sample_metadata, cell_metadata(assay = as.matrix(.normalised), col.prefix = new.assay.name))
+  object@sample_metadata <- cbind(object@sample_metadata, cell_metadata(assay = as.matrix(.normalised), col.prefix = paste0('SCANPY', new.assay.suffix)))
   
   if('_' %in% unlist(strsplit(x = new.assay.suffix, split = ''))) {
     
