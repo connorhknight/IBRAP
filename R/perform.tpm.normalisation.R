@@ -98,9 +98,9 @@ perform.tpm <- function(object,
     
   }
   
-  if(!is.character(new.assay.name)) {
+  if(!is.character(new.assay.suffix)) {
     
-    stop('new.assay.name must be a character string\n')
+    stop('new.assay.suffix must be a character string\n')
     
   }
   

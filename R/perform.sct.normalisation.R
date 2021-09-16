@@ -28,7 +28,7 @@
 perform.sct <- function(object, 
                         assay,
                         slot,
-                        new.assay.name = 'SCT',
+                        new.assay.suffix = 'SCT',
                         ...) {
   
   if(!is(object = object, class2 = 'IBRAP')) {
@@ -60,7 +60,7 @@ perform.sct <- function(object,
     
   }
   
-  if(!is.character(new.assay.name)) {
+  if(!is.character(new.assay.suffix)) {
     
     stop('new.assay.name must be character string\n')
     

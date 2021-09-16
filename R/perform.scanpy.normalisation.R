@@ -87,7 +87,7 @@ perform.scanpy <- function(object,
     
   }
   
-  if(!is.character(new.assay.name)) {
+  if(!is.character(new.assay.suffix)) {
     
     stop('new.assay.name must be character string \n')
     
