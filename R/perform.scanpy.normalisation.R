@@ -38,7 +38,7 @@ perform.scanpy <- function(object,
                            assay='RAW', 
                            slot='counts', 
                            new.assay.suffix='', 
-                           target_sum = 1e6, 
+                           target_sum = 1e4, 
                            exclude_highly_expressed = FALSE,  
                            max_fraction = 0.05, 
                            key_added = 'scanpy_norm_factor',
@@ -221,11 +221,11 @@ perform.scanpy <- function(object,
                           exclude_highly_expressed = as.logical(exclude_highly_expressed), 
                           max_fraction = as.integer(max_fraction))
   } else if (!is.null(key_added)) {
-    sc$pp$normalize_total(adata = scobj, 
+    sc$pp$normalize_total(adata = scobj,  target_sum=target_sum,
                           exclude_highly_expressed = as.logical(exclude_highly_expressed), 
                           max_fraction = as.integer(max_fraction))
   } else {
-    sc$pp$normalize_total(adata = scobj)
+    sc$pp$normalize_total(adata = scobj, target_sum=target_sum)
   }
   
   .counts <- t(scobj$X)
@@ -299,11 +299,24 @@ perform.scanpy <- function(object,
   
   .highly.variable.genes <- rownames(object@methods$RAW@counts)[scobj$var[['highly_variable']]]
   
-  scobj2 <- sc$AnnData(X = as.matrix(scobj$X)[,scobj$var$highly_variable])
+  scobj2 <- sc$AnnData(X = t(.normalised[scobj$var$highly_variable,]))
+  
+  pd <- reticulate::import('pandas')
+  
   scobj2$var_names <- as.factor(rownames(object@methods$RAW@counts)[scobj$var$highly_variable])
   scobj2$obs_names <- as.factor(colnames(object@methods$RAW@counts))
-  scobj2$obs <- object@sample_metadata
   
+  if(length(vars.to.regress) > 1) {
+    
+    scobj2$obs <- pd$DataFrame(data = as.data.frame(object@sample_metadata[,vars.to.regress]))
+    
+  } else {
+    
+    scobj2$obs[,vars.to.regress] <- pd$DataFrame(data = as.data.frame(object@sample_metadata[,vars.to.regress]))
+    
+  }
+  
+
   cat(crayon::cyan(paste0(Sys.time(), ': regressing covaraites \n')))
   
   sc$pp$regress_out(adata = scobj2, keys = vars.to.regress)

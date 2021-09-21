@@ -9,7 +9,7 @@ perform.scanpy(
   assay = "RAW",
   slot = "counts",
   new.assay.suffix = "",
-  target_sum = 1e+06,
+  target_sum = 10000,
   exclude_highly_expressed = FALSE,
   max_fraction = 0.05,
   key_added = "scanpy_norm_factor",

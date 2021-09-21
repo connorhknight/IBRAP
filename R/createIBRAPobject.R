@@ -67,8 +67,12 @@ createIBRAPobject <- function(counts,
       
     } else {
       
-      rownames(meta.data) <- paste0(original.project, '_', rownames(meta.data))
-      
+      if(isTRUE(add.suffix)) {
+        
+        rownames(meta.data) <- paste0(original.project, '_', rownames(meta.data))
+        
+      }
+
     }
     
   }
@@ -120,7 +124,7 @@ createIBRAPobject <- function(counts,
   }
   
   rownames(meta) <- colnames(counts)
-  
+
   f.metadata <- feature_metadata(assay = counts, col.prefix = method.name)
   
   if(!is.null(meta.data)) {
@@ -137,10 +141,13 @@ createIBRAPobject <- function(counts,
       
     }
     
+    print(rownames(meta.data))
+    print(rownames(meta))
+    
     meta <- meta[match(rownames(meta.data), rownames(meta)),]
-
+    
     meta <- cbind(meta, meta.data)
-
+    
     meta <- meta[match(colnames(counts), rownames(meta)),]
 
   }

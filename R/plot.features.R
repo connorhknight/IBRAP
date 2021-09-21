@@ -8,6 +8,8 @@
 #' @param slot Character. Which expression matrix would you like to access. Default = 'normalised'
 #' @param reduction Character. Which reduction should be used for the plot
 #' @param features Character Which features should be plotted
+#' @param order Boolean. Should datapoints be plotted in order of expression intensity. Default = TRUE
+#' @param percentile. Numerical. What percentile of datapoint expression should be plotted. Default = c(0.1,0.9)
 #' @param pt_size Numeric. what size should the inidividual plot sizes be
 #' @param cells Numeric. Which cells should be subset for plotting, Default = NULL
 #' 
@@ -20,7 +22,8 @@ plot.features <- function(object,
                           slot,
                           reduction,
                           features,
-                          percentile = c(0,1),
+                          order = TRUE,
+                          percentile = c(0.1,0.9),
                           pt_size = 3,
                           cells = NULL) {
   
@@ -91,6 +94,12 @@ plot.features <- function(object,
     if(!is.null(cells)) {
       
       results <- results[cells,]
+      
+    }
+    
+    if(isTRUE(order)) {
+      
+      results <- results[order(as.numeric(results$feature)),]
       
     }
     

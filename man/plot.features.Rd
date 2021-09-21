@@ -10,7 +10,8 @@
   slot,
   reduction,
   features,
-  percentile = c(0, 1),
+  order = TRUE,
+  percentile = c(0.1, 0.9),
   pt_size = 3,
   cells = NULL
 )
@@ -26,9 +27,13 @@
 
 \item{features}{Character Which features should be plotted}
 
+\item{order}{Boolean. Should datapoints be plotted in order of expression intensity. Default = TRUE}
+
 \item{pt_size}{Numeric. what size should the inidividual plot sizes be}
 
 \item{cells}{Numeric. Which cells should be subset for plotting, Default = NULL}
+
+\item{percentile.}{Numerical. What percentile of datapoint expression should be plotted. Default = c(0.1,0.9)}
 }
 \value{
 A plot of reduced dimensions annotated with assignments
