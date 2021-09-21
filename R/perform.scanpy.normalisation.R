@@ -299,14 +299,24 @@ perform.scanpy <- function(object,
   
   .highly.variable.genes <- rownames(object@methods$RAW@counts)[scobj$var[['highly_variable']]]
   
-  sc$pp$regress_out(adata = scobj, keys = vars.to.regress)
+  scobj2 <- sc$AnnData(X = as.matrix(scobj$X)[,scobj$var$highly_variable])
+  scobj2$var_names <- as.factor(rownames(object@methods$RAW@counts)[scobj$var$highly_variable])
+  scobj2$obs_names <- as.factor(colnames(object@methods$RAW@counts))
+  scobj2$obs <- object@sample_metadata
   
-  sc$pp$scale(scobj)
+  cat(crayon::cyan(paste0(Sys.time(), ': regressing covaraites \n')))
   
-  .norm.scaled <- t(scobj$X)
+  sc$pp$regress_out(adata = scobj2, keys = vars.to.regress)
+  
+  cat(crayon::cyan(paste0(Sys.time(), ': scaling data \n')))
+  
+  sc$pp$scale(scobj2)
+
+  .norm.scaled <- t(scobj2$X)
+
   colnames(.norm.scaled) <- colnames(object@methods$RAW@counts)
+
   rownames(.norm.scaled) <- .highly.variable.genes
-  .norm.scaled <- .norm.scaled[.highly.variable.genes,]
   
   object@sample_metadata <- cbind(object@sample_metadata, cell_metadata(assay = as.matrix(.normalised), col.prefix = paste0('SCANPY', new.assay.suffix)))
   
@@ -317,7 +327,7 @@ perform.scanpy <- function(object,
     new.assay.suffix <- sub(pattern = '_', replacement = '-', x = new.assay.suffix)
     
   }
-  
+
   object@methods[[paste0('SCANPY', new.assay.suffix)]] <- new(Class = 'methods',
                                                               counts = as(.counts, 'dgCMatrix'), 
                                                               normalised = as(.normalised, 'dgCMatrix'), 
