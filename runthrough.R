@@ -6,42 +6,42 @@ library(reticulate)
 prepare.reticulate()
 
 #Load Sample
-sample_1 <- read.csv('F9223Bcells_dfall_decontx_ec.csv',
+sample_1 <- read.csv('~/Desktop/F9223Bcells_ec_dfall_CRv4.csv',
                      header = T, row.names = 1, sep = ',')
 
 #Remove Doublets
-sample_1 <- perform.scrublet(counts = as.matrix(sample_1))
+sample_1_clean <- perform.scrublet(counts = as.matrix(sample_1))
 
 #Ambient RNA decontamination (optional)
-sample_1 <- perform.decontX(counts = sample_1)
+sample_1_clean <- perform.decontX(counts = sample_1_clean)
 
 #Create Seurat Object
-sample <- createIBRAPobject(counts = as.matrix(sample_1), original.project = 'FL',
+sample <- createIBRAPobject(counts = as.matrix(sample_1_clean), original.project = 'FL',
                             min.cells = 3, min.features = 200)
 
 #Find each cell proportional of expression MT genes
 sample <- find_percentage_genes(object = sample, pattern = '^MT-',
                                 assay = 'RAW', slot = 'counts',
                                 column.name = 'RAW_percent.mt')
-#QC plots
-plot.QC.vln(object = sample,
-            metadata.columns = c('RAW_total.features',
-                                 'RAW_total.counts',
-                                 'RAW_percent.mt'))
-plot.QC.scatter(object = sample,
-                x = 'RAW_total.counts',
-                y = 'RAW_total.features',
-                split.by = 'original.project')
-
-plot.QC.scatter(object = sample,
-                y = 'RAW_total.counts',
-                x = 'RAW_percent.mt',
-                split.by = 'original.project')
-
-plot.QC.scatter(object = sample,
-                y = 'RAW_total.features',
-                x = 'RAW_percent.mt',
-                split.by = 'original.project')
+# #QC plots
+# plot.QC.vln(object = sample,
+#             metadata.columns = c('RAW_total.features',
+#                                  'RAW_total.counts',
+#                                  'RAW_percent.mt'))
+# plot.QC.scatter(object = sample,
+#                 x = 'RAW_total.counts',
+#                 y = 'RAW_total.features',
+#                 split.by = 'original.project')
+# 
+# plot.QC.scatter(object = sample,
+#                 y = 'RAW_total.counts',
+#                 x = 'RAW_percent.mt',
+#                 split.by = 'original.project')
+# 
+# plot.QC.scatter(object = sample,
+#                 y = 'RAW_total.features',
+#                 x = 'RAW_percent.mt',
+#                 split.by = 'original.project')
 
 #Find possible multiplets
 sd.value <- sd(sample$RAW_total.features)
@@ -84,13 +84,13 @@ sample <- perform.scran(object = sample,
 
 sample <- perform.scanpy(object = sample,
                          vars.to.regress = c('RAW_total.counts', 'RAW_percent.mt'),
-                         do.scale = T, log1 = F)
+                         do.scale = T)
 
 
 #Remove any unwanted genes from highly variable gene list (optional)
-unwanted2 <- as.character(rownames(sample)[grepl("^MT-" ,x=rownames(sample))])
-unwanted <- c('IGK','IGL',unwanted2)
-sample <- remove.hvgs(object = sample, assay = c('SCT', 'SCRAN', 'SCANPY'), hvgs.omit = list(unwanted,unwanted,unwanted))
+# unwanted2 <- as.character(rownames(sample)[grepl("^MT-" ,x=rownames(sample))])
+# unwanted <- c('IGK','IGL',unwanted2)
+# sample <- remove.hvgs(object = sample, assay = c('SCT', 'SCRAN', 'SCANPY'), hvgs.omit = list(unwanted,unwanted,unwanted))
 
 #Run PCA
 sample <- perform.pca(object = sample,
@@ -100,42 +100,41 @@ sample <- perform.pca(object = sample,
 
 #Run neighbour finding
 #Using scanpy with pca reductions
-sample <- perform.nn.v1(object = sample,
-                        assay = c('SCT', 'SCRAN', 'SCANPY'),
-                        reduction = c('pca'),
-                        dims = list(0),
-                        generate.diffmap = T)
+sample <- perform.nn(object = sample,
+                     assay = c('SCT', 'SCRAN', 'SCANPY'),
+                     reduction = c('pca'),
+                     dims = list(6),
+                     generate.diffmap = T)
 
 #Using seurat with pca and diffmap reductions
-sample <- perform.nn.v2(object = sample, assay = c('SCT', 'SCRAN', 'SCANPY'),
-                        reduction = c('pca','pca_nn.v1:diffmap'),
-                        dims = list(0,0))
-
-#Using scanpy with diffmap reductions
-sample <- perform.nn.v1(object = sample, assay = c('SCT', 'SCRAN', 'SCANPY'),
-                        reduction = c('pca_nn.v1:diffmap'),
-                        dims = list(0))
+# sample <- perform.nn.v2(object = sample, assay = c('SCT', 'SCRAN', 'SCANPY'),
+#                         reduction = c('pca','pca_nn.v1:diffmap'),
+#                         dims = list(0,0))
+# 
+# #Using scanpy with diffmap reductions
+# sample <- perform.nn.v1(object = sample, assay = c('SCT', 'SCRAN', 'SCANPY'),
+#                         reduction = c('pca_nn.v1:diffmap'),
+#                         dims = list(0))
 
 #Neighbourhood graphs generated
-names(sample@methods$SCT@neighbours)
+# names(sample@methods$SCT@neighbours)
 
 #Run UMAP
 sample <- perform.umap(object = sample,
                        assay = c('SCT',
-                                 'SCRAN',
-                                 'SCANPY'),
-                       reduction = c('pca',
-                                     'pca_nn.v1:diffmap'),
+                                 'SCRAN'),
+                       reduction = c('pca'),
                        n_components = 2,
-                       n.dims = list(1:20,
-                                     NULL))
+                       n.dims = list(1:6))
+
+sample <- perform.umap(object = sample,
+                       assay = c('SCANPY'),
+                       graph = c('pca_nn'),
+                       n_components = 2)
 
 #Run clustering
-sample <- perform.graph.cluster(object = sample, assay = c('SCT', 'SCRAN', 'SCANPY'),
-                                neighbours = c("pca_nn.v1",
-                                               "pca_nn.v2",
-                                               "pca_nn.v1:diffmap_nn.v2",
-                                               "pca_nn.v1:diffmap_nn.v1"),
+sample <- perform.graph.cluster(object = sample, assay = c('SCT', 'SCANPY'),
+                                neighbours = c("pca_nn"),
                                 algorithm = 1)
 #Cluster assignments
 names(sample@methods$SCT@cluster_assignments)
@@ -145,7 +144,7 @@ plot.list <- list()
 plot.list[[1]] <- plot.reduced.dim(object = sample,
                                    reduction = 'pca_umap',
                                    assay = 'SCT',
-                                   clust.method = 'pca_nn.v2:louvain',
+                                   clust.method = 'pca_nn:louvain',
                                    column = 'neighbourhood_graph_res.0.6', pt.size = 0.6) +
   ggplot2::theme(legend.position = 'none')
 
@@ -154,7 +153,7 @@ plot.list[[1]]
 plot.list[[2]] <- plot.reduced.dim(object = sample,
                                    reduction = 'pca_umap',
                                    assay = 'SCRAN',
-                                   clust.method = 'pca_nn.v2:louvain',
+                                   clust.method = 'pca_nn:louvain',
                                    column = 'neighbourhood_graph_res.0.6', pt.size = 0.6) +
   ggplot2::theme(legend.position = 'none')
 
@@ -163,7 +162,7 @@ plot.list[[2]]
 plot.list[[3]] <- plot.reduced.dim(object = sample,
                                    reduction = 'pca_umap',
                                    assay = 'SCANPY',
-                                   clust.method = 'pca_nn.v2:louvain',
+                                   clust.method = 'pca_nn:louvain',
                                    column = 'neighbourhood_graph_res.0.6', pt.size = 0.6) +
   ggplot2::theme(legend.position = 'none')
 
@@ -172,6 +171,12 @@ plot.list[[3]]
 #Run featureplots
 plot.features(object = sample, assay = 'SCT', slot = 'normalised',
               reduction = 'pca_umap', features = c('CD79A','CD79B'), pt_size = 0.6)
+
+plot.features(object = sample, assay = 'SCRAN', slot = 'normalised',
+              reduction = 'pca_umap', features = c('CD79A','CD79B'), pt_size = 0.6)
+
+plot.features(object = sample, assay = 'SCANPY', slot = 'normalised',
+              reduction = 'pca_nn:umap', features = c('CD79A','CD79B'), pt_size = 0.6)
 
 #Run Trajectory analysis
 traject_SC <- perform.slingshot.trajectory(object = sample,

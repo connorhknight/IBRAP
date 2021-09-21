@@ -102,7 +102,20 @@ perform.pca <- function(object,
       eig[,2] <- factor(x = temp, levels = unique(temp))
       colnames(eig) <- c ('Variance', 'PCs')
       
+      list.of.figs[[t]] <- ggplot2::ggplot(data = eig[1:n.pcs,], mapping = ggplot2::aes(x = PCs, y = Variance)) + 
+        ggplot2::geom_point() + 
+        egg::theme_article() + 
+        ggplot2::ylab('Explained Variance (%)') +
+        ggplot2::ggtitle(t) + 
+        ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90, vjust = 0.5, hjust=1), plot.title = ggplot2::element_text(hjust = 0.5))
+      
+      cat(crayon::cyan(paste0(Sys.time(), ': PCA completed\n')))
+      
+      object@methods[[t]]@computational_reductions[[reduction.save]] <- as.matrix(a$rotated[,1:n.pcs])
+      
     } else if (ass == 'SCANPY') {
+      
+      sc <- reticulate::import('scanpy')
       
       scobj <- sc$AnnData(X = t(as.matrix(object@methods[[t]][['norm.scaled']])))
       scobj$obs_names <- as.factor(colnames(object@methods[[t]][['norm.scaled']]))
@@ -118,28 +131,18 @@ perform.pca <- function(object,
       
       for(x in 1:n.pcs) {
         
-        pc.names[[count]] <- paste0('PC_',count)
+        pc.names[[count]] <- paste0('PC',count)
         
         count <- count + 1
         
       }
       
     colnames(tmp) <- unlist(pc.names)
+    rownames(tmp) <- colnames(object@methods[[t]][['norm.scaled']])
     
     eig <- as.data.frame(apply(X = tmp, MARGIN = 2, FUN = sd)^2/sum(apply(X = tmp, MARGIN = 2, FUN = sd)^2)*100)
     eig[,2] <- factor(x = colnames(tmp), levels = unique(colnames(tmp)))
     colnames(eig) <- c('Variance', 'PCs')
-      
-    } else {
-      
-      a <- PCAtools::pca(mat = mat, center = F, scale = F, ...)
-      eig <- a$sdev^2/sum(a$sdev^2)
-      eig <- as.data.frame(eig*100)
-      temp <- as.character(colnames(a$rotated))
-      eig[,2] <- factor(x = temp, levels = unique(temp))
-      colnames(eig) <- c('Variance', 'PCs')
-      
-    }
     
     list.of.figs[[t]] <- ggplot2::ggplot(data = eig[1:n.pcs,], mapping = ggplot2::aes(x = PCs, y = Variance)) + 
       ggplot2::geom_point() + 
@@ -150,7 +153,29 @@ perform.pca <- function(object,
     
     cat(crayon::cyan(paste0(Sys.time(), ': PCA completed\n')))
     
-    object@methods[[t]]@computational_reductions[[reduction.save]] <- as.matrix(a$rotated[,1:n.pcs])
+    object@methods[[t]]@computational_reductions[[reduction.save]] <- as.matrix(tmp)
+      
+    } else {
+      
+      a <- PCAtools::pca(mat = mat, center = F, scale = F, ...)
+      eig <- a$sdev^2/sum(a$sdev^2)
+      eig <- as.data.frame(eig*100)
+      temp <- as.character(colnames(a$rotated))
+      eig[,2] <- factor(x = temp, levels = unique(temp))
+      colnames(eig) <- c('Variance', 'PCs')
+      
+      list.of.figs[[t]] <- ggplot2::ggplot(data = eig[1:n.pcs,], mapping = ggplot2::aes(x = PCs, y = Variance)) + 
+        ggplot2::geom_point() + 
+        egg::theme_article() + 
+        ggplot2::ylab('Explained Variance (%)') +
+        ggplot2::ggtitle(t) + 
+        ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90, vjust = 0.5, hjust=1), plot.title = ggplot2::element_text(hjust = 0.5))
+      
+      cat(crayon::cyan(paste0(Sys.time(), ': PCA completed\n')))
+      
+      object@methods[[t]]@computational_reductions[[reduction.save]] <- as.matrix(a$rotated[,1:n.pcs])
+      
+    }
     
   }
   

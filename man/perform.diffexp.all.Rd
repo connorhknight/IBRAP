@@ -32,3 +32,10 @@ A dataframe containing differentially expression genes and other information
 \description{
 Performs differential expression on the assay differentiating the supplied identities, some methods enable variable regression, including: LR, negbinom, poisson or MAST. This function compares one cluster vs all others
 }
+\examples{
+
+SCT_DE <- perform.seurat.diffexp.all(object = object, assay = 'SCT', test = 'MAST', identity = object@sample_metadata$celltype, latent.vars = 'original.project')
+SCRAN_DE <- perform.seurat.diffexp.all(object = object, assay = 'SCRAN', test = 'MAST', identity = object@sample_metadata$celltype, latent.vars = 'original.project')
+SCANPY_DE <- perform.seurat.diffexp.all(object = object, assay = 'SCRAN', test = 'MAST', identity = object@sample_metadata$celltype, latent.vars = 'original.project')
+
+}

@@ -299,19 +299,14 @@ perform.scanpy <- function(object,
   
   .highly.variable.genes <- rownames(object@methods$RAW@counts)[scobj$var[['highly_variable']]]
   
-  scobj2 <- sc$AnnData(X = t(.normalised[.highly.variable.genes,]))
+  sc$pp$regress_out(adata = scobj, keys = vars.to.regress)
   
-  if(length(names(object@sample_metadata)) >= 1) {
-    scobj2$obs <- object@sample_metadata
-  }
+  sc$pp$scale(scobj)
   
-  sc$pp$regress_out(adata = scobj2, keys = vars.to.regress)
-  
-  sc$pp$scale(scobj2)
-  
-  .norm.scaled <- t(scobj2$X)
+  .norm.scaled <- t(scobj$X)
   colnames(.norm.scaled) <- colnames(object)
   rownames(.norm.scaled) <- .highly.variable.genes
+  .norm.scaled <- .norm.scaled[.highly.variable.genes,]
   
   object@sample_metadata <- cbind(object@sample_metadata, cell_metadata(assay = as.matrix(.normalised), col.prefix = paste0('SCANPY', new.assay.suffix)))
   
