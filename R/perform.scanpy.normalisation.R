@@ -304,7 +304,7 @@ perform.scanpy <- function(object,
   sc$pp$scale(scobj)
   
   .norm.scaled <- t(scobj$X)
-  colnames(.norm.scaled) <- colnames(object)
+  colnames(.norm.scaled) <- colnames(object@methods$RAW@counts)
   rownames(.norm.scaled) <- .highly.variable.genes
   .norm.scaled <- .norm.scaled[.highly.variable.genes,]
   
