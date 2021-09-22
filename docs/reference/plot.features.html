@@ -162,7 +162,8 @@
   <span class='va'>slot</span>,
   <span class='va'>reduction</span>,
   <span class='va'>features</span>,
-  percentile <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>0</span>, <span class='fl'>1</span><span class='op'>)</span>,
+  order <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  percentile <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>0.1</span>, <span class='fl'>0.9</span><span class='op'>)</span>,
   pt_size <span class='op'>=</span> <span class='fl'>3</span>,
   cells <span class='op'>=</span> <span class='cn'>NULL</span>
 <span class='op'>)</span></code></pre></div>
@@ -191,12 +192,20 @@
       <td><p>Character Which features should be plotted</p></td>
     </tr>
     <tr>
+      <th>order</th>
+      <td><p>Boolean. Should datapoints be plotted in order of expression intensity. Default = TRUE</p></td>
+    </tr>
+    <tr>
       <th>pt_size</th>
       <td><p>Numeric. what size should the inidividual plot sizes be</p></td>
     </tr>
     <tr>
       <th>cells</th>
       <td><p>Numeric. Which cells should be subset for plotting, Default = NULL</p></td>
+    </tr>
+    <tr>
+      <th>percentile.</th>
+      <td><p>Numerical. What percentile of datapoint expression should be plotted. Default = c(0.1,0.9)</p></td>
     </tr>
     </table>
 

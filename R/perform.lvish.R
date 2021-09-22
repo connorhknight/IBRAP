@@ -128,9 +128,9 @@ perform.lvish <- function(object,
       
       cat(crayon::cyan(paste0(Sys.time(), ': processing', r, 'for assay:', u,'\n')))
       
-      if(!is.null(dim)) {
+      if(dim != 0) {
         
-        c <- uwot::lvish(X = red[,dim], n_components = n_components, verbose = TRUE, ...)
+        c <- uwot::lvish(X = red[,1:dim], n_components = n_components, verbose = TRUE, ...)
         
       } else {
         

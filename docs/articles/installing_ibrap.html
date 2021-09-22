@@ -117,19 +117,27 @@
 <h3 class="hasAnchor">
 <a href="#installing-ibrap" class="anchor" aria-hidden="true"></a>Installing IBRAP</h3>
 <p>IBRAP depends on more than 100 other packages, thus the installation process may take some time and some manual intervention</p>
-<p>Firstly, some Bioconductor packages must be installed:</p>
+<p>Firstly, some Bioconductor packages must be installed prior to the github installation:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R">
 <span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"BiocManager"</span>, quietly<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span>
     <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"BiocManager"</span><span class="op">)</span>
-<span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BiocManager/man/install.html" class="external-link">install</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"celda"</span>, <span class="st">"slingshot"</span>, <span class="st">"scran"</span>, <span class="st">"scuttle"</span>, <span class="st">"SC3"</span>, <span class="st">"SingleCellExperiment"</span>, <span class="st">"PCAtools"</span>, <span class="st">"topGO"</span>,<span class="st">"shinydashboard"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<p>These are packages that are not automatically installed using the subsequent command.</p>
-<p>Next, we install IBRAP and its dependencies:</p>
+<span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BiocManager/man/install.html" class="external-link">install</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"celda"</span>, <span class="st">"slingshot"</span>, <span class="st">"scran"</span>, <span class="st">"scuttle"</span>, <span class="st">"SC3"</span>, <span class="st">"SingleCellExperiment"</span>, <span class="st">"PCAtools"</span>, <span class="st">"topGO"</span>,<span class="st">"shinydashboard"</span>, <span class="st">"destiny"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<p>Next, we install IBRAP and other dependencies in a single command:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R">
 <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">'devtools'</span><span class="op">)</span>
 <span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org//reference/remote-reexports.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">'connorhknight/IBRAP'</span><span class="op">)</span></code></pre></div>
-<p>Once installed, you can enjoy a toolbox of the most commonly used scRNA-seq components, fully integrated.</p>
+<p>IBRAP not only uses packages within R, but also through python. For this, we use reticulate to interface python into the R environment. To setup reticulate we must start by installing miniconda:</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R">
+<span class="fu">reticulate</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/reticulate/man/install_miniconda.html" class="external-link">install_miniconda</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<p>Once miniconda is installed it will produce an environment called r-reticulate. Next, we must assure the correct packages are installed within the new environment:</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R">
+<span class="fu"><a href="../reference/prepare.reticulate.html">prepare.reticulate</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<p>Once this has been completed, you are ready to use IBRAP! For a basic understand of a single sample workflow please use the ‘getting started’ tutorial. For multi sample analysis, you can divert to the integration tutorial.</p>
+<p>Good luck!</p>
 </div>
   </div>
 

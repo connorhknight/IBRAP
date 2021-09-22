@@ -52,10 +52,7 @@ perform.scanpy <- function(object,
                            n_bins = 20, 
                            flavor = 'seurat', 
                            batch_key = NULL,
-                           
-                           do.scale=TRUE,
-                           vars.to.regress=NULL, 
-                           do.center=TRUE
+                           vars.to.regress=NULL
 ) {
   
   if(!is(object = object, class2 = 'IBRAP')) {

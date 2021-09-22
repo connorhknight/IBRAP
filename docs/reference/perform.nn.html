@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Performs Scran normalisation, hvg selection, scaling and variance stabilisation and regression. — perform.scran • IBRAP</title>
+<title>Finds the shared nearest neighbourhood for the cells. This supplies a graph. — perform.nn • IBRAP</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -46,8 +46,8 @@
 
 
 
-<meta property="og:title" content="Performs Scran normalisation, hvg selection, scaling and variance stabilisation and regression. — perform.scran" />
-<meta property="og:description" content="A new method-assay is produced. Raw counts are normalised and HVGs identified using Scran" />
+<meta property="og:title" content="Finds the shared nearest neighbourhood for the cells. This supplies a graph. — perform.nn" />
+<meta property="og:description" content="Neighbourhood graph generator utilised. According to the assay name a different method will be used. If the assay is derived from scanpy then the scanpy algorithm will be applied. Otherwise, the seurat implementation will be applied." />
 <meta property="og:image" content="/logo.png" />
 
 
@@ -146,27 +146,34 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Performs Scran normalisation, hvg selection, scaling and variance stabilisation and regression.</h1>
+    <h1>Finds the shared nearest neighbourhood for the cells. This supplies a graph.</h1>
     
-    <div class="hidden name"><code>perform.scran.Rd</code></div>
+    <div class="hidden name"><code>perform.nn.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>A new method-assay is produced. Raw counts are normalised and HVGs identified using Scran</p>
+    <p>Neighbourhood graph generator utilised. According to the assay name a different method will be used. If the assay is derived from scanpy then the scanpy algorithm will be applied. Otherwise, the seurat implementation will be applied.</p>
     </div>
 
-    <div class="ref-usage sourceCode"><pre class='sourceCode r'><code><span class='fu'>perform.scran</span><span class='op'>(</span>
+    <div class="ref-usage sourceCode"><pre class='sourceCode r'><code><span class='fu'>perform.nn</span><span class='op'>(</span>
   <span class='va'>object</span>,
-  assay <span class='op'>=</span> <span class='st'>"RAW"</span>,
-  slot <span class='op'>=</span> <span class='st'>"counts"</span>,
-  batch <span class='op'>=</span> <span class='cn'>NULL</span>,
-  vars.to.regress <span class='op'>=</span> <span class='cn'>NULL</span>,
-  do.scale <span class='op'>=</span> <span class='cn'>TRUE</span>,
-  do.center <span class='op'>=</span> <span class='cn'>TRUE</span>,
-  new.assay.suffix <span class='op'>=</span> <span class='st'>""</span>,
-  n.genes <span class='op'>=</span> <span class='fl'>1500</span>,
-  max.cluster.size <span class='op'>=</span> <span class='fl'>1000</span>,
-  center_size_factors <span class='op'>=</span> <span class='cn'>TRUE</span>
+  <span class='va'>assay</span>,
+  <span class='va'>reduction</span>,
+  neighbour.name.suffix <span class='op'>=</span> <span class='st'>""</span>,
+  dims <span class='op'>=</span> <span class='fl'>0</span>,
+  k.param <span class='op'>=</span> <span class='fl'>20</span>,
+  prune.SNN <span class='op'>=</span> <span class='fl'>1</span><span class='op'>/</span><span class='fl'>15</span>,
+  nn.method <span class='op'>=</span> <span class='st'>"annoy"</span>,
+  n.trees <span class='op'>=</span> <span class='fl'>50</span>,
+  nn.eps <span class='op'>=</span> <span class='fl'>0</span>,
+  annoy.metric <span class='op'>=</span> <span class='st'>"euclidean"</span>,
+  n_neighbors <span class='op'>=</span> <span class='fl'>15</span>,
+  random_state <span class='op'>=</span> <span class='fl'>0</span>,
+  method <span class='op'>=</span> <span class='st'>"umap"</span>,
+  metric <span class='op'>=</span> <span class='st'>"euclidean"</span>,
+  generate.diffmap <span class='op'>=</span> <span class='cn'>FALSE</span>,
+  n_comps <span class='op'>=</span> <span class='fl'>15</span>,
+  diffmap.name.suffix <span class='op'>=</span> <span class='st'>""</span>
 <span class='op'>)</span></code></pre></div>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -181,54 +188,84 @@
       <td><p>Character. String containing indicating which assay to use</p></td>
     </tr>
     <tr>
-      <th>slot</th>
-      <td><p>Character. String indicating which slot within the assay should be sourced</p></td>
+      <th>reduction</th>
+      <td><p>Character. String defining which reduction to supply to the clustering algorithm.</p></td>
     </tr>
     <tr>
-      <th>batch</th>
-      <td><p>Character. Which column in the metadata defines the batches. Default = NULL</p></td>
+      <th>neighbour.name.suffix</th>
+      <td><p>Character. String defining the names to store the neighbourhood graph results under.</p></td>
     </tr>
     <tr>
-      <th>vars.to.regress</th>
-      <td><p>Character. Which column in the metadata should be regressed. Default = NULL</p></td>
+      <th>dims</th>
+      <td><p>Numerical. (scanpy only) How many components of the reduction should be used, 0 means that all will be used. Default = 0</p></td>
     </tr>
     <tr>
-      <th>do.scale</th>
-      <td><p>Boolean. Whether to scale the features variance. Default = TRUE</p></td>
+      <th>k.param</th>
+      <td><p>Numerical. The number of k when calcuating k-nearest neighbour. Default = 20</p></td>
     </tr>
     <tr>
-      <th>do.center</th>
-      <td><p>Boolean. Whether to centre features to zero. Default = TRUE</p></td>
+      <th>prune.SNN</th>
+      <td><p>Numerical. Setas acceptance cutoff for jaccard index whilst computing neighbourhood overlap for SNN construction. Any edges with a value less than this parameter will be removed. 0 = no pruning and 1 = prune everything. Default = 0</p></td>
     </tr>
     <tr>
-      <th>new.assay.suffix</th>
-      <td><p>Character. What should be added as a suffix for SCRAN</p></td>
+      <th>nn.method</th>
+      <td><p>Character. Nearest neighbour method, either 'rann' or 'annoy'. Default = 'annoy'</p></td>
     </tr>
     <tr>
-      <th>n.genes</th>
-      <td><p>Numerical. Top number of genes to retain when finding HVGs. Default = 1500</p></td>
+      <th>n.trees</th>
+      <td><p>Numerical. More trees facilitates hgiher precision when using 'annoy' method. Default = 20</p></td>
     </tr>
     <tr>
-      <th>max.cluster.size</th>
-      <td><p>Numerical. When performing quickCluster, what is the maximum size the clusters can be. Default = 1000</p></td>
+      <th>nn.eps</th>
+      <td><p>Numerical. Margin of error when performing nearest neighbour search whilst using rann method. 0 would imply an exact search. Default = 0.0</p></td>
     </tr>
     <tr>
-      <th>center_size_factors</th>
-      <td><p>Boolean Should size factor variance be centred. Default = TRUE</p></td>
+      <th>annoy.metric</th>
+      <td><p>Character. Distance metric for annoy method. Options: 'euclidean', 'cosine', 'manhattan', 'hamming'. Default = 'euclidean'</p></td>
+    </tr>
+    <tr>
+      <th>n_neighbors</th>
+      <td><p>Numerical. (scanpy only) How many neighbours should be found per cell, a higher value typically achieves more accurate results. Default = 15</p></td>
+    </tr>
+    <tr>
+      <th>random_state</th>
+      <td><p>Numerical. (scanpy only) The seed value to use. Default = 0</p></td>
+    </tr>
+    <tr>
+      <th>method</th>
+      <td><p>Character. (scanpy only) String indicating which methodology to use including: ‘umap’, ‘gauss’ or ‘rapids’</p></td>
+    </tr>
+    <tr>
+      <th>metric</th>
+      <td><p>Character. (scanpy only) String indicating which distance metric to use, including: ‘braycurtis’, ‘canberra’, ‘chebyshev’, ‘correlation’, ‘dice’, ‘hamming’, ‘jaccard’, ‘kulsinski’, ‘mahalanobis’, ‘minkowski’, ‘rogerstanimoto’, ‘russellrao’, ‘seuclidean’, ‘sokalmichener’, ‘sokalsneath’, ‘sqeuclidean’, ‘yule’, ‘cityblock’, ‘cosine’, ‘euclidean’, ‘l1’, ‘l2’ or ‘manhattan’</p></td>
+    </tr>
+    <tr>
+      <th>generate.diffmap</th>
+      <td><p>Boolean. (scanpy only) Should diffusion maps be generated from the neighourhood graphs, these will be stored in computational_reductions and can be used for umap generation and further neighbourhood generation. Default = TRUE</p></td>
+    </tr>
+    <tr>
+      <th>n_comps</th>
+      <td><p>Numerical. (scanpy only) How many components should be generated for the diffusion maps. Default = 15</p></td>
+    </tr>
+    <tr>
+      <th>compute.SNN</th>
+      <td><p>Boolean. Should the shared nearest neighbour graph be calculated. Default = TRUE</p></td>
+    </tr>
+    <tr>
+      <th>diffmap.name</th>
+      <td><p>Character. (scanpy only) What should the diffusion maps be named.</p></td>
     </tr>
     </table>
 
-    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
-
-    <p>Produces a new 'methods' assay containing normalised, scaled and HVGs.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <div class="ref-examples sourceCode"><pre class='sourceCode r'><code><span class='r-in'></span>
-<span class='r-in'><span class='va'>object</span> <span class='op'>&lt;-</span> <span class='fu'>perform.scran</span><span class='op'>(</span>object <span class='op'>=</span> <span class='va'>object</span>, </span>
-<span class='r-in'>                        assay <span class='op'>=</span> <span class='st'>'RAW'</span>, </span>
-<span class='r-in'>                        slot <span class='op'>=</span> <span class='st'>'counts'</span>, </span>
-<span class='r-in'>                        vars.to.regress <span class='op'>=</span> <span class='st'>'RAW_total.counts'</span>, do.scale <span class='op'>=</span> <span class='cn'>T</span><span class='op'>)</span></span>
-<span class='r-err co'><span class='r-pr'>#&gt;</span> <span class='error'>Error in is(object = object, class2 = "IBRAP")</span> object 'object' not found</span>
+<span class='r-in'><span class='co'># generates a diffusion map from the scanpy assay</span></span>
+<span class='r-in'><span class='va'>object</span> <span class='op'>&lt;-</span> <span class='fu'>perform.nn</span><span class='op'>(</span>object <span class='op'>=</span> <span class='va'>object</span>, assay <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>'SCT'</span>, <span class='st'>'SCRAN'</span>, <span class='st'>'SCANPY'</span><span class='op'>)</span>, </span>
+<span class='r-in'>                     reduction <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>'pca_harmony'</span>,<span class='st'>'scanorama'</span><span class='op'>)</span>,</span>
+<span class='r-in'>                     dims <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span><span class='fl'>0</span>,<span class='fl'>0</span><span class='op'>)</span>, generate.diffmap <span class='op'>=</span> <span class='cn'>T</span><span class='op'>)</span></span>
+<span class='r-err co'><span class='r-pr'>#&gt;</span> <span class='error'>Error in is(object, "IBRAP")</span> object 'object' not found</span>
+<span class='r-in'>                        </span>
 <span class='r-in'></span>
 </code></pre></div>
   </div>

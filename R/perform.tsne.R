@@ -127,9 +127,9 @@ perform.tsne <- function(object,
       
       cat(crayon::cyan(paste0(Sys.time(), ': processing ', r, 'for assay:', g,'\n')))
       
-      if(!is.null(dim)) {
+      if(dim != 0) {
         
-        c <- ProjectionBasedClustering::tSNE(DataOrDistances = red[,dim], 
+        c <- ProjectionBasedClustering::tSNE(DataOrDistances = red[,1:dim], 
                                              OutputDimension = n_components, Iterations = 1000, 
                                              verbose = TRUE,...)$ProjectedPoints
         

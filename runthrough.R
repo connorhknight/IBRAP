@@ -103,7 +103,7 @@ sample <- perform.pca(object = sample,
 sample <- perform.nn(object = sample,
                      assay = c('SCT', 'SCRAN', 'SCANPY'),
                      reduction = c('pca'),
-                     dims = list(6),
+                     dims = list(10),
                      generate.diffmap = T)
 
 #Using seurat with pca and diffmap reductions
@@ -133,9 +133,26 @@ sample <- perform.umap(object = sample,
                        n_components = 2)
 
 #Run clustering
-sample <- perform.graph.cluster(object = sample, assay = c('SCT', 'SCANPY'),
+sample <- perform.graph.cluster(object = sample, assay = c('SCT', 'SCRAN', 'SCANPY'),
                                 neighbours = c("pca_nn"),
                                 algorithm = 1)
+
+sample <- perform.diffusion.map(object = sample, assay = c('SCT','SCRAN','SCANPY'), 
+                                reduction = 'pca', dims = list(10))
+
+sample <- perform.umap(object = sample,
+                       assay = c('SCT',
+                                 'SCRAN',
+                                 'SCANPY'),
+                       reduction = c('pca_diffmap'),
+                       n_components = 2,
+                       n.dims = list(NULL))
+
+sample <- perform.umap(object = sample,
+                       assay = c('SCANPY'),
+                       graph = c('pca_nn'),
+                       n_components = 2)
+
 #Cluster assignments
 names(sample@methods$SCT@cluster_assignments)
 
@@ -160,7 +177,7 @@ plot.list[[2]] <- plot.reduced.dim(object = sample,
 plot.list[[2]]
 
 plot.list[[3]] <- plot.reduced.dim(object = sample,
-                                   reduction = 'pca_umap',
+                                   reduction = 'pca_nn:umap',
                                    assay = 'SCANPY',
                                    clust.method = 'pca_nn:louvain',
                                    column = 'neighbourhood_graph_res.0.6', pt.size = 0.6) +
@@ -176,7 +193,7 @@ plot.features(object = sample, assay = 'SCRAN', slot = 'normalised',
               reduction = 'pca_umap', features = c('CD79A','CD79B'), pt_size = 0.6)
 
 plot.features(object = sample, assay = 'SCANPY', slot = 'normalised',
-              reduction = 'pca_nn:umap', features = c('CD79A','CD79B'), pt_size = 0.6)
+              reduction = 'pca_umap', features = c('CD79A','CD79B'), pt_size = 0.6)
 
 #Run Trajectory analysis
 traject_SC <- perform.slingshot.trajectory(object = sample,

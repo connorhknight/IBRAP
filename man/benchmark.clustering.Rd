@@ -9,7 +9,7 @@ benchmark.clustering(
   assay,
   clustering,
   reduction,
-  n.dims = 1:3,
+  n.dims = 2,
   dist.method = "euclidean",
   ground.truth = NULL
 )

@@ -43,7 +43,7 @@ benchmark.clustering <- function(object,
                                  assay,
                                  clustering,
                                  reduction, 
-                                 n.dims = 1:3,
+                                 n.dims = 2,
                                  dist.method='euclidean',
                                  ground.truth=NULL) {
   
@@ -161,7 +161,7 @@ benchmark.clustering <- function(object,
       
       cat(crayon::cyan(paste0(Sys.time(), ': benchmarking for assay: ', l, ' cluster dataframe: ', k, '\n')))
       
-      reduction_sub <- reduction.list[[reduction[count]]][,n.dims]
+      reduction_sub <- reduction.list[[reduction[count]]][,1:n.dims]
       
       count <- count + 1
       

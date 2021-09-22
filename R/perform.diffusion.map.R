@@ -150,7 +150,7 @@ perform.diffusion.map <- function(object,
         
       }
       
-      object@methods[[p]]@computational_reductions[[paste0(r, '_diffmap', diffmap.name.suffix)]] <- destiny::DiffusionMap(data = reduction.list[[r]][,1:dim], k = k, n_eigs = n.dcs, verbose = T, ...)@eigenvectors
+      object@methods[[p]]@computational_reductions[[paste0(r, ':diffmap', diffmap.name.suffix)]] <- destiny::DiffusionMap(data = reduction.list[[r]][,1:dim], k = k, n_eigs = n.dcs, verbose = T, ...)@eigenvectors
       
     }
     

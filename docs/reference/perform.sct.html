@@ -155,7 +155,7 @@
     <p>Performs SCTransform normalisation, hvg selection, scaling and variance stabilisation and regression.</p>
     </div>
 
-    <div class="ref-usage sourceCode"><pre class='sourceCode r'><code><span class='fu'>perform.sct</span><span class='op'>(</span><span class='va'>object</span>, <span class='va'>assay</span>, <span class='va'>slot</span>, new.assay.name <span class='op'>=</span> <span class='st'>"SCT"</span>, <span class='va'>...</span><span class='op'>)</span></code></pre></div>
+    <div class="ref-usage sourceCode"><pre class='sourceCode r'><code><span class='fu'>perform.sct</span><span class='op'>(</span><span class='va'>object</span>, <span class='va'>assay</span>, <span class='va'>slot</span>, new.assay.suffix <span class='op'>=</span> <span class='st'>""</span>, <span class='va'>...</span><span class='op'>)</span></code></pre></div>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -173,8 +173,8 @@
       <td><p>String indicating which slot within the assay should be sourced</p></td>
     </tr>
     <tr>
-      <th>new.assay.name</th>
-      <td><p>Character. Name of new method-assay to be produced. Default = 'SCT'</p></td>
+      <th>new.assay.suffix</th>
+      <td><p>Character. What should be added as a suffix for SCT</p></td>
     </tr>
     <tr>
       <th>do.scale</th>
@@ -183,6 +183,10 @@
     <tr>
       <th>do.center</th>
       <td><p>Whether to center residuals to have mean zero; default is TRUE</p></td>
+    </tr>
+    <tr>
+      <th>vars.to.regress</th>
+      <td><p>Character. Which data from `object@sample_metadata` should be regressed from the dataset.</p></td>
     </tr>
     <tr>
       <th>n.genes</th>

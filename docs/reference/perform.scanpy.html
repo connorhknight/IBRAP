@@ -159,12 +159,12 @@
   <span class='va'>object</span>,
   assay <span class='op'>=</span> <span class='st'>"RAW"</span>,
   slot <span class='op'>=</span> <span class='st'>"counts"</span>,
-  new.assay.name <span class='op'>=</span> <span class='st'>"SCANPY"</span>,
-  target_sum <span class='op'>=</span> <span class='fl'>1e+06</span>,
+  new.assay.suffix <span class='op'>=</span> <span class='st'>""</span>,
+  target_sum <span class='op'>=</span> <span class='fl'>10000</span>,
   exclude_highly_expressed <span class='op'>=</span> <span class='cn'>FALSE</span>,
   max_fraction <span class='op'>=</span> <span class='fl'>0.05</span>,
   key_added <span class='op'>=</span> <span class='st'>"scanpy_norm_factor"</span>,
-  log1 <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  log1 <span class='op'>=</span> <span class='cn'>FALSE</span>,
   n_top_genes <span class='op'>=</span> <span class='fl'>1500</span>,
   max_mean <span class='op'>=</span> <span class='fl'>6</span>,
   min_mean <span class='op'>=</span> <span class='fl'>0.0125</span>,
@@ -173,9 +173,7 @@
   n_bins <span class='op'>=</span> <span class='fl'>20</span>,
   flavor <span class='op'>=</span> <span class='st'>"seurat"</span>,
   batch_key <span class='op'>=</span> <span class='cn'>NULL</span>,
-  do.scale <span class='op'>=</span> <span class='cn'>TRUE</span>,
-  vars.to.regress <span class='op'>=</span> <span class='cn'>NULL</span>,
-  do.centre <span class='op'>=</span> <span class='cn'>TRUE</span>
+  vars.to.regress <span class='op'>=</span> <span class='cn'>NULL</span>
 <span class='op'>)</span></code></pre></div>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -194,8 +192,8 @@
       <td><p>Character. String indicating which slot within the assay should be sourced</p></td>
     </tr>
     <tr>
-      <th>new.assay.name</th>
-      <td><p>Character. What should the new assay be called. Default = 'SCRAN'</p></td>
+      <th>new.assay.suffix</th>
+      <td><p>Character. What should be added as a suffix to 'SCANPY</p></td>
     </tr>
     <tr>
       <th>target_sum</th>
@@ -242,16 +240,16 @@
       <td><p>Character. Which column in the metadata identifies the batches of the cells. Default = NULL</p></td>
     </tr>
     <tr>
-      <th>do.scale</th>
-      <td><p>Boolean. Whether the gene expression should be centred. Default = TRUE</p></td>
-    </tr>
-    <tr>
       <th>vars.to.regress</th>
       <td><p>Character. A single or multiple columns of information in the metadata that should be regressed from the dataset. Default = NULL</p></td>
     </tr>
     <tr>
       <th>flavour</th>
       <td><p>Character. Choosing which HVG selection method to use when, options: 'seurat', 'cell_ranger', 'seurat_v3'. Default = 'seurat'</p></td>
+    </tr>
+    <tr>
+      <th>do.scale</th>
+      <td><p>Boolean. Whether the gene expression should be centred. Default = TRUE</p></td>
     </tr>
     </table>
 
@@ -263,7 +261,7 @@
     <div class="ref-examples sourceCode"><pre class='sourceCode r'><code><span class='r-in'></span>
 <span class='r-in'><span class='va'>object</span> <span class='op'>&lt;-</span> <span class='fu'>perform.scanpy</span><span class='op'>(</span>object <span class='op'>=</span> <span class='va'>object</span>, </span>
 <span class='r-in'>                         vars.to.regress <span class='op'>=</span> <span class='st'>'RAW_total.counts'</span>, do.scale <span class='op'>=</span> <span class='cn'>T</span><span class='op'>)</span></span>
-<span class='r-err co'><span class='r-pr'>#&gt;</span> <span class='error'>Error in is(object = object, class2 = "IBRAP")</span> object 'object' not found</span>
+<span class='r-err co'><span class='r-pr'>#&gt;</span> <span class='error'>Error in perform.scanpy(object = object, vars.to.regress = "RAW_total.counts",     do.scale = T)</span> unused argument (do.scale = T)</span>
 <span class='r-in'></span>
 </code></pre></div>
   </div>

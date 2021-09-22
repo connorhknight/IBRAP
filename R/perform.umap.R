@@ -200,9 +200,9 @@ perform.umap <- function(object,
         
         red <- reduction.list[[i]]
         
-        if(is.null(dim)) {
+        if(dim == 0) {
           
-          dim <- 1:ncol(red)
+          dim <- ncol(red)
           
         }
         
@@ -213,7 +213,7 @@ perform.umap <- function(object,
         seuobj@reductions$pca <- suppressWarnings(Seurat::CreateDimReducObject(embeddings = red, assay = 'RNA', key = paste0(i, '_')))
 
         seuobj <- suppressWarnings(Seurat::RunUMAP(object = seuobj, 
-                                                   dims = dim,
+                                                   dims = 1:dim,
                                                    n_components = n_components, 
                                                    reduction = 'pca',
                                                    verbose = TRUE,

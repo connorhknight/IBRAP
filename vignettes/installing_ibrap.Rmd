@@ -25,19 +25,17 @@ klippy::klippy(tooltip_message = 'Click to copy', tooltip_success = 'Done', posi
 
 IBRAP depends on more than 100 other packages, thus the installation process may take some time and some manual intervention 
 
-Firstly, some Bioconductor packages must be installed: 
+Firstly, some Bioconductor packages must be installed prior to the github installation: 
 
 ```{r, eval=F, echo=T}
 
 if (!requireNamespace("BiocManager", quietly=TRUE))
     install.packages("BiocManager")
-BiocManager::install(c("celda", "slingshot", "scran", "scuttle", "SC3", "SingleCellExperiment", "PCAtools", "topGO","shinydashboard"))
+BiocManager::install(c("celda", "slingshot", "scran", "scuttle", "SC3", "SingleCellExperiment", "PCAtools", "topGO","shinydashboard", "destiny"))
 
 ```
 
-These are packages that are not automatically installed using the subsequent command. 
-
-Next, we install IBRAP and its dependencies:
+Next, we install IBRAP and other dependencies in a single command:
 
 ```{r, eval=F, echo=T}
 
@@ -46,5 +44,36 @@ devtools::install_github('connorhknight/IBRAP')
 
 ```
 
-Once installed, you can enjoy a toolbox of the most commonly used scRNA-seq components, fully integrated. 
+IBRAP not only uses packages within R, but also through python. For this, we use reticulate to interface python into the R environment. To setup reticulate we must start by installing miniconda:
+
+```{r, eval=F, echo=T}
+
+reticulate::install_miniconda()
+
+```
+
+Once miniconda is installed it will produce an environment called r-reticulate. Next, we must assure the correct packages are installed within the new environment:
+
+```{r, eval=F, echo=T}
+
+prepare.reticulate()
+
+```
+
+Once this has been completed, you are ready to use IBRAP! For a basic understand of a single sample workflow please use the 'getting started' tutorial. For multi sample analysis, you can divert to the integration tutorial. 
+
+Good luck!
+
+
+
+
+
+
+
+
+
+
+
+
+
 

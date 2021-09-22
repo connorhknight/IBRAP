@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Create an IBRAP class object — createIBRAPobject • IBRAP</title>
+<title>Diffusion maps — perform.diffusion.map • IBRAP</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -46,8 +46,8 @@
 
 
 
-<meta property="og:title" content="Create an IBRAP class object — createIBRAPobject" />
-<meta property="og:description" content="Creates and produces project metadata into an IBRAP S4 class object" />
+<meta property="og:title" content="Diffusion maps — perform.diffusion.map" />
+<meta property="og:description" content="Produces diffusion maps from previous reductions, i.e. PCA. Diffusion maps are known to better represent cellular trajectories in non-linear space" />
 <meta property="og:image" content="/logo.png" />
 
 
@@ -146,58 +146,64 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Create an IBRAP class object</h1>
+    <h1>Diffusion maps</h1>
     
-    <div class="hidden name"><code>createIBRAPobject.Rd</code></div>
+    <div class="hidden name"><code>perform.diffusion.map.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Creates and produces project metadata into an IBRAP S4 class object</p>
+    <p>Produces diffusion maps from previous reductions, i.e. PCA. Diffusion maps are known to better represent cellular trajectories in non-linear space</p>
     </div>
 
-    <div class="ref-usage sourceCode"><pre class='sourceCode r'><code><span class='fu'>createIBRAPobject</span><span class='op'>(</span>counts <span class='op'>=</span> <span class='va'>counts</span>, original.project <span class='op'>=</span> <span class='st'>'project_1'</span>, method.name <span class='op'>=</span> <span class='st'>'RAW'</span>, meta.data <span class='op'>=</span> <span class='va'>df</span>, min.cells <span class='op'>=</span> <span class='fl'>3</span>, min.features <span class='op'>=</span> <span class='fl'>200</span><span class='op'>)</span></code></pre></div>
+    <div class="ref-usage sourceCode"><pre class='sourceCode r'><code><span class='fu'>perform.diffusion.map</span><span class='op'>(</span>
+  <span class='va'>object</span>,
+  <span class='va'>assay</span>,
+  <span class='va'>reduction</span>,
+  <span class='va'>dims</span>,
+  n.dcs <span class='op'>=</span> <span class='fl'>15</span>,
+  k <span class='op'>=</span> <span class='fl'>15</span>,
+  diffmap.name.suffix <span class='op'>=</span> <span class='st'>""</span>,
+  <span class='va'>...</span>
+<span class='op'>)</span></code></pre></div>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>counts</th>
-      <td><p>Counts matrix</p></td>
+      <th>object</th>
+      <td><p>IBRAP S4 class object</p></td>
     </tr>
     <tr>
-      <th>original.project</th>
-      <td><p>Character string naming the project</p></td>
+      <th>assay</th>
+      <td><p>Character. String containing indicating which assay to use</p></td>
     </tr>
     <tr>
-      <th>method.name</th>
-      <td><p>Character string naming the original method-assay. Default = 'RAW' `(Recommended)`</p></td>
+      <th>reduction</th>
+      <td><p>Character. String defining which reduction to supply to the clustering algorithm.</p></td>
     </tr>
     <tr>
-      <th>meta.data</th>
-      <td><p>data.frame of extra metadata to append to generated dataframe. Warning: Must be in the same order and colnames</p></td>
+      <th>dims</th>
+      <td><p>Numerical list. The number of dimensions to use for each reduction. This is supplied as a list respective to the order of reductions.</p></td>
     </tr>
     <tr>
-      <th>min.cells</th>
-      <td><p>Numerical value of the minimum number of cells a gene should be present in</p></td>
+      <th>n.dcs</th>
+      <td><p>Numerical. The number of diffusion components to produce. Default = 15</p></td>
     </tr>
     <tr>
-      <th>min.features</th>
-      <td><p>Numerical value minimum features that should be present in a cell</p></td>
+      <th>k</th>
+      <td><p>Numerical. How many neighbours should be found per cell. A higher value tends to be more accurate. Default = 15</p></td>
+    </tr>
+    <tr>
+      <th>diffmap.name.suffix</th>
+      <td><p>Character. What should be used as a suffix for diffmap</p></td>
     </tr>
     </table>
 
-    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
-
-    <p>IBRAP S4 class object containing raw counts and metadata</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <div class="ref-examples sourceCode"><pre class='sourceCode r'><code><span class='r-in'><span class='va'>object</span> <span class='op'>&lt;-</span> <span class='fu'>createIBRAPobject</span><span class='op'>(</span>counts <span class='op'>=</span> <span class='va'>counts</span>,</span>
-<span class='r-in'>                                      meta.data <span class='op'>=</span> <span class='va'>metadata_df</span>,</span>
-<span class='r-in'>                                      original.project <span class='op'>=</span> <span class='st'>'bmmc'</span>,</span>
-<span class='r-in'>                                      method.name <span class='op'>=</span> <span class='st'>'RAW'</span>,</span>
-<span class='r-in'>                                      min.cells <span class='op'>=</span> <span class='fl'>3</span>,</span>
-<span class='r-in'>                                      min.features <span class='op'>=</span> <span class='fl'>200</span><span class='op'>)</span></span>
-<span class='r-err co'><span class='r-pr'>#&gt;</span> <span class='error'>Error in as.matrix(x = counts)</span> object 'counts' not found</span>
+    <div class="ref-examples sourceCode"><pre class='sourceCode r'><code><span class='r-in'></span>
+<span class='r-in'>                        </span>
+<span class='r-in'></span>
 <span class='r-in'></span>
 </code></pre></div>
   </div>

@@ -10,7 +10,7 @@ perform.scran(
   slot = "counts",
   batch = NULL,
   vars.to.regress = NULL,
-  do.scale = FALSE,
+  do.scale = TRUE,
   do.center = TRUE,
   new.assay.suffix = "",
   n.genes = 1500,

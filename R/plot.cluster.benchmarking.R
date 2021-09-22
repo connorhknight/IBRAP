@@ -19,7 +19,7 @@
 plot.cluster.benchmarking <- function(object, 
                                       assay,
                                       clustering, 
-                                      ARI){
+                                      ARI = F){
   
   if(!is(object, 'IBRAP')) {
     

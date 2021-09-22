@@ -112,6 +112,9 @@
     <loc>/reference/perform.diffexp.html</loc>
   </url>
   <url>
+    <loc>/reference/perform.diffusion.map.html</loc>
+  </url>
+  <url>
     <loc>/reference/perform.graph.cluster.html</loc>
   </url>
   <url>
@@ -122,6 +125,9 @@
   </url>
   <url>
     <loc>/reference/perform.lvish.html</loc>
+  </url>
+  <url>
+    <loc>/reference/perform.nn.html</loc>
   </url>
   <url>
     <loc>/reference/perform.nn.v1.html</loc>

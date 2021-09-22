@@ -121,12 +121,14 @@
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R">
 <span class="va">bmmc</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.choose.html" class="external-link">file.choose</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
-  
-                       </code></pre></div>
-<div id="chapter-1-cleaning-droplet-based-datasdets" class="section level2">
+  </code></pre></div>
+<div id="section-1-cleaning-droplet-based-datasdets" class="section level2">
 <h2 class="hasAnchor">
-<a href="#chapter-1-cleaning-droplet-based-datasdets" class="anchor" aria-hidden="true"></a>Chapter 1: Cleaning droplet-based datasdets</h2>
-<p>Droplet-based technologies are normally accompanied by specific conundra that requires omission, namely: multiplets and ambient RNA. With IBRAP you can apply a python package called scrublet (perform.scrublet()) and decontX (perform.decontX()) from the celda package in R for removal, respectively. We supply our count matrix to the functions. There is no defined order of applciation, but logically we assume scrublet removal followed by decontX.</p>
+<a href="#section-1-cleaning-droplet-based-datasdets" class="anchor" aria-hidden="true"></a>Section 1: Cleaning droplet-based datasdets</h2>
+<div id="section-1-1-applying-the-functions" class="section level3">
+<h3 class="hasAnchor">
+<a href="#section-1-1-applying-the-functions" class="anchor" aria-hidden="true"></a>Section 1.1: Applying the functions</h3>
+<p>Droplet-based present unique confounding effects, including doublets and ambient RNA contamination. To remove them we have enlisted scrublet and decontX, respectively. Thus far, there is no consensus on the order of application. However, we prefer scrublet followed by decontX.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R">
 <span class="co"># We simply supply our generated count matrix to both functions</span>
@@ -134,13 +136,19 @@
 <span class="va">bmmc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/perform.scrublet.html">perform.scrublet</a></span><span class="op">(</span>counts <span class="op">=</span> <span class="va">bmmc</span><span class="op">)</span>
 
 <span class="va">bmmc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/perform.decontX.html">perform.decontX</a></span><span class="op">(</span>counts <span class="op">=</span> <span class="va">bmmc</span><span class="op">)</span></code></pre></div>
-<p><img src="scrublet_plot.png" width="150%" height="150%"></p>
-<p><img src="decontX.png" width="150%" height="150%"></p>
 </div>
-<div id="chapter-2-initiating-the-ibrap-s4-object" class="section level2">
+<div id="section-1-2explaining-the-results" class="section level3">
+<h3 class="hasAnchor">
+<a href="#section-1-2explaining-the-results" class="anchor" aria-hidden="true"></a>Section 1.2:Explaining the results</h3>
+<p><img src="scrublet_plot.png" width="150%" height="150%"></p>
+<p>Scrublet functions by simulating multiplets from out datasets (by integrating similar cells); we can see these simulated cells with high doublet scores. For this example, we can see a minimal number of cells in our observed cells with high doublet scores. Cells that are above a certain doublet score threshold are omitted from the dataset.</p>
+<p><img src="decontX.png" width="150%" height="150%"></p>
+<p>DecontX creates a umap projection of samples and colours the them according the amount of contamination presented within a cell. In this sample, we observe minimal contaminaton. WARNING</p>
+</div>
+</div>
+<div id="section-2-initiating-the-ibrap-s4-object" class="section level2">
 <h2 class="hasAnchor">
-<a href="#chapter-2-initiating-the-ibrap-s4-object" class="anchor" aria-hidden="true"></a>Chapter 2: Initiating the IBRAP S4 object</h2>
-<p>Since our datasets are produced by 10x genomics and aligned using CellRanger, 3 subsequent files are produced to integrate these files into a count matrix.</p>
+<a href="#section-2-initiating-the-ibrap-s4-object" class="anchor" aria-hidden="true"></a>Section 2: Initiating the IBRAP S4 object</h2>
 <p>Now we can initiate our IBRAP class object ready for downstream analyses. Refer to methods-object and IBRAP-object for further detail.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R">
@@ -151,11 +159,15 @@
                           min.cells <span class="op">=</span> <span class="fl">3</span>,
                           min.features <span class="op">=</span> <span class="fl">200</span><span class="op">)</span>
                           </code></pre></div>
+<p>This produces an S4 class object that initially contains sample metadata and a raw method assay contained in <a href="mailto:object@methods" class="email">object@methods</a>. A couple of important steps happen here: important metadata, including: total counts and total features per cell are stored in <a href="mailto:object@sample_metadata" class="email">object@sample_metadata</a>, and some initial filtering of the count matrix happens. In thsi case, we remove an features that are not present in at least 3 cells and remove cells with less than 200 features are present. We performed the latter as to remove any droplets that are empty and do not contain true cells.</p>
 </div>
-<div id="chapter-3-quality-control" class="section level2">
+<div id="section-3-quality-control" class="section level2">
 <h2 class="hasAnchor">
-<a href="#chapter-3-quality-control" class="anchor" aria-hidden="true"></a>Chapter 3: Quality Control</h2>
-<p>Current best practices for quality assuring scRNA-seq datasets are outlined in numerous <a href="https://www.embopress.org/doi/full/10.15252/msb.20188746" class="external-link">publications</a>. Including:</p>
+<a href="#section-3-quality-control" class="anchor" aria-hidden="true"></a>Section 3: Quality Control</h2>
+<div id="section-3-1-metrices" class="section level3">
+<h3 class="hasAnchor">
+<a href="#section-3-1-metrices" class="anchor" aria-hidden="true"></a>Section 3.1: Metrices</h3>
+<p>Next, we must assess the quality of our datasets, if you wish to read in-depth about Quality Control (QC) then please refer to this <a href="https://www.embopress.org/doi/full/10.15252/msb.20188746" class="external-link">publication</a>. In summary, we use the following metrices to QC our data:</p>
 <table class="table">
 <colgroup>
 <col width="13%">
@@ -180,7 +192,7 @@
 </tr>
 </tbody>
 </table>
-<p>The total RNA and Total genes are calculated upon the creation of the IBRAP object. However, percentage mitochondrial genes requires a second function since mitochondrial genes have a varying prefix in datasets. Thus, we use find_percentage_genes():</p>
+<p>As previously mentioned we already generated total count and total genes whilst creating our ibrap object. However, percentage mitochondrial genes requires a second function since mitochondrial genes have a varying prefix in datasets:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R">
 <span class="va">bmmc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/find_percentage_genes.html">find_percentage_genes</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">bmmc</span>, pattern <span class="op">=</span> <span class="st">'^MT-'</span>,
@@ -188,7 +200,12 @@
                               slot <span class="op">=</span> <span class="st">'counts'</span>,
                               column.name <span class="op">=</span> <span class="st">'RAW_percent.mt'</span><span class="op">)</span>
                               </code></pre></div>
-<p>We can visualise this information in two ways: using violin plots (plot.qc.vln()) or comparing two metrices with scatter plots (plot.qc.scatter()). The latter enables us to observe correlations between the metrices.</p>
+<p>These fraction results will be saved under <a href="mailto:object@sample_metadata" class="email">object@sample_metadata</a> alongside total counts and total genes for use downstream.</p>
+</div>
+<div id="section-3-2-visualisation" class="section level3">
+<h3 class="hasAnchor">
+<a href="#section-3-2-visualisation" class="anchor" aria-hidden="true"></a>Section 3.2: Visualisation</h3>
+<p>Visualising this information is important for high dimensional data. Thus, we can achieve this in two ways: using violin plots or comparing two metrices with scatter plots.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R">
 <span class="fu"><a href="../reference/plot.QC.vln.html">plot.QC.vln</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">bmmc</span>, 
@@ -196,23 +213,33 @@
                                  <span class="st">'RAW_total.counts'</span>, 
                                  <span class="st">'RAW_percent.mt'</span><span class="op">)</span><span class="op">)</span>
                                  </code></pre></div>
+<p>The violin plot is split into its metrices and displays the volume of cells expressing the value on the y axis.</p>
 <p><img src="vln_qc_pre.png" width="150%" height="150%"></p>
+<p>Scatter plots enable us to observe correlations between metrices, i.e. the higher the amount of features in a cell the higher the nummber of counts there should be.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R">
 <span class="fu">plot.qc.scatter</span><span class="op">(</span>object <span class="op">=</span> <span class="va">bmmc</span>, 
-                y <span class="op">=</span> <span class="st">'RAW_total.counts'</span>, 
-                x <span class="op">=</span> <span class="st">'RAW_percent.mt'</span>, 
+                x <span class="op">=</span> <span class="st">'RAW_total.counts'</span>, 
+                y <span class="op">=</span> <span class="st">'RAW_total.features'</span>, 
                 split.by <span class="op">=</span> <span class="st">'original.project'</span>
                 <span class="op">)</span></code></pre></div>
 <p><img src="scatter_qc_pre.png" width="150%" height="150%"></p>
-<p>Filtration is subsequently applied to remove problematic cells.</p>
+</div>
+<div id="section-3-3-filtration" class="section level3">
+<h3 class="hasAnchor">
+<a href="#section-3-3-filtration" class="anchor" aria-hidden="true"></a>Section 3.3: Filtration</h3>
+<p>Next, we clean our data further by applyng filtration cut-offs. We remove cells with a high number of features since this will remove any doublets that were missed by scrublet (two cells in a droplet will display a disproportionately higher number of features). Then, we remove cells with a certain fraction of mitochondrial counts, we do this to remove cells with damaged mitochondria during the preparation process.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R">
-<span class="va">bmmc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/filter_IBRAP.html">filter_IBRAP</a></span><span class="op">(</span><span class="va">RAW_total.features</span> <span class="op">&lt;</span> <span class="fl">2500</span> <span class="op">&amp;</span> <span class="va">RAW_total.counts</span> <span class="op">&gt;</span> <span class="fl">200</span> <span class="op">&amp;</span> <span class="va">RAW_percent.mt</span> <span class="op">&lt;</span> <span class="fl">8</span><span class="op">)</span></code></pre></div>
+<span class="va">bmmc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/filter_IBRAP.html">filter_IBRAP</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">bmmc</span>, <span class="va">RAW_total.features</span> <span class="op">&lt;</span> <span class="fl">3000</span> <span class="op">&amp;</span> <span class="va">RAW_percent.mt</span> <span class="op">&lt;</span> <span class="fl">8</span><span class="op">)</span></code></pre></div>
 </div>
-<div id="chapter-4-data-transformation" class="section level2">
+</div>
+<div id="section-4-data-transformation" class="section level2">
 <h2 class="hasAnchor">
-<a href="#chapter-4-data-transformation" class="anchor" aria-hidden="true"></a>Chapter 4: Data Transformation</h2>
+<a href="#section-4-data-transformation" class="anchor" aria-hidden="true"></a>Section 4: Data Transformation</h2>
+<div id="section-4-1-applying-the-functions" class="section level3">
+<h3 class="hasAnchor">
+<a href="#section-4-1-applying-the-functions" class="anchor" aria-hidden="true"></a>Section 4.1: Applying The Functions</h3>
 <p>To accommodate downstream analyses, we must promote a normal distribution and numerical scaling in our data. We included four separate <a href="https://connorhknight.github.io/IBRAP/articles/data_transform.html" class="external-link">normalisation</a> methods that are applied as such:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R">
@@ -227,161 +254,197 @@
 
 <span class="va">bmmc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/perform.scanpy.html">perform.scanpy</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">bmmc</span>, 
                        vars.to.regress <span class="op">=</span> <span class="st">'RAW_total.counts'</span>, do.scale <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></code></pre></div>
-<p>Please refer to the above hyperlink to understand why we only used 3 out of 4 methods for this 10x dataset.</p>
+</div>
+<div id="section-4-2-how-functions-work-downstream" class="section level3">
+<h3 class="hasAnchor">
+<a href="#section-4-2-how-functions-work-downstream" class="anchor" aria-hidden="true"></a>Section 4.2: How Functions Work Downstream</h3>
 <p>Each normalisation function produces a new method-assay which contains the results. Any downstream analyses will be stored in these separate compartments, respective to the normalisation method. i.e. <a href="mailto:object@methods" class="email">object@methods</a> contains all of the method assays. Hereon, function will iterate through the indicated method-assays and any other inputs within the assays. For example, if you supply c(‘SCT’,‘SCRAN’,‘SCANPY’) as assays and c(‘pca_umap’, ‘pca_t-SNE’) as reductions. A function will perform firstly on ‘pca_umap’ in the ‘SCT’ assay, then the ‘pca_t-SNE’ in the ‘SCT’ assay. After these the function will move on to ‘pca_umap’ in the ‘SCRAN’ assay and so on.</p>
 </div>
-<div id="chapter-5-linear-dimensionaly-reduction" class="section level2">
+<div id="section-4-3-downstream-pipeline-deviations" class="section level3">
+<h3 class="hasAnchor">
+<a href="#section-4-3-downstream-pipeline-deviations" class="anchor" aria-hidden="true"></a>Section 4.3: Downstream Pipeline Deviations</h3>
+<p>Since IBRAP incorporated multiple pipelines some pipelines begin to vary at this point. For example, Scanpy PCA calculation and neighbourhood graph generation slightly differ. IBRAP accomodates this by identifyig the assay name and automatically applying the correct function. When adding suffixes to any result naming it is important not to include your own underscores.</p>
+</div>
+</div>
+<div id="section-5-removing-certain-highly-variable-genes" class="section level2">
 <h2 class="hasAnchor">
-<a href="#chapter-5-linear-dimensionaly-reduction" class="anchor" aria-hidden="true"></a>Chapter 5: Linear Dimensionaly Reduction</h2>
-<p>Now that our data has been appropriately transformed we can reduce the number of dimensions using Principal Component Analysis (PCA) perform.pca(). Reduction methods summarise as much information from the higher dimensions into lower dimensions as possible.</p>
+<a href="#section-5-removing-certain-highly-variable-genes" class="anchor" aria-hidden="true"></a>Section 5: Removing Certain Highly Variable Genes</h2>
+<p>In some instances, certain genes require omission from the highly varaible genes. This can be achieved with the following function:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R">
+<span class="co"># This function finds all ribosomal genes and removes them from the HVG list of the three assays</span>
+<span class="va">unwanted</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="fu"><a href="../reference/rownames.html">rownames</a></span><span class="op">(</span><span class="va">bmmc</span><span class="op">)</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl</a></span><span class="op">(</span><span class="st">"^RPL"</span> ,x<span class="op">=</span><span class="fu"><a href="../reference/rownames.html">rownames</a></span><span class="op">(</span><span class="va">bmmc</span><span class="op">)</span><span class="op">)</span><span class="op">]</span><span class="op">)</span>
+<span class="va">bmmc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/remove.hvgs.html">remove.hvgs</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">bmmc</span>, assay <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'SCT'</span>, <span class="st">'SCRAN'</span>, <span class="st">'SCANPY'</span><span class="op">)</span>, 
+                    hvgs.omit <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">unwanted</span>,<span class="va">unwanted</span>,<span class="va">unwanted</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+</div>
+<div id="section-6-linear-dimensionaly-reduction" class="section level2">
+<h2 class="hasAnchor">
+<a href="#section-6-linear-dimensionaly-reduction" class="anchor" aria-hidden="true"></a>Section 6: Linear Dimensionaly Reduction</h2>
+<div id="section-6-1-principal-component-analysis" class="section level3">
+<h3 class="hasAnchor">
+<a href="#section-6-1-principal-component-analysis" class="anchor" aria-hidden="true"></a>Section 6.1: Principal Component Analysis</h3>
+<p>Now that our data has been appropriately transformed and highly varaible genes have been identified we can reduce the number of dimensions using Principal Component Analysis (PCA). Reduction methods summarise as much information from the higher dimensions into lower dimensions as possible. Therefore, these lower dimensions facilitate a faster computing time and require less computational resources.</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R">
 <span class="va">bmmc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/perform.pca.html">perform.pca</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">bmmc</span>, 
                     assay <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'SCT'</span>, <span class="st">'SCRAN'</span>, <span class="st">'SCANPY'</span><span class="op">)</span>, 
-                    n.pcs <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">50</span>, reduction.save <span class="op">=</span> <span class="st">'pca'</span><span class="op">)</span></code></pre></div>
-<p>The produce principal components (PCs) contain a different explained variance, high variance PCs contain the most information between points and low provide the opposite. Furthermore, low variation PCs create a false closeness between cell points and thus require exclusion from <em>some</em> downstream analyses. A simple way to identify the number of PCs to retain is to plot them in descending order and find the elbow point. The elbow point being the bend in the plot of points.</p>
+                    n.pcs <span class="op">=</span> <span class="fl">50</span>, reduction.save <span class="op">=</span> <span class="st">'pca'</span><span class="op">)</span></code></pre></div>
+<p>As you can see, we have requested this function to iterate through all three assays and to save the reduction as pca. The produced principal components (PCs) contain a different explained variance, high variance PCs contain the most information between points and low provide the opposite. Furthermore, low variation PCs create a false closeness between cell points and thus require exclusion from <em>some</em> downstream analyses. A simple way to identify the number of PCs to retain is to plot them in descending order and find the elbow point. The elbow point being the bend in the plot of points.</p>
 <p><img src="PCA_screeplot.png" width="150%" height="150%"></p>
-<p>For these assays, the elbow point is around 10-12 PCs.</p>
+<p>For these assays, the elbow point is around 10-15 PCs.</p>
 </div>
-<div id="chapter-6-generating-neighbourhood-graphs-clustering" class="section level2">
-<h2 class="hasAnchor">
-<a href="#chapter-6-generating-neighbourhood-graphs-clustering" class="anchor" aria-hidden="true"></a>Chapter 6: Generating Neighbourhood Graphs &amp; Clustering</h2>
-<p>IBRAP enlists two neighbourhood graph generators: - perform.nn.v1() which is derived scanpys neighbourhood graph function. - perform.nn.v2() which is seurats version.</p>
-<p>The main difference is that v1 uses UMAPs method of finding neighbours and all edge weights equate to one. Whereas, v2 uses the Louvain algorithm to maximise modularity (network closeness) and edge weights are jacquard similarity between neighbours.</p>
-<p>Scanpy also integrated an ease-of-use function to generate diffusion maps generated from the neighbourhood graph. This is an equivalent to PCA but is thought to represent cellular trajectories. We can generate these diffusion maps by setting the generate.diffmap parameter to TRUE. Since we need to generate neighourhood graphs for the diffusion maps too, there is a little repetition in functon application.</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># here we generate the neighbour graph for PCA and produce a diffusion map from the PCA-neighbour graph</span>
-
-<span class="va">bmmc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/perform.nn.v1.html">perform.nn.v1</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">bmmc</span>, assay <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'SCT'</span>, <span class="st">'SCRAN'</span>, <span class="st">'SCANPY'</span><span class="op">)</span>, 
-                      reduction <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'pca'</span><span class="op">)</span>, 
-                      dims <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fl">0</span><span class="op">)</span>, 
-                      generate.diffmap <span class="op">=</span> <span class="cn">T</span><span class="op">)</span>
-                      
-<span class="co"># the next function generates neighbours for the diffusion map</span>
-                      
-<span class="va">bmmc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/perform.nn.v1.html">perform.nn.v1</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">bmmc</span>, 
-                      assay <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'SCT'</span>, <span class="st">'SCRAN'</span>, <span class="st">'SCANPY'</span><span class="op">)</span>, 
-                      reduction <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'pca_nn.v1:diffmap'</span><span class="op">)</span>, 
-                      dims <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fl">0</span><span class="op">)</span>,
-                      generate.diffmap <span class="op">=</span> <span class="cn">F</span><span class="op">)</span>
-                      
-<span class="co"># this last function finds the neighbour graph for pca and the difusion map using seurats version</span>
-<span class="co"># v2 does not produce diffusion maps</span>
-
-<span class="va">bmmc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/perform.nn.v2.html">perform.nn.v2</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">bmmc</span>, 
-                      assay <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'SCT'</span>, <span class="st">'SCRAN'</span>, <span class="st">'SCANPY'</span><span class="op">)</span>, 
-                      reduction <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'pca'</span>, <span class="st">'pca_nn.v1:diffmap'</span><span class="op">)</span>, 
-                      dims <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">0</span><span class="op">)</span><span class="op">)</span>
-                          </code></pre></div>
-<p>Finally, using our neighbourhood graph we must cluster close networks together to infer individual cell types. perform.graph.cluster() provides either: - Louvain algorithm (1) - Louvain algorithm with multilevel refinement (2) - Smart Local Moving (SLM) (3) - Leiden (4)</p>
+<div id="section-6-2-diffusion-maps" class="section level3">
+<h3 class="hasAnchor">
+<a href="#section-6-2-diffusion-maps" class="anchor" aria-hidden="true"></a>Section 6.2: Diffusion Maps</h3>
+<p>We use next calculate diffusion maps from our PCA reduction. Diffusion maps are useful in visualising the developmental trajectory in our cellular population once processed with a non-linear method, such as: UMAP. To create this we apply the following function:</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R">
-<span class="va">bmmc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/perform.graph.cluster.html">perform.graph.cluster</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">bmmc</span>, 
-                               assay <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'SCT'</span>, <span class="st">'SCRAN'</span>, <span class="st">'SCANPY'</span><span class="op">)</span>, 
-                               neighbours <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"pca"</span>, <span class="st">"pca_nn.v1:diffmap"</span><span class="op">)</span>, 
-                               algorithm <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></code></pre></div>
-<p>There are alternative <a href="https://connorhknight.github.io/IBRAP/articles/clustering_method.html" class="external-link">clustering methods</a> that are described in an alternate article</p>
+<span class="va">bmmc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/perform.diffusion.map.html">perform.diffusion.map</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">bmmc</span>, assay <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'SCT'</span>, <span class="st">'SCRAN'</span>, <span class="st">'SCANPY'</span><span class="op">)</span>, reduction <span class="op">=</span> <span class="st">'pca'</span>, dims <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fl">0</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<p>Again, we have requested for IBRAP to iterate through our three assays whilst using their PCA reduction. We specified the dimensions to use as 0 (which means all components) and the default setting for this function produces 15 diffusion components. Both the PCA and diffusion map will be saved in the method assay in <a href="mailto:assay@computational_reductions" class="email">assay@computational_reductions</a>.</p>
+<p>We will then process these downstream. Next, we will cluster our datasets.</p>
 </div>
-<div id="chapter-7-non-linear-reduction" class="section level2">
+</div>
+<div id="section-7-generating-neighbourhood-graphs-clustering" class="section level2">
 <h2 class="hasAnchor">
-<a href="#chapter-7-non-linear-reduction" class="anchor" aria-hidden="true"></a>Chapter 7: Non-linear Reduction</h2>
-<p>Since we have reduced our dataset into a manageable size, produce neighbourhood graphs and clustered communities, we need to visualise our data. scRNA-seq contains many zeros which makes a sparse matrix, this renders linear reduction methods inappropriate for visualisation. Therefore, we resort to non-linear reductions.</p>
-<p>IBRAP integrated the ability to perform 3 methods: - UMAP - t-SNE - lvish (a LargeVis adaptation)</p>
-<p>For this tutorial we will focus on UMAP.</p>
+<a href="#section-7-generating-neighbourhood-graphs-clustering" class="anchor" aria-hidden="true"></a>Section 7: Generating Neighbourhood Graphs &amp; Clustering</h2>
+<div id="section-7-1-neighbourhood-graphs" class="section level3">
+<h3 class="hasAnchor">
+<a href="#section-7-1-neighbourhood-graphs" class="anchor" aria-hidden="true"></a>Section 7.1: Neighbourhood Graphs</h3>
+<p>Prior to clustering it is important to ascertain the relationship and closeness of our cells. As a pre-requisite to clustering we are going to produce a k-nearest neghbour graphs. This is produced by applying the following function:</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R">
-<span class="va">bmmc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/perform.umap.html">perform.umap</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">samp</span>, 
-                     assay <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'SCT'</span>, <span class="st">'SCRAN'</span>, <span class="st">'SCANPY'</span><span class="op">)</span>, 
-                     reduction <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'pca'</span>, <span class="st">'pca_nn.v1:diffmap'</span><span class="op">)</span>, 
-                     n.dims <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">10</span>,<span class="cn">NULL</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<p>After generating reductions and cell assignments you may wish to benchmark these assignments, this is demonstrated in this tutorial</p>
+<code class="sourceCode R"><span class="co"># here we generate the neighbour graph for PCA and produce a diffusion map from the PCA-neighbour graph</span>
+
+<span class="va">bmmc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/perform.nn.html">perform.nn</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">bmmc</span>, assay <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'SCT'</span>, <span class="st">'SCRAN'</span>, <span class="st">'SCANPY'</span><span class="op">)</span>, 
+                   reduction <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'pca'</span>, <span class="st">'pca:diffmap'</span><span class="op">)</span>, 
+                   dims <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">0</span><span class="op">)</span><span class="op">)</span>
+                          </code></pre></div>
+<p>In this function, we have requested that the function iterate through all three assays, within each assay to use pca and then pca:diffmap using all dimensions (seen as list(0,0)). These results will be stored under <a href="mailto:assay@neighbours" class="email">assay@neighbours</a> ready for use downstream.</p>
 </div>
-<div id="chapter-8-visualising-clustering-results" class="section level2">
-<h2 class="hasAnchor">
-<a href="#chapter-8-visualising-clustering-results" class="anchor" aria-hidden="true"></a>Chapter 8: Visualising Clustering Results</h2>
-<p>Since IBRAP has integrated several pipelines we must begin to visualise the differences between results.</p>
-<p>We performed Louvain graph clustering from two different neighbourhood graphs which can causes varied results. Therefore we should observe the difference between these values.</p>
+<div id="section-7-2-clustering" class="section level3">
+<h3 class="hasAnchor">
+<a href="#section-7-2-clustering" class="anchor" aria-hidden="true"></a>Section 7.2: Clustering</h3>
+<p>Finally, using our neighbourhood graph we must cluster close networks together to infer individual cell types. perform.graph.cluster() provides either: - Louvain algorithm (1) - Louvain algorithm with multilevel refinement (2) - Smart Local Moving (SLM) (3) - Leiden (4)</p>
+<p>These methods can be adjusted using thre res parameter in the function typically ranging between 0.1-1.5. A higher resolution finds more communities in a sample, whereas a lower value produces the opposite. The default option for this function is to use the following resolutions: c(0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1, 1.1, 1.2, 1.3, 1.4, 1.5). However, feel free to adjsut this to your requirement.</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R">
-<span class="va">plot1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot.reduced.dim.html">plot.reduced.dim</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">samp</span>, 
-                          reduction <span class="op">=</span> <span class="st">'pca_umap'</span>, 
-                          assay <span class="op">=</span> <span class="st">'SCT'</span>, 
-                          clust.method <span class="op">=</span> <span class="st">'pca_nn.v1:louvain'</span>, 
-                          column <span class="op">=</span> <span class="st">'neighbourhood_graph_res.0.7'</span>, pt.size <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span> <span class="op">+</span> 
-  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">'neighbour_v1'</span><span class="op">)</span> <span class="op">+</span> 
-  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>plot.title <span class="op">=</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>hjust <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span><span class="op">)</span>
-
-<span class="va">plot2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot.reduced.dim.html">plot.reduced.dim</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">samp</span>, 
-                          reduction <span class="op">=</span> <span class="st">'pca_umap'</span>, 
-                          assay <span class="op">=</span> <span class="st">'SCT'</span>, 
-                          clust.method <span class="op">=</span> <span class="st">'pca_nn.v2:louvain'</span>, 
-                          column <span class="op">=</span> <span class="st">'neighbourhood_graph_res.0.6'</span>, pt.size <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span> <span class="op">+</span> 
-  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">'neighbour_v2'</span><span class="op">)</span> <span class="op">+</span> 
-  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>plot.title <span class="op">=</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>hjust <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span><span class="op">)</span>
-
-<span class="va">plot1</span> <span class="op">+</span> <span class="va">plot2</span></code></pre></div>
-<p><img src="umap_plots_neighbours.png" width="150%" height="150%"></p>
-<p>We also produce these results using different normalisation methods, lets observe the difference between these.</p>
+<span class="va">bmmc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/perform.graph.cluster.html">perform.graph.cluster</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">bmmc</span>, 
+                              assay <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'SCT'</span>, <span class="st">'SCRAN'</span>, <span class="st">'SCANPY'</span><span class="op">)</span>, 
+                              neighbours <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"pca_nn"</span>, <span class="st">"pca:diffmap_nn"</span><span class="op">)</span>, 
+                              algorithm <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></code></pre></div>
+<p>For this example we clustered all assays and used our neighbourhood graphs generated from PCA and Diffusion maps using the classic louvain algorithm. As mentioned above there are a few graph-based methods. But, we have also inclusing a couple of <a href="https://connorhknight.github.io/IBRAP/articles/clustering_method.html" class="external-link">alternatives</a> that are described in another tutorial</p>
+</div>
+</div>
+<div id="section-8-non-linear-reduction" class="section level2">
+<h2 class="hasAnchor">
+<a href="#section-8-non-linear-reduction" class="anchor" aria-hidden="true"></a>Section 8: Non-linear Reduction</h2>
+<p>Now we have reduced the dimensionalty of our datasets using non-linear methods and clustered the cells according to their similarity we must visualise these results. However, linear methods such as PCA and diffusion maps are inherently innapropriate for visualisation. Therefore, we must process then using non-linear methods.</p>
+<p>IBRAP integrated the ability to perform 3 methods: - UMAP - t-SNE - lvish (a LargeVis adaptation)</p>
+<p>For this tutorial we will focus on UMAP.</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R">
-<span class="va">plot3</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot.reduced.dim.html">plot.reduced.dim</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">samp</span>, 
-                          reduction <span class="op">=</span> <span class="st">'pca_umap'</span>, 
-                          assay <span class="op">=</span> <span class="st">'SCT'</span>, 
-                          clust.method <span class="op">=</span> <span class="st">'pca_nn.v1:louvain'</span>, 
-                          column <span class="op">=</span> <span class="st">'neighbourhood_graph_res.0.7'</span>, pt.size <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span> <span class="op">+</span> 
-  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">'SCT_neighbour_v1'</span><span class="op">)</span> <span class="op">+</span> 
-  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>plot.title <span class="op">=</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>hjust <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span><span class="op">)</span>
-
-<span class="va">plot4</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot.reduced.dim.html">plot.reduced.dim</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">samp</span>, 
-                          reduction <span class="op">=</span> <span class="st">'pca_umap'</span>, 
-                          assay <span class="op">=</span> <span class="st">'SCRAN'</span>, 
-                          clust.method <span class="op">=</span> <span class="st">'pca_nn.v1:louvain'</span>, 
-                          column <span class="op">=</span> <span class="st">'neighbourhood_graph_res.0.7'</span>, pt.size <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span> <span class="op">+</span> 
-  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">'SCRAN_neighbour_v1'</span><span class="op">)</span> <span class="op">+</span> 
-  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>plot.title <span class="op">=</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>hjust <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span><span class="op">)</span>
-
-<span class="va">plot5</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot.reduced.dim.html">plot.reduced.dim</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">samp</span>, 
-                          reduction <span class="op">=</span> <span class="st">'pca_umap'</span>, 
-                          assay <span class="op">=</span> <span class="st">'SCANPY'</span>, 
-                          clust.method <span class="op">=</span> <span class="st">'pca_nn.v1:louvain'</span>, 
-                          column <span class="op">=</span> <span class="st">'neighbourhood_graph_res.0.7'</span>, pt.size <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span> <span class="op">+</span> 
-  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">'SCANPY_neighbour_v1'</span><span class="op">)</span> <span class="op">+</span> 
-  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>plot.title <span class="op">=</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>hjust <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span><span class="op">)</span>
-
-<span class="va">plot3</span> <span class="op">+</span> <span class="va">plot4</span> <span class="op">+</span> <span class="va">plot5</span></code></pre></div>
-<p><img src="diff_norm_method.png" width="150%" height="150%"></p>
-<p>We shall proceed using the SCT neighbourhood graph version 1. We have clustered our cells however, now we must identify the biology.</p>
+<span class="va">bmmc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/perform.umap.html">perform.umap</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">bmmc</span>, 
+                     assay <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'SCT'</span>, <span class="st">'SCRAN'</span>, <span class="st">'SCANPY'</span><span class="op">)</span>, 
+                     reduction <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'pca'</span>, <span class="st">'pca:diffmap'</span><span class="op">)</span>, 
+                     n.dims <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">15</span>,<span class="fl">0</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<p>Simply, we asked this function to iterate through all assays, and use the first 15 components of the pca reduction and to use all components of the diffusion map.</p>
+<p>Now, we have generated a high volume of results, especially clustering results. Therefore, it is beneficial to applying to some benchmarking comparisons.</p>
 </div>
-<div id="chapter-9-benchmarking-clustering-results" class="section level2">
+<div id="section-9-benchmarking-results" class="section level2">
 <h2 class="hasAnchor">
-<a href="#chapter-9-benchmarking-clustering-results" class="anchor" aria-hidden="true"></a>Chapter 9: Benchmarking Clustering Results</h2>
-<p>A large number of results will be produced using IBRAP therefore it is beneficial to observe the effectiveness of the clustering results. IBRAP contains a benchmarking function that enlists multiple metrices to assess clustering performance. These metrices are only informative however and will be unable to distinguish the best results (that is down to the user to decide).</p>
-<p>To set up the function, supply the dataframes contained within the <span class="citation">@cluster_assignments</span> you wish to benchmark under clustering. Next, include the corresponding reductions for them, normally this will be a umap reduction. For example, if clustering and the umap were calculated using PCA these should be paired.</p>
+<a href="#section-9-benchmarking-results" class="anchor" aria-hidden="true"></a>Section 9: Benchmarking Results</h2>
+<p>IBRAP contains a benchmarking function that enlists multiple metrices to assess clustering performance. These metrices are only informative however and will be unable to distinguish the best results (that is down to the user to decide).</p>
+<table class="table">
+<colgroup>
+<col width="16%">
+<col width="83%">
+</colgroup>
+<thead><tr class="header">
+<th align="left">QC.Metric</th>
+<th align="left">Description</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">Average Silhouette Width (ASW)</td>
+<td align="left">This measures how close cells are to their own cluster (cohesion) whilst comparing to other clusters (separation) A higher value is good.</td>
+</tr>
+<tr class="even">
+<td align="left">Dunn Index</td>
+<td align="left">Comapres the ratio of the smallest distance between observations not in the same cluster to the largest intra-cluster distance. A higher value is preferred.</td>
+</tr>
+<tr class="odd">
+<td align="left">Connectivity</td>
+<td align="left">This uses a k-nearest neighbour algorithm that determines the connectedness between clusters. A depleted value is prefered.</td>
+</tr>
+</tbody>
+</table>
+<p>To set up the function, supply the dataframes contained within the <a href="mailto:assay@cluster_assignments" class="email">assay@cluster_assignments</a> you wish to benchmark under clustering. Next, include the corresponding reductions for them, normally this will be a umap reduction using 1:2 dimensions. For example, if clustering and the umap were calculated using PCA these should be paired, likewise if they were calcualted using pca:diffmap then they should be paired.</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R">
-<span class="va">samp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/benchmark.clustering.html">benchmark.clustering</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">samp</span>, assay <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'SCT'</span>, <span class="st">'SCRAN'</span>, <span class="st">'SCANPY'</span><span class="op">)</span>, 
-                             clustering <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"pca_nn.v1:louvain"</span>,<span class="st">"pca_nn.v1:diffmap_nn.v1:louvain"</span>,
-                                            <span class="st">"pca_nn.v2:louvain"</span>,<span class="st">"pca_nn.v1:diffmap_nn.v2:louvain"</span><span class="op">)</span>, 
-                             reduction <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'pca_umap'</span>, <span class="st">'pca_nn.v1:diffmap_umap'</span>,
-                                           <span class="st">'pca_umap'</span>, <span class="st">'pca_nn.v1:diffmap_umap'</span>
-                             <span class="op">)</span>, 
+<span class="va">bmmc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/benchmark.clustering.html">benchmark.clustering</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">bmmc</span>, 
+                             assay <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'SCT'</span>, <span class="st">'SCRAN'</span>, <span class="st">'SCANPY'</span><span class="op">)</span>, 
+                             clustering <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'pca_nn:louvain'</span>, <span class="st">'pca:diffmap_nn:louvain'</span><span class="op">)</span>, 
+                             reduction <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'pca_umap'</span>, <span class="st">'pca:diffmap_umap'</span><span class="op">)</span>, 
                              n.dims <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">)</span></code></pre></div>
-</div>
-<div id="chapter-10-biological-analysis" class="section level2">
-<h2 class="hasAnchor">
-<a href="#chapter-10-biological-analysis" class="anchor" aria-hidden="true"></a>Chapter 10: Biological Analysis</h2>
-<p>To understand the biology driving the clustering we can tackle it in two ways: differential expression analyses or visualisation</p>
-<p>Differential expression analyses can be performed either 1 cluster compared against all other cells or 1 cluster against 1 other cluster. In this tutorial we will use the 1 v all function.</p>
+<p>We can visualise the comparison within a clustering method dataframe using the following function:</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<code class="sourceCode R">
+<span class="fu">plot.cluster.benchmarking</span><span class="op">(</span>object <span class="op">=</span> <span class="va">bmmc</span>, assay <span class="op">=</span> <span class="st">'SCT'</span>, 
+                          clustering <span class="op">=</span> <span class="st">'pca_nn:louvain'</span><span class="op">)</span></code></pre></div>
+<p><img src="cluster_benchmarking.png" width="150%" height="150%"></p>
+<p>This provides a line graph showing the metrices. As you can see, there is a correlation between the results. However, do not be fooled by the preferred valuei n very low settings, this is likely due to a smaller number of communities being detected at lower resolutions which means that clusters are typically more separated.</p>
+<p>Now that we have our results and benchmarking to guide us we can begin to visualise the results.</p>
+</div>
+<div id="section-10-visualising-clustering-results" class="section level2">
+<h2 class="hasAnchor">
+<a href="#section-10-visualising-clustering-results" class="anchor" aria-hidden="true"></a>Section 10: Visualising Clustering Results</h2>
+<p>Since we have 3 different normalisation method it is beneficial to observe the difference in their produces topology and clustering.</p>
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<code class="sourceCode R">
+<span class="va">plot1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot.reduced.dim.html">plot.reduced.dim</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">bmmc</span>, 
+                          reduction <span class="op">=</span> <span class="st">'pca_umap'</span>, 
+                          assay <span class="op">=</span> <span class="st">'SCT'</span>, 
+                          clust.method <span class="op">=</span> <span class="st">'pca_nn:louvain'</span>, 
+                          column <span class="op">=</span> <span class="st">'neighbourhood_graph_res.0.8'</span>, pt.size <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span> <span class="op">+</span> 
+  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">'SCT'</span><span class="op">)</span> <span class="op">+</span> 
+  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>plot.title <span class="op">=</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>hjust <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span><span class="op">)</span>
+
+<span class="va">plot2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot.reduced.dim.html">plot.reduced.dim</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">bmmc</span>, 
+                          reduction <span class="op">=</span> <span class="st">'pca_umap'</span>, 
+                          assay <span class="op">=</span> <span class="st">'SCRAN'</span>, 
+                          clust.method <span class="op">=</span> <span class="st">'pca_nn:louvain'</span>, 
+                          column <span class="op">=</span> <span class="st">'neighbourhood_graph_res.0.8'</span>, pt.size <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span> <span class="op">+</span> 
+  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">'SCRAN'</span><span class="op">)</span> <span class="op">+</span> 
+  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>plot.title <span class="op">=</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>hjust <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span><span class="op">)</span>
+
+<span class="va">plot3</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot.reduced.dim.html">plot.reduced.dim</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">bmmc</span>, 
+                          reduction <span class="op">=</span> <span class="st">'pca_umap'</span>, 
+                          assay <span class="op">=</span> <span class="st">'SCANPY'</span>, 
+                          clust.method <span class="op">=</span> <span class="st">'pca_nn:louvain'</span>, 
+                          column <span class="op">=</span> <span class="st">'neighbourhood_graph_res.0.8'</span>, pt.size <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span> <span class="op">+</span> 
+  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">'SCANPY'</span><span class="op">)</span> <span class="op">+</span> 
+  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>plot.title <span class="op">=</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>hjust <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span><span class="op">)</span>
+
+<span class="va">plot1</span> <span class="op">+</span> <span class="va">plot2</span> <span class="op">+</span> <span class="va">plot3</span></code></pre></div>
+<p><img src="diff_norm_method.png" width="150%" height="150%"></p>
+<p>As we can see, each normalisation method changes the final topology of the data. Furthermore, we can see that SCT, SCRAN, and SCANPY produced 18, 14, and 14 communities, respectively. Therefore, it is important to assess all normalisation methods and their subsequent results since they can differ and some perform better than others according to datasets. For this analysis we will proceed using the SCT results.</p>
+</div>
+<div id="section-11-biological-analysis" class="section level2">
+<h2 class="hasAnchor">
+<a href="#section-11-biological-analysis" class="anchor" aria-hidden="true"></a>Section 11: Biological Analysis</h2>
+<p>To understand the biology driving the clustering we can tackle it in two ways: differential expression analyses or visualisation.</p>
+<div id="section-11-1" class="section level3">
+<h3 class="hasAnchor">
+<a href="#section-11-1" class="anchor" aria-hidden="true"></a>Section 11.1</h3>
+<p>Differential expression analyses can be performed either 1 cluster compared against all other cells or 1 cluster against 1 other cluster. In this tutorial we will use the 1 v all function.</p>
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R">
 <span class="va">DE_res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/perform.diffexp.all.html">perform.diffexp.all</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">samp</span>, 
                               assay <span class="op">=</span> <span class="st">'SCT'</span>, 
                               test <span class="op">=</span> <span class="st">'MAST'</span>, 
-                              identity <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/vector.html" class="external-link">as.vector</a></span><span class="op">(</span><span class="va">samp</span><span class="op">@</span><span class="va">methods</span><span class="op">$</span><span class="va">SCT</span><span class="op">@</span><span class="va">cluster_assignments</span><span class="op">$</span><span class="va">`pca_nn.v1:louvain`</span><span class="op">$</span><span class="va">neighbourhood_graph_res.0.7</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<p>These results then enable us to distinguish the unique markers that are bing expressed by each cluster.</p>
-<p>If the driving biology remains unclear from a differential expression analysis we may utilise visualisation. We have included 4 different methods of visualisation: feature plots, violin plots, dot plots, and heatmaps.</p>
+                              identity <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/vector.html" class="external-link">as.vector</a></span><span class="op">(</span><span class="va">samp</span><span class="op">@</span><span class="va">methods</span><span class="op">$</span><span class="va">SCT</span><span class="op">@</span><span class="va">cluster_assignments</span><span class="op">$</span><span class="va">`pca_nn.v1:louvain`</span><span class="op">$</span><span class="va">neighbourhood_graph_res.0.8</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<p>These results will produce a table with key columns: the gene names, pct.1 and pct.2 comparing expression values, and their p-value. These columns are key in identifying the strength in the difference in expression and whether the difference is statistically significant. However, when this fails visualisation can help. We have included 4 different methods of visualisation: feature plots, violin plots, dot plots, and heatmaps.</p>
 <p>In this case, we can use feature plots:</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R">
 <span class="fu"><a href="../reference/plot.features.html">plot.features</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">samp</span>, assay <span class="op">=</span> <span class="st">'SCT'</span>, reduction <span class="op">=</span> <span class="st">'pca_umap'</span>, 
               features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'JCHAIN'</span>,<span class="st">'MS4A1'</span>,<span class="st">'MME'</span>,<span class="st">'IRF8'</span>,<span class="st">'HLA-DRA'</span>,<span class="st">'LYZ'</span>,
@@ -390,8 +453,10 @@
               slot <span class="op">=</span> <span class="st">'normalised'</span><span class="op">)</span></code></pre></div>
 <p><img src="Feature_plots.png" width="150%" height="150%"></p>
 <p>Next, we must indicate which cell type belongs to which clusters</p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R">
+<span class="va">clusters</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="va">bmmc</span><span class="op">@</span><span class="va">methods</span><span class="op">$</span><span class="va">SCT</span><span class="op">@</span><span class="va">cluster_assignments</span><span class="op">$</span><span class="va">`pca_nn:louvain`</span><span class="op">$</span><span class="va">neighbourhood_graph_res.0.8</span><span class="op">)</span>
+
 <span class="va">clusters</span><span class="op">[</span><span class="va">clusters</span> <span class="op">==</span> <span class="st">'18'</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="st">'plasma'</span>
 <span class="va">clusters</span><span class="op">[</span><span class="va">clusters</span> <span class="op">==</span> <span class="st">'17'</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="st">'immature B cells'</span>
 <span class="va">clusters</span><span class="op">[</span><span class="va">clusters</span> <span class="op">==</span> <span class="st">'11'</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="st">'pro B cells'</span>
@@ -412,14 +477,16 @@
 <span class="va">clusters</span><span class="op">[</span><span class="va">clusters</span> <span class="op">==</span> <span class="st">'13'</span><span class="op">]</span> <span class="op">=</span> <span class="st">'CD8+ naive T cells'</span>
 <span class="va">clusters</span><span class="op">[</span><span class="va">clusters</span> <span class="op">==</span> <span class="st">'7'</span><span class="op">]</span> <span class="op">=</span> <span class="st">'CD8+ cytotoxic T cells'</span>
 
-<span class="va">samp</span><span class="op">@</span><span class="va">sample_metadata</span><span class="op">$</span><span class="va">celltypes</span> <span class="op">&lt;-</span> <span class="va">clusters</span>
+<span class="va">bmmc</span><span class="op">@</span><span class="va">sample_metadata</span><span class="op">$</span><span class="va">celltypes</span> <span class="op">&lt;-</span> <span class="va">clusters</span>
 
-<span class="fu"><a href="../reference/plot.reduced.dim.html">plot.reduced.dim</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">samp</span>, 
+<span class="fu"><a href="../reference/plot.reduced.dim.html">plot.reduced.dim</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">bmmc</span>, 
                  reduction <span class="op">=</span> <span class="st">'pca_umap'</span>, 
                  assay <span class="op">=</span> <span class="st">'SCT'</span>, 
                  clust.method <span class="op">=</span> <span class="st">'metadata'</span>, 
-                 column <span class="op">=</span> <span class="st">'celltypes'</span><span class="op">)</span></code></pre></div>
+                 column <span class="op">=</span> <span class="st">'celltypes'</span>, 
+                 pt.size <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span></code></pre></div>
 <p><img src="cell_types.png" width="150%" height="150%"></p>
+</div>
 </div>
 </div>
   </div>
