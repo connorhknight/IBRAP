@@ -59,8 +59,6 @@ perform.scanpy(
 \item{vars.to.regress}{Character. A single or multiple columns of information in the metadata that should be regressed from the dataset. Default = NULL}
 
 \item{flavour}{Character. Choosing which HVG selection method to use when, options: 'seurat', 'cell_ranger', 'seurat_v3'. Default = 'seurat'}
-
-\item{do.scale}{Boolean. Whether the gene expression should be centred. Default = TRUE}
 }
 \value{
 Produces a new 'methods' assay containing normalised, scaled and HVGs.
@@ -71,6 +69,6 @@ A new method-assay is produced. Raw counts are normalised and HVGs identified us
 \examples{
 
 object <- perform.scanpy(object = object, 
-                         vars.to.regress = 'RAW_total.counts', do.scale = T)
+                         vars.to.regress = 'RAW_total.counts')
 
 }
