@@ -21,16 +21,14 @@
 #' @param n_bins Numerical. Number of bins to produce when determining HVGs
 #' @param flavour Character. Choosing which HVG selection method to use when, options: 'seurat', 'cell_ranger', 'seurat_v3'. Default = 'seurat'
 #' @param batch_key Character. Which column in the metadata identifies the batches of the cells. Default = NULL
-#' @param do.scale Boolean. Whether the gene expression should be scaled. Default = TRUE
 #' @param vars.to.regress Character. A single or multiple columns of information in the metadata that should be regressed from the dataset. Default = NULL
-#' @param do.scale Boolean. Whether the gene expression should be centred. Default = TRUE
 #' 
 #' @return Produces a new 'methods' assay containing normalised, scaled and HVGs.
 #' 
 #' @examples 
 #' 
 #' object <- perform.scanpy(object = object, 
-#'                          vars.to.regress = 'RAW_total.counts', do.scale = T)
+#'                          vars.to.regress = 'RAW_total.counts')
 #'
 #' @export
 
@@ -160,12 +158,6 @@ perform.scanpy <- function(object,
     
   }
   
-  if(!is.logical(do.scale)) {
-    
-    stop('do.scale must be logical: TRUE/FALSE\n')
-    
-  }
-  
   if(!is.null(batch_key)) {
     
     if(!is.numeric(batch_key)) {
@@ -183,18 +175,6 @@ perform.scanpy <- function(object,
       stop('vars.to.regress must be character string\n')
       
     }
-    
-  }
-  
-  if(!is.logical(do.scale)) {
-    
-    stop('do.scale must be logical: TRUE/FALSE\n')
-    
-  }
-  
-  if(!is.logical(do.center)) {
-    
-    stop('do.center must be logical: TRUE/FALSE\n')
     
   }
   
