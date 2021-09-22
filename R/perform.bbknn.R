@@ -241,11 +241,11 @@ perform.bbknn <- function(object,
         
       }
       
-      if(is.null(n_pcs)) {
+      if(n_pcs == 0) {
         
         cat(crayon::cyan(paste0(Sys.time(), ': npcs calculated\n')))
         
-        n_pcs <- as.integer(length(colnames(object@methods[[p]]@computational_reductions[[reduction[count]]])))
+        n_pcs <- ncol(object@methods[[p]]@computational_reductions[[reduction[count]]])
         
       }
       

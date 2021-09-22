@@ -169,9 +169,9 @@ perform.harmony <- function(object,
       
       dims <- dims.use[[count]]
       
-      if(is.null(dims)) {
+      if(dims == 0) {
         
-        dims <- 1:ncol(red)
+        dims <- ncol(red)
         
       }
       
@@ -184,7 +184,7 @@ perform.harmony <- function(object,
       
       cat(crayon::cyan(paste0(Sys.time(), ': initialising harmony for assay: ', p, ', reduction: ', g, '\n')))
       
-      harm <- harmony::HarmonyMatrix(data_mat = red[,dims], meta_data = object@sample_metadata, vars_use = vars.use, do_pca = FALSE, verbose = TRUE, ...)
+      harm <- harmony::HarmonyMatrix(data_mat = red[,1:dims], meta_data = object@sample_metadata, vars_use = vars.use, do_pca = FALSE, verbose = TRUE, ...)
       
       object@methods[[p]]@integration_reductions[[paste0(r, '_harmony', reduction.save.suffix)]] <- harm
       

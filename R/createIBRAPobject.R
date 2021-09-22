@@ -141,9 +141,6 @@ createIBRAPobject <- function(counts,
       
     }
     
-    print(rownames(meta.data))
-    print(rownames(meta))
-    
     meta <- meta[match(rownames(meta.data), rownames(meta)),]
     
     meta <- cbind(meta, meta.data)
