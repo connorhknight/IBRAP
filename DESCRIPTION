@@ -45,7 +45,7 @@ Imports:
     plotly (>= 4.9.4.1),
     colorspace (>= 2.0-2),
     utils (>= 4.0.4),
-    ggrepel (>=0.9.1)
+    ggrepel (>= 0.9.1)
     
     
     
