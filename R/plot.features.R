@@ -106,8 +106,8 @@ plot.features <- function(object,
     lower <- as.numeric(quantile(results$feature, percentile)[1])
     upper <- as.numeric(quantile(results$feature, percentile)[2])
     
-    results$feature[which(results$feature <= upper)] <- 0
-    results$feature[which(results$feature >= lower)] <- 0
+    results$feature[which(results$feature >= upper)] <- 0
+    results$feature[which(results$feature <= lower)] <- 0
 
     plot.list[[x]] <- ggplot2::ggplot(data = results[order(results$feature),], 
                                       ggplot2::aes(x = red_1, y = red_2)) + 
