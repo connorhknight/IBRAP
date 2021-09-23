@@ -9,8 +9,10 @@ perform.singleR.annotation(
   assay = "RAW",
   slot = "counts",
   ref,
-  log.transform = TRUE,
-  tpm.transform = FALSE,
+  log.transform.query = TRUE,
+  tpm.transform.query = FALSE,
+  log.transform.ref = TRUE,
+  tpm.transform.ref = FALSE,
   ref.labels,
   column.suffix = "1",
   ...
@@ -25,15 +27,15 @@ perform.singleR.annotation(
 
 \item{ref}{AnyMatrix. A matrix of the reference datasets, if data is end-bias then it should be log normalised, if it is full-length then it requires tpm normalisation. Both can be completed within this function.}
 
-\item{log.transform}{Boolean. Should the reference data be log transformed. Default = TRUE}
-
-\item{tpm.transform}{Boolean. Should the reference data be tpm normalised. Default = FALSE}
-
 \item{ref.labels}{Vector. The cluster assignments for the reference data. Default = NULL}
 
 \item{column.suffix}{Character. A suffix to append the end of the new metadata columns if this functiuons is to be used multiple times. Default = '1'}
 
 \item{...}{arguments to be passed to singleR::SingleR}
+
+\item{log.transform}{Boolean. Should the reference data be log transformed. Default = TRUE}
+
+\item{tpm.transform}{Boolean. Should the reference data be tpm normalised. Default = FALSE}
 }
 \value{
 Produces a new 'methods' assay containing normalised, scaled and HVGs.

@@ -11,7 +11,7 @@ perform.graph.subclustering(
   column,
   clusters,
   neighbours,
-  algorithm,
+  algorithm = 1,
   res = 0.6,
   ...
 )

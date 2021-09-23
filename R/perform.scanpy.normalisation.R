@@ -273,31 +273,39 @@ perform.scanpy <- function(object,
                                 flavor = as.character(flavor))
     
   }
-  
+
   .highly.variable.genes <- rownames(object@methods$RAW@counts)[scobj$var[['highly_variable']]]
-  
+
   scobj2 <- sc$AnnData(X = t(.normalised[scobj$var$highly_variable,]))
-  
+
   pd <- reticulate::import('pandas')
-  
+
   scobj2$var_names <- as.factor(rownames(object@methods$RAW@counts)[scobj$var$highly_variable])
+
   scobj2$obs_names <- as.factor(colnames(object@methods$RAW@counts))
   
-  if(length(vars.to.regress) > 1) {
+  if(!is.null(vars.to.regress)) {
     
-    scobj2$obs <- pd$DataFrame(data = as.data.frame(object@sample_metadata[,vars.to.regress]))
-    
-  } else {
-    
-    scobj2$obs[,vars.to.regress] <- pd$DataFrame(data = as.data.frame(object@sample_metadata[,vars.to.regress]))
+    if(length(vars.to.regress) > 1) {
+      
+      scobj2$obs <- pd$DataFrame(data = as.data.frame(object@sample_metadata[,vars.to.regress]))
+      
+    } else {
+      
+      scobj2$obs[,vars.to.regress] <- object@sample_metadata[,vars.to.regress]
+      
+    }
     
   }
-  
 
   cat(crayon::cyan(paste0(Sys.time(), ': regressing covaraites \n')))
   
-  sc$pp$regress_out(adata = scobj2, keys = vars.to.regress)
-  
+  if(!is.null(vars.to.regress)) {
+    
+    sc$pp$regress_out(adata = scobj2, keys = vars.to.regress)
+    
+  }
+
   cat(crayon::cyan(paste0(Sys.time(), ': scaling data \n')))
   
   sc$pp$scale(scobj2)

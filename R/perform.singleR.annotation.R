@@ -27,8 +27,10 @@ perform.singleR.annotation <- function(object,
                                        assay = 'RAW', 
                                        slot = 'counts', 
                                        ref, 
-                                       log.transform = TRUE, 
-                                       tpm.transform = FALSE, 
+                                       log.transform.query = TRUE,
+                                       tpm.transform.query = FALSE,
+                                       log.transform.ref = TRUE, 
+                                       tpm.transform.ref = FALSE, 
                                        ref.labels, 
                                        column.suffix='1', 
                                        ...) {
@@ -57,16 +59,29 @@ perform.singleR.annotation <- function(object,
     
   }
   
-  if(!is.logical(log.transform)) {
+  if(!is.logical(log.transform.query)) {
     
-    stop('log.transform must be logical, TRUE/FALSE \n')
+    stop('log.transform.query must be logical, TRUE/FALSE \n')
     
   }
   
   
-  if(!is.logical(tpm.transform)) {
+  if(!is.logical(tpm.transform.query)) {
     
-    stop('tpm.transform must be logical, TRUE/FALSE \n')
+    stop('tpm.transform.query must be logical, TRUE/FALSE \n')
+    
+  }
+  
+  if(!is.logical(log.transform.ref)) {
+    
+    stop('log.transform.ref must be logical, TRUE/FALSE \n')
+    
+  }
+  
+  
+  if(!is.logical(tpm.transform.ref)) {
+    
+    stop('tpm.transform.ref must be logical, TRUE/FALSE \n')
     
   }
   
@@ -81,15 +96,15 @@ perform.singleR.annotation <- function(object,
     
   }
   
-  if(isTRUE(tpm.transform)) {
+  if(isTRUE(tpm.transform.ref)) {
     
     cat(crayon::cyan(paste0(Sys.time(), ': tpm transforming reference data \n')))
     
     temp <- createIBRAPobject(counts = ref, original.project = 'tpm_transform')
-    temp <- perform.tpm.normalisation(object = temp)
+    temp <- perform.tpm(object = temp)
     ref <- temp@methods$TPM@normalised
     
-  } else if (isTRUE(log.transform) && isFALSE(tpm.transform)) {
+  } else if (isTRUE(log.transform.ref) && isFALSE(tpm.transform.ref)) {
     
     cat(crayon::cyan(paste0(Sys.time(), ': log2 transforming reference data \n')))
     
@@ -99,6 +114,22 @@ perform.singleR.annotation <- function(object,
   
   query <- object@methods[[assay]][[slot]]
   
+  if(isTRUE(tpm.transform.query)) {
+    
+    cat(crayon::cyan(paste0(Sys.time(), ': tpm transforming query data \n')))
+    
+    temp <- createIBRAPobject(counts = query, original.project = 'tpm_transform')
+    temp <- perform.tpm(object = temp)
+    query <- temp@methods$TPM@normalised
+    
+  } else if (isTRUE(log.transform.query) && isFALSE(tpm.transform.query)) {
+    
+    cat(crayon::cyan(paste0(Sys.time(), ': log2 transforming query data \n')))
+    
+    query <- log2(query+1)
+    
+  }
+
   cat(crayon::cyan(paste0(Sys.time(), ': initiating singleR automated labelling \n')))
   
   result <- SingleR::SingleR(test = query, ref = ref, labels = ref.labels, ...)

@@ -23,7 +23,6 @@ perform.seurat.integration(
   n.trees = 50,
   anchor.eps = 0,
   features = NULL,
-  features.to.integrate = NULL,
   integrate.dims = 1:30,
   k.weight = 100,
   sd.weight = 1,
@@ -55,8 +54,6 @@ perform.seurat.integration(
 \item{anchor.eps}{Numerical. Error bound on the neighbor finding algorithm (from RANN/Annoy) when finding integration genes.}
 
 \item{features}{Character. Vector of features to use when computing the PCA to determine the weights. Only set if you want a different set from those used in the anchor finding process. Default = NULL}
-
-\item{features.to.integrate}{Character. Vector of features to integrate. By default, will use the features used in anchor finding. Default = NULL}
 
 \item{integrate.dims}{Numerical. Number of dimensions to use in the anchor weighting procedure. Default = 1:30}
 
@@ -96,7 +93,6 @@ perform.seurat.cca <- function(object = object,
                                          n.trees = 50, 
                                          anchor.eps = 0, 
                                          features = NULL,
-                                         features.to.integrate = NULL, 
                                          integrate.dims = 1:30,
                                          k.weight = 100,
                                          sd.weight = 1, 

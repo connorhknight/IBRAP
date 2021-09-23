@@ -31,7 +31,7 @@ perform.graph.subclustering <- function(object,
                                         column, 
                                         clusters, 
                                         neighbours, 
-                                        algorithm, 
+                                        algorithm = 1, 
                                         res = 0.6, ...) {
   
   if(!is(object, 'IBRAP')) {
@@ -58,7 +58,7 @@ perform.graph.subclustering <- function(object,
     
     stop('clust.method must be a character string \n')
     
-  } else {
+  } else if (clust.method != 'metadata') {
     
     if(!clust.method %in% names(object@methods[[assay]]@cluster_assignments)) {
       
@@ -72,7 +72,7 @@ perform.graph.subclustering <- function(object,
     
     stop('column must be character string \n')
     
-  } else {
+  } else if(clust.method != 'metadata') {
     
     if(!column %in% colnames(object@methods[[assay]]@cluster_assignments[[clust.method]])) {
       
@@ -80,56 +80,131 @@ perform.graph.subclustering <- function(object,
       
     }
     
-  }
-  
-  for(x in clusters) {
+  } else if (clust.method == 'metadata') {
     
-    if(!x %in% object@methods[[assay]]@cluster_assignments[[clust.method]][,column]) {
+    if(!column %in% colnames(object@sample_metadata)) {
       
-      stop('defined clusters are not contained within the dataframe \n')
+      stop('column is not contained within the defined metadata \n')
       
     }
     
   }
   
-  cell_subset <- object[,object@methods[[assay]]@cluster_assignments[[clust.method]][,column]==clusters]
-  
-  cell_subset <- perform.seurat.cluster(object = cell_subset, assay = assay, neighbours = neighbours, res = res, cluster.df.name = clust.method, ...)
-  
-  
-  subclusters <- as.numeric(cell_subset@methods[[assay]]@cluster_assignments[[clust.method]][,1])
-  
-  cat(crayon::cyan(paste0(Sys.time(), ': identified ', length(unique(subclusters)), ' subclusters\n')))
-  
-  if(length(unique(subclusters)) > 26) {
+  for(x in clusters) {
     
-    let <- paste0(LETTERS, LETTERS)
-    
-  } else {
-    
-    let <- LETTERS
-    
-  }
-  
-  minimum <- min(subclusters)
-  maximum <- max(subclusters)
-  
-  for(x in minimum:maximum) {
-    
-    subclusters[subclusters == x] <- let[x]
+    if(clust.method != 'metadata') {
+      
+      if(!x %in% object@methods[[assay]]@cluster_assignments[[clust.method]][,column]) {
+        
+        stop('defined clusters are not contained within the dataframe column \n')
+        
+      }
+      
+    } else if (clust.method == 'metadata') {
+      
+      if(!x %in% object@sample_metadata[,column]) {
+        
+        stop('defined clusters are not contained within the metadata column \n')
+        
+      }
+      
+    }
     
   }
   
-  subclusters <- as.data.frame(as.factor(subclusters))
-  rownames(subclusters) <- colnames(cell_subset)
+  if(algorithm==1) {
+    
+    algo.name <- 'louvain'
+    
+  }
   
-  object@methods[[assay]]@cluster_assignments[[clust.method]][,paste0(column, '_subres_', res)] <- as.character(object@methods[[assay]]@cluster_assignments[[clust.method]][,column])
+  if(algorithm==2) {
+    
+    algo.name <- 'louvainMLR'
+    
+  }
   
-  sub_ids <- object@methods[[assay]]@cluster_assignments[[clust.method]][,paste0(column, '_subres_', res)]==as.character(clusters)
+  if(algorithm==3) {
+    
+    algo.name <- 'SLM'
+    
+  }
   
-  object@methods[[assay]]@cluster_assignments[[clust.method]][,paste0(column, '_subres_', res)][sub_ids] <- as.character(subclusters[,1])
+  if(algorithm==4) {
+    
+    algo.name <- 'leiden'
+    
+  }
   
-  cat(crayon::cyan(paste0(Sys.time(), ': subclusters added under column name: ', paste0(column, '_subres_', res), '\n')))
+  if(clust.method != 'metadata') {
+    
+    cell_subset <- object[,object@methods[[assay]]@cluster_assignments[[clust.method]][,column] %in% clusters]
+    
+    cell_subset <- perform.graph.cluster(object = cell_subset, assay = assay, neighbours = neighbours, res = res, algorithm = 1, ...)
+    
+    subclusters <- as.character(cell_subset@methods[[assay]]@cluster_assignments[[paste0(neighbours, ':', algo.name)]][,1])
+    
+    cat(crayon::cyan(paste0(Sys.time(), ': identified ', length(unique(subclusters)), ' subclusters\n')))
+    
+    subclusters <- as.data.frame(as.factor(subclusters))
+    
+    rownames(subclusters) <- colnames(cell_subset)
+    
+    object@methods[[assay]]@cluster_assignments[[clust.method]][,paste0(column, '_subcluster_', res)] <- as.character(object@methods[[assay]]@cluster_assignments[[clust.method]][,column])
+    
+    sub_ids <- which(object@methods[[assay]]@cluster_assignments[[clust.method]][,paste0(column, '_subcluster_', res)] %in% as.character(clusters))
+    
+    orig.names <- as.data.frame(object@methods[[assay]]@cluster_assignments[[clust.method]][,paste0(column, '_subcluster_', res)][sub_ids])
+    
+    rownames(orig.names) <- colnames(cell_subset)
+    
+    orig.names[,2] <- subclusters[match(x = rownames(subclusters), table = rownames(orig.names)),]
+    
+    orig.names[,3] <- paste0(orig.names[,1], '_', orig.names[,2])
+    
+    object@methods[[assay]]@cluster_assignments[[clust.method]][,paste0(column, '_subcluster_', res)][sub_ids] <- orig.names[,3]
+    
+    cat(crayon::cyan(paste0(Sys.time(), ': subclusters added under column name: ', paste0(column, '_subcluster_', res), '\n')))
+    
+  } else if (clust.method == 'metadata') {
+    
+    object2 <- object
+    
+    object2@methods[[assay]]@cluster_assignments[['metadata']] <- object@sample_metadata
+    
+    cell_subset <- object2[,object2@methods[[assay]]@cluster_assignments[['metadata']][,column] %in% clusters]
+    
+    print(dim(cell_subset))
+    
+    cell_subset <- perform.graph.cluster(object = cell_subset, assay = assay, neighbours = neighbours, res = res, algorithm = 1, ...)
+
+    subclusters <- as.character(cell_subset@methods[[assay]]@cluster_assignments[[paste0(neighbours, ':', algo.name)]][,1])
+
+    subclusters <- as.data.frame(as.factor(subclusters))
+ 
+    rownames(subclusters) <- colnames(cell_subset)
+
+    object2@methods[[assay]]@cluster_assignments[['metadata']][,paste0(column, '_subcluster_', res)] <- as.character(object2@methods[[assay]]@cluster_assignments[['metadata']][,column])
+
+    sub_ids <- which(object2@methods[[assay]]@cluster_assignments[['metadata']][,paste0(column, '_subcluster_', res)] %in% as.character(clusters))
+
+    orig.names <- as.data.frame(object2@methods[[assay]]@cluster_assignments[['metadata']][,paste0(column, '_subcluster_', res)][sub_ids])
+
+    rownames(orig.names) <- colnames(cell_subset)
+
+    orig.names[,2] <- subclusters[match(x = rownames(subclusters), table = rownames(orig.names)),]
+
+    orig.names[,3] <- paste0(orig.names[,1], '_', orig.names[,2])
+
+    object2@methods[[assay]]@cluster_assignments[['metadata']][,paste0(column, '_subcluster_', res)][sub_ids] <- as.character(orig.names[,3])
+    
+    cat(crayon::cyan(paste0(Sys.time(), ': identified ', length(unique(subclusters)), ' subclusters\n')))
+    
+    object@sample_metadata[,paste0(column, '_subcluster_', res)] <- object2@methods[[assay]]@cluster_assignments[['metadata']][,paste0(column, '_subcluster_', res)]
+    
+    cat(crayon::cyan(paste0(Sys.time(), ': subclusters added under column name: ', paste0(column, '_subcluster_', res), '\n')))
+    
+  }
   
   return(object)
   

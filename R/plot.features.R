@@ -24,7 +24,7 @@ plot.features <- function(object,
                           features,
                           order = TRUE,
                           percentile = c(0.1,0.9),
-                          pt_size = 3,
+                          pt_size = 0.5,
                           cells = NULL) {
   
   if(!is(object = object, class2 = 'IBRAP')) {
@@ -106,7 +106,8 @@ plot.features <- function(object,
     lower <- as.numeric(quantile(results$feature, percentile)[1])
     upper <- as.numeric(quantile(results$feature, percentile)[2])
     
-    results <- subset(x = results, results$feature >= lower & results$feature <= upper)
+    results$feature[which(results$feature <= upper)] <- 0
+    results$feature[which(results$feature >= lower)] <- 0
 
     plot.list[[x]] <- ggplot2::ggplot(data = results[order(results$feature),], 
                                       ggplot2::aes(x = red_1, y = red_2)) + 

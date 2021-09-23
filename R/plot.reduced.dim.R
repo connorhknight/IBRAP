@@ -20,7 +20,8 @@ plot.reduced.dim <- function(object,
                              assay,
                              clust.method,
                              column,
-                             pt.size=5, 
+                             pt.size=0.5, 
+                             add.label = TRUE,
                              cells = NULL) {
   
   if(!is(object = object, class2 = 'IBRAP')) {
@@ -160,6 +161,32 @@ plot.reduced.dim <- function(object,
     
   }
   
+  if(isTRUE(add.label)) {
+    
+    clust_centres <- data.frame(clusters = unique(results$variable))
+    
+    centre_1 <- list()
+    centre_2 <- list()
+    
+    count <- 1
+    
+    for(x in unique(results$variable)) {
+      
+      centre_1[[count]] <- mean(results[results[,'variable'] == x,][,orig.names[1]])
+      centre_2[[count]] <- mean(results[results[,'variable'] == x,][,orig.names[2]])
+      
+      count <- count + 1
+      
+    }
+    
+    clust_centres[,orig.names[1]] <- unlist(centre_1)
+    clust_centres[,orig.names[2]] <- unlist(centre_2)
+    clust_centres$variable <- unique(results$variable)
+    
+  }
+  
+
+  
   p <- ggplot2::ggplot(data = results, 
                        mapping = ggplot2::aes_string(x = colnames(results)[1], 
                                                      y = colnames(results)[2], 
@@ -169,6 +196,19 @@ plot.reduced.dim <- function(object,
     ggplot2::theme_classic() + 
     ggplot2::theme(legend.title.align=0.5) + 
     ggplot2::guides(colour = ggplot2::guide_legend(override.aes = list(size=2)))
+  
+  if(isTRUE(add.label)) {
+
+    p <- p + 
+      ggrepel::geom_label_repel(data = clust_centres, mapping = 
+                                  ggplot2::aes_string(x = colnames(results)[1], 
+                                                      y = colnames(results)[2], 
+                                                      label = 'variable'), 
+                                color = 'black', label.size = NA, fill = NA) + 
+      
+      ggplot2::theme(legend.position = "none")
+    
+  }
   
   return(p)
   

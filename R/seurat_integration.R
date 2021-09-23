@@ -19,7 +19,6 @@
 #' @param n.tree Numerical. More trees gives higher precision when using annoy approximate nearest neighbor search. Default = 50
 #' @param anchor.eps Numerical. Error bound on the neighbor finding algorithm (from RANN/Annoy) when finding integration genes. 
 #' @param features Character. Vector of features to use when computing the PCA to determine the weights. Only set if you want a different set from those used in the anchor finding process. Default = NULL
-#' @param features.to.integrate Character. Vector of features to integrate. By default, will use the features used in anchor finding. Default = NULL
 #' @param integrate.dims Numerical. Number of dimensions to use in the anchor weighting procedure. Default = 1:30
 #' @param k.weight Numerical. Number of neighbors to consider when weighting anchors. Default = 100
 #' @param sd.weight Numerical. Controls the bandwidth of the Gaussian kernel for weighting. Default = 1
@@ -45,7 +44,6 @@
 #'                                          n.trees = 50, 
 #'                                          anchor.eps = 0, 
 #'                                          features = NULL,
-#'                                          features.to.integrate = NULL, 
 #'                                          integrate.dims = 1:30,
 #'                                          k.weight = 100,
 #'                                          sd.weight = 1, 
@@ -71,7 +69,6 @@ perform.seurat.integration <- function(object,
                                        n.trees = 50, 
                                        anchor.eps = 0, 
                                        features = NULL,
-                                       features.to.integrate = NULL, 
                                        integrate.dims = 1:30,
                                        k.weight = 100,
                                        sd.weight = 1, 
@@ -230,16 +227,6 @@ perform.seurat.integration <- function(object,
     
   }
   
-  if(!is.null(features.to.integrate)) {
-    
-    if(!is.character(features.to.integrate)) {
-      
-      stop('features.to.integrate must be character string(s)')
-      
-    } 
-    
-  }
-  
   if(!is.numeric(integrate.dims)) {
     
     stop('integrate.dims must be numerical \n')
@@ -368,10 +355,12 @@ perform.seurat.integration <- function(object,
                                                                  nn.method = nn.method, 
                                                                  n.trees = n.trees, 
                                                                  eps = anchor.eps))
+
+      to_integrate <- Reduce(intersect, lapply(anchors@object.list, rownames))
       
       combined <- suppressWarnings(Seurat::IntegrateData(anchorset = anchors, 
                                                          features = features,
-                                                         features.to.integrate = features.to.integrate, 
+                                                         features.to.integrate = to_integrate, 
                                                          dims = integrate.dims,
                                                          k.weight = k.weight,
                                                          sd.weight = sd.weight, 
@@ -413,7 +402,7 @@ perform.seurat.integration <- function(object,
             
           }
           
-          object@methods[[a]]@integration_reductions[[paste0(toupper(reduction), '_pca', reduction.name.suffix[[count]])]] <- tmp.obj@methods[[1]]@computational_reductions[[1]]
+          object@methods[[a]]@integration_reductions[[paste0('seurat', reduction.name.suffix[[count]])]] <- tmp.obj@methods[[1]]@computational_reductions[[1]]
           
         }
         
@@ -456,10 +445,12 @@ perform.seurat.integration <- function(object,
                                                                  n.trees = n.trees, 
                                                                  eps = anchor.eps))
       
+      to_integrate <- Reduce(intersect, lapply(anchors@object.list, rownames))
+      
       combined <- suppressWarnings(Seurat::IntegrateData(anchorset = anchors, 
                                                          normalization.method = "SCT", 
                                                          features = features,
-                                                         features.to.integrate = features.to.integrate, 
+                                                         features.to.integrate = to_integrate, 
                                                          dims = integrate.dims,
                                                          k.weight = k.weight,
                                                          sd.weight = sd.weight, 
@@ -497,7 +488,7 @@ perform.seurat.integration <- function(object,
             
           }
           
-          object@methods[[a]]@integration_reductions[[paste0(toupper(reduction), '_pca', reduction.name.suffix[[count]])]] <- tmp.obj@methods[[1]]@computational_reductions[[1]]
+          object@methods[[a]]@integration_reductions[[paste0('seurat', reduction.name.suffix[[count]])]] <- tmp.obj@methods[[1]]@computational_reductions[[1]]
           
         }
         

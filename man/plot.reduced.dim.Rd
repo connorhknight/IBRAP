@@ -5,7 +5,16 @@
 \alias{plot.reduced.dim.}
 \title{Plot of reduced dimensions and labels}
 \usage{
-\method{plot}{reduced.dim}(object, reduction, assay, clust.method, column, pt.size = 5, cells = NULL)
+\method{plot}{reduced.dim}(
+  object,
+  reduction,
+  assay,
+  clust.method,
+  column,
+  pt.size = 0.5,
+  add.label = TRUE,
+  cells = NULL
+)
 }
 \arguments{
 \item{object}{An IBRAP S4 class object}

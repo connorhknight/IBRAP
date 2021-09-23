@@ -76,8 +76,8 @@ shinyApp(
                                              uiOutput(outputId = 'features_selector'),
                                              uiOutput(outputId = 'reduction_feature'),
                                              p('Please indicate the percetile range, default = 0-1 (0%-100%)'),
-                                             numericInput(inputId = 'upper_percentile', value = 1, label = 'Upper percentile'),
-                                             numericInput(inputId = 'lower_percentile', value = 0, label = 'Lower percentile'),
+                                             numericInput(inputId = 'upper_percentile', value = 1, label = 'Upper percentile', min = 0, max = 1),
+                                             numericInput(inputId = 'lower_percentile', value = 0, label = 'Lower percentile', min = 0, max = 1),
                                              numericInput(inputId = 'feature_ptsize', value = 3, label = 'Point size'),
                                              actionButton(inputId = 'plot_feature', label = 'Plot')
                                          ),
