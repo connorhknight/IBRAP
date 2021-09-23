@@ -11,7 +11,7 @@
   reduction,
   features,
   order = TRUE,
-  percentile = c(0.1, 0.9),
+  percentile = c(0, 1),
   pt_size = 0.5,
   cells = NULL
 )
