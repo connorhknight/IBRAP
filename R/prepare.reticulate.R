@@ -117,6 +117,20 @@ prepare.reticulate <- function() {
     
     cat(crayon::cyan('pandas installed.\n'))
     
+  }  
+  
+  ####################################################
+  
+  reticulate::py_install('numba==0.53.1', pip = T)
+  
+  if(isFALSE(reticulate::py_module_available('numba'))) {
+    
+    cat(crayon::cyan('numba is not install, please try manually: numba==0.53.1 \n'))
+    
+  } else {
+    
+    cat(crayon::cyan('numba installed.\n'))
+    
   }
   
   ####################################################
@@ -130,20 +144,6 @@ prepare.reticulate <- function() {
   } else {
     
     cat(crayon::cyan('numpy installed.\n'))
-    
-  }
-  
-  ####################################################
-  
-  reticulate::py_install('numba==0.53.1', pip = T)
-  
-  if(isFALSE(reticulate::py_module_available('numba'))) {
-    
-    cat(crayon::cyan('numba is not install, please try manually: numba==0.53.1 \n'))
-    
-  } else {
-    
-    cat(crayon::cyan('numba installed.\n'))
     
   }
   
