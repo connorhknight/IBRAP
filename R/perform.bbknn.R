@@ -15,7 +15,7 @@
 #' @param neighbors_within_batch Numerical. How many neighbours to report per batch. Default = 3
 #' @param n_pcs Numerical. Range of principal components to use. Default = NULL
 #' @param trim Numerical. Trims the n of neighbours per cell to this value. Helps with population independence. Default = NULL
-#' @param n_trees Numerical. Number of trees to generate in annoy forest. More trees provides higher precision at the cost of increased resource demand and run time. Default = 10
+#' @param annoy_n_trees Numerical. Number of trees to generate in annoy forest. More trees provides higher precision at the cost of increased resource demand and run time. Default = 10
 #' @param use_faiss Boolean. Uses faiss package to compute nearest neighbour, this improves run time at the cost of precision. Default = TRUE
 #' @param set_op_mix_ratio Numerical. UMAP connectivity parameter between 0 and 1. controls the blen d between a connectivity matrix formed exclusively from mutual nearest neighbour pairs (0) and a union of all observed neighbour relationships with the mutual pairs emphasised (1). Default = 1.0
 #' @param local_connectivity Numerical. How many nearest neighbours of each cell are assumed to be fully connected. Default = 1
@@ -27,13 +27,6 @@
 #' 
 #' @examples 
 #' 
-#' # This example will generate a diffusion map as well 
-#' object <- perform.bbknn(object = object, 
-#'                         assay = c('SCT', 'SCANPY', 'SCRAN'), 
-#'                         reduction = c('pca'),
-#'                         batch = 'tech', generate.diffmap = T)
-#'                           
-#' #' # This example will generate a diffusion map as well 
 #' object <- perform.bbknn(object = object, 
 #'                         assay = c('SCT', 'SCANPY', 'SCRAN'), 
 #'                         reduction = c('pca'),
@@ -51,7 +44,7 @@ perform.bbknn <- function(object,
                           neighbors_within_batch = 3,
                           n_pcs = NULL,
                           trim = NULL,
-                          n_trees = 10,
+                          annoy_n_trees = 10,
                           use_faiss = TRUE,
                           set_op_mix_ratio = 1.0,
                           local_connectivity= 1,
@@ -152,9 +145,9 @@ perform.bbknn <- function(object,
     
   }
   
-  if(!is.numeric(n_trees)) {
+  if(!is.numeric(annoy_n_trees)) {
     
-    stop('n_trees must be numerical\n')
+    stop('annoy_n_trees must be numerical\n')
     
   }
   
@@ -259,7 +252,7 @@ perform.bbknn <- function(object,
                              metric = as.character(metric),
                              neighbors_within_batch = as.integer(neighbors_within_batch),
                              n_pcs = n_pcs,
-                             n_trees = as.integer(n_trees),
+                             annoy_n_trees = as.integer(annoy_n_trees),
                              use_faiss = as.logical(use_faiss),
                              set_op_mix_ratio = set_op_mix_ratio,
                              local_connectivity = local_connectivity)
@@ -277,7 +270,7 @@ perform.bbknn <- function(object,
                              neighbors_within_batch = as.integer(neighbors_within_batch),
                              n_pcs = n_pcs,
                              trim = as.integer(trim),
-                             n_trees = as.integer(n_trees),
+                             annoy_n_trees = as.integer(annoy_n_trees),
                              use_faiss = as.logical(use_faiss),
                              set_op_mix_ratio = set_op_mix_ratio,
                              local_connectivity = local_connectivity)

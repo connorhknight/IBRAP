@@ -15,7 +15,7 @@ perform.bbknn(
   neighbors_within_batch = 3,
   n_pcs = NULL,
   trim = NULL,
-  n_trees = 10,
+  annoy_n_trees = 10,
   use_faiss = TRUE,
   set_op_mix_ratio = 1,
   local_connectivity = 1,
@@ -43,7 +43,7 @@ perform.bbknn(
 
 \item{trim}{Numerical. Trims the n of neighbours per cell to this value. Helps with population independence. Default = NULL}
 
-\item{n_trees}{Numerical. Number of trees to generate in annoy forest. More trees provides higher precision at the cost of increased resource demand and run time. Default = 10}
+\item{annoy_n_trees}{Numerical. Number of trees to generate in annoy forest. More trees provides higher precision at the cost of increased resource demand and run time. Default = 10}
 
 \item{use_faiss}{Boolean. Uses faiss package to compute nearest neighbour, this improves run time at the cost of precision. Default = TRUE}
 
@@ -67,13 +67,6 @@ Performs BBKNN integration on defined method-assays and reductions contained wit
 }
 \examples{
 
-# This example will generate a diffusion map as well 
-object <- perform.bbknn(object = object, 
-                        assay = c('SCT', 'SCANPY', 'SCRAN'), 
-                        reduction = c('pca'),
-                        batch = 'tech', generate.diffmap = T)
-                          
-#' # This example will generate a diffusion map as well 
 object <- perform.bbknn(object = object, 
                         assay = c('SCT', 'SCANPY', 'SCRAN'), 
                         reduction = c('pca'),

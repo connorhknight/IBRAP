@@ -35,6 +35,9 @@ Produces diffusion maps from previous reductions, i.e. PCA. Diffusion maps are k
 }
 \examples{
 
-                        
+samp <- perform.diffusion.map(object = samp, 
+                              assay = c('SCT','SCRAN','SCANPY'), 
+                              reduction = 'pca', 
+                              dims = list(20))                     
 
 }

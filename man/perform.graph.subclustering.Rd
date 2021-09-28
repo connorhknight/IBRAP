@@ -46,8 +46,8 @@ Seurat subclustering
 \examples{
 
 object <- perform.graph.subclustering(object = object, assay = 'SCT', 
-                                      clust.method = 'pca_nn.v1:louvain', 
-                                      column = 'resolution_0.5', clusters = c(1,5,9), 
-                                      neighbours = 'pca_nn.v1:', algorithm = 1)
+                                      clust.method = 'pca', 
+                                      column = 'neighbourhood_graph_res.0.7', clusters = c(1,5,9), 
+                                      neighbours = 'pca_nn:', algorithm = 1)
 
 }

@@ -51,6 +51,7 @@ perform.scanpy <- function(object,
                            flavor = 'seurat', 
                            batch_key = NULL,
                            vars.to.regress=NULL
+                           
 ) {
   
   if(!is(object = object, class2 = 'IBRAP')) {

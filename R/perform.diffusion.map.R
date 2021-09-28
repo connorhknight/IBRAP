@@ -15,7 +15,10 @@
 #' 
 #' @examples 
 #' 
-#'                         
+#' samp <- perform.diffusion.map(object = samp, 
+#'                               assay = c('SCT','SCRAN','SCANPY'), 
+#'                               reduction = 'pca', 
+#'                               dims = list(20))                     
 #'
 #' @export
 

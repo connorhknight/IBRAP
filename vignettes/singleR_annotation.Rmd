@@ -28,14 +28,16 @@ klippy::klippy(tooltip_message = 'Click to copy', tooltip_success = 'Done', posi
 
 Well-analysed reference maps are currently emerging in single-cell data. To take advantage of this, reference-based cell type annotation algorithms are being developed. Thus, we included SingleR into IBRAP which enables the user to bypass downstream analyses and annotate new datasets more rapidly. 
 
-A pre-requisite for autmoated annotation is intuitive - the reference sample must have correct cell type labels. 
+A pre-requisite for automated annotation is intuitive - the reference sample must have correct cell type labels. 
 
-For this analysis we will use pancreatic cell samples analysed using smartseq2 and celseq2, these can be aquired from the following links:
+For this analysis we will use pancreatic cell samples analysed using smartseq2 and celseq2, these can be acquired from the following links:
 
 https://www.dropbox.com/s/heughk2kl0lg6qc/smartseq2.rds?dl=0
 https://www.dropbox.com/s/txlq7875wkthb3y/celseq2.rds?dl=0
 
 We can annotate either dataset using the other. In this tutorial, we will use the smartseq2 sample as a reference to annotate the cekseq2 sample. 
+
+The query and reference matrix is either log (end bias) or tpm & log (full-length) transformed to normalise the data. reference cell type labels must then be provided using the ref.label paramter in the same order as the columns of the reference matrix. SingleR will sequence through each singular query cell and iterate a probability analysis to identify the most probable cell type. 
 
 ```{r, eval=F, echo=T}
 

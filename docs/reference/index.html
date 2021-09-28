@@ -159,7 +159,413 @@
     <tbody>
       <tr>
         <th colspan="2">
-          <h2 id="section-all-functions" class="hasAnchor"><a href="#section-all-functions" class="anchor"></a>All functions</h2>
+          <h2 id="section-pre-processing-functions" class="hasAnchor"><a href="#section-pre-processing-functions" class="anchor"></a>Pre-processing Functions</h2>
+          <p class="section-desc"><p>Functions to be used to pre-process the data prior to normalisation</p></p>
+        </th>
+      </tr>
+      
+      
+    </tbody><tbody>
+      
+      
+      <tr>
+        
+        <td>
+          <p><code><a href="perform.scrublet.html">perform.scrublet()</a></code> </p>
+        </td>
+        <td><p>Python module: scrublet</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="perform.decontX.html">perform.decontX()</a></code> </p>
+        </td>
+        <td><p>R package: celda, decontX function</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="createIBRAPobject.html">createIBRAPobject()</a></code> </p>
+        </td>
+        <td><p>Create an IBRAP class object</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="add.cell.cycle.html">add.cell.cycle()</a></code> </p>
+        </td>
+        <td><p>Scores cell cycle phases</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="add.feature.score.html">add.cell.cycle()</a></code> </p>
+        </td>
+        <td><p>Provides scores for a given vector of features</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="find_percentage_genes.html">find_percentage_genes()</a></code> </p>
+        </td>
+        <td><p>Calculates the fraction of counts from genes matching a pattern string</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="filter_IBRAP.html">filter_IBRAP()</a></code> </p>
+        </td>
+        <td><p>Filters object according to cell metadata</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="remove.hvgs.html">remove.hvgs()</a></code> </p>
+        </td>
+        <td><p>Remove highly variable genes</p></td>
+      </tr>
+    </tbody><tbody>
+      <tr>
+        <th colspan="2">
+          <h2 id="section-normalisation-functions" class="hasAnchor"><a href="#section-normalisation-functions" class="anchor"></a>Normalisation Functions</h2>
+          <p class="section-desc"><p>IBRAP functions for normalisation</p></p>
+        </th>
+      </tr>
+      
+      
+    </tbody><tbody>
+      
+      
+      <tr>
+        
+        <td>
+          <p><code><a href="perform.scanpy.html">perform.scanpy()</a></code> </p>
+        </td>
+        <td><p>Performs Scanpy normalisation, hvg selection, scaling and variance stabilisation and regression.</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="perform.scran.html">perform.scran()</a></code> </p>
+        </td>
+        <td><p>Performs Scran normalisation, hvg selection, scaling and variance stabilisation and regression.</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="perform.tpm.html">perform.tpm()</a></code> </p>
+        </td>
+        <td><p>Performs TPM normalisation</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="perform.sct.html">perform.sct()</a></code> </p>
+        </td>
+        <td><p>Performs SCTransform</p></td>
+      </tr>
+    </tbody><tbody>
+      <tr>
+        <th colspan="2">
+          <h2 id="section-reduction-functions" class="hasAnchor"><a href="#section-reduction-functions" class="anchor"></a>Reduction Functions</h2>
+          <p class="section-desc"><p>Methods to reduce the dimensionality of the data</p></p>
+        </th>
+      </tr>
+      
+      
+    </tbody><tbody>
+      
+      
+      <tr>
+        
+        <td>
+          <p><code><a href="perform.pca.html">perform.pca()</a></code> </p>
+        </td>
+        <td><p>Performs PCA reduction</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="perform.diffusion.map.html">perform.diffusion.map()</a></code> </p>
+        </td>
+        <td><p>Diffusion maps</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="perform.umap.html">perform.umap()</a></code> </p>
+        </td>
+        <td><p>Performs UMAP reduction</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="perform.lvish.html">perform.lvish()</a></code> </p>
+        </td>
+        <td><p>Performs LargeVis reduction</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="perform.tsne.html">perform.tsne()</a></code> </p>
+        </td>
+        <td><p>Performs t-SNE reduction</p></td>
+      </tr>
+    </tbody><tbody>
+      <tr>
+        <th colspan="2">
+          <h2 id="section-clustering-functions" class="hasAnchor"><a href="#section-clustering-functions" class="anchor"></a>Clustering Functions</h2>
+          <p class="section-desc"><p>Methods to cluster reduced dimensions</p></p>
+        </th>
+      </tr>
+      
+      
+    </tbody><tbody>
+      
+      
+      <tr>
+        
+        <td>
+          <p><code><a href="perform.nn.html">perform.nn()</a></code> </p>
+        </td>
+        <td><p>Finds the shared nearest neighbourhood for the cells. This supplies a graph.</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="perform.graph.cluster.html">perform.graph.cluster()</a></code> </p>
+        </td>
+        <td><p>Performs graph-based clustering</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="perform.graph.subclustering.html">perform.graph.subclustering()</a></code> </p>
+        </td>
+        <td><p>Seurat subclustering</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="perform.sc3.reduction.cluster.html">perform.sc3.reduction.cluster()</a></code> </p>
+        </td>
+        <td><p>Performs SC3 clustering on reduced embeddings</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="perform.sc3.slot.cluster.html">perform.sc3.slot.cluster()</a></code> </p>
+        </td>
+        <td><p>Performs SC3 clustering on matrix slot</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="perform.reduction.kmeans.html">perform.reduction.kmeans()</a></code> </p>
+        </td>
+        <td><p>Performs Kmeans/PAM clustering on a reduction</p></td>
+      </tr>
+    </tbody><tbody>
+      <tr>
+        <th colspan="2">
+          <h2 id="section-integration-functions" class="hasAnchor"><a href="#section-integration-functions" class="anchor"></a>Integration functions</h2>
+          <p class="section-desc"><p>Methods to remove batch effects from multi-sample projects</p></p>
+        </th>
+      </tr>
+      
+      
+    </tbody><tbody>
+      
+      
+      <tr>
+        
+        <td>
+          <p><code><a href="perform.harmony.html">perform.harmony()</a></code> </p>
+        </td>
+        <td><p>Performs Harmony integration</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="perform.scanorama.html">perform.scanorama()</a></code> </p>
+        </td>
+        <td><p>Performs Scanorama integration</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="perform.seurat.cca.html">perform.seurat.integration()</a></code> </p>
+        </td>
+        <td><p>Performs Seurat Integration</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="perform.bbknn.html">perform.bbknn()</a></code> </p>
+        </td>
+        <td><p>Performs BBKNN integration</p></td>
+      </tr>
+    </tbody><tbody>
+      <tr>
+        <th colspan="2">
+          <h2 id="section-gene-analsysis-functions" class="hasAnchor"><a href="#section-gene-analsysis-functions" class="anchor"></a>Gene Analsysis Functions</h2>
+          <p class="section-desc"></p>
+        </th>
+      </tr>
+      
+      
+    </tbody><tbody>
+      
+      
+      <tr>
+        
+        <td>
+          <p><code><a href="perform.diffexp.html">perform.diffexp()</a></code> </p>
+        </td>
+        <td><p>Perform differential expression</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="perform.diffexp.all.html">perform.diffexp.all()</a></code> </p>
+        </td>
+        <td><p>Perform differential expression one cluster vs all</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="perform.GO.enrichment.html">perform.GO.enrichment()</a></code> </p>
+        </td>
+        <td><p>Gene Ontology enrichment</p></td>
+      </tr>
+    </tbody><tbody>
+      <tr>
+        <th colspan="2">
+          <h2 id="section-plotting-functions" class="hasAnchor"><a href="#section-plotting-functions" class="anchor"></a>Plotting Functions</h2>
+          <p class="section-desc"><p>These plots can be used to plot results produced in IBRAP</p></p>
+        </th>
+      </tr>
+      
+      
+    </tbody><tbody>
+      
+      
+      <tr>
+        
+        <td>
+          <p><code><a href="plot.QC.scatter.html">plot.QC.scatter()</a></code> </p>
+        </td>
+        <td><p>Plots two QC metrices in scatter format</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="plot.QC.vln.html">plot.QC.vln()</a></code> </p>
+        </td>
+        <td><p>Plots a given QC metric</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="plot.reduced.dim.html">plot(<i>&lt;reduced.dim&gt;</i>)</a></code> </p>
+        </td>
+        <td><p>Plot of reduced dimensions and labels</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="plot.reduced.dim.interactive.html">plot(<i>&lt;reduced.dim.interactive&gt;</i>)</a></code> </p>
+        </td>
+        <td><p>Interactive plot of reduced dimensions and labels</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="plot.dot.plot.html">plot(<i>&lt;dot.plot&gt;</i>)</a></code> </p>
+        </td>
+        <td><p>Plots a dot plot of gene expression</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="plot.features.html">plot(<i>&lt;features&gt;</i>)</a></code> </p>
+        </td>
+        <td><p>Plot of reduced dimensions and features</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="plot.vln.html">plot(<i>&lt;vln&gt;</i>)</a></code> </p>
+        </td>
+        <td><p>Plot of violin plot of defined features</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="plot.GO.output.html">plot(<i>&lt;GO.output&gt;</i>)</a></code> </p>
+        </td>
+        <td><p>Plot GO enrichment output</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="plot.slingshot.html">plot(<i>&lt;slingshot&gt;</i>)</a></code> </p>
+        </td>
+        <td><p>Plots slingshot results</p></td>
+      </tr>
+    </tbody><tbody>
+      <tr>
+        <th colspan="2">
+          <h2 id="section-benchmarking-functions" class="hasAnchor"><a href="#section-benchmarking-functions" class="anchor"></a>Benchmarking Functions</h2>
+          <p class="section-desc"></p>
+        </th>
+      </tr>
+      
+      
+    </tbody><tbody>
+      
+      
+      <tr>
+        
+        <td>
+          <p><code><a href="benchmark.clustering.html">benchmark.clustering()</a></code> </p>
+        </td>
+        <td><p>Benchmarks the cluster assignments</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="benchmark.integration.html">benchmark.intergation()</a></code> </p>
+        </td>
+        <td><p>Benchmarks the cluster assignmentws</p></td>
+      </tr>
+    </tbody><tbody>
+      <tr>
+        <th colspan="2">
+          <h2 id="section-miscellaneous-functions" class="hasAnchor"><a href="#section-miscellaneous-functions" class="anchor"></a>Miscellaneous Functions</h2>
+          <p class="section-desc"></p>
+        </th>
+      </tr>
+      
+      
+    </tbody><tbody>
+      
+      
+      <tr>
+        
+        <td>
+          <p><code><a href="Read10X_output.html">Read10X_output()</a></code> </p>
+        </td>
+        <td><p>Produce counts matrix from CellRanger output</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="perform.singleR.annotation.html">perform.singleR.annotation()</a></code> </p>
+        </td>
+        <td><p>Performs automated cell annotation on query datasets using reference data</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="perform.slingshot.trajectory.html">perform.slingshot.trajectory()</a></code> </p>
+        </td>
+        <td><p>Performs Slingshot trajectory inference</p></td>
+      </tr>
+    </tbody><tbody>
+      <tr>
+        <th colspan="2">
+          <h2 id="section-backend-functions" class="hasAnchor"><a href="#section-backend-functions" class="anchor"></a>Backend Functions</h2>
+          <p class="section-desc"></p>
+        </th>
+      </tr>
+      
+      
+    </tbody><tbody>
+      
+      
+      <tr>
+        
+        <td>
+          <p><code><a href="prepare.reticulate.html">prepare.reticulate()</a></code> </p>
+        </td>
+        <td><p>Installs or identifies if python modules are installed</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="run.IBRAP.rshiny.html">run.IBRAP.rshiny()</a></code> </p>
+        </td>
+        <td><p>Rshiny application initiator</p></td>
+      </tr>
+    </tbody><tbody>
+      <tr>
+        <th colspan="2">
+          <h2 id="section-s-class-object-structures" class="hasAnchor"><a href="#section-s-class-object-structures" class="anchor"></a>S4 Class Object Structures</h2>
           <p class="section-desc"></p>
         </th>
       </tr>
@@ -177,273 +583,9 @@
       </tr><tr>
         
         <td>
-          <p><code><a href="Read10X_output.html">Read10X_output()</a></code> </p>
-        </td>
-        <td><p>Produce counts matrix from CellRanger output</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="add.cell.cycle.html">add.cell.cycle()</a></code> </p>
-        </td>
-        <td><p>Scores cell cycle phases</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="add.feature.score.html">add.cell.cycle()</a></code> </p>
-        </td>
-        <td><p>Provides scores for a given vector of features</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="benchmark.clustering.html">benchmark.clustering()</a></code> </p>
-        </td>
-        <td><p>Benchmarks the cluster assignments</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="createIBRAPobject.html">createIBRAPobject()</a></code> </p>
-        </td>
-        <td><p>Create an IBRAP class object</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="feature_metadata.html">feature_metadata()</a></code> </p>
-        </td>
-        <td><p>Generates feature level metadata</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="filter_IBRAP.html">filter_IBRAP()</a></code> </p>
-        </td>
-        <td><p>Filters object according to cell metadata</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="find_percentage_genes.html">find_percentage_genes()</a></code> </p>
-        </td>
-        <td><p>Calculates the fraction of counts from genes matching a pattern string</p></td>
-      </tr><tr>
-        
-        <td>
           <p><code><a href="methods-object.html">methods-object</a></code> </p>
         </td>
         <td><p>An S4 class object of method-assays</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="perform.GO.enrichment.html">perform.GO.enrichment()</a></code> </p>
-        </td>
-        <td><p>Gene Ontology enrichment</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="perform.bbknn.html">perform.bbknn()</a></code> </p>
-        </td>
-        <td><p>Performs BBKNN integration</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="perform.decontX.html">perform.decontX()</a></code> </p>
-        </td>
-        <td><p>R package: celda, decontX function</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="perform.diffexp.html">perform.diffexp()</a></code> </p>
-        </td>
-        <td><p>Perform differential expression</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="perform.diffexp.all.html">perform.diffexp.all()</a></code> </p>
-        </td>
-        <td><p>Perform differential expression one cluster vs all</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="perform.graph.cluster.html">perform.graph.cluster()</a></code> </p>
-        </td>
-        <td><p>Performs graph-based clustering</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="perform.graph.subclustering.html">perform.graph.subclustering()</a></code> </p>
-        </td>
-        <td><p>Seurat subclustering</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="perform.harmony.html">perform.harmony()</a></code> </p>
-        </td>
-        <td><p>Performs Harmony integration</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="perform.lvish.html">perform.lvish()</a></code> </p>
-        </td>
-        <td><p>Performs LargeVis reduction</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="perform.pca.html">perform.pca()</a></code> </p>
-        </td>
-        <td><p>Performs PCA reduction</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="perform.reduction.kmeans.html">perform.reduction.kmeans()</a></code> </p>
-        </td>
-        <td><p>Performs Kmeans/PAM clustering on a reduction</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="perform.sc3.reduction.cluster.html">perform.sc3.reduction.cluster()</a></code> </p>
-        </td>
-        <td><p>Performs SC3 clustering on reduced embeddings</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="perform.sc3.slot.cluster.html">perform.sc3.slot.cluster()</a></code> </p>
-        </td>
-        <td><p>Performs SC3 clustering on matrix slot</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="perform.scanorama.html">perform.scanorama()</a></code> </p>
-        </td>
-        <td><p>Performs Scanorama integration</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="perform.scanpy.html">perform.scanpy()</a></code> </p>
-        </td>
-        <td><p>Performs Scanpy normalisation, hvg selection, scaling and variance stabilisation and regression.</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="perform.scran.html">perform.scran()</a></code> </p>
-        </td>
-        <td><p>Performs Scran normalisation, hvg selection, scaling and variance stabilisation and regression.</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="perform.scrublet.html">perform.scrublet()</a></code> </p>
-        </td>
-        <td><p>Python module: scrublet</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="perform.sct.html">perform.sct()</a></code> </p>
-        </td>
-        <td><p>Performs SCTransform</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="perform.seurat.cca.html">perform.seurat.integration()</a></code> </p>
-        </td>
-        <td><p>Performs Seurat Integration</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="perform.singleR.annotation.html">perform.singleR.annotation()</a></code> </p>
-        </td>
-        <td><p>Performs automated cell annotation on query datasets using reference data</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="perform.slingshot.trajectory.html">perform.slingshot.trajectory()</a></code> </p>
-        </td>
-        <td><p>Performs Slingshot trajectory inference</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="perform.tpm.html">perform.tpm()</a></code> </p>
-        </td>
-        <td><p>Performs TPM normalisation</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="perform.tsne.html">perform.tsne()</a></code> </p>
-        </td>
-        <td><p>Performs t-SNE reduction</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="perform.umap.html">perform.umap()</a></code> </p>
-        </td>
-        <td><p>Performs UMAP reduction</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="plot.GO.output.html">plot(<i>&lt;GO.output&gt;</i>)</a></code> </p>
-        </td>
-        <td><p>Plot GO enrichment output</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="plot.QC.scatter.html">plot.QC.scatter()</a></code> </p>
-        </td>
-        <td><p>Plots two QC metrices in scatter format</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="plot.QC.vln.html">plot.QC.vln()</a></code> </p>
-        </td>
-        <td><p>Plots a given QC metric</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="plot.dot.plot.html">plot(<i>&lt;dot.plot&gt;</i>)</a></code> </p>
-        </td>
-        <td><p>Plots a dot plot of gene expression</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="plot.features.html">plot(<i>&lt;features&gt;</i>)</a></code> </p>
-        </td>
-        <td><p>Plot of reduced dimensions and features</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="plot.reduced.dim.html">plot(<i>&lt;reduced.dim&gt;</i>)</a></code> </p>
-        </td>
-        <td><p>Plot of reduced dimensions and labels</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="plot.reduced.dim.interactive.html">plot(<i>&lt;reduced.dim.interactive&gt;</i>)</a></code> </p>
-        </td>
-        <td><p>Interactive plot of reduced dimensions and labels</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="plot.slingshot.html">plot(<i>&lt;slingshot&gt;</i>)</a></code> </p>
-        </td>
-        <td><p>Plots slingshot results</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="plot.vln.html">plot(<i>&lt;vln&gt;</i>)</a></code> </p>
-        </td>
-        <td><p>Plot of violin plot of defined features</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="prepare.reticulate.html">prepare.reticulate()</a></code> </p>
-        </td>
-        <td><p>Installs or identifies if python modules are installed</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="remove.hvgs.html">remove.hvgs()</a></code> </p>
-        </td>
-        <td><p>Remove highly variable genes</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="run.IBRAP.rshiny.html">run.IBRAP.rshiny()</a></code> </p>
-        </td>
-        <td><p>Rshiny application initiator</p></td>
       </tr>
     </tbody>
     </table>

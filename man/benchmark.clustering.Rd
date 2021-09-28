@@ -40,21 +40,15 @@ Supervised (ARI and NMI) and unsupervised (ASW, Dunn Index, and Connectivity) be
 # without ground truth labels 
 
 object <- benchmark.clustering(object = object, assay = c('SCT', 'SCRAN', 'SCANPY'), 
-                                         clustering = c("pca_harmony_nn.v1:louvain",
-                                                        "pca_harmony_nn.v2:louvain"), 
-                                         reduction = c('pca_harmony_umap',
-                                                       'pca_harmony_umap'
-                                         ), 
+                                         clustering = c("pca_harmony_nn:louvain"), 
+                                         reduction = c('pca_harmony_umap'), 
                                          n.dims = 1:2)
 
 # With ground truth labels 
 
 object <- benchmark.clustering(object = object, assay = c('SCT', 'SCRAN', 'SCANPY'), 
-                                         clustering = c("pca_harmony_nn.v1:louvain",
-                                                        "pca_harmony_nn.v2:louvain"), 
-                                         reduction = c('pca_harmony_umap',
-                                                       'pca_harmony_umap'
-                                         ), 
+                                         clustering = c("pca_harmony_nn.v1:louvain"), 
+                                         reduction = c('pca_harmony_umap'), 
                                          n.dims = 1:2, ground.truth = metadata$celltypes)
 
 }

@@ -31,58 +31,90 @@ navbar:
         href: articles/singleR_annotation.html
 
 reference:
-- title: All functions
+- title: Pre-processing Functions
+  desc: Functions to be used to pre-process the data prior to normalisation
+  contents:
+  - '`perform.scrublet`'
+  - '`perform.decontX`'
+  - '`createIBRAPobject`'
+  - '`add.cell.cycle`'
+  - '`add.feature.score`'
+  - '`find_percentage_genes`'
+  - '`filter_IBRAP`'
+  - '`remove.hvgs`'
+- title: Normalisation Functions
+  desc: IBRAP functions for normalisation
+  contents:
+  - '`perform.scanpy`'
+  - '`perform.scran`'
+  - '`perform.tpm`'
+  - '`perform.sct`'
+- title: Reduction Functions
+  desc: Methods to reduce the dimensionality of the data
+  contents:
+  - '`perform.pca`'
+  - '`perform.diffusion.map`'
+  - '`perform.umap`'
+  - '`perform.lvish`'
+  - '`perform.tsne`'
+- title: Clustering Functions
+  desc: Methods to cluster reduced dimensions 
+  contents:
+  - '`perform.nn`'
+  - '`perform.graph.cluster`'
+  - '`perform.graph.subclustering`'
+  - '`perform.sc3.reduction.cluster`'
+  - '`perform.sc3.slot.cluster`'
+  - '`perform.reduction.kmeans`'
+- title: Integration functions
+  desc: Methods to remove batch effects from multi-sample projects
+  contents:
+  - '`perform.harmony`'
+  - '`perform.scanorama`'
+  - '`perform.seurat.integration`'
+  - '`perform.bbknn`'
+- title: Gene Analsysis Functions
+  desc: >
+  contents:
+  - '`perform.diffexp`'
+  - '`perform.diffexp.all`'
+  - '`perform.GO.enrichment`'
+- title: Plotting Functions
+  desc: These plots can be used to plot results produced in IBRAP
+  contents:
+  - '`plot.QC.scatter`'
+  - '`plot.QC.vln`'
+  - '`plot.reduced.dim`'
+  - '`plot.reduced.dim.interactive`'
+  - '`plot.dot.plot`'
+  - '`plot.features`'
+  - '`plot.vln`'
+  - '`plot.cluster.benchmarking`'
+  - '`plot.integration.benchmarking`'
+  - '`plot.GO.output`'
+  - '`plot.slingshot`'
+- title: Benchmarking Functions
+  desc: >
+  contents:
+  - '`benchmark.clustering`'
+  - '`benchmark.integration`'
+- title: Miscellaneous Functions
+  desc: >
+  contents:
+  - '`Read10X_output`'
+  - '`perform.singleR.annotation`'
+  - '`perform.slingshot.trajectory`'
+- title: Backend Functions
+  desc: >
+  contents:
+  - '`prepare.reticulate`'
+  - '`run.IBRAP.rshiny`'
+- title: S4 Class Object Structures
   desc: >
   contents:
   - '`IBRAP-object`'
-  - '`Read10X_output`'
-  - '`add.cell.cycle`'
-  - '`add.feature.score`'
-  - '`benchmark.clustering`'
-  - '`createIBRAPobject`'
-  - '`feature_metadata`'
-  - '`filter_IBRAP`'
-  - '`find_percentage_genes`'
   - '`methods-object`'
-  - '`perform.GO.enrichment`'
-  - '`perform.nn.v1`'
-  - '`perform.nn.v2`'
-  - '`perform.bbknn`'
-  - '`perform.decontX`'
-  - '`perform.diffexp`'
-  - '`perform.diffexp.all`'
-  - '`perform.graph.cluster`'
-  - '`perform.graph.subclustering`'
-  - '`perform.harmony`'
-  - '`perform.lvish`'
-  - '`perform.pca`'
-  - '`perform.reduction.kmeans`'
-  - '`perform.sc3.reduction.cluster`'
-  - '`perform.sc3.slot.cluster`'
-  - '`perform.scanorama`'
-  - '`perform.scanpy`'
-  - '`perform.scran`'
-  - '`perform.scrublet`'
-  - '`perform.sct`'
-  - '`perform.seurat.integration`'
-  - '`perform.singleR.annotation`'
-  - '`perform.slingshot.trajectory`'
-  - '`perform.tpm`'
-  - '`perform.tsne`'
-  - '`perform.umap`'
-  - '`plot.GO.output`'
-  - '`plot.QC.scatter`'
-  - '`plot.QC.vln`'
-  - '`plot.dot.plot`'
-  - '`plot.features`'
-  - '`plot.reduced.dim`'
-  - '`plot.reduced.dim.interactive`'
-  - '`plot.slingshot`'
-  - '`plot.vln`'
-  - '`prepare.reticulate`'
-  - '`remove.hvgs`'
-  - '`run.IBRAP.rshiny`'
-
+  
 template:
   params:
     bootswatch: cerulean

@@ -39,6 +39,7 @@ Performs PCA reduction on defined method-assays. Data should be HVG subset, norm
 
 object <- perform.pca(object = object, 
                       assay = c('SCT', 'SCRAN', 'SCANPY'), 
-                      n.pcs = 50, reduction.save = 'pca')
+                      n.pcs = 50, 
+                      reduction.save = 'pca')
 
 }

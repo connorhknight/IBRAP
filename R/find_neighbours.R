@@ -31,8 +31,8 @@
 #' 
 #' # generates a diffusion map from the scanpy assay
 #' object <- perform.nn(object = object, assay = c('SCT', 'SCRAN', 'SCANPY'), 
-#'                      reduction = c('pca_harmony','scanorama'),
-#'                      dims = list(0,0), generate.diffmap = T)
+#'                      reduction = c('pca'),
+#'                      dims = list(0,0))
 #'                         
 #'
 #' @export

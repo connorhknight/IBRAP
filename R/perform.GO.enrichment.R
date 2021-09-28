@@ -128,7 +128,11 @@ perform.GO.enrichment <- function(result,
       if(stringr::str_detect(string = temp[t], pattern = '< ')) {
         
         temp[t] <- strsplit(x = temp[t], split = ' ')[[1]][2]
+
+      } else if(stringr::str_detect(string = temp[t], pattern = '<')) {
         
+        temp[t] <- strsplit(x = temp[t], split = '<')[[1]][2]
+
       }
       
     }

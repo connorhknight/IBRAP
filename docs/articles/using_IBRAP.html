@@ -128,7 +128,7 @@
 <div id="section-1-1-applying-the-functions" class="section level3">
 <h3 class="hasAnchor">
 <a href="#section-1-1-applying-the-functions" class="anchor" aria-hidden="true"></a>Section 1.1: Applying the functions</h3>
-<p>Droplet-based present unique confounding effects, including doublets and ambient RNA contamination. To remove them we have enlisted scrublet and decontX, respectively. Thus far, there is no consensus on the order of application. However, we prefer scrublet followed by decontX.</p>
+<p>Droplet-based datasets present unique confounding effects, including: doublets and ambient RNA contamination. To remove them we have enlisted scrublet and decontX, respectively. Thus far, there is no consensus on the order of application. However, we prefer scrublet followed by decontX.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R">
 <span class="co"># We simply supply our generated count matrix to both functions</span>
@@ -137,19 +137,20 @@
 
 <span class="va">bmmc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/perform.decontX.html">perform.decontX</a></span><span class="op">(</span>counts <span class="op">=</span> <span class="va">bmmc</span><span class="op">)</span></code></pre></div>
 </div>
-<div id="section-1-2explaining-the-results" class="section level3">
+<div id="section-1-2-explaining-the-results" class="section level3">
 <h3 class="hasAnchor">
-<a href="#section-1-2explaining-the-results" class="anchor" aria-hidden="true"></a>Section 1.2:Explaining the results</h3>
+<a href="#section-1-2-explaining-the-results" class="anchor" aria-hidden="true"></a>Section 1.2: Explaining the results</h3>
 <p><img src="scrublet_plot.png" width="150%" height="150%"></p>
 <p>Scrublet functions by simulating multiplets from out datasets (by integrating similar cells); we can see these simulated cells with high doublet scores. For this example, we can see a minimal number of cells in our observed cells with high doublet scores. Cells that are above a certain doublet score threshold are omitted from the dataset.</p>
 <p><img src="decontX.png" width="150%" height="150%"></p>
-<p>DecontX creates a umap projection of samples and colours the them according the amount of contamination presented within a cell. In this sample, we observe minimal contaminaton. WARNING</p>
+<p>DecontX creates a umap projection of samples and colours them according the amount of contamination presented within a cell. In this sample, we observe minimal contaminaton. WARNING: DecontX should only be used if you expect ambient RNA otherwise it can drastically affect downstream results.</p>
+<p>Now that we have removed these confounding effects from our dataset we can move on with our analysis.</p>
 </div>
 </div>
 <div id="section-2-initiating-the-ibrap-s4-object" class="section level2">
 <h2 class="hasAnchor">
 <a href="#section-2-initiating-the-ibrap-s4-object" class="anchor" aria-hidden="true"></a>Section 2: Initiating the IBRAP S4 object</h2>
-<p>Now we can initiate our IBRAP class object ready for downstream analyses. Refer to methods-object and IBRAP-object for further detail.</p>
+<p>Lets start by initiating our IBRAP class object ready for downstream analyses. You can see the structure and a manual for these in our reference section.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R">
 <span class="co"># whilst creating the object we begin filtering the cells and genes using min.cells and min.features</span>
@@ -159,7 +160,7 @@
                           min.cells <span class="op">=</span> <span class="fl">3</span>,
                           min.features <span class="op">=</span> <span class="fl">200</span><span class="op">)</span>
                           </code></pre></div>
-<p>This produces an S4 class object that initially contains sample metadata and a raw method assay contained in <a href="mailto:object@methods" class="email">object@methods</a>. A couple of important steps happen here: important metadata, including: total counts and total features per cell are stored in <a href="mailto:object@sample_metadata" class="email">object@sample_metadata</a>, and some initial filtering of the count matrix happens. In thsi case, we remove an features that are not present in at least 3 cells and remove cells with less than 200 features are present. We performed the latter as to remove any droplets that are empty and do not contain true cells.</p>
+<p>This produces an S4 class object that initially contains sample metadata and a raw method assay contained in <a href="mailto:object@methods" class="email">object@methods</a>. A couple of important steps happen here: metadata, including: total counts and total genes per cell are stored in <a href="mailto:object@sample_metadata" class="email">object@sample_metadata</a>, and some initial filtering of the count matrix happens. In this case, we removed any genes that are not present in at least 3 cells and removed cells with less than 200 genes We performed the latter as to remove any droplets that are empty and do not contain true cells.</p>
 </div>
 <div id="section-3-quality-control" class="section level2">
 <h2 class="hasAnchor">
@@ -170,8 +171,8 @@
 <p>Next, we must assess the quality of our datasets, if you wish to read in-depth about Quality Control (QC) then please refer to this <a href="https://www.embopress.org/doi/full/10.15252/msb.20188746" class="external-link">publication</a>. In summary, we use the following metrices to QC our data:</p>
 <table class="table">
 <colgroup>
-<col width="13%">
-<col width="86%">
+<col width="12%">
+<col width="87%">
 </colgroup>
 <thead><tr class="header">
 <th align="left">QC.Metric</th>
@@ -184,11 +185,11 @@
 </tr>
 <tr class="even">
 <td align="left">Total RNA</td>
-<td align="left">Low RNA quanitity indicates droplets containing no cells whereas, disproportionately high RNA indicates a droplet containing more than one cell</td>
+<td align="left">A difference in count value can affect downstream processes and requires normalising downstream</td>
 </tr>
 <tr class="odd">
 <td align="left">Total Genes</td>
-<td align="left">likewise, a low or high number of genes typically correspond with total RNA</td>
+<td align="left">Low gene presence indicates droplets containing no cells whereas, disproportionately high number of genes indicates a droplet containing more than one cell</td>
 </tr>
 </tbody>
 </table>
@@ -215,7 +216,7 @@
                                  </code></pre></div>
 <p>The violin plot is split into its metrices and displays the volume of cells expressing the value on the y axis.</p>
 <p><img src="vln_qc_pre.png" width="150%" height="150%"></p>
-<p>Scatter plots enable us to observe correlations between metrices, i.e. the higher the amount of features in a cell the higher the nummber of counts there should be.</p>
+<p>Scatter plots enable us to observe correlations between metrices, i.e. the higher the amount of features in a cell the higher the number of counts there should be.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R">
 <span class="fu">plot.qc.scatter</span><span class="op">(</span>object <span class="op">=</span> <span class="va">bmmc</span>, 
@@ -224,11 +225,12 @@
                 split.by <span class="op">=</span> <span class="st">'original.project'</span>
                 <span class="op">)</span></code></pre></div>
 <p><img src="scatter_qc_pre.png" width="150%" height="150%"></p>
+<p>Now that we have eye-balled our data we can proceed to filtration.</p>
 </div>
 <div id="section-3-3-filtration" class="section level3">
 <h3 class="hasAnchor">
 <a href="#section-3-3-filtration" class="anchor" aria-hidden="true"></a>Section 3.3: Filtration</h3>
-<p>Next, we clean our data further by applyng filtration cut-offs. We remove cells with a high number of features since this will remove any doublets that were missed by scrublet (two cells in a droplet will display a disproportionately higher number of features). Then, we remove cells with a certain fraction of mitochondrial counts, we do this to remove cells with damaged mitochondria during the preparation process.</p>
+<p>We clean our data further by applyng filtration cut-offs. We remove cells with a high number of features since this will remove any doublets that were missed by scrublet (two cells in a droplet will display a disproportionately higher number of features). Then, we remove cells with a certain fraction of mitochondrial counts, we do this to remove cells with damaged mitochondria during the preparation process.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R">
 <span class="va">bmmc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/filter_IBRAP.html">filter_IBRAP</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">bmmc</span>, <span class="va">RAW_total.features</span> <span class="op">&lt;</span> <span class="fl">3000</span> <span class="op">&amp;</span> <span class="va">RAW_percent.mt</span> <span class="op">&lt;</span> <span class="fl">8</span><span class="op">)</span></code></pre></div>
@@ -241,19 +243,19 @@
 <h3 class="hasAnchor">
 <a href="#section-4-1-applying-the-functions" class="anchor" aria-hidden="true"></a>Section 4.1: Applying The Functions</h3>
 <p>To accommodate downstream analyses, we must promote a normal distribution and numerical scaling in our data. We included four separate <a href="https://connorhknight.github.io/IBRAP/articles/data_transform.html" class="external-link">normalisation</a> methods that are applied as such:</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R">
-<span class="va">bmmc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/perform.sct.html">perform.sct</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">bmmc</span>, 
-                    assay <span class="op">=</span> <span class="st">'RAW'</span>, 
-                    slot <span class="op">=</span> <span class="st">'counts'</span><span class="op">)</span>
-
-<span class="va">bmmc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/perform.scran.html">perform.scran</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">bmmc</span>, 
-                      assay <span class="op">=</span> <span class="st">'RAW'</span>, 
-                      slot <span class="op">=</span> <span class="st">'counts'</span>, 
-                      vars.to.regress <span class="op">=</span> <span class="st">'RAW_total.counts'</span>, do.scale <span class="op">=</span> <span class="cn">T</span><span class="op">)</span>
-
-<span class="va">bmmc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/perform.scanpy.html">perform.scanpy</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">bmmc</span>, 
-                       vars.to.regress <span class="op">=</span> <span class="st">'RAW_total.counts'</span>, do.scale <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" data-line-number="1"></a>
+<a class="sourceLine" id="cb8-2" data-line-number="2">bmmc &lt;-<span class="st"> </span><span class="kw">perform.sct</span>(<span class="dt">object =</span> bmmc, </a>
+<a class="sourceLine" id="cb8-3" data-line-number="3">                    <span class="dt">assay =</span> <span class="st">'RAW'</span>, </a>
+<a class="sourceLine" id="cb8-4" data-line-number="4">                    <span class="dt">slot =</span> <span class="st">'counts'</span>, <span class="dt">vars.to.regress =</span> <span class="st">'RAW_percent.mt'</span>)</a>
+<a class="sourceLine" id="cb8-5" data-line-number="5"></a>
+<a class="sourceLine" id="cb8-6" data-line-number="6">bmmc &lt;-<span class="st"> </span><span class="kw">perform.scran</span>(<span class="dt">object =</span> bmmc, </a>
+<a class="sourceLine" id="cb8-7" data-line-number="7">                      <span class="dt">assay =</span> <span class="st">'RAW'</span>, </a>
+<a class="sourceLine" id="cb8-8" data-line-number="8">                      <span class="dt">slot =</span> <span class="st">'counts'</span>, </a>
+<a class="sourceLine" id="cb8-9" data-line-number="9">                      <span class="dt">vars.to.regress =</span> <span class="kw">c</span>(<span class="st">'RAW_percent.mt'</span> <span class="st">'RAW_total.counts'</span>))</a>
+<a class="sourceLine" id="cb8-10" data-line-number="10"></a>
+<a class="sourceLine" id="cb8-11" data-line-number="11">bmmc &lt;-<span class="st"> </span><span class="kw">perform.scanpy</span>(<span class="dt">object =</span> bmmc, </a>
+<a class="sourceLine" id="cb8-12" data-line-number="12">                       <span class="dt">vars.to.regress =</span> <span class="kw">c</span>(<span class="st">'RAW_percent.mt'</span> <span class="st">'RAW_total.counts'</span>))</a></code></pre></div>
+<p>For these methods, we transformed our raw counts, and regressed some QC metrices from our datasets to not allow them to affect our downstream analyses. There are some notable differences here. For example, SCT automatically regresses RAW_total.counts so we do not need to specify this however, the others you do. These parameters are set as default, any deviation from these is at your own risk since they could produce incorrect results. Nonetheless, feel free to play around and observe the difference.</p>
 </div>
 <div id="section-4-2-how-functions-work-downstream" class="section level3">
 <h3 class="hasAnchor">

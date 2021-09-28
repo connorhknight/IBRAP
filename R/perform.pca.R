@@ -19,7 +19,8 @@
 #' 
 #' object <- perform.pca(object = object, 
 #'                       assay = c('SCT', 'SCRAN', 'SCANPY'), 
-#'                       n.pcs = 50, reduction.save = 'pca')
+#'                       n.pcs = 50, 
+#'                       reduction.save = 'pca')
 #'
 #' @export
 

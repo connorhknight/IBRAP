@@ -173,7 +173,6 @@
   n.trees <span class='op'>=</span> <span class='fl'>50</span>,
   anchor.eps <span class='op'>=</span> <span class='fl'>0</span>,
   features <span class='op'>=</span> <span class='cn'>NULL</span>,
-  features.to.integrate <span class='op'>=</span> <span class='cn'>NULL</span>,
   integrate.dims <span class='op'>=</span> <span class='fl'>1</span><span class='op'>:</span><span class='fl'>30</span>,
   k.weight <span class='op'>=</span> <span class='fl'>100</span>,
   sd.weight <span class='op'>=</span> <span class='fl'>1</span>,
@@ -231,10 +230,6 @@
     <tr>
       <th>features</th>
       <td><p>Character. Vector of features to use when computing the PCA to determine the weights. Only set if you want a different set from those used in the anchor finding process. Default = NULL</p></td>
-    </tr>
-    <tr>
-      <th>features.to.integrate</th>
-      <td><p>Character. Vector of features to integrate. By default, will use the features used in anchor finding. Default = NULL</p></td>
     </tr>
     <tr>
       <th>integrate.dims</th>
