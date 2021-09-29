@@ -27,7 +27,8 @@ perform.seurat.integration(
   k.weight = 100,
   sd.weight = 1,
   sample.tree = NULL,
-  integrate.eps = 0
+  integrate.eps = 0,
+  save.plot = TRUE
 )
 }
 \arguments{
@@ -64,6 +65,8 @@ perform.seurat.integration(
 \item{sample.tree}{Character. Specify the order of integration. If NULL, will compute automatically. Default = NULL}
 
 \item{integrate.eps}{Numerical. Error bound on the neighbor finding algorithm (from RANN)}
+
+\item{save.plot}{Boolean. Should the automatically genewrated plot be saved? Default = TRUE}
 
 \item{max.features.}{Numerical. The maximum number of features to use when specifying the neighborhood search space in the anchor filtering. Default = 200}
 

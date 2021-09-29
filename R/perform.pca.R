@@ -30,6 +30,7 @@ perform.pca <- function(object,
                         plot.var = TRUE,
                         n.pcs=50,
                         reduction.save='pca', 
+                        save.plot = TRUE, 
                         ...) {
   
   if(!is(object = object, class2 = 'IBRAP')) {
@@ -69,6 +70,12 @@ perform.pca <- function(object,
   if(!is.character(reduction.save)) {
     
     stop('reduction.save must be numerical')
+    
+  }
+  
+  if(!is.logical(save.plot)) {
+    
+    stop('save.plot must be boolean. TRUE/FALSE \n')
     
   }
   
@@ -180,7 +187,17 @@ perform.pca <- function(object,
     
   }
   
-  print(do.call('ggarrange.tmp', c(plots = list.of.figs, ncol = length(list.of.figs))))
+  if(isTRUE(save.plot)) {
+    
+    pdf(file = paste0('PCA_', ass, '.pdf'))
+    print(do.call('ggarrange.tmp', c(plots = list.of.figs, ncol = length(list.of.figs))))
+    dev.off()
+    
+  } else {
+    
+    print(do.call('ggarrange.tmp', c(plots = list.of.figs, ncol = length(list.of.figs))))
+    
+  }
   
   return(object)
   

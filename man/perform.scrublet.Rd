@@ -9,6 +9,8 @@ perform.scrublet(counts = counts, expected_doublet_rate = 0.025)
 \arguments{
 \item{counts}{Counts matrix}
 
+\item{save.plot}{Boolean. Should the automatically genewrated plot be saved? Default = TRUE}
+
 \item{total_counts}{Total number of cells. NULL = automatically counts.}
 
 \item{sim_doublet_ratio}{Number of doublets to simulate relative to observed}

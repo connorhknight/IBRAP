@@ -21,33 +21,55 @@ knitr::opts_chunk$set(
 klippy::klippy(tooltip_message = 'Click to copy', tooltip_success = 'Done', position = c('bottom', 'right'))
 ```
 
-### Installing IBRAP 
+## Step 1: Configure ImageMagick for linux-based system prior to installation
 
-IBRAP depends on more than 100 other packages, thus the installation process may take some time and some manual intervention 
-
-Firstly, some Bioconductor packages must be installed prior to the github installation: 
+1. Get ImageMagick from the following link by doing: 
 
 ```{r, eval=F, echo=T}
+curl -L -O https://download.imagemagick.org/ImageMagick/download/releases/ImageMagick-6.9.10-86.tar.xz
 
+```
+
+2. cd into the downloaded directory containing ImageMagick. Then execute the following command:
+
+```{r, eval=F, echo=T}
+./configure
+make
+make install
+
+```
+
+3. now we must export the LD_LIBRARY_PATH and pkgconfig path to the library location of ImageMagick package. For example: 
+
+```{r, eval=F, echo=T}
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/path/to/magick/ImageMagick-6.9.10-86/lib
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/path/to/magick/ImageMagick-6.9.10-86/Magick++/lib
+export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:/path/to/magick/ImageMagick-6.9.10-86/lib/pkgconfig
+
+```
+
+## Step 2: Installing BiocManager dependencies for IBRAP 
+
+```{r, eval=F, echo=T}
 if (!requireNamespace("BiocManager", quietly=TRUE))
     install.packages("BiocManager")
 BiocManager::install(c("celda", "slingshot", "scran", "scuttle", "SC3", "SingleCellExperiment", "PCAtools", "topGO","shinydashboard", "destiny"))
 
 ```
 
-Next, we install IBRAP and other dependencies in a single command:
+## Step 3: Installing IBRAP
 
 ```{r, eval=F, echo=T}
-
 install.packages('devtools')
 devtools::install_github('connorhknight/IBRAP')
 
 ```
 
+## Step 4: Preparing reticulate
+
 IBRAP not only uses packages within R, but also through python. For this, we use reticulate to interface python into the R environment. To setup reticulate we must start by installing miniconda:
 
 ```{r, eval=F, echo=T}
-
 reticulate::install_miniconda()
 
 ```
@@ -55,12 +77,11 @@ reticulate::install_miniconda()
 Once miniconda is installed it will produce an environment called r-reticulate. Next, we must assure the correct packages are installed within the new environment:
 
 ```{r, eval=F, echo=T}
-
 prepare.reticulate()
 
 ```
 
-Once this has been completed, you are ready to use IBRAP! For a basic understand of a single sample workflow please use the 'getting started' tutorial. For multi sample analysis, you can divert to the integration tutorial. 
+Once this has been completed, you are ready to use IBRAP! For a basic understand of a single sample workflow please use the 'getting started' tutorial. For multi-sample analysis, you can divert to the integration tutorial. 
 
 Good luck!
 

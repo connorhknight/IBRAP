@@ -9,6 +9,8 @@ perform.decontX(counts = counts)
 \arguments{
 \item{counts}{Counts matrix}
 
+\item{save.plot}{Boolean. Should the automatically genewrated plot be saved? Default = TRUE}
+
 \item{z}{Cluster assignments for cells}
 
 \item{batch}{Batches for each cell if multiple samples are present}

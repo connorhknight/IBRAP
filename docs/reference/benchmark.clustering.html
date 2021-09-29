@@ -207,22 +207,16 @@
 <span class='r-in'><span class='co'># without ground truth labels </span></span>
 <span class='r-in'></span>
 <span class='r-in'><span class='va'>object</span> <span class='op'>&lt;-</span> <span class='fu'>benchmark.clustering</span><span class='op'>(</span>object <span class='op'>=</span> <span class='va'>object</span>, assay <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>'SCT'</span>, <span class='st'>'SCRAN'</span>, <span class='st'>'SCANPY'</span><span class='op'>)</span>, </span>
-<span class='r-in'>                                         clustering <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"pca_harmony_nn.v1:louvain"</span>,</span>
-<span class='r-in'>                                                        <span class='st'>"pca_harmony_nn.v2:louvain"</span><span class='op'>)</span>, </span>
-<span class='r-in'>                                         reduction <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>'pca_harmony_umap'</span>,</span>
-<span class='r-in'>                                                       <span class='st'>'pca_harmony_umap'</span></span>
-<span class='r-in'>                                         <span class='op'>)</span>, </span>
+<span class='r-in'>                                         clustering <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"pca_harmony_nn:louvain"</span><span class='op'>)</span>, </span>
+<span class='r-in'>                                         reduction <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>'pca_harmony_umap'</span><span class='op'>)</span>, </span>
 <span class='r-in'>                                         n.dims <span class='op'>=</span> <span class='fl'>1</span><span class='op'>:</span><span class='fl'>2</span><span class='op'>)</span></span>
 <span class='r-err co'><span class='r-pr'>#&gt;</span> <span class='error'>Error in is(object = object, class2 = "IBRAP")</span> object 'object' not found</span>
 <span class='r-in'></span>
 <span class='r-in'><span class='co'># With ground truth labels </span></span>
 <span class='r-in'></span>
 <span class='r-in'><span class='va'>object</span> <span class='op'>&lt;-</span> <span class='fu'>benchmark.clustering</span><span class='op'>(</span>object <span class='op'>=</span> <span class='va'>object</span>, assay <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>'SCT'</span>, <span class='st'>'SCRAN'</span>, <span class='st'>'SCANPY'</span><span class='op'>)</span>, </span>
-<span class='r-in'>                                         clustering <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"pca_harmony_nn.v1:louvain"</span>,</span>
-<span class='r-in'>                                                        <span class='st'>"pca_harmony_nn.v2:louvain"</span><span class='op'>)</span>, </span>
-<span class='r-in'>                                         reduction <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>'pca_harmony_umap'</span>,</span>
-<span class='r-in'>                                                       <span class='st'>'pca_harmony_umap'</span></span>
-<span class='r-in'>                                         <span class='op'>)</span>, </span>
+<span class='r-in'>                                         clustering <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"pca_harmony_nn.v1:louvain"</span><span class='op'>)</span>, </span>
+<span class='r-in'>                                         reduction <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>'pca_harmony_umap'</span><span class='op'>)</span>, </span>
 <span class='r-in'>                                         n.dims <span class='op'>=</span> <span class='fl'>1</span><span class='op'>:</span><span class='fl'>2</span>, ground.truth <span class='op'>=</span> <span class='va'>metadata</span><span class='op'>$</span><span class='va'>celltypes</span><span class='op'>)</span></span>
 <span class='r-err co'><span class='r-pr'>#&gt;</span> <span class='error'>Error in is(object = object, class2 = "IBRAP")</span> object 'object' not found</span>
 <span class='r-in'></span>

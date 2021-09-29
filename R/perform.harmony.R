@@ -11,6 +11,7 @@
 #' @param reduction Character. String defining the name of the reduction to provide for BBKNN. Default = 'pca'
 #' @param reduction.save.suffix Character. What should be appended to the end of harmony as the reduction name
 #' @param dims.use Numerical. Number of dimensions of the provided reduction to input into harmony, NULL equates to all dimensions. Default = NULL
+#' @param save.plot Boolean. Should the automatically genewrated plot be saved? Default = TRUE
 #' @param ... Arguments to be passed to harmony::HarmonyMatrix
 #' 
 #' @return PCA reductions contained within the computational_reduction list in the defined assays
@@ -32,6 +33,7 @@ perform.harmony <- function(object,
                             reduction = 'pca', 
                             reduction.save.suffix = '',
                             dims.use = NULL, 
+                            save.plot = TRUE,
                             ...) {
   
   if(!is(object = object, class2 = 'IBRAP')) {
@@ -184,7 +186,19 @@ perform.harmony <- function(object,
       
       cat(crayon::cyan(paste0(Sys.time(), ': initialising harmony for assay: ', p, ', reduction: ', g, '\n')))
       
-      harm <- harmony::HarmonyMatrix(data_mat = red[,1:dims], meta_data = object@sample_metadata, vars_use = vars.use, do_pca = FALSE, verbose = TRUE, ...)
+      if(isTRUE(save.plot)) {
+        
+        pdf(file = paste0('harmony_', g, '.pdf'))
+        
+      }
+      
+      harm <- harmony::HarmonyMatrix(data_mat = red[,1:dims], meta_data = object@sample_metadata, vars_use = vars.use, do_pca = FALSE, verbose = TRUE, plot_convergence = TRUE, ...)
+      
+      if(isTRUE(save.plot)) {
+        
+        dev.off()
+        
+      }
       
       object@methods[[p]]@integration_reductions[[paste0(r, '_harmony', reduction.save.suffix)]] <- harm
       

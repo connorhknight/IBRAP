@@ -6,6 +6,7 @@
 #' @description Removes doublets from dataset.
 #' 
 #' @param counts Counts matrix
+#' @param save.plot Boolean. Should the automatically genewrated plot be saved? Default = TRUE
 #' @param total_counts Total number of cells. NULL = automatically counts.
 #' @param sim_doublet_ratio Number of doublets to simulate relative to observed
 #' @param n_neighbors Expected number of neighbours per cell
@@ -36,6 +37,7 @@
 #' @export
 
 perform.scrublet <- function(counts,
+                             save.plot = TRUE, 
                              total_counts = NULL, 
                              sim_doublet_ratio = 2.0, 
                              n_neighbors = NULL, 
@@ -64,6 +66,12 @@ perform.scrublet <- function(counts,
     }
     
   } 
+  
+  if(!is.logical(save.plot)) {
+    
+    stop('save.plot must be boolean. TRUE/FALSE \n')
+    
+  }
   
   if(!is.null(total_counts)) {
     
@@ -228,7 +236,18 @@ perform.scrublet <- function(counts,
     ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5))
   
   comb.plot <- cowplot::plot_grid(sim.plot, obs.plot, ncol = 2, nrow = 1)
-  print(comb.plot)
+  
+  if(isTRUE(save.plot)) {
+    
+    pdf(file = paste0('scrublet_', as.character(as.integer(runif(1, min = 1, max = 1000))), '.pdf'))
+    print(comb.plot)
+    dev.off()
+    
+  } else {
+    
+    print(comb.plot)
+    
+  }
   
   cat(crayon::cyan(paste0(Sys.time(), ': doublets detected\n')))
   counts <- as.matrix(counts)

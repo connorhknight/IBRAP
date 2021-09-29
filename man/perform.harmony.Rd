@@ -11,6 +11,7 @@ perform.harmony(
   reduction = "pca",
   reduction.save.suffix = "",
   dims.use = NULL,
+  save.plot = TRUE,
   ...
 )
 }
@@ -26,6 +27,8 @@ perform.harmony(
 \item{reduction.save.suffix}{Character. What should be appended to the end of harmony as the reduction name}
 
 \item{dims.use}{Numerical. Number of dimensions of the provided reduction to input into harmony, NULL equates to all dimensions. Default = NULL}
+
+\item{save.plot}{Boolean. Should the automatically genewrated plot be saved? Default = TRUE}
 
 \item{...}{Arguments to be passed to harmony::HarmonyMatrix}
 }

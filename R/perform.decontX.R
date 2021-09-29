@@ -6,6 +6,7 @@
 #' @description Removes ambient RNA from datasets
 #' 
 #' @param counts Counts matrix
+#' @param save.plot Boolean. Should the automatically genewrated plot be saved? Default = TRUE
 #' @param z Cluster assignments for cells
 #' @param batch Batches for each cell if multiple samples are present
 #' @param maxIter Maximum number of iterations to be performed
@@ -25,6 +26,7 @@
 #' @export
 
 perform.decontX <- function(counts,
+                            save.plot = TRUE,
                             z = NULL,
                             batch = NULL,
                             maxIter = 500,
@@ -45,6 +47,12 @@ perform.decontX <- function(counts,
     }
     
   } 
+  
+  if(!is.logical(save.plot)) {
+    
+    stop('save.plot must be boolean. TRUE/FALSE \n')
+    
+  }
   
   if(!is.null(z)) {
     
@@ -106,6 +114,12 @@ perform.decontX <- function(counts,
   
   if(is.null(batch)) {
     
+    if(isTRUE(save.plot)) {
+      
+      pdf(file = paste0('decontX_', as.character(as.integer(runif(1, min = 1, max = 1000))), '.pdf'))
+
+    }
+    
     d <- celda::decontX(x = counts,
                         z = z,
                         batch = NULL,
@@ -119,7 +133,19 @@ perform.decontX <- function(counts,
                         seed = seed,
                         verbose = TRUE)
     
+    if(isTRUE(save.plot)) {
+      
+      dev.off()
+      
+    }
+    
   } else {
+    
+    if(isTRUE(save.plot)) {
+      
+      pdf(file = paste0('decontX_', as.character(as.integer(runif(1, min = 1, max = 1000))), '.pdf'))
+      
+    }
     
     d <- celda::decontX(x = counts,
                         z = z,
@@ -133,6 +159,12 @@ perform.decontX <- function(counts,
                         dbscanEps = dbscanEps,
                         seed = seed,
                         verbose = TRUE)
+    
+    if(isTRUE(save.plot)) {
+      
+      dev.off()
+      
+    }
     
   }
   

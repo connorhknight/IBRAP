@@ -11,6 +11,7 @@ perform.pca(
   plot.var = TRUE,
   n.pcs = 50,
   reduction.save = "pca",
+  save.plot = TRUE,
   ...
 )
 }

@@ -24,6 +24,7 @@
 #' @param sd.weight Numerical. Controls the bandwidth of the Gaussian kernel for weighting. Default = 1
 #' @param sample.tree Character. Specify the order of integration. If NULL, will compute automatically. Default = NULL
 #' @param integrate.eps Numerical. Error bound on the neighbor finding algorithm (from RANN)
+#' @param save.plot Boolean. Should the automatically genewrated plot be saved? Default = TRUE
 #' 
 #' @return Produces a new 'methods' assay containing normalised, scaled and HVGs.
 #' 
@@ -73,7 +74,8 @@ perform.seurat.integration <- function(object,
                                        k.weight = 100,
                                        sd.weight = 1, 
                                        sample.tree = NULL, 
-                                       integrate.eps = 0) {
+                                       integrate.eps = 0,
+                                       save.plot = TRUE) {
   
   if(!is(object = object, class2 = 'IBRAP')) {
     
@@ -261,6 +263,12 @@ perform.seurat.integration <- function(object,
     
   }
   
+  if(!is.logical(save.plot)) {
+    
+    stop('save.plot must be boolean. TRUE/FALSE \n')
+    
+  }
+  
   if(length(batch) > 1) {
     
     temp <- function(x) {
@@ -381,7 +389,7 @@ perform.seurat.integration <- function(object,
       
       tmp.obj@methods[[paste0(a,'_integrated')]]@highly.variable.genes <- combined@assays$integrated@var.features
       
-      tmp.obj <- IBRAP::perform.pca(object = tmp.obj, assay = paste0(a,'_integrated'), slot = 'norm.scaled')
+      tmp.obj <- IBRAP::perform.pca(object = tmp.obj, assay = paste0(a,'_integrated'), slot = 'norm.scaled', save.plot = save.plot)
       
       if(is.null(reduction.name.suffix)) {
         
@@ -467,7 +475,7 @@ perform.seurat.integration <- function(object,
       
       tmp.obj@methods[[paste0(a,'_integrated')]]@highly.variable.genes <- combined@assays$integrated@var.features
       
-      tmp.obj <- IBRAP::perform.pca(object = tmp.obj, assay = paste0(a,'_integrated'), slot = 'norm.scaled')
+      tmp.obj <- IBRAP::perform.pca(object = tmp.obj, assay = paste0(a,'_integrated'), slot = 'norm.scaled', save.plot = save.plot)
       
       if(is.null(reduction.name.suffix)) {
         
