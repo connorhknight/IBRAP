@@ -46,7 +46,6 @@ Imports:
     colorspace (>= 2.0-2),
     utils (>= 4.0.4),
     ggrepel (>= 0.9.1),
-    progress (>= 1.2.2)
     
     
     

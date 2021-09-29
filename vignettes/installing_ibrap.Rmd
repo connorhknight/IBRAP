@@ -53,7 +53,7 @@ export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:/path/to/magick/ImageMagick-6.9.10-86/li
 ```{r, eval=F, echo=T}
 if (!requireNamespace("BiocManager", quietly=TRUE))
     install.packages("BiocManager")
-BiocManager::install(c("celda", "slingshot", "scran", "scuttle", "SC3", "SingleCellExperiment", "PCAtools", "topGO","shinydashboard", "destiny"))
+BiocManager::install(c("celda", "slingshot", "scran", "scuttle", "SC3", "SingleCellExperiment", "PCAtools", "topGO","shinydashboard", "destiny", "progress"))
 
 ```
 

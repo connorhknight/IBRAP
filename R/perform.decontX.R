@@ -140,7 +140,7 @@ perform.decontX <- function(counts,
   
   cat(crayon::cyan(paste0(Sys.time(), ': ', as.character(formatC(sum(sum(d$contamination)/length(d$contamination)), digits = 2)), '% average contamination\n')))
   
-  clean.matrix <- SummarizedExperiment::assay(d, 'decontXcounts')
+  clean.matrix <- d$decontXcounts
   cat(crayon::cyan(paste0(Sys.time(), ': matrix isolated\n')))
   clean.matrix <- round(clean.matrix)
   zero.samples <- Matrix::colSums(as.matrix(clean.matrix)) > 0

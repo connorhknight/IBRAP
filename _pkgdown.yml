@@ -17,10 +17,6 @@ navbar:
         href: articles/installing_ibrap.html
       - text: Getting Started
         href: articles/using_IBRAP.html
-      - text: Data Transformation
-        href: articles/data_transform.html
-      - text: Clustering Methods
-        href: articles/clustering_method.html
       - text: Data Integration
         href: articles/integration.html
       - text: RShiny Application
@@ -29,7 +25,11 @@ navbar:
         href: articles/trajectory.html
       - text: Automated Annotation
         href: articles/singleR_annotation.html
-
+      - text: Data Transformation
+        href: articles/data_transform.html
+      - text: Clustering Methods
+        href: articles/clustering_method.html
+        
 reference:
 - title: Pre-processing Functions
   desc: Functions to be used to pre-process the data prior to normalisation
