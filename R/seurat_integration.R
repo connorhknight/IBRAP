@@ -385,7 +385,7 @@ perform.seurat.integration <- function(object,
       
       if(is.null(reduction.name.suffix)) {
         
-        object@methods[[a]]@integration_reductions[[paste0(toupper(reduction), '_pca')]] <- tmp.obj@methods[[1]]@computational_reductions[[1]]
+        object@methods[[a]]@integration_reductions[[paste0('seurat', reduction.name.suffix[[count]])]] <- tmp.obj@methods[[1]]@computational_reductions[[1]]
         
       } else if(!is.null(reduction.name.suffix)) {
         
@@ -471,7 +471,7 @@ perform.seurat.integration <- function(object,
       
       if(is.null(reduction.name.suffix)) {
         
-        object@methods[[a]]@integration_reductions[[paste0(toupper(reduction), '_pca')]] <- tmp.obj@methods[[1]]@computational_reductions[[1]]
+        object@methods[[a]]@integration_reductions[[paste0('seurat', reduction.name.suffix[[count]])]] <- tmp.obj@methods[[1]]@computational_reductions[[1]]
         
       } else if(!is.null(reduction.name.suffix)) {
         

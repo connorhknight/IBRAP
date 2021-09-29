@@ -199,6 +199,8 @@ perform.bbknn <- function(object,
     count <- 1
     
     for(r in reduction) {
+      
+      dims <- n_pcs[[count]]
     
       scobj <- sc$AnnData(X = object@methods[[p]]@computational_reductions[[reduction[count]]])
       
@@ -234,11 +236,11 @@ perform.bbknn <- function(object,
         
       }
       
-      if(n_pcs == 0) {
+      if(dims == 0) {
         
         cat(crayon::cyan(paste0(Sys.time(), ': npcs calculated\n')))
         
-        n_pcs <- ncol(object@methods[[p]]@computational_reductions[[reduction[count]]])
+        dims <- ncol(object@methods[[p]]@computational_reductions[[reduction[count]]])
         
       }
       
@@ -251,7 +253,7 @@ perform.bbknn <- function(object,
                              approx = as.logical(FALSE),
                              metric = as.character(metric),
                              neighbors_within_batch = as.integer(neighbors_within_batch),
-                             n_pcs = n_pcs,
+                             n_pcs = dims,
                              annoy_n_trees = as.integer(annoy_n_trees),
                              use_faiss = as.logical(use_faiss),
                              set_op_mix_ratio = set_op_mix_ratio,
@@ -268,7 +270,7 @@ perform.bbknn <- function(object,
                              approx = as.logical(FALSE),
                              metric = as.character(metric),
                              neighbors_within_batch = as.integer(neighbors_within_batch),
-                             n_pcs = n_pcs,
+                             n_pcs = dims,
                              trim = as.integer(trim),
                              annoy_n_trees = as.integer(annoy_n_trees),
                              use_faiss = as.logical(use_faiss),
