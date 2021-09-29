@@ -81,7 +81,7 @@ perform.diffexp.all <- function(object,
   
   if(!is.null(clust.method)) {
     
-    if(!clust.method %in% names(object@method[[assy]]@cluster_assignments)) {
+    if(!clust.method %in% names(object@methods[[assay]]@cluster_assignments)) {
       
       stop('clust.method is not present in cluster_assignments \n')
       
@@ -95,7 +95,7 @@ perform.diffexp.all <- function(object,
   
   if(!is.null(column)) {
     
-    if(!column %in% names(object@method[[assy]]@cluster_assignments[[clust.method]])) {
+    if(!column %in% names(object@methods[[assay]]@cluster_assignments[[clust.method]])) {
       
       stop('column is not present in clust.method \n')
       
@@ -106,25 +106,6 @@ perform.diffexp.all <- function(object,
     stop('please provide a colum in the dataframe of your clust.method \n')
     
   }
-  
-  if(!is.null(identity)) {
-    
-    if(!is.vector(identity)) {
-      
-      stop('Identity must be a vector \n')
-      
-    } else if(length(identity) != ncol(object@methods[[assay]]@counts)) {
-      
-      stop('Identity length does not match the number of cells \n')
-      
-    }
-    
-  } else if (is.null(identity)) {
-    
-    stop('Please provide the cell identities \n')
-    
-  }
-  
   
   if(!is.null(latent.vars)) {
     
@@ -142,11 +123,11 @@ perform.diffexp.all <- function(object,
     seuobj@assays$RNA@data <- object@methods[[assay]]@normalised
     seuobj@assays$RNA@scale.data <- object@methods[[assay]]@norm.scaled
     
-    if(clust.method == 'metadata') {
+    if(clust.method != 'metadata') {
       
       seuobj$cluster <- object@methods[[assay]]@cluster_assignments[[clust.method]][,column]
       
-    } else {
+    } else if(clust.method == 'metadata') {
       
       seuobj$cluster <- object@sample_metadata[,column]
       
@@ -166,7 +147,16 @@ perform.diffexp.all <- function(object,
     seuobj@assays$RNA@data <- object@methods[[assay]]@normalised
     seuobj@assays$RNA@scale.data <- object@methods[[assay]]@norm.scaled
     
-    seuobj$cluster <- identity
+    if(clust.method != 'metadata') {
+      
+      seuobj$cluster <- object@methods[[assay]]@cluster_assignments[[clust.method]][,column]
+      
+    } else if(clust.method == 'metadata') {
+
+      seuobj$cluster <- object@sample_metadata[,column]
+
+    }
+    
     Seurat::Idents(seuobj) <- 'cluster'
     
     met <- merge(seuobj@meta.data, object@sample_metadata, by = 0)
@@ -180,3 +170,6 @@ perform.diffexp.all <- function(object,
   return(results)
   
 }
+
+
+
