@@ -39,8 +39,9 @@
 
 perform.diffexp.all <- function(object, 
                                 assay = NULL,
+                                clust.method = NULL,
+                                column = NULL,
                                 test = 'wilcox', 
-                                identity = NULL,
                                 latent.vars = NULL,
                                 ...) {
   
@@ -56,6 +57,14 @@ perform.diffexp.all <- function(object,
       
       stop('Assay must be character string \n')
       
+    } else if (is.character(assay)) {
+      
+      if(!assay %in% names(object@methods)) {
+        
+        stop('assay not founnd in object@methods \n')
+        
+      }
+      
     }
     
   } else if (is.null(assay)) {
@@ -67,6 +76,34 @@ perform.diffexp.all <- function(object,
   if(!is.character(test)) {
     
     stop('Test must be character string \n')
+    
+  }
+  
+  if(!is.null(clust.method)) {
+    
+    if(!clust.method %in% names(object@method[[assy]]@cluster_assignments)) {
+      
+      stop('clust.method is not present in cluster_assignments \n')
+      
+    }
+    
+  } else if (is.null(clust.method)) {
+    
+    stop('please provide a clust.method from cluster_assignments \n')
+    
+  }
+  
+  if(!is.null(column)) {
+    
+    if(!column %in% names(object@method[[assy]]@cluster_assignments[[clust.method]])) {
+      
+      stop('column is not present in clust.method \n')
+      
+    }
+    
+  } else if (is.null(column)) {
+    
+    stop('please provide a colum in the dataframe of your clust.method \n')
     
   }
   
@@ -105,7 +142,16 @@ perform.diffexp.all <- function(object,
     seuobj@assays$RNA@data <- object@methods[[assay]]@normalised
     seuobj@assays$RNA@scale.data <- object@methods[[assay]]@norm.scaled
     
-    seuobj$cluster <- identity
+    if(clust.method == 'metadata') {
+      
+      seuobj$cluster <- object@methods[[assay]]@cluster_assignments[[clust.method]][,column]
+      
+    } else {
+      
+      seuobj$cluster <- object@sample_metadata[,column]
+      
+    }
+    
     Seurat::Idents(seuobj) <- 'cluster'
     
     met <- merge(seuobj@meta.data, object@sample_metadata, by = 0)

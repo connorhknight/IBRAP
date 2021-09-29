@@ -7,8 +7,9 @@
 perform.diffexp.all(
   object,
   assay = NULL,
+  clust.method = NULL,
+  column = NULL,
   test = "wilcox",
-  identity = NULL,
   latent.vars = NULL,
   ...
 )
@@ -20,11 +21,11 @@ perform.diffexp.all(
 
 \item{test}{Character. Which test to use. Can be either: wilcox, bimod, roc, t, negbinom, poisson, LR, MAST, DESeq2. Please refer to Seurat::FindMarkers for more information.}
 
-\item{identity}{Vector. A vector of cell identifiers to distinguish cells. Default = NULL}
-
 \item{latent.vars}{Character. String(s) identifying which variables contained within the metadata to regress from the cells}
 
 \item{...}{arguments to pass to Seurat::FindMarkers}
+
+\item{identity}{Vector. A vector of cell identifiers to distinguish cells. Default = NULL}
 }
 \value{
 A dataframe containing differentially expression genes and other information
