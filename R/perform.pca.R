@@ -189,8 +189,8 @@ perform.pca <- function(object,
   
   if(isTRUE(save.plot)) {
     
-    pdf(file = paste0('PCA_', ass, '.pdf'))
-    print(do.call('ggarrange.tmp', c(plots = list.of.figs, ncol = length(list.of.figs))))
+    png(file = paste0('PCA_', ass, '.png'))
+    do.call('ggarrange.tmp', c(plots = list.of.figs, ncol = length(list.of.figs)))
     dev.off()
     
   } else {
