@@ -188,7 +188,7 @@ perform.harmony <- function(object,
       
       if(isTRUE(save.plot)) {
         
-        pdf(file = paste0('harmony_', g, '.pdf'))
+        pdf(file = paste0('harmony_', g, '.pdf'), onefile = T)
         
       }
       

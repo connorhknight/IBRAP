@@ -126,7 +126,7 @@ perform.decontX <- function(counts,
   
   if(isTRUE(save.plot)) {
     
-    pdf(file = paste0('decontX_', as.character(as.integer(runif(1, min = 1, max = 1000))), '.pdf'))
+    pdf(file = paste0('decontX_', as.character(as.integer(runif(1, min = 1, max = 1000))), '.pdf'), onefile = T)
     
   }
   
