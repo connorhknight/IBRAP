@@ -11,6 +11,7 @@
   reduction,
   features,
   order = TRUE,
+  percentile = c(0, 1),
   pt_size = 0.5,
   cells = NULL
 )
@@ -31,6 +32,8 @@
 \item{pt_size}{Numeric. what size should the inidividual plot sizes be}
 
 \item{cells}{Numeric. Which cells should be subset for plotting, Default = NULL}
+
+\item{percentile.}{Numerical. What percentile of datapoint expression should be plotted. Default = c(0.1,0.9)}
 }
 \value{
 A plot of reduced dimensions annotated with assignments

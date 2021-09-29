@@ -13,8 +13,6 @@ perform.decontX(counts = counts)
 
 \item{z}{Cluster assignments for cells}
 
-\item{batch}{Batches for each cell if multiple samples are present}
-
 \item{maxIter}{Maximum number of iterations to be performed}
 
 \item{delta}{Numeric Vector of length 2. Concentration parameters for the Dirichlet prior for the contamination in each cell. The first element is the prior for the native counts while the second element is the prior for the contamination counts. These essentially act as pseudocounts for the native and contamination in each cell. If estimateDelta = TRUE, this is only used to produce a random sample of proportions for an initial value of contamination in each cell. Then fit_dirichlet is used to update delta in each iteration. If estimateDelta = FALSE, then delta is fixed with these values for the entire inference procedure. Fixing delta and setting a high number in the second element will force decontX to be more aggressive and estimate higher levels of contamination at the expense of potentially removing native expression. Default c(10, 10).}

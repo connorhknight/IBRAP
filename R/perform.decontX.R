@@ -8,7 +8,6 @@
 #' @param counts Counts matrix
 #' @param save.plot Boolean. Should the automatically genewrated plot be saved? Default = TRUE
 #' @param z Cluster assignments for cells
-#' @param batch Batches for each cell if multiple samples are present
 #' @param maxIter Maximum number of iterations to be performed
 #' @param delta Numeric Vector of length 2. Concentration parameters for the Dirichlet prior for the contamination in each cell. The first element is the prior for the native counts while the second element is the prior for the contamination counts. These essentially act as pseudocounts for the native and contamination in each cell. If estimateDelta = TRUE, this is only used to produce a random sample of proportions for an initial value of contamination in each cell. Then fit_dirichlet is used to update delta in each iteration. If estimateDelta = FALSE, then delta is fixed with these values for the entire inference procedure. Fixing delta and setting a high number in the second element will force decontX to be more aggressive and estimate higher levels of contamination at the expense of potentially removing native expression. Default c(10, 10).
 #' @param estimateDelta Boolean. Whether to update delta at each iteration.
@@ -28,7 +27,6 @@
 perform.decontX <- function(counts,
                             save.plot = TRUE,
                             z = NULL,
-                            batch = NULL,
                             maxIter = 500,
                             delta = c(10, 10),
                             estimateDelta = TRUE,
@@ -112,69 +110,37 @@ perform.decontX <- function(counts,
     
   }
   
-  if(is.null(batch)) {
-    
-    if(isTRUE(save.plot)) {
-      
-      pdf(file = paste0('decontX_', as.character(as.integer(runif(1, min = 1, max = 1000))), '.pdf'))
+  d <- celda::decontX(x = counts,
+                      z = z,
+                      maxIter = maxIter,
+                      delta = delta,
+                      estimateDelta = estimateDelta,
+                      convergence = convergence,
+                      iterLogLik = iterLogLik,
+                      varGenes = varGenes,
+                      dbscanEps = dbscanEps,
+                      seed = seed,
+                      verbose = TRUE)
 
-    }
+  cat(crayon::cyan(paste0(Sys.time(), ': decontamination completed\n')))
+  
+  if(isTRUE(save.plot)) {
     
-    d <- celda::decontX(x = counts,
-                        z = z,
-                        batch = NULL,
-                        maxIter = maxIter,
-                        delta = delta,
-                        estimateDelta = estimateDelta,
-                        convergence = convergence,
-                        iterLogLik = iterLogLik,
-                        varGenes = varGenes,
-                        dbscanEps = dbscanEps,
-                        seed = seed,
-                        verbose = TRUE)
-    
-    if(isTRUE(save.plot)) {
-      
-      dev.off()
-      
-    }
-    
-  } else {
-    
-    if(isTRUE(save.plot)) {
-      
-      pdf(file = paste0('decontX_', as.character(as.integer(runif(1, min = 1, max = 1000))), '.pdf'))
-      
-    }
-    
-    d <- celda::decontX(x = counts,
-                        z = z,
-                        batch = object@sample_metadata[,batch],
-                        maxIter = maxIter,
-                        delta = delta,
-                        estimateDelta = estimateDelta,
-                        convergence = convergence,
-                        iterLogLik = iterLogLik,
-                        varGenes = varGenes,
-                        dbscanEps = dbscanEps,
-                        seed = seed,
-                        verbose = TRUE)
-    
-    if(isTRUE(save.plot)) {
-      
-      dev.off()
-      
-    }
+    pdf(file = paste0('decontX_', as.character(as.integer(runif(1, min = 1, max = 1000))), '.pdf'))
     
   }
   
-  cat(crayon::cyan(paste0(Sys.time(), ': decontamination completed\n')))
-  
   print(celda::plotDecontXContamination(x = d))
+  
+  if(isTRUE(save.plot)) {
+    
+    dev.off()
+    
+  }
   
   cat(crayon::cyan(paste0(Sys.time(), ': ', as.character(formatC(sum(sum(d$contamination)/length(d$contamination)), digits = 2)), '% average contamination\n')))
   
-  clean.matrix <- d$decontXcounts
+  clean.matrix <- SummarizedExperiment::assay(d, 'decontXcounts')
   cat(crayon::cyan(paste0(Sys.time(), ': matrix isolated\n')))
   clean.matrix <- round(clean.matrix)
   zero.samples <- Matrix::colSums(as.matrix(clean.matrix)) > 0

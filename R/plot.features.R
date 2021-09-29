@@ -10,6 +10,7 @@
 #' @param features Character Which features should be plotted
 #' @param order Boolean. Should datapoints be plotted in order of expression intensity. Default = TRUE
 #' @param pt_size Numeric. what size should the inidividual plot sizes be
+#' @param percentile. Numerical. What percentile of datapoint expression should be plotted. Default = c(0.1,0.9)
 #' @param cells Numeric. Which cells should be subset for plotting, Default = NULL
 #' 
 #' @return A plot of reduced dimensions annotated with assignments
@@ -22,6 +23,7 @@ plot.features <- function(object,
                           reduction,
                           features,
                           order = TRUE,
+                          percentile = c(0,1),
                           pt_size = 0.5,
                           cells = NULL) {
   
@@ -100,6 +102,12 @@ plot.features <- function(object,
       results <- results[order(as.numeric(results$feature)),]
       
     }
+    
+    lower <- as.numeric(quantile(results$feature, percentile)[1])
+    upper <- as.numeric(quantile(results$feature, percentile)[2])
+    
+    results$feature[which(results$feature >= upper)] <- 1
+    results$feature[which(results$feature <= lower)] <- 1
  
     plot.list[[x]] <- ggplot2::ggplot(data = results[order(results$feature),], 
                                       ggplot2::aes(x = red_1, y = red_2)) + 
