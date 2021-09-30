@@ -111,12 +111,6 @@
       <a href="../articles/using_IBRAP.html">Getting Started</a>
     </li>
     <li>
-      <a href="../articles/data_transform.html">Data Transformation</a>
-    </li>
-    <li>
-      <a href="../articles/clustering_method.html">Clustering Methods</a>
-    </li>
-    <li>
       <a href="../articles/integration.html">Data Integration</a>
     </li>
     <li>
@@ -127,6 +121,12 @@
     </li>
     <li>
       <a href="../articles/singleR_annotation.html">Automated Annotation</a>
+    </li>
+    <li>
+      <a href="../articles/data_transform.html">Data Transformation</a>
+    </li>
+    <li>
+      <a href="../articles/clustering_method.html">Clustering Methods</a>
     </li>
   </ul>
 </li>
@@ -162,6 +162,7 @@
   reduction <span class='op'>=</span> <span class='st'>"pca"</span>,
   reduction.save.suffix <span class='op'>=</span> <span class='st'>""</span>,
   dims.use <span class='op'>=</span> <span class='cn'>NULL</span>,
+  save.plot <span class='op'>=</span> <span class='cn'>TRUE</span>,
   <span class='va'>...</span>
 <span class='op'>)</span></code></pre></div>
 
@@ -191,6 +192,10 @@
     <tr>
       <th>dims.use</th>
       <td><p>Numerical. Number of dimensions of the provided reduction to input into harmony, NULL equates to all dimensions. Default = NULL</p></td>
+    </tr>
+    <tr>
+      <th>save.plot</th>
+      <td><p>Boolean. Should the automatically genewrated plot be saved? Default = TRUE</p></td>
     </tr>
     <tr>
       <th>...</th>
@@ -224,7 +229,7 @@
 
       <footer>
       <div class="copyright">
-  <p><p>Developed by Connor Knight.</p></p>
+  <p><p>Developed by Connor Knight, Faraz Khan.</p></p>
 </div>
 
 <div class="pkgdown">

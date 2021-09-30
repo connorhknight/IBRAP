@@ -63,12 +63,6 @@
       <a href="../articles/using_IBRAP.html">Getting Started</a>
     </li>
     <li>
-      <a href="../articles/data_transform.html">Data Transformation</a>
-    </li>
-    <li>
-      <a href="../articles/clustering_method.html">Clustering Methods</a>
-    </li>
-    <li>
       <a href="../articles/integration.html">Data Integration</a>
     </li>
     <li>
@@ -79,6 +73,12 @@
     </li>
     <li>
       <a href="../articles/singleR_annotation.html">Automated Annotation</a>
+    </li>
+    <li>
+      <a href="../articles/data_transform.html">Data Transformation</a>
+    </li>
+    <li>
+      <a href="../articles/clustering_method.html">Clustering Methods</a>
     </li>
   </ul>
 </li>
@@ -99,7 +99,7 @@
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Installing &amp; Preparing IBRAP</h1>
-                        <h4 data-toc-skip class="author">Connor H Knight</h4>
+                        <h4 data-toc-skip class="author">Connor H Knight &amp; Faraz Khan</h4>
             
             <h4 data-toc-skip class="date">11/08/2021</h4>
       
@@ -113,48 +113,39 @@
 <script>
   addClassKlippyTo("pre.r, pre.markdown");
   addKlippy('right', 'bottom', 'auto', '1', 'Click to copy', 'Done');
-</script><div id="installing-ibrap" class="section level3">
-<h3 class="hasAnchor">
-<a href="#installing-ibrap" class="anchor" aria-hidden="true"></a>Installing IBRAP</h3>
-</div>
-<div id="step-1-configure-imagemagick-for-linux-based-system-prior-to-installation" class="section level2">
+</script><div id="step-1-configure-imagemagick-for-linux-based-system-prior-to-installation" class="section level2">
 <h2 class="hasAnchor">
 <a href="#step-1-configure-imagemagick-for-linux-based-system-prior-to-installation" class="anchor" aria-hidden="true"></a>Step 1: Configure ImageMagick for linux-based system prior to installation</h2>
 <ol style="list-style-type: decimal">
 <li>Get ImageMagick from the following link by doing:</li>
 </ol>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"></a>
-<a class="sourceLine" id="cb1-2" data-line-number="2">curl <span class="op">-</span>L <span class="op">-</span>O https<span class="op">:</span><span class="er">//</span>download.imagemagick.org<span class="op">/</span>ImageMagick<span class="op">/</span>download<span class="op">/</span>releases<span class="op">/</span>ImageMagick<span class="dv">-6</span>.<span class="fl">9.10-86.</span>tar.xz</a></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1">curl <span class="op">-</span>L <span class="op">-</span>O https<span class="op">:</span><span class="er">//</span>download.imagemagick.org<span class="op">/</span>ImageMagick<span class="op">/</span>download<span class="op">/</span>releases<span class="op">/</span>ImageMagick<span class="dv">-6</span>.<span class="fl">9.10-86.</span>tar.xz</a></code></pre></div>
 <ol start="2" style="list-style-type: decimal">
 <li>cd into the downloaded directory containing ImageMagick. Then execute the following command:</li>
 </ol>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"></a>
-<a class="sourceLine" id="cb2-2" data-line-number="2">.<span class="op">/</span>configure</a>
-<a class="sourceLine" id="cb2-3" data-line-number="3">make</a>
-<a class="sourceLine" id="cb2-4" data-line-number="4">make install</a></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1">.<span class="op">/</span>configure</a>
+<a class="sourceLine" id="cb2-2" data-line-number="2">make</a>
+<a class="sourceLine" id="cb2-3" data-line-number="3">make install</a></code></pre></div>
 <ol start="3" style="list-style-type: decimal">
 <li>now we must export the LD_LIBRARY_PATH and pkgconfig path to the library location of ImageMagick package. For example:</li>
 </ol>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1"></a>
-<a class="sourceLine" id="cb3-2" data-line-number="2">export LD_LIBRARY_PATH=<span class="er">$</span>LD_LIBRARY_PATH<span class="op">:</span><span class="er">/</span>path<span class="op">/</span>to<span class="op">/</span>magick<span class="op">/</span>ImageMagick<span class="dv">-6</span>.<span class="fl">9.10</span><span class="dv">-86</span><span class="op">/</span>lib</a>
-<a class="sourceLine" id="cb3-3" data-line-number="3">export LD_LIBRARY_PATH=<span class="er">$</span>LD_LIBRARY_PATH<span class="op">:</span><span class="er">/</span>path<span class="op">/</span>to<span class="op">/</span>magick<span class="op">/</span>ImageMagick<span class="dv">-6</span>.<span class="fl">9.10</span><span class="dv">-86</span><span class="op">/</span>Magick<span class="op">++</span><span class="er">/</span>lib</a>
-<a class="sourceLine" id="cb3-4" data-line-number="4">export PKG_CONFIG_PATH=<span class="er">$</span>PKG_CONFIG_PATH<span class="op">:</span><span class="er">/</span>path<span class="op">/</span>to<span class="op">/</span>magick<span class="op">/</span>ImageMagick<span class="dv">-6</span>.<span class="fl">9.10</span><span class="dv">-86</span><span class="op">/</span>lib<span class="op">/</span>pkgconfig</a></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1">export LD_LIBRARY_PATH=<span class="er">$</span>LD_LIBRARY_PATH<span class="op">:</span><span class="er">/</span>path<span class="op">/</span>to<span class="op">/</span>magick<span class="op">/</span>ImageMagick<span class="dv">-6</span>.<span class="fl">9.10</span><span class="dv">-86</span><span class="op">/</span>lib</a>
+<a class="sourceLine" id="cb3-2" data-line-number="2">export LD_LIBRARY_PATH=<span class="er">$</span>LD_LIBRARY_PATH<span class="op">:</span><span class="er">/</span>path<span class="op">/</span>to<span class="op">/</span>magick<span class="op">/</span>ImageMagick<span class="dv">-6</span>.<span class="fl">9.10</span><span class="dv">-86</span><span class="op">/</span>Magick<span class="op">++</span><span class="er">/</span>lib</a>
+<a class="sourceLine" id="cb3-3" data-line-number="3">export PKG_CONFIG_PATH=<span class="er">$</span>PKG_CONFIG_PATH<span class="op">:</span><span class="er">/</span>path<span class="op">/</span>to<span class="op">/</span>magick<span class="op">/</span>ImageMagick<span class="dv">-6</span>.<span class="fl">9.10</span><span class="dv">-86</span><span class="op">/</span>lib<span class="op">/</span>pkgconfig</a></code></pre></div>
 </div>
 <div id="step-2-installing-biocmanager-dependencies-for-ibrap" class="section level2">
 <h2 class="hasAnchor">
 <a href="#step-2-installing-biocmanager-dependencies-for-ibrap" class="anchor" aria-hidden="true"></a>Step 2: Installing BiocManager dependencies for IBRAP</h2>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R">
-<span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"BiocManager"</span>, quietly<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span>
+<code class="sourceCode R"><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"BiocManager"</span>, quietly<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span>
     <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"BiocManager"</span><span class="op">)</span>
-<span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BiocManager/man/install.html" class="external-link">install</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"celda"</span>, <span class="st">"slingshot"</span>, <span class="st">"scran"</span>, <span class="st">"scuttle"</span>, <span class="st">"SC3"</span>, <span class="st">"SingleCellExperiment"</span>, <span class="st">"PCAtools"</span>, <span class="st">"topGO"</span>,<span class="st">"shinydashboard"</span>, <span class="st">"destiny"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BiocManager/man/install.html" class="external-link">install</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"celda"</span>, <span class="st">"slingshot"</span>, <span class="st">"scran"</span>, <span class="st">"scuttle"</span>, <span class="st">"SC3"</span>, <span class="st">"SingleCellExperiment"</span>, <span class="st">"PCAtools"</span>, <span class="st">"topGO"</span>,<span class="st">"shinydashboard"</span>, <span class="st">"destiny"</span>, <span class="st">"progress"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 </div>
 <div id="step-3-installing-ibrap" class="section level2">
 <h2 class="hasAnchor">
 <a href="#step-3-installing-ibrap" class="anchor" aria-hidden="true"></a>Step 3: Installing IBRAP</h2>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R">
-<span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">'devtools'</span><span class="op">)</span>
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">'devtools'</span><span class="op">)</span>
 <span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org//reference/remote-reexports.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">'connorhknight/IBRAP'</span><span class="op">)</span></code></pre></div>
 </div>
 <div id="step-4-preparing-reticulate" class="section level2">
@@ -162,13 +153,11 @@
 <a href="#step-4-preparing-reticulate" class="anchor" aria-hidden="true"></a>Step 4: Preparing reticulate</h2>
 <p>IBRAP not only uses packages within R, but also through python. For this, we use reticulate to interface python into the R environment. To setup reticulate we must start by installing miniconda:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R">
-<span class="fu">reticulate</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/reticulate/man/install_miniconda.html" class="external-link">install_miniconda</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="fu">reticulate</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/reticulate/man/install_miniconda.html" class="external-link">install_miniconda</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <p>Once miniconda is installed it will produce an environment called r-reticulate. Next, we must assure the correct packages are installed within the new environment:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R">
-<span class="fu"><a href="../reference/prepare.reticulate.html">prepare.reticulate</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
-<p>Once this has been completed, you are ready to use IBRAP! For a basic understand of a single sample workflow please use the ‘getting started’ tutorial. For multi sample analysis, you can divert to the integration tutorial.</p>
+<code class="sourceCode R"><span class="fu"><a href="../reference/prepare.reticulate.html">prepare.reticulate</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<p>Once this has been completed, you are ready to use IBRAP! For a basic understand of a single sample workflow please use the ‘getting started’ tutorial. For multi-sample analysis, you can divert to the integration tutorial.</p>
 <p>Good luck!</p>
 </div>
   </div>
@@ -185,7 +174,7 @@
 
       <footer><div class="copyright">
   <p></p>
-<p>Developed by Connor Knight.</p>
+<p>Developed by Connor Knight, Faraz Khan.</p>
 </div>
 
 <div class="pkgdown">

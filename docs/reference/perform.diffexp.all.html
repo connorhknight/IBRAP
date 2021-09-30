@@ -111,12 +111,6 @@
       <a href="../articles/using_IBRAP.html">Getting Started</a>
     </li>
     <li>
-      <a href="../articles/data_transform.html">Data Transformation</a>
-    </li>
-    <li>
-      <a href="../articles/clustering_method.html">Clustering Methods</a>
-    </li>
-    <li>
       <a href="../articles/integration.html">Data Integration</a>
     </li>
     <li>
@@ -127,6 +121,12 @@
     </li>
     <li>
       <a href="../articles/singleR_annotation.html">Automated Annotation</a>
+    </li>
+    <li>
+      <a href="../articles/data_transform.html">Data Transformation</a>
+    </li>
+    <li>
+      <a href="../articles/clustering_method.html">Clustering Methods</a>
     </li>
   </ul>
 </li>
@@ -158,8 +158,9 @@
     <div class="ref-usage sourceCode"><pre class='sourceCode r'><code><span class='fu'>perform.diffexp.all</span><span class='op'>(</span>
   <span class='va'>object</span>,
   assay <span class='op'>=</span> <span class='cn'>NULL</span>,
+  clust.method <span class='op'>=</span> <span class='cn'>NULL</span>,
+  column <span class='op'>=</span> <span class='cn'>NULL</span>,
   test <span class='op'>=</span> <span class='st'>"wilcox"</span>,
-  identity <span class='op'>=</span> <span class='cn'>NULL</span>,
   latent.vars <span class='op'>=</span> <span class='cn'>NULL</span>,
   <span class='va'>...</span>
 <span class='op'>)</span></code></pre></div>
@@ -180,16 +181,16 @@
       <td><p>Character. Which test to use. Can be either: wilcox, bimod, roc, t, negbinom, poisson, LR, MAST, DESeq2. Please refer to Seurat::FindMarkers for more information.</p></td>
     </tr>
     <tr>
-      <th>identity</th>
-      <td><p>Vector. A vector of cell identifiers to distinguish cells. Default = NULL</p></td>
-    </tr>
-    <tr>
       <th>latent.vars</th>
       <td><p>Character. String(s) identifying which variables contained within the metadata to regress from the cells</p></td>
     </tr>
     <tr>
       <th>...</th>
       <td><p>arguments to pass to Seurat::FindMarkers</p></td>
+    </tr>
+    <tr>
+      <th>identity</th>
+      <td><p>Vector. A vector of cell identifiers to distinguish cells. Default = NULL</p></td>
     </tr>
     </table>
 
@@ -232,7 +233,7 @@
 
       <footer>
       <div class="copyright">
-  <p><p>Developed by Connor Knight.</p></p>
+  <p><p>Developed by Connor Knight, Faraz Khan.</p></p>
 </div>
 
 <div class="pkgdown">

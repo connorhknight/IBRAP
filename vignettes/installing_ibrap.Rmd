@@ -1,6 +1,6 @@
 ---
 title: "Installing & Preparing IBRAP"
-author: "Connor H Knight"
+author: "Connor H Knight & Faraz Khan"
 date: "11/08/2021"
 output: rmarkdown::html_vignette
 vignette: >

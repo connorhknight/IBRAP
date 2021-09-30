@@ -111,12 +111,6 @@
       <a href="../articles/using_IBRAP.html">Getting Started</a>
     </li>
     <li>
-      <a href="../articles/data_transform.html">Data Transformation</a>
-    </li>
-    <li>
-      <a href="../articles/clustering_method.html">Clustering Methods</a>
-    </li>
-    <li>
       <a href="../articles/integration.html">Data Integration</a>
     </li>
     <li>
@@ -127,6 +121,12 @@
     </li>
     <li>
       <a href="../articles/singleR_annotation.html">Automated Annotation</a>
+    </li>
+    <li>
+      <a href="../articles/data_transform.html">Data Transformation</a>
+    </li>
+    <li>
+      <a href="../articles/clustering_method.html">Clustering Methods</a>
     </li>
   </ul>
 </li>
@@ -177,7 +177,8 @@
   k.weight <span class='op'>=</span> <span class='fl'>100</span>,
   sd.weight <span class='op'>=</span> <span class='fl'>1</span>,
   sample.tree <span class='op'>=</span> <span class='cn'>NULL</span>,
-  integrate.eps <span class='op'>=</span> <span class='fl'>0</span>
+  integrate.eps <span class='op'>=</span> <span class='fl'>0</span>,
+  save.plot <span class='op'>=</span> <span class='cn'>TRUE</span>
 <span class='op'>)</span></code></pre></div>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -252,6 +253,10 @@
       <td><p>Numerical. Error bound on the neighbor finding algorithm (from RANN)</p></td>
     </tr>
     <tr>
+      <th>save.plot</th>
+      <td><p>Boolean. Should the automatically genewrated plot be saved? Default = TRUE</p></td>
+    </tr>
+    <tr>
       <th>max.features.</th>
       <td><p>Numerical. The maximum number of features to use when specifying the neighborhood search space in the anchor filtering. Default = 200</p></td>
     </tr>
@@ -278,7 +283,7 @@
 
       <footer>
       <div class="copyright">
-  <p><p>Developed by Connor Knight.</p></p>
+  <p><p>Developed by Connor Knight, Faraz Khan.</p></p>
 </div>
 
 <div class="pkgdown">

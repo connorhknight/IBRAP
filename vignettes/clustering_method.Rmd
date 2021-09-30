@@ -1,6 +1,6 @@
 ---
 title: "Clustering Method"
-author: "Connor H Knight"
+author: "Connor H Knight & Faraz Khan"
 date: "11/08/2021"
 output: 
     html_document:
