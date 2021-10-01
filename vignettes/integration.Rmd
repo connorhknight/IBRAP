@@ -88,7 +88,7 @@ pancreas <- perform.scanpy(object = pancreas,
 pancreas <- perform.pca(object = pancreas, 
                         assay = c('SCT', 'SCRAN', 'SCANPY'), 
                         n.pcs = 50, reduction.save = 'pca')
-                        
+
 pancreas <- perform.umap(object = pancreas, 
                          assay = c('SCT', 'SCRAN', 'SCANPY'), 
                          reduction = c('pca'), 
@@ -116,6 +116,8 @@ plot1 + plot2 + plot3
                         
 ```
 
+We merged the datasets and transformed the data using normalisation methods. Next, we reduced the embeddings linearly with PCA and generated UMAP embeddings for visualisation. Now, we can visualise batch effects present. 
+
 ```{r, echo=FALSE, out.width="150%", out.height="150%"}
 
 knitr::include_graphics(path = 'unintegrated.png')
@@ -128,30 +130,10 @@ As we can see there are profound differences between the samples due to technica
 
 We have included 4 integration techniques:
 
-Seurat
-
-- functions on normalised counts
-- can either reduced embeddings with canonical correlation analysis, reciprocal PCA, or recipricol LSI 
-- integrates samples one-by-one projecting new samples each time
-- produces a new integrated pca reduction
-
-Scanorama
-
-- Uses normalised, scaled and HVG subset matrices
-- integrates datasets in order of similarity
-- produces a new scanorama reduced embedding
-
-BBKNN
-
-- uses a reduced embeddings (such as PCA) as input 
-- uses UMAP to correct batches
-- produces a neighbourhood graph that can be fed into graph-based clustering and umap generation
-
-Harmony
-
-- uses a reduced embeddings (such as PCA) as input 
-- iteratively corrects batch effects present within dataset until no further correction can be made
-- produces a harmony reduced embedding that can be fed downstream
+- Seurat
+- Scanorama
+- BBKNN
+- Harmony
  
 Lets begin the integration techniques
 
@@ -164,6 +146,12 @@ pancreas <- perform.bbknn(object = pancreas,
                           reduction = c('pca'),
                           batch = 'tech')
 
+```
+
+Firstly we used BBKNN. BBKNN accepts reduced embeddings (i.e. PCA or diffusion maps) as input. BBKNN does not create a reduced embedding, but creates a nearest neighbourhood graph that has been corrected for batch effects. Therefore, this method is constrained to graph-based clustering methods and UMAP non-linear reduction methods. 
+
+```{r, eval=F, echo=T}
+
 pancreas <- perform.harmony(object = pancreas, 
                             assay = c('SCRAN', 'SCT', 'SCANPY'), 
                             vars.use = 'original.project', 
@@ -171,19 +159,48 @@ pancreas <- perform.harmony(object = pancreas,
                             max.iter.harmony = 100,
                             dims.use = list(NULL))
                             
+```
+
+Next, we used harmony. Harmony accepts reduced embeddings and produces a new reduced embedding called harmony reducitons. These reductions can then be used to produce nearest neighbourhood graphs, any clusxtering method, and any reduction method. Harmony functions well since you can adjust the aggressiveness of the correction per covariate that you specify using the theta parameter.
+
+```{r, eval=F, echo=T}
+
 pancreas <- perform.scanorama(object = pancreas, 
                               assay = c('SCT', 'SCRAN', 'SCANPY'), 
                               slot = 'norm.scaled', 
                               split.by = 'original.project', 
                               n.dims = 50)
+
+```
+
+Scanorama is also available in IBRAP. Rather than functioning on reduced embeddings, scanorama uses the @norm.scaled slot of the method assay and stitches together the batches in order of similarity. Scanorama produces a reduced embedding that can be used for nearest neighbourhood graph generation, any clustering method, and non-linear reduction method. 
+
+```{r, eval=F, echo=T}
+
+pancreas <- perform.seurat.integration(object = pancreas,  
+                                     assay = c('SCT','SCRAN','SCANPY'),
+                                     normalisation.method = c('perform.sct','perform.scran','perform.scanpy'), 
+                                     batch = 'original.project')
+
+```
+
+Finally, we included seurats cca integration method. This method renormalises the individual batches separately (hence, why you must supply the normalisation method in the order of assays) and then projects them together. We finish by processing the corrected matrix with a PCA reduction and supply the new PCA reduction as seurat. This reduced embedding that can be used for nearest neighbourhood graph generation, any clustering method, and non-linear reduction method. 
+
+```{r, eval=F, echo=T}
                               
 pancreas <- perform.umap(object = pancreas, 
                          assay = c('SCT', 'SCRAN', 'SCANPY'), 
-                         reduction = c('pca_harmony', 'scanorama'), 
+                         reduction = c('pca_harmony', 'scanorama', 'seurat'), 
                          n_components = 2, 
-                         n.dims = list(1:50, 1:50))
+                         n.dims = list(50, 50, 50))
 
 pancreas <- perform.umap(object = pancreas, assay = c('SCT', 'SCRAN', 'SCANPY'), graph = 'pca_bbknn_bbknn')
+
+```
+
+We nex created UAMP reduced embeddings from the previously generated corrected reduced embeddings, including: pca_harmony, scanorama, and seurat. However, BBKNN only produced a corrected neighbourhood graph. Thus, we must supply the graph in a separate function to create the corrected UMAP embeddings. Lets visualise the effectiveness of the integration methods. 
+
+```{r, eval=F, echo=T}
 
 plot.list <- list()
 
@@ -257,9 +274,11 @@ knitr::include_graphics(path = 'integrations.png')
 
 ```
 
+From initial inspection we can see that some worked better than others. For example seurat integration seems to produce a great overlap of batches. However, we cannot soley rely on visualising the batches to determine which worked best. To help us understand the results we have included benchmarking. 
+
 ## Benchmarking Integration
 
-Alternatively to just visualising the data we can also apply Average Silhouette Width to quantativiely assess the closeness of the batches in comparison to the uncorrected version. 
+Our benchmarking involves the same methodoogy proposed in the SCONE. An Average Silhouette Width quantativiely assesses the closeness of the batches in comparison to the uncorrected version. 
 
 previously we calcualted the UMAP reductions for the uncorrected PCA and the corrected: harmony, bbknn, and scanorama data. We can use the UMAP reductions to assess the effectiveness of the data using this function:
 
@@ -268,8 +287,8 @@ previously we calcualted the UMAP reductions for the uncorrected PCA and the cor
 pancreas <- benchmark.intergation(object = pancreas, 
                                   batch = 'original.project', assays = c('SCT','SCRAN','SCANPY'), 
                                   reduction = c('pca_umap', 'pca_harmony_umap', 
-                                                'scanorama_umap', 'pca_bbknn_bbknn:umap', 'CCA_pca_umap'), 
-                                  result.names = c('uncorrected', 'harmony', 'scanorama', 'bbknn', 'cca'), 
+                                                'scanorama_umap', 'pca_bbknn_bbknn:umap', 'seurat_umap'), 
+                                  result.names = c('uncorrected', 'harmony', 'scanorama', 'bbknn', 'seurat'), 
                                   n.components = 2)
 
 ```
@@ -282,11 +301,42 @@ knitr::include_graphics(path = 'integration_benchmarking.png')
 
 ```
 
+For Average Silhouette Width (ASW) when observing clustering (biological effects) we wish to see a higher value. However, when reducing batches we wish to see a more negative value (even a negative value). As you can see, the uncorrected version has a high ASW value which indicates profound batch effects are present. Whereas, we can see the batch correction methods have reducd the batch effects to varying degrees. For example, harmony and seurat seemed to reduced the batch effect the best across all normalisation methods. Scanorama and BBKNN however performed less successfully. However, you should not use this as an absolute recommendation for whcih reduction to proceed with. 
 
+## Visualising ground truth labels
 
+For this dataset we were provided with ground turht labels which enable us to observe how well the biological structure of was retained during integration. As an example, we can observe the labelling on a random projection. However, feel free to explore other UMAP reductions from other assays and integration methods. 
 
+We can visualise the results using our plot.reduced.dim function. 
 
+```{r, eval=F, echo=T}
 
+plot.reduced.dim(object = pancreas, reduction = 'pca_harmony_umap', assay = 'SCT',
+                                   clust.method = 'metadata', column = 'celltype', pt.size = 0.1)
+
+```
+
+```{r, echo=FALSE, out.width="150%", out.height="150%"}
+
+knitr::include_graphics(path = 'celltype_labels.png')
+
+```
+
+As we can see, SCTransform with harmony integration led to a well defined separation of cell types. 
+
+## Differential Expression Analysis 
+
+Differential expression analyses can be perfortmed using the integrated clustering results. batch correction has not been performed on the counts matrices. Therefore it is beneficial to apply a method such as MAST which regresses out covrates such as total counts or batches. This is performed using the perform.diff.exp.all function. 
+
+```{r, eval=F, echo=T}
+
+SCT_DE <- perform.diffexp.all(object = pancreas, assay = 'SCT', 
+                              test = 'MAST', 
+                              clust.method = 'pca_harmony_nn:umap', 
+                              column = "neighbourhood_graph_res.0.4", 
+                              latent.vars = c('RAW_total.counts', 'original.project'))
+
+```
 
 
 

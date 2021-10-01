@@ -28,7 +28,7 @@ klippy::klippy(tooltip_message = 'Click to copy', tooltip_success = 'Done', posi
 
 To demonstrate IBRAP we enlisted a sample produced by [Oetjen](https://insight.jci.org/articles/view/124928) *et al*. This can be downloaded using the following link:  
 
-https://www.dropbox.com/s/3wj4f48x7txuyrp/BMMC.rds?dl=0
+https://www.dropbox.com/s/s126bv59mjnhkre/marrow_A.rds?dl=0
 
 ```{r, eval=F, echo=T}
 
@@ -252,7 +252,7 @@ We will then process these downstream. Next, we will cluster our datasets.
 
 ### Section 7.1: Neighbourhood Graphs
 
-Prior to clustering it is important to ascertain the relationship and closeness of our cells. As a pre-requisite to clustering we are going to produce a k-nearest neghbour graphs. This is produced by applying the following function: 
+Prior to clustering it is important to ascertain the relationship and closeness of our cells. As a pre-requisite to clustering we are going to produce a k-nearest neghbour graphs. SCT, SCRAN, and SCANPY use one algorithm whilst SCANPY uses its own version. This is produced by applying the following function: 
 
 ```{r, eval=F, echo=T}
 # here we generate the neighbour graph for PCA and produce a diffusion map from the PCA-neighbour graph
@@ -300,9 +300,25 @@ For this tutorial we will focus on UMAP.
 ```{r, eval=F, echo=T}
 
 bmmc <- perform.umap(object = bmmc, 
-                     assay = c('SCT', 'SCRAN', 'SCANPY'), 
+                     assay = c('SCT', 'SCRAN'), 
                      reduction = c('pca', 'pca:diffmap'), 
-                     n.dims = list(1:15,0))
+                     n.dims = list(15,0))
+
+```
+
+Scanpy UMAP reductions are produced from the nearest neighbourhood graph that we previously preoduced using the perform.nn() function previously. SCANPY would therefore be processed like this: 
+
+```{r, eval=F, echo=T}
+
+bmmc <- perform.umap(object = bmmc, 
+                     assay = c('SCANPY'), 
+                     graph = c('pca_nn'), 
+                     n.dims = list(15))
+
+bmmc <- perform.umap(object = bmmc, 
+                     assay = c('SCANPY'), 
+                     reduction = c('pca:diffmap'), 
+                     n.dims = list(0))
 
 ```
 
@@ -354,6 +370,8 @@ Now that we have our results and benchmarking to guide us we can begin to visual
 ## Section 10: Visualising Clustering Results
 
 Since we have 3 different normalisation method it is beneficial to observe the difference in their produces topology and clustering. 
+
+The main challenge with the plotting function in IBRAP is isolating the correct labelling. In general, plotting functions will ask for the assay which is contained within object@methods, the clust.method that is contained withing @cluster_assignments, and the column which would be contained with in that cluster assignment. One thing to note, is that if you wish to access columns that are contained within object@sample_metadata.
 
 ```{r, eval=F, echo=T}
 

@@ -117,7 +117,7 @@
 <h1 class="hasAnchor">
 <a href="#analysing-2994-bone-marrow-mononuclear-cells-bmmc-from-a-single-sample-" class="anchor" aria-hidden="true"></a>Analysing 2994 Bone Marrow Mononuclear Cells (BMMC) from a single sample.</h1>
 <p>To demonstrate IBRAP we enlisted a sample produced by <a href="https://insight.jci.org/articles/view/124928" class="external-link">Oetjen</a> <em>et al</em>. This can be downloaded using the following link:</p>
-<p><a href="https://www.dropbox.com/s/3wj4f48x7txuyrp/BMMC.rds?dl=0" class="external-link uri">https://www.dropbox.com/s/3wj4f48x7txuyrp/BMMC.rds?dl=0</a></p>
+<p><a href="https://www.dropbox.com/s/s126bv59mjnhkre/marrow_A.rds?dl=0" class="external-link uri">https://www.dropbox.com/s/s126bv59mjnhkre/marrow_A.rds?dl=0</a></p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R">
 <span class="va">bmmc</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.choose.html" class="external-link">file.choose</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
@@ -312,7 +312,7 @@
 <div id="section-7-1-neighbourhood-graphs" class="section level3">
 <h3 class="hasAnchor">
 <a href="#section-7-1-neighbourhood-graphs" class="anchor" aria-hidden="true"></a>Section 7.1: Neighbourhood Graphs</h3>
-<p>Prior to clustering it is important to ascertain the relationship and closeness of our cells. As a pre-requisite to clustering we are going to produce a k-nearest neghbour graphs. This is produced by applying the following function:</p>
+<p>Prior to clustering it is important to ascertain the relationship and closeness of our cells. As a pre-requisite to clustering we are going to produce a k-nearest neghbour graphs. SCT, SCRAN, and SCANPY use one algorithm whilst SCANPY uses its own version. This is produced by applying the following function:</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># here we generate the neighbour graph for PCA and produce a diffusion map from the PCA-neighbour graph</span>
 
@@ -345,9 +345,21 @@
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R">
 <span class="va">bmmc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/perform.umap.html">perform.umap</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">bmmc</span>, 
-                     assay <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'SCT'</span>, <span class="st">'SCRAN'</span>, <span class="st">'SCANPY'</span><span class="op">)</span>, 
+                     assay <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'SCT'</span>, <span class="st">'SCRAN'</span><span class="op">)</span>, 
                      reduction <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'pca'</span>, <span class="st">'pca:diffmap'</span><span class="op">)</span>, 
-                     n.dims <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">15</span>,<span class="fl">0</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+                     n.dims <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fl">15</span>,<span class="fl">0</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<p>Scanpy UMAP reductions are produced from the nearest neighbourhood graph that we previously preoduced using the perform.nn() function previously. SCANPY would therefore be processed like this:</p>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R">
+<span class="va">bmmc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/perform.umap.html">perform.umap</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">bmmc</span>, 
+                     assay <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'SCANPY'</span><span class="op">)</span>, 
+                     graph <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'pca_nn'</span><span class="op">)</span>, 
+                     n.dims <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fl">15</span><span class="op">)</span><span class="op">)</span>
+
+<span class="va">bmmc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/perform.umap.html">perform.umap</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">bmmc</span>, 
+                     assay <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'SCANPY'</span><span class="op">)</span>, 
+                     reduction <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'pca:diffmap'</span><span class="op">)</span>, 
+                     n.dims <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fl">0</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <p>Simply, we asked this function to iterate through all assays, and use the first 15 components of the pca reduction and to use all components of the diffusion map.</p>
 <p>Now, we have generated a high volume of results, especially clustering results. Therefore, it is beneficial to applying to some benchmarking comparisons.</p>
 </div>
@@ -380,7 +392,7 @@
 </tbody>
 </table>
 <p>To set up the function, supply the dataframes contained within the <a href="mailto:assay@cluster_assignments" class="email">assay@cluster_assignments</a> you wish to benchmark under clustering. Next, include the corresponding reductions for them, normally this will be a umap reduction using 1:2 dimensions. For example, if clustering and the umap were calculated using PCA these should be paired, likewise if they were calcualted using pca:diffmap then they should be paired.</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R">
 <span class="va">bmmc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/benchmark.clustering.html">benchmark.clustering</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">bmmc</span>, 
                              assay <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'SCT'</span>, <span class="st">'SCRAN'</span>, <span class="st">'SCANPY'</span><span class="op">)</span>, 
@@ -388,7 +400,7 @@
                              reduction <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'pca_umap'</span>, <span class="st">'pca:diffmap_umap'</span><span class="op">)</span>, 
                              n.dims <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">)</span></code></pre></div>
 <p>We can visualise the comparison within a clustering method dataframe using the following function:</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R">
 <span class="fu">plot.cluster.benchmarking</span><span class="op">(</span>object <span class="op">=</span> <span class="va">bmmc</span>, assay <span class="op">=</span> <span class="st">'SCT'</span>, 
                           clustering <span class="op">=</span> <span class="st">'pca_nn:louvain'</span><span class="op">)</span></code></pre></div>
@@ -400,31 +412,32 @@
 <h2 class="hasAnchor">
 <a href="#section-10-visualising-clustering-results" class="anchor" aria-hidden="true"></a>Section 10: Visualising Clustering Results</h2>
 <p>Since we have 3 different normalisation method it is beneficial to observe the difference in their produces topology and clustering.</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<p>The main challenge with the plotting function in IBRAP is isolating the correct labelling. In general, plotting functions will ask for the assay which is contained within <a href="mailto:object@methods" class="email">object@methods</a>, the clust.method that is contained withing <span class="citation">@cluster_assignments</span>, and the column which would be contained with in that cluster assignment. One thing to note, is that if you wish to access columns that are contained within <a href="mailto:object@sample_metadata" class="email">object@sample_metadata</a>.</p>
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R">
 <span class="va">plot1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot.reduced.dim.html">plot.reduced.dim</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">bmmc</span>, 
                           reduction <span class="op">=</span> <span class="st">'pca_umap'</span>, 
                           assay <span class="op">=</span> <span class="st">'SCT'</span>, 
                           clust.method <span class="op">=</span> <span class="st">'pca_nn:louvain'</span>, 
                           column <span class="op">=</span> <span class="st">'neighbourhood_graph_res.0.8'</span>, pt.size <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span> <span class="op">+</span> 
-  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">'SCT'</span><span class="op">)</span> <span class="op">+</span> 
-  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>plot.title <span class="op">=</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>hjust <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span><span class="op">)</span>
+  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">'SCT'</span><span class="op">)</span> <span class="op">+</span> 
+  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/theme.html" class="external-link">theme</a></span><span class="op">(</span>plot.title <span class="op">=</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/element.html" class="external-link">element_text</a></span><span class="op">(</span>hjust <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span><span class="op">)</span>
 
 <span class="va">plot2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot.reduced.dim.html">plot.reduced.dim</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">bmmc</span>, 
                           reduction <span class="op">=</span> <span class="st">'pca_umap'</span>, 
                           assay <span class="op">=</span> <span class="st">'SCRAN'</span>, 
                           clust.method <span class="op">=</span> <span class="st">'pca_nn:louvain'</span>, 
                           column <span class="op">=</span> <span class="st">'neighbourhood_graph_res.0.8'</span>, pt.size <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span> <span class="op">+</span> 
-  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">'SCRAN'</span><span class="op">)</span> <span class="op">+</span> 
-  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>plot.title <span class="op">=</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>hjust <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span><span class="op">)</span>
+  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">'SCRAN'</span><span class="op">)</span> <span class="op">+</span> 
+  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/theme.html" class="external-link">theme</a></span><span class="op">(</span>plot.title <span class="op">=</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/element.html" class="external-link">element_text</a></span><span class="op">(</span>hjust <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span><span class="op">)</span>
 
 <span class="va">plot3</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot.reduced.dim.html">plot.reduced.dim</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">bmmc</span>, 
                           reduction <span class="op">=</span> <span class="st">'pca_umap'</span>, 
                           assay <span class="op">=</span> <span class="st">'SCANPY'</span>, 
                           clust.method <span class="op">=</span> <span class="st">'pca_nn:louvain'</span>, 
                           column <span class="op">=</span> <span class="st">'neighbourhood_graph_res.0.8'</span>, pt.size <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span> <span class="op">+</span> 
-  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">'SCANPY'</span><span class="op">)</span> <span class="op">+</span> 
-  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>plot.title <span class="op">=</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>hjust <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span><span class="op">)</span>
+  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">'SCANPY'</span><span class="op">)</span> <span class="op">+</span> 
+  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/theme.html" class="external-link">theme</a></span><span class="op">(</span>plot.title <span class="op">=</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/element.html" class="external-link">element_text</a></span><span class="op">(</span>hjust <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span><span class="op">)</span>
 
 <span class="va">plot1</span> <span class="op">+</span> <span class="va">plot2</span> <span class="op">+</span> <span class="va">plot3</span></code></pre></div>
 <p><img src="diff_norm_method.png" width="150%" height="150%"></p>
@@ -438,7 +451,7 @@
 <h3 class="hasAnchor">
 <a href="#section-11-1" class="anchor" aria-hidden="true"></a>Section 11.1</h3>
 <p>Differential expression analyses can be performed either 1 cluster compared against all other cells or 1 cluster against 1 other cluster. In this tutorial we will use the 1 v all function.</p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R">
 <span class="va">DE_res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/perform.diffexp.all.html">perform.diffexp.all</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">samp</span>, 
                               assay <span class="op">=</span> <span class="st">'SCT'</span>, 
@@ -446,7 +459,7 @@
                               identity <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/vector.html" class="external-link">as.vector</a></span><span class="op">(</span><span class="va">samp</span><span class="op">@</span><span class="va">methods</span><span class="op">$</span><span class="va">SCT</span><span class="op">@</span><span class="va">cluster_assignments</span><span class="op">$</span><span class="va">`pca_nn.v1:louvain`</span><span class="op">$</span><span class="va">neighbourhood_graph_res.0.8</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <p>These results will produce a table with key columns: the gene names, pct.1 and pct.2 comparing expression values, and their p-value. These columns are key in identifying the strength in the difference in expression and whether the difference is statistically significant. However, when this fails visualisation can help. We have included 4 different methods of visualisation: feature plots, violin plots, dot plots, and heatmaps.</p>
 <p>In this case, we can use feature plots:</p>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R">
 <span class="fu"><a href="../reference/plot.features.html">plot.features</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">samp</span>, assay <span class="op">=</span> <span class="st">'SCT'</span>, reduction <span class="op">=</span> <span class="st">'pca_umap'</span>, 
               features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'JCHAIN'</span>,<span class="st">'MS4A1'</span>,<span class="st">'MME'</span>,<span class="st">'IRF8'</span>,<span class="st">'HLA-DRA'</span>,<span class="st">'LYZ'</span>,
@@ -455,7 +468,7 @@
               slot <span class="op">=</span> <span class="st">'normalised'</span><span class="op">)</span></code></pre></div>
 <p><img src="Feature_plots.png" width="150%" height="150%"></p>
 <p>Next, we must indicate which cell type belongs to which clusters</p>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R">
 <span class="va">clusters</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="va">bmmc</span><span class="op">@</span><span class="va">methods</span><span class="op">$</span><span class="va">SCT</span><span class="op">@</span><span class="va">cluster_assignments</span><span class="op">$</span><span class="va">`pca_nn:louvain`</span><span class="op">$</span><span class="va">neighbourhood_graph_res.0.8</span><span class="op">)</span>
 
