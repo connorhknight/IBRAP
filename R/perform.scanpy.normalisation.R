@@ -40,9 +40,9 @@ perform.scanpy <- function(object,
                            exclude_highly_expressed = FALSE,  
                            max_fraction = 0.05, 
                            key_added = 'scanpy_norm_factor',
-                           log1 = FALSE,
+                           log1 = TRUE,
                            
-                           n_top_genes = 1500, 
+                           n_top_genes = NULL, 
                            max_mean = 6, 
                            min_mean = 0.0125, 
                            min_disp = 0.5, 
@@ -112,13 +112,17 @@ perform.scanpy <- function(object,
     stop('key_added must be character string \n')
     
   }
-  
-  if(!is.numeric(n_top_genes)) {
+
+  if(!is.null(n_top_genes)) {
     
-    stop('n_top_genes must be numerical \n')
+    if(!is.numeric(n_top_genes)) {
+      
+      stop('n_top_genes must be numerical \n')
+      
+    }
     
   }
-  
+
   if(!is.numeric(max_mean)) {
     
     stop('max_mean must be numerical \n')
@@ -203,22 +207,24 @@ perform.scanpy <- function(object,
                           exclude_highly_expressed = as.logical(exclude_highly_expressed), 
                           max_fraction = as.integer(max_fraction))
   } else {
-    sc$pp$normalize_total(adata = scobj, target_sum=target_sum)
+    sc$pp$normalize_total(adata = scobj)
   }
   
   .counts <- t(scobj$X)
-  rownames(.counts) <- rownames(object)
-  colnames(.counts) <- colnames(object)
+  rownames(.counts) <- rownames(object@methods$RAW@counts)
+  colnames(.counts) <- colnames(object@methods$RAW@counts)
   
   feat.metadata <- feature_metadata(assay = .counts, col.prefix = 'SCANPY')
   
-  cat(crayon::cyan(paste0(Sys.time(), ': log transforming data\n')))
-  
   if(isTRUE(log1)) {
+    
+    cat(crayon::cyan(paste0(Sys.time(), ': log1 transforming data\n')))
     
     sc$pp$log1p(scobj)
     
   } else if(isFALSE(log1)) {
+    
+    cat(crayon::cyan(paste0(Sys.time(), ': log2 transforming data\n')))
     
     scobj$X <- log2(scobj$X+1)
     

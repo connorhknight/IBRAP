@@ -123,9 +123,11 @@
 <ol start="2" style="list-style-type: decimal">
 <li>cd into the downloaded directory containing ImageMagick. Then execute the following command:</li>
 </ol>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1">.<span class="op">/</span>configure</a>
-<a class="sourceLine" id="cb2-2" data-line-number="2">make</a>
-<a class="sourceLine" id="cb2-3" data-line-number="3">make install</a></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1">tar <span class="op">-</span>xf ImageMagick<span class="dv">-6</span>.<span class="fl">9.10-86.</span>tar.xz </a>
+<a class="sourceLine" id="cb2-2" data-line-number="2">cd ImageMagick<span class="dv">-6</span>.<span class="fl">9.10</span><span class="dv">-86</span></a>
+<a class="sourceLine" id="cb2-3" data-line-number="3">.<span class="op">/</span>configure</a>
+<a class="sourceLine" id="cb2-4" data-line-number="4">make</a>
+<a class="sourceLine" id="cb2-5" data-line-number="5">make install</a></code></pre></div>
 <ol start="3" style="list-style-type: decimal">
 <li>now we must export the LD_LIBRARY_PATH and pkgconfig path to the library location of ImageMagick package. For example:</li>
 </ol>

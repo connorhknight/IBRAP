@@ -33,6 +33,8 @@ curl -L -O https://download.imagemagick.org/ImageMagick/download/releases/ImageM
 2. cd into the downloaded directory containing ImageMagick. Then execute the following command:
 
 ```{r, eval=F, echo=T}
+tar -xf ImageMagick-6.9.10-86.tar.xz 
+cd ImageMagick-6.9.10-86
 ./configure
 make
 make install
