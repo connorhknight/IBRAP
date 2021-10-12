@@ -42,7 +42,7 @@ perform.scanpy(
 
 \item{key_added}{Character. What should the column name be that contains cell scaling factors. Default = 'scanpy_norm_factor'}
 
-\item{n_top_genes}{Numerical. How many HVGs should be identified. Default = 1500}
+\item{n_top_genes}{Numerical. How many HVGs should be identified. Default = NULL}
 
 \item{max_mean}{Numerical. If n_top_genes is NULL, this is the maximum mean to determine HVGs. Default = 6}
 

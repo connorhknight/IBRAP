@@ -110,7 +110,7 @@ perform.pca <- function(object,
       eig[,2] <- factor(x = temp, levels = unique(temp))
       colnames(eig) <- c ('Variance', 'PCs')
       
-      list.of.figs[[t]] <- ggplot2::ggplot(data = eig[1:n.pcs,], mapping = ggplot2::aes(x = PCs, y = Variance)) + 
+      p <- ggplot2::ggplot(data = eig[1:n.pcs,], mapping = ggplot2::aes(x = PCs, y = Variance)) + 
         ggplot2::geom_point() + 
         egg::theme_article() + 
         ggplot2::ylab('Explained Variance (%)') +
@@ -152,7 +152,7 @@ perform.pca <- function(object,
     eig[,2] <- factor(x = colnames(tmp), levels = unique(colnames(tmp)))
     colnames(eig) <- c('Variance', 'PCs')
     
-    list.of.figs[[t]] <- ggplot2::ggplot(data = eig[1:n.pcs,], mapping = ggplot2::aes(x = PCs, y = Variance)) + 
+    p <- ggplot2::ggplot(data = eig[1:n.pcs,], mapping = ggplot2::aes(x = PCs, y = Variance)) + 
       ggplot2::geom_point() + 
       egg::theme_article() + 
       ggplot2::ylab('Explained Variance (%)') +
@@ -172,7 +172,7 @@ perform.pca <- function(object,
       eig[,2] <- factor(x = temp, levels = unique(temp))
       colnames(eig) <- c('Variance', 'PCs')
       
-      list.of.figs[[t]] <- ggplot2::ggplot(data = eig[1:n.pcs,], mapping = ggplot2::aes(x = PCs, y = Variance)) + 
+      p <- ggplot2::ggplot(data = eig[1:n.pcs,], mapping = ggplot2::aes(x = PCs, y = Variance)) + 
         ggplot2::geom_point() + 
         egg::theme_article() + 
         ggplot2::ylab('Explained Variance (%)') +
@@ -185,18 +185,9 @@ perform.pca <- function(object,
       
     }
     
-  }
-  
-  if(isTRUE(save.plot)) {
-    
-    print(do.call('ggarrange.tmp', c(plots = list.of.figs, ncol = length(list.of.figs))))
-    pdf(file = paste0('PCA_.pdf'), onefile = T)
-    do.call('ggarrange.tmp', c(plots = list.of.figs, ncol = length(list.of.figs)))
+    pdf(file = paste0('PCA_', t, '.pdf'), onefile = TRUE)
+    print(p)
     dev.off()
-    
-  } else {
-    
-    print(do.call('ggarrange.tmp', c(plots = list.of.figs, ncol = length(list.of.figs))))
     
   }
   

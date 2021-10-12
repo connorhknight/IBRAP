@@ -13,7 +13,7 @@
 #' @param exclude_highly_expressed Boolean. Should highly expressed genes be excluded. Default = FALSE
 #' @param max_fraction Numerical. If exclude_highly_expressed=True, consider cells as highly expressed that have more counts than max_fraction of the original total counts in at least one cell. Default = 0.05
 #' @param key_added Character. What should the column name be that contains cell scaling factors. Default = 'scanpy_norm_factor'
-#' @param n_top_genes Numerical. How many HVGs should be identified. Default = 1500
+#' @param n_top_genes Numerical. How many HVGs should be identified. Default = NULL
 #' @param max_mean Numerical. If n_top_genes is NULL, this is the maximum mean to determine HVGs. Default = 6
 #' @param min_mean Numerical. If n_top_genes is NULL, this is the minimum mean to determine HVGs. Default = 0.0125
 #' @param min_disp Numerical. If n_top_genes is NULL, The minimum dispersion that should be presented in a gene for it to be considered highly varaible. Default = 0.5
