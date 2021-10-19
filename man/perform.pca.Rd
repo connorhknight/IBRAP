@@ -8,7 +8,6 @@ perform.pca(
   object,
   assay,
   slot = "norm.scaled",
-  plot.var = TRUE,
   n.pcs = 50,
   reduction.save = "pca",
   save.plot = TRUE,
@@ -22,13 +21,13 @@ perform.pca(
 
 \item{slot}{Character. String indicating which slot within the assay should be sourced}
 
-\item{plot.var}{Boolean. Should the explained variance of PCs be plotted}
-
 \item{n.pcs}{Numerical. How many principal components should be produced. Default = 50}
 
 \item{reduction.save}{Character. What should this reduction be saved as in computation_reduction. Default = 'pca'}
 
 \item{...}{Arguments to be passed to PCAtools::pca}
+
+\item{plot.var}{Boolean. Should the explained variance of PCs be plotted}
 }
 \value{
 PCA reductions contained within the computational_reduction list in the defined assays

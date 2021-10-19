@@ -10,7 +10,7 @@ perform.reduction.kmeans(
   reduction = NULL,
   dims = NULL,
   k = NULL,
-  assignment.df.name,
+  cluster.df.name.suffix = "",
   method = "kmeans",
   ...
 )
@@ -26,11 +26,11 @@ perform.reduction.kmeans(
 
 \item{k}{Numerical. How many clusters should the algorithm identify, this can be a range. Default = NULL}
 
-\item{assignment.df.name}{Character. What to call the df contained in clusters.}
-
 \item{method}{Which algorithm should be used, options: 'kmeans', 'pam'. Default = 'kmeans}
 
 \item{...}{Arguments to be passed to either base::kmeans or cluster::pam, depending on the defined method}
+
+\item{assignment.df.name}{Character. What to call the df contained in clusters.}
 }
 \value{
 Cluster assignments using the list of resolutions provided contained within cluster_assignments under assignment.df.name
