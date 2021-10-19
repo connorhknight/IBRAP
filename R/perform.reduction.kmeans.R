@@ -23,7 +23,7 @@ perform.reduction.kmeans <- function(object,
                                      reduction=NULL, 
                                      dims = NULL,
                                      k=NULL,
-                                     assignment.df.name,
+                                     cluster.df.name.suffix='',
                                      method='kmeans',
                                      ...) {
   
@@ -71,9 +71,13 @@ perform.reduction.kmeans <- function(object,
     
   }
   
-  if(!is.character(assignment.df.name)) {
+  if(!is.null(cluster.df.name.suffix)) {
     
-    stop(paste0('assignment.df.name must be character string(s)\n'))
+    if(!is.character(cluster.df.name.suffix)) {
+      
+      stop(paste0('cluster.df.name.suffix must be character string(s)\n'))
+      
+    }
     
   }
   
@@ -128,21 +132,13 @@ perform.reduction.kmeans <- function(object,
     
     for(o in reduction) {
       
-      if(length(reduction) == 1) {
-        
-        red <- reduction.list
-        
-      } else {
-        
-        red <- reduction.list[[o]] 
-        
-      }
+      red <- reduction.list[[o]] 
       
       dimen <- dims[[count]]
       
       if(is.null(dimen)) {
         
-        dimen <- 1:length(colnames(red))
+        dimen <- 1:ncol(red)
         
       }
       
@@ -159,30 +155,57 @@ perform.reduction.kmeans <- function(object,
         for(i in k) {
           
           cat(crayon::cyan(paste0(Sys.time(), ': calculating PAM for k = ', i, '\n')))
+
+          clusters[,paste0('k_', i)] <- as.factor(cluster::pam(x = red[,dimen], k = i, ...)$clustering)
           
-          clusters[,paste0('pam_clustering_K_', i)] <- as.factor(cluster::pam(x = red[,dimen], k = i, ...)$clustering)
         }
       }
       if(method == 'kmeans') {
         for(i in k) {
           
           cat(crayon::cyan(paste0(Sys.time(), ': calculating kmeans for k = ', i, '\n')))
-          
-          clusters[[paste0('kmeans_clustering_K_', i)]] <- as.factor(kmeans(x = red[,dimen], centers = i, ...)$cluster)
+
+          clusters[[paste0('k_', i)]] <- as.factor(kmeans(x = red[,dimen], centers = i, ...)$cluster)
         }
-      } else {
-        stop('please specify method: pam or kmeans\n')
-      }
+      } 
       
       clusters <- clusters[,2:length(colnames(clusters))]
-      object@methods[[p]]@cluster_assignments[[assignment.df.name[[count]]]] <- clusters
+      
+      if('_' %in% unlist(strsplit(x = cluster.df.name.suffix, split = ''))) {
+        
+        cat(crayon::cyan(paste0(Sys.time(), ': _ cannot be used in cluster.df.name.suffix, replacing with - \n')))
+        cluster.df.name.suffix <- sub(pattern = '_', replacement = '-', x = cluster.df.name.suffix)
+        
+      }
+      
+      if(method == 'pam') {
+        
+        object@methods[[p]]@cluster_assignments[[paste0(o, ':pam', cluster.df.name.suffix)]] <- clusters
+        
+      }
+      
+      if(method == 'kmeans') {
+        
+        object@methods[[p]]@cluster_assignments[[paste0(o, ':kmeans', cluster.df.name.suffix)]] <- clusters
+        
+      }
       
       count <- count + 1
     }
     
   }
   
-  cat(crayon::cyan(paste0(Sys.time(), ': finished kmeans clustering \n')))
+  if(method == 'pam') {
+    
+    cat(crayon::cyan(paste0(Sys.time(), ': finished PAM clustering \n')))
+    
+  }
+  
+  if(method == 'kmeans') {
+    
+    cat(crayon::cyan(paste0(Sys.time(), ': finished kmeans clustering \n')))
+    
+  }
   
   return(object)
 }

@@ -389,7 +389,7 @@ perform.seurat.integration <- function(object,
       
       tmp.obj@methods[[paste0(a,'_integrated')]]@highly.variable.genes <- combined@assays$integrated@var.features
       
-      tmp.obj <- IBRAP::perform.pca(object = tmp.obj, assay = paste0(a,'_integrated'), slot = 'norm.scaled', save.plot = save.plot)
+      tmp.obj <- IBRAP::perform.pca(object = tmp.obj, assay = paste0(a,'_integrated'), slot = 'norm.scaled', plot.var = F, save.plot = F)
       
       if(is.null(reduction.name.suffix)) {
         
@@ -475,7 +475,7 @@ perform.seurat.integration <- function(object,
       
       tmp.obj@methods[[paste0(a,'_integrated')]]@highly.variable.genes <- combined@assays$integrated@var.features
       
-      tmp.obj <- IBRAP::perform.pca(object = tmp.obj, assay = paste0(a,'_integrated'), slot = 'norm.scaled', save.plot = save.plot)
+      tmp.obj <- IBRAP::perform.pca(object = tmp.obj, assay = paste0(a,'_integrated'), slot = 'norm.scaled', save.plot = F, plot.var = F)
       
       if(is.null(reduction.name.suffix)) {
         

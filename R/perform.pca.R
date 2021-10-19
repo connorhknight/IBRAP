@@ -27,7 +27,6 @@
 perform.pca <- function(object, 
                         assay,
                         slot='norm.scaled',
-                        plot.var = TRUE,
                         n.pcs=50,
                         reduction.save='pca', 
                         save.plot = TRUE, 
@@ -185,10 +184,20 @@ perform.pca <- function(object,
       
     }
     
-    pdf(file = paste0('PCA_', t, '.pdf'), onefile = TRUE)
-    print(p)
-    dev.off()
+    if(isTRUE(save.plot)) {
+      
+      pdf(file = paste0('PCA_', t, '.pdf'), onefile = TRUE)
+      
+    }
     
+    print(p)
+    
+    if(isTRUE(save.plot)) {
+      
+      dev.off()
+      
+    }
+
   }
   
   return(object)
