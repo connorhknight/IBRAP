@@ -10,7 +10,7 @@ Description: This package integrates numerous leading scRNA-seq analytical compo
     metrices can be applied to ascertain which pipeline performed best. A tutorial
     on how to use IBRAP can be found at: https://github.com/connorhknight/IBRAP
 Depends:
-    R (>= 4.0.4)
+    R (>= 4.0.0)
 Authors@R: c(
     person("Connor", "Knight", ,"connorhknight@gmail.co.uk", 
     role = c("aut", "cre"),
