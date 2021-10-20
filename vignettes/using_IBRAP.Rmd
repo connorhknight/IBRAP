@@ -50,7 +50,7 @@ bmmc <- perform.scrublet(counts = bmmc)
 
 ```
 
-We have also included a function that adopts decontX which allows users to identify ambient RNA and in droplets and to remove it. However this is not installed automatically and requires the use of the decontX tutorial to use it. 
+We have also included a function that adopts decontX which allows users to identify ambient RNA and in droplets and to remove it. However this is not installed automatically and requires the use of the [decontX](https://connorhknight.github.io/IBRAP/) tutorial to use it. 
 
 ### Section 1.2: Explaining the results
 
@@ -61,14 +61,6 @@ knitr::include_graphics(path = 'scrublet_plot.png')
 ```
 
 Scrublet functions by simulating multiplets from out datasets (by integrating similar cells); we can see these simulated cells with high doublet scores. For this example, we can see a minimal number of cells in our observed cells with high doublet scores. Cells that are above a certain doublet score threshold are omitted from the dataset. 
-
-```{r, echo=FALSE, out.width="150%", out.height="150%"}
-
-knitr::include_graphics(path = 'decontX.png')
-
-```
-
-DecontX creates a umap projection of samples and colours them according the amount of contamination presented within a cell. In this sample, we observe minimal contaminaton. WARNING: DecontX should only be used if you expect ambient RNA otherwise it can drastically affect downstream results. 
 
 Now that we have removed these confounding effects from our dataset we can move on with our analysis. 
 

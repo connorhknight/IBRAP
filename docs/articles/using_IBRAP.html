@@ -140,15 +140,13 @@
 <span class="co"># We simply supply our generated count matrix to both functions</span>
 
 <span class="va">bmmc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/perform.scrublet.html">perform.scrublet</a></span><span class="op">(</span>counts <span class="op">=</span> <span class="va">bmmc</span><span class="op">)</span></code></pre></div>
-<p>We have also included a function that adopts decontX which allows users to identify ambient RNA and in droplets and to remove it. However this is not installed automatically and requires the use of the decontX tutorial to use it.</p>
+<p>We have also included a function that adopts decontX which allows users to identify ambient RNA and in droplets and to remove it. However this is not installed automatically and requires the use of the <a href="https://connorhknight.github.io/IBRAP/" class="external-link">decontX</a> tutorial to use it.</p>
 </div>
 <div id="section-1-2-explaining-the-results" class="section level3">
 <h3 class="hasAnchor">
 <a href="#section-1-2-explaining-the-results" class="anchor" aria-hidden="true"></a>Section 1.2: Explaining the results</h3>
 <p><img src="scrublet_plot.png" width="150%" height="150%"></p>
 <p>Scrublet functions by simulating multiplets from out datasets (by integrating similar cells); we can see these simulated cells with high doublet scores. For this example, we can see a minimal number of cells in our observed cells with high doublet scores. Cells that are above a certain doublet score threshold are omitted from the dataset.</p>
-<p><img src="decontX.png" width="150%" height="150%"></p>
-<p>DecontX creates a umap projection of samples and colours them according the amount of contamination presented within a cell. In this sample, we observe minimal contaminaton. WARNING: DecontX should only be used if you expect ambient RNA otherwise it can drastically affect downstream results.</p>
 <p>Now that we have removed these confounding effects from our dataset we can move on with our analysis.</p>
 </div>
 </div>
