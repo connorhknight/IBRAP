@@ -29,6 +29,8 @@ navbar:
         href: articles/data_transform.html
       - text: Clustering Methods
         href: articles/clustering_method.html
+      - text: HPC issues/solutions
+        href: articles/HPC_issues.html
         
 reference:
 - title: Pre-processing Functions
@@ -136,3 +138,4 @@ articles:
   - '`application`'
   - '`trajectory`'
   - '`singleR_annotation`'
+  - '`HPC_issues`'

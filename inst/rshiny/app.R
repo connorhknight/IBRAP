@@ -190,7 +190,7 @@ shinyApp(
       
       f <- unlist(lapply(X = lapply(X = strsplit(x = red, split = '_'), FUN = temp), FUN = paste0, collapse = '_'))
       
-      forout_reactive$allowed_labels <- c(names(forout_reactive$active.assay@cluster_assignments)[f == ff], 'metadata')
+      forout_reactive$allowed_labels <- c(names(forout_reactive$active.assay@cluster_assignments)[f == ff], 'metadata', 'counts:SC3', 'normalised:SC3', 'norm.scaled:SC3')
       
     })
     

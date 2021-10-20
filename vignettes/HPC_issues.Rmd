@@ -1,0 +1,83 @@
+---
+title: "HPC_issues"
+author: "Connor H Knight & Faraz Khan"
+date: "11/08/2021"
+output: 
+    html_document:
+    toc: true
+    toc_depth: 4
+    theme: united
+vignette: >
+  %\VignetteIndexEntry{Getting Started}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r klippy, echo=FALSE, include=TRUE}
+klippy::klippy(tooltip_message = 'Click to copy', tooltip_success = 'Done', position = c('bottom', 'right'))
+```
+
+## Incorrect gcc version 
+
+In some instances old versions are automatically stored in your user bin. If you recieve the following error you may have an older version of gcc loaded. 
+
+```{r, eval=F, echo=T}
+g++: error: unrecognized command line option ‘-fno-plt’
+g++: error: unrecognized command line option ‘-fno-semantic-interposition’
+
+```
+
+If you see this you can use the following to see which version you have loaded: 
+
+```{r, eval=F, echo=T}
+
+find gcc 
+{paste previous output here} -- version
+
+```
+
+If you are in a HPC environemnt then you must load the correct version >=7 using the HPC infastructure or compile the correct version yourself. 
+
+## ImageMagick for celda 
+
+ImageMagick version inside a HPC is commonly known to create issues. For IBRAP this affects the installation of celda. A known way to fix this is to compile a specific version of ImageMagick and to supply the pathways. 
+
+### step 1: Get ImageMagick from the following link by doing: 
+  
+```{r, eval=F, echo=T}
+curl -L -O https://download.imagemagick.org/ImageMagick/download/releases/ImageMagick-6.9.10-86.tar.xz
+
+```
+
+### step 2: cd into the downloaded directory containing ImageMagick. Then execute the following command:
+  
+```{r, eval=F, echo=T}
+tar -xf ImageMagick-6.9.10-86.tar.xz 
+cd ImageMagick-6.9.10-86
+./configure
+make
+make install
+
+```
+
+### step 3: now we must export the LD_LIBRARY_PATH and pkgconfig path to the library location of ImageMagick package. For example: 
+  
+```{r, eval=F, echo=T}
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/path/to/magick/ImageMagick-6.9.10-86/lib
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/path/to/magick/ImageMagick-6.9.10-86/Magick++/lib
+export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:/path/to/magick/ImageMagick-6.9.10-86/lib/pkgconfig
+
+```
+
+This should allow R tofind the correct imagemagick librarys and allow celda to install. However, take now that every HPC environment is different and different troubleshooting may be required on a case-by-case basis. 
+
+If you have any more isses/solutions please post them on our issues section in our github. 
+
+

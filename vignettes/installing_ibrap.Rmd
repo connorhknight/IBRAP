@@ -21,45 +21,14 @@ knitr::opts_chunk$set(
 klippy::klippy(tooltip_message = 'Click to copy', tooltip_success = 'Done', position = c('bottom', 'right'))
 ```
 
-## Step 1: Configure ImageMagick for linux-based system prior to installation
+## IBRAP requirements
 
-1. Get ImageMagick from the following link by doing: 
+IBRAP requires R version >=4.0.4 to function.
+We also provide decontX which is contained within the celda package. However, an issue for celda is that it requires ImageMagick which is known to be problematic in a HPC environment. Thus, we have developed two installations: one with celda and one without. You can attempt the installation containing the celda package and if you encounter issues you can debug them. If you do not require decontX or are unable to debug the installation you may use our without celda installatiion. 
 
-```{r, eval=F, echo=T}
-curl -L -O https://download.imagemagick.org/ImageMagick/download/releases/ImageMagick-6.9.10-86.tar.xz
+We have developed a separate tutorial with a few common issues encountered in hpc environment here. 
 
-```
-
-2. cd into the downloaded directory containing ImageMagick. Then execute the following command:
-
-```{r, eval=F, echo=T}
-tar -xf ImageMagick-6.9.10-86.tar.xz 
-cd ImageMagick-6.9.10-86
-./configure
-make
-make install
-
-```
-
-3. now we must export the LD_LIBRARY_PATH and pkgconfig path to the library location of ImageMagick package. For example: 
-
-```{r, eval=F, echo=T}
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/path/to/magick/ImageMagick-6.9.10-86/lib
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/path/to/magick/ImageMagick-6.9.10-86/Magick++/lib
-export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:/path/to/magick/ImageMagick-6.9.10-86/lib/pkgconfig
-
-```
-
-## Step 2: Installing BiocManager dependencies for IBRAP 
-
-```{r, eval=F, echo=T}
-if (!requireNamespace("BiocManager", quietly=TRUE))
-    install.packages("BiocManager")
-BiocManager::install(c("celda", "slingshot", "scran", "scuttle", "SC3", "SingleCellExperiment", "PCAtools", "topGO","shinydashboard", "destiny", "progress"))
-
-```
-
-## Step 3: Installing IBRAP
+## With celda package
 
 ```{r, eval=F, echo=T}
 install.packages('devtools')
@@ -67,7 +36,15 @@ devtools::install_github('connorhknight/IBRAP')
 
 ```
 
-## Step 4: Preparing reticulate
+## Without celda package
+
+```{r, eval=F, echo=T}
+install.packages('devtools')
+devtools::install_github('connorhknight/IBRAP_no_decontX')
+
+```
+
+## Preparing reticulate
 
 IBRAP not only uses packages within R, but also through python. For this, we use reticulate to interface python into the R environment. To setup reticulate we must start by installing miniconda:
 
@@ -83,20 +60,6 @@ prepare.reticulate()
 
 ```
 
-Once this has been completed, you are ready to use IBRAP! For a basic understand of a single sample workflow please use the 'getting started' tutorial. For multi-sample analysis, you can divert to the integration tutorial. 
+Once this has been completed, you are ready to use IBRAP! For a basic understand of a single sample workflow please use the [getting started](https://connorhknight.github.io/IBRAP/articles/using_IBRAP.html) tutorial. For multi-sample analysis, you can divert to the [integration](https://connorhknight.github.io/IBRAP/articles/integration.html) tutorial. 
 
 Good luck!
-
-
-
-
-
-
-
-
-
-
-
-
-
-

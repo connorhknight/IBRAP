@@ -21,7 +21,7 @@ perform.sc3.slot.cluster <- function(object,
                                      assay,
                                      slot,
                                      HVGs,
-                                     assignment.df.name,
+                                     cluster.df.name.suffix='',
                                      ks, 
                                      n.core = 3) {
   
@@ -59,9 +59,9 @@ perform.sc3.slot.cluster <- function(object,
     
   }
   
-  if(!is.character(assignment.df.name)) {
+  if(!is.character(cluster.df.name.suffix)) {
     
-    stop(paste0('assignment.df.name must be character string(s)\n'))
+    stop(paste0('cluster.df.name.suffix must be character string(s)\n'))
     
   }
   
@@ -79,6 +79,13 @@ perform.sc3.slot.cluster <- function(object,
   
   cat(crayon::cyan(paste0(Sys.time(), ': initialising SC3 clustering\n')))
   
+  if('_' %in% unlist(strsplit(x = cluster.df.name.suffix, split = ''))) {
+    
+    cat(crayon::cyan(paste0(Sys.time(), ': _ cannot be used in cluster.df.name.suffix, replacing with - \n')))
+    cluster.df.name.suffix <- sub(pattern = '_', replacement = '-', x = cluster.df.name.suffix)
+    
+  }
+  
   for(p in assay) {
     
     mat <- object@methods[[p]][[slot]]
@@ -93,15 +100,15 @@ perform.sc3.slot.cluster <- function(object,
     if(is.null(HVGs)) {
       
       temp.2 <- SingleCellExperiment::SingleCellExperiment(list('counts' = as.matrix(object@methods[[p]]@counts[rownames(mat),]), 'logcounts' = as.matrix(mat)))
-      rowData(temp.2)$feature_symbol <- rownames(temp.2)
-      temp.2 <- temp.2[!duplicated(rowData(temp.2)$feature_symbol), ]
+      SummarizedExperiment::rowData(temp.2)$feature_symbol <- rownames(temp.2)
+      temp.2 <- temp.2[!duplicated(SummarizedExperiment::rowData(temp.2)$feature_symbol), ]
       temp.2 <- SC3::sc3_prepare(temp.2, gene_filter = TRUE, n_cores = n.core)
       
     } else {
       
       temp.2 <- SingleCellExperiment::SingleCellExperiment(list('logcounts' = as.matrix(mat)))
-      rowData(temp.2)$feature_symbol <- rownames(temp.2)
-      temp.2 <- temp.2[!duplicated(rowData(temp.2)$feature_symbol), ]
+      SummarizedExperiment::rowData(temp.2)$feature_symbol <- rownames(temp.2)
+      temp.2 <- temp.2[!duplicated(SummarizedExperiment::rowData(temp.2)$feature_symbol), ]
       temp.2 <- SC3::sc3_prepare(temp.2, gene_filter = FALSE, n_cores = n.core)
       
     }
@@ -110,7 +117,9 @@ perform.sc3.slot.cluster <- function(object,
     temp.2 <- SC3::sc3_calc_transfs(temp.2)
     temp.2 <- SC3::sc3_kmeans(temp.2, ks = ks)
     temp.2 <- SC3::sc3_calc_consens(temp.2)
-    object@methods[[p]]@cluster_assignments[[assignment.df.name]] <- as.data.frame(colData(temp.2))
+    
+    object@methods[[p]]@cluster_assignments[[paste0(slot, ':SC3', cluster.df.name.suffix)]] <- as.data.frame(SummarizedExperiment::colData(temp.2))
+    
     cat(crayon::cyan(paste0(Sys.time(), ': SC3 clustering completed\n')))
     
   }
