@@ -186,19 +186,7 @@ perform.harmony <- function(object,
       
       cat(crayon::cyan(paste0(Sys.time(), ': initialising harmony for assay: ', p, ', reduction: ', g, '\n')))
       
-      if(isTRUE(save.plot)) {
-        
-        pdf(file = paste0('harmony_', g, '.pdf'), onefile = T)
-        
-      }
-      
       harm <- harmony::HarmonyMatrix(data_mat = red[,1:dims], meta_data = object@sample_metadata, vars_use = vars.use, do_pca = FALSE, verbose = TRUE, plot_convergence = TRUE, ...)
-      
-      if(isTRUE(save.plot)) {
-        
-        dev.off()
-        
-      }
       
       object@methods[[p]]@integration_reductions[[paste0(r, '_harmony', reduction.save.suffix)]] <- harm
       

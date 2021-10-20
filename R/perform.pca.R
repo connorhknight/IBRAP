@@ -8,7 +8,6 @@
 #' @param object IBRAP S4 class object
 #' @param assay Character. String containing indicating which assay to use
 #' @param slot Character. String indicating which slot within the assay should be sourced
-#' @param plot.var Boolean. Should the explained variance of PCs be plotted
 #' @param n.pcs Numerical. How many principal components should be produced. Default = 50
 #' @param reduction.save Character. What should this reduction be saved as in computation_reduction. Default = 'pca'
 #' @param ... Arguments to be passed to PCAtools::pca
