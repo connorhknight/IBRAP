@@ -351,7 +351,7 @@ bmmc <- benchmark.clustering(object = bmmc,
                              assay = c('SCT', 'SCRAN', 'SCANPY'), 
                              clustering = c('pca_nn:louvain', 'pca:diffmap_nn:louvain'), 
                              reduction = c('pca_umap', 'pca:diffmap_umap'), 
-                             n.dims = 1:2)
+                             n.dims = 2)
 
 ```
 
