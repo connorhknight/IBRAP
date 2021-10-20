@@ -9,7 +9,7 @@ perform.sc3.reduction.cluster(
   assay,
   reduction,
   dims,
-  assignment.df.name,
+  cluster.df.name.suffix = "",
   ks,
   n.core = 3
 )
@@ -23,11 +23,11 @@ perform.sc3.reduction.cluster(
 
 \item{dims}{Numerical. How many dimensions of the reduciton should be supplied, NULL equates to all.}
 
-\item{assignment.df.name}{Character. What to call the df contained in clusters.}
-
 \item{ks}{Numerical range. Number of clusters to identify, this can be a range, i.e. 5:10.}
 
 \item{n.core}{Numerical. How many cores should be used to run SC3. Default = 3}
+
+\item{assignment.df.name}{Character. What to call the df contained in clusters.}
 }
 \value{
 Cluster assignments using the list of resolutions provided contained within cluster_assignments under assignment.df.name

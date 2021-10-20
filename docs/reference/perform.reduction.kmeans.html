@@ -128,6 +128,9 @@
     <li>
       <a href="../articles/clustering_method.html">Clustering Methods</a>
     </li>
+    <li>
+      <a href="../articles/HPC_issues.html">HPC issues/solutions</a>
+    </li>
   </ul>
 </li>
       </ul>
@@ -161,7 +164,7 @@
   reduction <span class='op'>=</span> <span class='cn'>NULL</span>,
   dims <span class='op'>=</span> <span class='cn'>NULL</span>,
   k <span class='op'>=</span> <span class='cn'>NULL</span>,
-  <span class='va'>assignment.df.name</span>,
+  cluster.df.name.suffix <span class='op'>=</span> <span class='st'>""</span>,
   method <span class='op'>=</span> <span class='st'>"kmeans"</span>,
   <span class='va'>...</span>
 <span class='op'>)</span></code></pre></div>
@@ -190,16 +193,16 @@
       <td><p>Numerical. How many clusters should the algorithm identify, this can be a range. Default = NULL</p></td>
     </tr>
     <tr>
-      <th>assignment.df.name</th>
-      <td><p>Character. What to call the df contained in clusters.</p></td>
-    </tr>
-    <tr>
       <th>method</th>
       <td><p>Which algorithm should be used, options: 'kmeans', 'pam'. Default = 'kmeans</p></td>
     </tr>
     <tr>
       <th>...</th>
       <td><p>Arguments to be passed to either base::kmeans or cluster::pam, depending on the defined method</p></td>
+    </tr>
+    <tr>
+      <th>assignment.df.name</th>
+      <td><p>Character. What to call the df contained in clusters.</p></td>
     </tr>
     </table>
 

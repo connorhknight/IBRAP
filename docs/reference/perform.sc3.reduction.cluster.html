@@ -128,6 +128,9 @@
     <li>
       <a href="../articles/clustering_method.html">Clustering Methods</a>
     </li>
+    <li>
+      <a href="../articles/HPC_issues.html">HPC issues/solutions</a>
+    </li>
   </ul>
 </li>
       </ul>
@@ -160,7 +163,7 @@
   <span class='va'>assay</span>,
   <span class='va'>reduction</span>,
   <span class='va'>dims</span>,
-  <span class='va'>assignment.df.name</span>,
+  cluster.df.name.suffix <span class='op'>=</span> <span class='st'>""</span>,
   <span class='va'>ks</span>,
   n.core <span class='op'>=</span> <span class='fl'>3</span>
 <span class='op'>)</span></code></pre></div>
@@ -185,16 +188,16 @@
       <td><p>Numerical. How many dimensions of the reduciton should be supplied, NULL equates to all.</p></td>
     </tr>
     <tr>
-      <th>assignment.df.name</th>
-      <td><p>Character. What to call the df contained in clusters.</p></td>
-    </tr>
-    <tr>
       <th>ks</th>
       <td><p>Numerical range. Number of clusters to identify, this can be a range, i.e. 5:10.</p></td>
     </tr>
     <tr>
       <th>n.core</th>
       <td><p>Numerical. How many cores should be used to run SC3. Default = 3</p></td>
+    </tr>
+    <tr>
+      <th>assignment.df.name</th>
+      <td><p>Character. What to call the df contained in clusters.</p></td>
     </tr>
     </table>
 
