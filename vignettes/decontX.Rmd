@@ -1,0 +1,42 @@
+---
+title: "decontX"
+author: "Connor H Knight & Faraz Khan"
+date: "11/08/2021"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Installing & Preparing IBRAP}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/"
+)
+```
+
+```{r klippy, echo=FALSE, include=TRUE}
+klippy::klippy(tooltip_message = 'Click to copy', tooltip_success = 'Done', position = c('bottom', 'right'))
+```
+
+## Installing DecontX
+
+DecontX is contained within the celda package which can be installed using the following function:
+
+```{r, eval=F, echo=T}
+
+BiocManager::install('celda')
+
+```
+
+If celda fails to install it may be due to serveral reasons. A couple of common issues (normally seen in a HPC environment) and solutions can be seen in the [HPC tutorial](https://connorhknight.github.io/IBRAP/articles/HPC_issues.html)
+
+The function itself is typically applied after scrublet (however these are interchangeable) on the raw counts matrix. The workflow then continues on as normal. 
+
+```{r, eval=F, echo=T}
+
+bmmc <- perform.decontX(object = bmmc)
+
+```

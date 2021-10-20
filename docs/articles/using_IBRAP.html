@@ -75,6 +75,9 @@
       <a href="../articles/singleR_annotation.html">Automated Annotation</a>
     </li>
     <li>
+      <a href="../articles/decontX.html">decontX</a>
+    </li>
+    <li>
       <a href="../articles/data_transform.html">Data Transformation</a>
     </li>
     <li>
@@ -131,14 +134,13 @@
 <div id="section-1-1-applying-the-functions" class="section level3">
 <h3 class="hasAnchor">
 <a href="#section-1-1-applying-the-functions" class="anchor" aria-hidden="true"></a>Section 1.1: Applying the functions</h3>
-<p>Droplet-based datasets present unique confounding effects, including: doublets and ambient RNA contamination. To remove them we have enlisted scrublet and decontX, respectively. Thus far, there is no consensus on the order of application. However, we prefer scrublet followed by decontX.</p>
+<p>Droplet-based datasets typically contain multiples (dorplets that contain two or more cells. To circumvent this, we included Scrublet. This can be performed using the following command:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R">
 <span class="co"># We simply supply our generated count matrix to both functions</span>
 
-<span class="va">bmmc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/perform.scrublet.html">perform.scrublet</a></span><span class="op">(</span>counts <span class="op">=</span> <span class="va">bmmc</span><span class="op">)</span>
-
-<span class="va">bmmc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/perform.decontX.html">perform.decontX</a></span><span class="op">(</span>counts <span class="op">=</span> <span class="va">bmmc</span><span class="op">)</span></code></pre></div>
+<span class="va">bmmc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/perform.scrublet.html">perform.scrublet</a></span><span class="op">(</span>counts <span class="op">=</span> <span class="va">bmmc</span><span class="op">)</span></code></pre></div>
+<p>We have also included a function that adopts decontX which allows users to identify ambient RNA and in droplets and to remove it. However this is not installed automatically and requires the use of the decontX tutorial to use it.</p>
 </div>
 <div id="section-1-2-explaining-the-results" class="section level3">
 <h3 class="hasAnchor">

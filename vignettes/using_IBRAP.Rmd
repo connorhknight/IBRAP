@@ -40,7 +40,7 @@ bmmc <- readRDS(file.choose())
 
 ### Section 1.1: Applying the functions
 
-Droplet-based datasets present unique confounding effects, including: doublets and ambient RNA contamination. To remove them we have enlisted scrublet and decontX, respectively. Thus far, there is no consensus on the order of application. However, we prefer scrublet followed by decontX. 
+Droplet-based datasets typically contain multiples (dorplets that contain two or more cells. To circumvent this, we included Scrublet. This can be performed using the following command:
 
 ```{r, eval=F, echo=T}
 
@@ -48,9 +48,9 @@ Droplet-based datasets present unique confounding effects, including: doublets a
 
 bmmc <- perform.scrublet(counts = bmmc)
 
-bmmc <- perform.decontX(counts = bmmc)
-
 ```
+
+We have also included a function that adopts decontX which allows users to identify ambient RNA and in droplets and to remove it. However this is not installed automatically and requires the use of the decontX tutorial to use it. 
 
 ### Section 1.2: Explaining the results
 

@@ -75,6 +75,9 @@
       <a href="../articles/singleR_annotation.html">Automated Annotation</a>
     </li>
     <li>
+      <a href="../articles/decontX.html">decontX</a>
+    </li>
+    <li>
       <a href="../articles/data_transform.html">Data Transformation</a>
     </li>
     <li>
@@ -119,31 +122,25 @@
 </script><div id="ibrap-requirements" class="section level2">
 <h2 class="hasAnchor">
 <a href="#ibrap-requirements" class="anchor" aria-hidden="true"></a>IBRAP requirements</h2>
-<p>IBRAP requires R version &gt;=4.0.4 to function. We also provide decontX which is contained within the celda package. However, an issue for celda is that it requires ImageMagick which is known to be problematic in a HPC environment. Thus, we have developed two installations: one with celda and one without. You can attempt the installation containing the celda package and if you encounter issues you can debug them. If you do not require decontX or are unable to debug the installation you may use our without celda installatiion.</p>
-<p>We have developed a separate tutorial with a few common issues encountered in hpc environment here.</p>
+<p>IBRAP requires R version &gt;=4.0.4 to function.</p>
 </div>
-<div id="with-celda-package" class="section level2">
+<div id="installing-ibrap" class="section level2">
 <h2 class="hasAnchor">
-<a href="#with-celda-package" class="anchor" aria-hidden="true"></a>With celda package</h2>
+<a href="#installing-ibrap" class="anchor" aria-hidden="true"></a>Installing IBRAP</h2>
+<p>IBRAP installation and its dependencies is fully automated and can be performed using the following command:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">'devtools'</span><span class="op">)</span>
 <span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/devtools/man/remote-reexports.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">'connorhknight/IBRAP'</span><span class="op">)</span></code></pre></div>
-</div>
-<div id="without-celda-package" class="section level2">
-<h2 class="hasAnchor">
-<a href="#without-celda-package" class="anchor" aria-hidden="true"></a>Without celda package</h2>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">'devtools'</span><span class="op">)</span>
-<span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/devtools/man/remote-reexports.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">'connorhknight/IBRAP_no_decontX'</span><span class="op">)</span></code></pre></div>
+<p>Once installed we must prepare our reticulate environment which enables us to access python.</p>
 </div>
 <div id="preparing-reticulate" class="section level2">
 <h2 class="hasAnchor">
 <a href="#preparing-reticulate" class="anchor" aria-hidden="true"></a>Preparing reticulate</h2>
 <p>IBRAP not only uses packages within R, but also through python. For this, we use reticulate to interface python into the R environment. To setup reticulate we must start by installing miniconda:</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu">reticulate</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/reticulate/man/install_miniconda.html" class="external-link">install_miniconda</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <p>Once miniconda is installed it will produce an environment called r-reticulate. Next, we must assure the correct packages are installed within the new environment:</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="../reference/prepare.reticulate.html">prepare.reticulate</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <p>Once this has been completed, you are ready to use IBRAP! For a basic understand of a single sample workflow please use the <a href="https://connorhknight.github.io/IBRAP/articles/using_IBRAP.html" class="external-link">getting started</a> tutorial. For multi-sample analysis, you can divert to the <a href="https://connorhknight.github.io/IBRAP/articles/integration.html" class="external-link">integration</a> tutorial.</p>
 <p>Good luck!</p>

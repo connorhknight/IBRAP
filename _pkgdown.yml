@@ -25,6 +25,8 @@ navbar:
         href: articles/trajectory.html
       - text: Automated Annotation
         href: articles/singleR_annotation.html
+      - text: decontX
+        href: articles/decontX.html
       - text: Data Transformation
         href: articles/data_transform.html
       - text: Clustering Methods
@@ -139,3 +141,4 @@ articles:
   - '`trajectory`'
   - '`singleR_annotation`'
   - '`HPC_issues`'
+  - '`decontX`'

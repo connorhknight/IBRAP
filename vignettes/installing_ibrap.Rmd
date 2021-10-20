@@ -24,11 +24,10 @@ klippy::klippy(tooltip_message = 'Click to copy', tooltip_success = 'Done', posi
 ## IBRAP requirements
 
 IBRAP requires R version >=4.0.4 to function.
-We also provide decontX which is contained within the celda package. However, an issue for celda is that it requires ImageMagick which is known to be problematic in a HPC environment. Thus, we have developed two installations: one with celda and one without. You can attempt the installation containing the celda package and if you encounter issues you can debug them. If you do not require decontX or are unable to debug the installation you may use our without celda installatiion. 
 
-We have developed a separate tutorial with a few common issues encountered in hpc environment here. 
+## Installing IBRAP
 
-## With celda package
+IBRAP installation and its dependencies is fully automated and can be performed using the following command:
 
 ```{r, eval=F, echo=T}
 install.packages('devtools')
@@ -36,13 +35,7 @@ devtools::install_github('connorhknight/IBRAP')
 
 ```
 
-## Without celda package
-
-```{r, eval=F, echo=T}
-install.packages('devtools')
-devtools::install_github('connorhknight/IBRAP_no_decontX')
-
-```
+Once installed we must prepare our reticulate environment which enables us to access python. 
 
 ## Preparing reticulate
 
