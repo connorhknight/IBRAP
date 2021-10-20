@@ -9,6 +9,8 @@ Description: This package integrates numerous leading scRNA-seq analytical compo
     you can stick to one pipeline. If numerous have been generated, benchmarking
     metrices can be applied to ascertain which pipeline performed best. A tutorial
     on how to use IBRAP can be found at: https://github.com/connorhknight/IBRAP
+Depends:
+    R (>= 4.0.4)
 Authors@R: c(
     person("Connor", "Knight", ,"connorhknight@gmail.co.uk", 
     role = c("aut", "cre"),
@@ -19,6 +21,7 @@ Authors@R: c(
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.1.1
+biocViews:
 Imports: 
     crayon (>= 1.4.1),
     Seurat (>= 4.0.3),
