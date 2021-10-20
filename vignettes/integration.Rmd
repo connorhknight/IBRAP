@@ -59,7 +59,7 @@ smartseq2 <- createIBRAPobject(counts = smartseq2,
 
 ## Merging IBRAP objects
 
-Datasets are then merged together. WARNING: Datasets can only be merged straight after their cvreation with no downstream results.
+Datasets are then merged together. WARNING: Datasets can only be merged straight after their creation with no downstream results.
 
 ```{r, eval=F, echo=T}
 
@@ -137,7 +137,7 @@ We have included 4 integration techniques:
  
 Lets begin the integration techniques
 
-## Integration Application $ Visualisaiton
+## Integration Application & Visualisaiton
 
 ```{r, eval=F, echo=T}
 
@@ -290,6 +290,10 @@ pancreas <- benchmark.intergation(object = pancreas,
                                                 'scanorama_umap', 'pca_bbknn_bbknn:umap', 'seurat_umap'), 
                                   result.names = c('uncorrected', 'harmony', 'scanorama', 'bbknn', 'seurat'), 
                                   n.components = 2)
+
+# we can plot the results with the following command
+
+plot.integration.benchmarking(object = pancreas, assay = c('SCT','SCRAN','SCANPY'))
 
 ```
 
