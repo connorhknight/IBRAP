@@ -23,7 +23,7 @@ klippy::klippy(tooltip_message = 'Click to copy', tooltip_success = 'Done', posi
 
 ## IBRAP requirements
 
-IBRAP requires R version >=4.0.4 to function.
+IBRAP requires R version >=4.0.0 to function.
 
 ## Installing IBRAP
 
