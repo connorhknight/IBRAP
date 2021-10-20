@@ -6,11 +6,10 @@ articles:
   application: application.html
   clustering_method: clustering_method.html
   data_transform: data_transform.html
-  decontX: decontX.html
   installing_ibrap: installing_ibrap.html
   integration: integration.html
   singleR_annotation: singleR_annotation.html
   trajectory: trajectory.html
   using_IBRAP: using_IBRAP.html
-last_built: 2021-10-20T17:27Z
+last_built: 2021-10-20T17:59Z
 

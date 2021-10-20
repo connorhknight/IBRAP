@@ -36,11 +36,11 @@ bmmc <- readRDS(file.choose())
   
 ```
 
-## Section 1: Cleaning droplet-based datasdets
+## Section 1: Cleaning droplet-based datasets
 
 ### Section 1.1: Applying the functions
 
-Droplet-based datasets typically contain multiples (dorplets that contain two or more cells. To circumvent this, we included Scrublet. This can be performed using the following command:
+Droplet-based datasets present unique confounding effects, including: doublets and ambient RNA contamination. To remove them we have enlisted scrublet and decontX, respectively. Thus far, there is no consensus on the order of application. However, we prefer scrublet followed by decontX. 
 
 ```{r, eval=F, echo=T}
 
@@ -48,9 +48,16 @@ Droplet-based datasets typically contain multiples (dorplets that contain two or
 
 bmmc <- perform.scrublet(counts = bmmc)
 
-```
+NOTE: We have also included a function (perform.decontX) 
+to perform ambient RNA decontamination. However, you need to 
+install package: celda Please see the link 
+(https://github.com/campbio/celda) for installation instruction. 
+In most cases, you do not need to perform this function unless 
+your data suffers from ambient RNA contamination
 
-We have also included a function that adopts decontX which allows users to identify ambient RNA and in droplets and to remove it. However this is not installed automatically and requires the use of the [decontX](https://connorhknight.github.io/IBRAP/) tutorial to use it. 
+bmmc <- perform.decontX(counts = bmmc)
+
+```
 
 ### Section 1.2: Explaining the results
 
@@ -61,6 +68,14 @@ knitr::include_graphics(path = 'scrublet_plot.png')
 ```
 
 Scrublet functions by simulating multiplets from out datasets (by integrating similar cells); we can see these simulated cells with high doublet scores. For this example, we can see a minimal number of cells in our observed cells with high doublet scores. Cells that are above a certain doublet score threshold are omitted from the dataset. 
+
+```{r, echo=FALSE, out.width="150%", out.height="150%"}
+
+knitr::include_graphics(path = 'decontX.png')
+
+```
+
+DecontX creates a umap projection of samples and colours them according the amount of contamination presented within a cell. In this sample, we observe minimal contaminaton. WARNING: DecontX should only be used if you expect ambient RNA otherwise it can drastically affect downstream results. 
 
 Now that we have removed these confounding effects from our dataset we can move on with our analysis. 
 
@@ -79,21 +94,21 @@ bmmc <- createIBRAPobject(counts = bmmc,
                           
 ```
 
-This produces an S4 class object that initially contains sample metadata and a raw method assay contained in object@methods. A couple of important steps happen here: metadata, including: total counts and total genes per cell are stored in object@sample_metadata, and some initial filtering of the count matrix happens. In this case, we removed any genes that are not present in at least 3 cells and removed cells with less than 200 genes We performed the latter as to remove any droplets that are empty and do not contain true cells. 
+This produces an S4 class object that initially contains sample metadata and a raw method assay contained in object@methods. A couple of important steps happen here: metadata, including: total counts and total genes per cell are stored in object@sample_metadata, and some initial filtering of the count matrix happens. In this case, we removed any genes that are not present in at least 3 cells and removed cells with less than 200 genes, We performed the latter as to remove any droplets that are empty and do not contain true cells. 
 
 ## Section 3: Quality Control
 
-### Section 3.1: Metrices
+### Section 3.1: Metrics
 
 Next, we must assess the quality of our datasets, if you wish to read in-depth about Quality Control (QC) then please refer to this [publication](https://www.embopress.org/doi/full/10.15252/msb.20188746). In summary, we use the following metrices to QC our data: 
 
 ```{r table1, echo=FALSE, message=FALSE, warnings=FALSE, results='asis'}
-df <- data.frame(`QC Metric` = c('Mitochondrial Fraction', 'Total RNA', 'Total Genes'), Description = c('An abnormally high mitochondrail fraction indicates improper wet lab preparation', 'A difference in count value can affect downstream processes and requires normalising downstream', 'Low gene presence indicates droplets containing no cells whereas, disproportionately high number of genes indicates a droplet containing more than one cell'))
+df <- data.frame(`QC Metric` = c('Mitochondrial Fraction', 'Total RNA', 'Total Genes'), Description = c('An abnormally high mitochondrial fraction indicates improper wet lab preparation', 'A difference in count value can affect downstream processes and requires normalising downstream', 'Low gene presence indicates droplets containing no cells whereas, disproportionately high number of genes indicates a droplet containing more than one cell'))
 
 knitr::kable(df)
 ```
 
-As previously mentioned we already generated total count and total genes whilst creating our ibrap object. However, percentage mitochondrial genes requires a second function since mitochondrial genes have a varying prefix in datasets:
+As previously mentioned we already generated total count and total genes whilst creating our IBRAP object. However, percentage mitochondrial genes requires a second function since mitochondrial genes have a varying prefix in datasets:
 
 ```{r, eval=F, echo=T}
 
@@ -108,7 +123,7 @@ These fraction results will be saved under object@sample_metadata alongside tota
 
 ### Section 3.2: Visualisation
 
-Visualising this information is important for high dimensional data. Thus, we can achieve this in two ways: using violin plots or comparing two metrices with scatter plots.
+Visualising this information is important for high dimensional data. Thus, we can achieve this in two ways: using violin plots or comparing two metrics with scatter plots.
 
 ```{r, eval=F, echo=T}
 
@@ -119,7 +134,7 @@ plot.QC.vln(object = bmmc,
                                  
 ```
 
-The violin plot is split into its metrices and displays the volume of cells expressing the value on the y axis. 
+The violin plot is split into its metrics and displays the volume of cells expressing the value on the y-axis. 
 
 ```{r, echo=FALSE, out.width="150%", out.height="150%"}
 
@@ -127,7 +142,7 @@ knitr::include_graphics(path = 'vln_qc_pre.png')
 
 ```
 
-Scatter plots enable us to observe correlations between metrices, i.e. the higher the amount of features in a cell the higher the number of counts there should be. 
+Scatter plots enable us to observe correlations between metrics, i.e. the higher the amount of features in a cell the higher the number of counts there should be. 
 
 ```{r, eval=F, echo=T}
 
@@ -149,7 +164,7 @@ Now that we have eye-balled our data we can proceed to filtration.
 
 ### Section 3.3: Filtration
 
-We clean our data further by applyng filtration cut-offs. We remove cells with a high number of features since this will remove any doublets that were missed by scrublet (two cells in a droplet will display a disproportionately higher number of features). Then, we remove cells with a certain fraction of mitochondrial counts, we do this to remove cells with damaged mitochondria during the preparation process. 
+We clean our data further by applyng filtration cut-offs. We remove cells with a high number of features since this will remove any doublets that were missed by scrublet (two cells in a droplet will display a disproportionately higher number of features). Then, we remove cells with a certain fraction of mitochondrial counts - we do this to remove cells with damaged cell membrane. The percentage cut-off for mitochondrial genes is set at a case-by-case basis and no single value is applicable to all samples. 
 
 ```{r, eval=F, echo=T}
 
@@ -179,7 +194,7 @@ bmmc <- perform.scanpy(object = bmmc,
 
 ```
 
-For these methods, we transformed our raw counts, and regressed some QC metrices from our datasets to not allow them to affect our downstream analyses. There are some notable differences here. For example, SCT automatically regresses RAW_total.counts so we do not need to specify this however, the others you do. These parameters are set as default, any deviation from these is at your own risk since they could produce incorrect results. Nonetheless, feel free to play around and observe the difference. 
+For these methods, we transformed our raw counts, and regressed some QC metrics from our datasets to not allow them to confound our downstream analyses. There are some notable differences here. For example, SCT automatically regresses RAW_total.counts so we do not need to specify this however, the others you do. These parameters are set as default, any deviation from these is at your own risk since they could produce incorrect results. Nonetheless, feel free to play around and observe the difference. 
 
 ### Section 4.2: How Functions Work Downstream
 
@@ -191,7 +206,7 @@ Since IBRAP incorporated multiple pipelines some pipelines begin to vary at this
 
 ## Section 5: Removing Certain Highly Variable Genes
 
-In some instances, certain genes require omission from the highly varaible genes. This can be achieved with the following function: 
+In some instances, certain genes require omission from the highly variable genes. This can be achieved with the following function: 
 
 ```{r, eval=F, echo=T}
 
@@ -206,7 +221,7 @@ bmmc <- remove.hvgs(object = bmmc, assay = c('SCT', 'SCRAN', 'SCANPY'),
 
 ### Section 6.1: Principal Component Analysis
 
-Now that our data has been appropriately transformed and highly varaible genes have been identified we can reduce the number of dimensions using Principal Component Analysis (PCA). Reduction methods summarise as much information from the higher dimensions into lower dimensions as possible. Therefore, these lower dimensions facilitate a faster computing time and require less computational resources. 
+Now that our data has been appropriately transformed and highly variable genes have been identified we can reduce the number of dimensions using Principal Component Analysis (PCA). Reduction methods summarise as much information from the higher dimensions into lower dimensions as possible. Therefore, these lower dimensions facilitate a faster computing time and require less computational resources. 
 
 ```{r, eval=F, echo=T}
 

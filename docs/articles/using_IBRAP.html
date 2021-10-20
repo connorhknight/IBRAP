@@ -75,9 +75,6 @@
       <a href="../articles/singleR_annotation.html">Automated Annotation</a>
     </li>
     <li>
-      <a href="../articles/decontX.html">decontX</a>
-    </li>
-    <li>
       <a href="../articles/data_transform.html">Data Transformation</a>
     </li>
     <li>
@@ -128,25 +125,34 @@
 <code class="sourceCode R">
 <span class="va">bmmc</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.choose.html" class="external-link">file.choose</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
   </code></pre></div>
-<div id="section-1-cleaning-droplet-based-datasdets" class="section level2">
+<div id="section-1-cleaning-droplet-based-datasets" class="section level2">
 <h2 class="hasAnchor">
-<a href="#section-1-cleaning-droplet-based-datasdets" class="anchor" aria-hidden="true"></a>Section 1: Cleaning droplet-based datasdets</h2>
+<a href="#section-1-cleaning-droplet-based-datasets" class="anchor" aria-hidden="true"></a>Section 1: Cleaning droplet-based datasets</h2>
 <div id="section-1-1-applying-the-functions" class="section level3">
 <h3 class="hasAnchor">
 <a href="#section-1-1-applying-the-functions" class="anchor" aria-hidden="true"></a>Section 1.1: Applying the functions</h3>
-<p>Droplet-based datasets typically contain multiples (dorplets that contain two or more cells. To circumvent this, we included Scrublet. This can be performed using the following command:</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R">
-<span class="co"># We simply supply our generated count matrix to both functions</span>
-
-<span class="va">bmmc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/perform.scrublet.html">perform.scrublet</a></span><span class="op">(</span>counts <span class="op">=</span> <span class="va">bmmc</span><span class="op">)</span></code></pre></div>
-<p>We have also included a function that adopts decontX which allows users to identify ambient RNA and in droplets and to remove it. However this is not installed automatically and requires the use of the <a href="https://connorhknight.github.io/IBRAP/" class="external-link">decontX</a> tutorial to use it.</p>
+<p>Droplet-based datasets present unique confounding effects, including: doublets and ambient RNA contamination. To remove them we have enlisted scrublet and decontX, respectively. Thus far, there is no consensus on the order of application. However, we prefer scrublet followed by decontX.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co"># We simply supply our generated count matrix to both functions</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>bmmc <span class="ot">&lt;-</span> <span class="fu">perform.scrublet</span>(<span class="at">counts =</span> bmmc)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>NOTE<span class="sc">:</span> We have also included a <span class="cf">function</span> (perform.decontX) </span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>to perform ambient RNA decontamination. However, you need to </span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>install package<span class="sc">:</span> celda Please see the link </span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>(https<span class="sc">:</span><span class="er">//</span>github.com<span class="sc">/</span>campbio<span class="sc">/</span>celda) <span class="cf">for</span> installation instruction. </span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>In most cases, you do not need to perform this <span class="cf">function</span> unless </span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>your data suffers from ambient RNA contamination</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>bmmc <span class="ot">&lt;-</span> <span class="fu">perform.decontX</span>(<span class="at">counts =</span> bmmc)</span></code></pre></div>
 </div>
 <div id="section-1-2-explaining-the-results" class="section level3">
 <h3 class="hasAnchor">
 <a href="#section-1-2-explaining-the-results" class="anchor" aria-hidden="true"></a>Section 1.2: Explaining the results</h3>
 <p><img src="scrublet_plot.png" width="150%" height="150%"></p>
 <p>Scrublet functions by simulating multiplets from out datasets (by integrating similar cells); we can see these simulated cells with high doublet scores. For this example, we can see a minimal number of cells in our observed cells with high doublet scores. Cells that are above a certain doublet score threshold are omitted from the dataset.</p>
+<p><img src="decontX.png" width="150%" height="150%"></p>
+<p>DecontX creates a umap projection of samples and colours them according the amount of contamination presented within a cell. In this sample, we observe minimal contaminaton. WARNING: DecontX should only be used if you expect ambient RNA otherwise it can drastically affect downstream results.</p>
 <p>Now that we have removed these confounding effects from our dataset we can move on with our analysis.</p>
 </div>
 </div>
@@ -163,14 +169,14 @@
                           min.cells <span class="op">=</span> <span class="fl">3</span>,
                           min.features <span class="op">=</span> <span class="fl">200</span><span class="op">)</span>
                           </code></pre></div>
-<p>This produces an S4 class object that initially contains sample metadata and a raw method assay contained in <a href="mailto:object@methods" class="email">object@methods</a>. A couple of important steps happen here: metadata, including: total counts and total genes per cell are stored in <a href="mailto:object@sample" class="email">object@sample</a>_metadata, and some initial filtering of the count matrix happens. In this case, we removed any genes that are not present in at least 3 cells and removed cells with less than 200 genes We performed the latter as to remove any droplets that are empty and do not contain true cells.</p>
+<p>This produces an S4 class object that initially contains sample metadata and a raw method assay contained in <a href="mailto:object@methods" class="email">object@methods</a>. A couple of important steps happen here: metadata, including: total counts and total genes per cell are stored in <a href="mailto:object@sample" class="email">object@sample</a>_metadata, and some initial filtering of the count matrix happens. In this case, we removed any genes that are not present in at least 3 cells and removed cells with less than 200 genes, We performed the latter as to remove any droplets that are empty and do not contain true cells.</p>
 </div>
 <div id="section-3-quality-control" class="section level2">
 <h2 class="hasAnchor">
 <a href="#section-3-quality-control" class="anchor" aria-hidden="true"></a>Section 3: Quality Control</h2>
-<div id="section-3-1-metrices" class="section level3">
+<div id="section-3-1-metrics" class="section level3">
 <h3 class="hasAnchor">
-<a href="#section-3-1-metrices" class="anchor" aria-hidden="true"></a>Section 3.1: Metrices</h3>
+<a href="#section-3-1-metrics" class="anchor" aria-hidden="true"></a>Section 3.1: Metrics</h3>
 <p>Next, we must assess the quality of our datasets, if you wish to read in-depth about Quality Control (QC) then please refer to this <a href="https://www.embopress.org/doi/full/10.15252/msb.20188746" class="external-link">publication</a>. In summary, we use the following metrices to QC our data:</p>
 <table class="table">
 <colgroup>
@@ -184,7 +190,7 @@
 <tbody>
 <tr class="odd">
 <td align="left">Mitochondrial Fraction</td>
-<td align="left">An abnormally high mitochondrail fraction indicates improper wet lab preparation</td>
+<td align="left">An abnormally high mitochondrial fraction indicates improper wet lab preparation</td>
 </tr>
 <tr class="even">
 <td align="left">Total RNA</td>
@@ -196,7 +202,7 @@
 </tr>
 </tbody>
 </table>
-<p>As previously mentioned we already generated total count and total genes whilst creating our ibrap object. However, percentage mitochondrial genes requires a second function since mitochondrial genes have a varying prefix in datasets:</p>
+<p>As previously mentioned we already generated total count and total genes whilst creating our IBRAP object. However, percentage mitochondrial genes requires a second function since mitochondrial genes have a varying prefix in datasets:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R">
 <span class="va">bmmc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/find_percentage_genes.html">find_percentage_genes</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">bmmc</span>, pattern <span class="op">=</span> <span class="st">'^MT-'</span>,
@@ -209,7 +215,7 @@
 <div id="section-3-2-visualisation" class="section level3">
 <h3 class="hasAnchor">
 <a href="#section-3-2-visualisation" class="anchor" aria-hidden="true"></a>Section 3.2: Visualisation</h3>
-<p>Visualising this information is important for high dimensional data. Thus, we can achieve this in two ways: using violin plots or comparing two metrices with scatter plots.</p>
+<p>Visualising this information is important for high dimensional data. Thus, we can achieve this in two ways: using violin plots or comparing two metrics with scatter plots.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R">
 <span class="fu"><a href="../reference/plot.QC.vln.html">plot.QC.vln</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">bmmc</span>, 
@@ -217,9 +223,9 @@
                                  <span class="st">'RAW_total.counts'</span>, 
                                  <span class="st">'RAW_percent.mt'</span><span class="op">)</span><span class="op">)</span>
                                  </code></pre></div>
-<p>The violin plot is split into its metrices and displays the volume of cells expressing the value on the y axis.</p>
+<p>The violin plot is split into its metrics and displays the volume of cells expressing the value on the y-axis.</p>
 <p><img src="vln_qc_pre.png" width="150%" height="150%"></p>
-<p>Scatter plots enable us to observe correlations between metrices, i.e. the higher the amount of features in a cell the higher the number of counts there should be.</p>
+<p>Scatter plots enable us to observe correlations between metrics, i.e. the higher the amount of features in a cell the higher the number of counts there should be.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R">
 <span class="fu">plot.qc.scatter</span><span class="op">(</span>object <span class="op">=</span> <span class="va">bmmc</span>, 
@@ -233,7 +239,7 @@
 <div id="section-3-3-filtration" class="section level3">
 <h3 class="hasAnchor">
 <a href="#section-3-3-filtration" class="anchor" aria-hidden="true"></a>Section 3.3: Filtration</h3>
-<p>We clean our data further by applyng filtration cut-offs. We remove cells with a high number of features since this will remove any doublets that were missed by scrublet (two cells in a droplet will display a disproportionately higher number of features). Then, we remove cells with a certain fraction of mitochondrial counts, we do this to remove cells with damaged mitochondria during the preparation process.</p>
+<p>We clean our data further by applyng filtration cut-offs. We remove cells with a high number of features since this will remove any doublets that were missed by scrublet (two cells in a droplet will display a disproportionately higher number of features). Then, we remove cells with a certain fraction of mitochondrial counts - we do this to remove cells with damaged cell membrane. The percentage cut-off for mitochondrial genes is set at a case-by-case basis and no single value is applicable to all samples.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R">
 <span class="va">bmmc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/filter_IBRAP.html">filter_IBRAP</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">bmmc</span>, <span class="va">RAW_total.features</span> <span class="op">&lt;</span> <span class="fl">3000</span> <span class="op">&amp;</span> <span class="va">RAW_percent.mt</span> <span class="op">&lt;</span> <span class="fl">8</span><span class="op">)</span></code></pre></div>
@@ -258,7 +264,7 @@
 <span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>bmmc <span class="ot">&lt;-</span> <span class="fu">perform.scanpy</span>(<span class="at">object =</span> bmmc, </span>
 <span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>                       <span class="at">vars.to.regress =</span> <span class="fu">c</span>(<span class="st">'RAW_percent.mt'</span> <span class="st">'RAW_total.counts'</span>))</span></code></pre></div>
-<p>For these methods, we transformed our raw counts, and regressed some QC metrices from our datasets to not allow them to affect our downstream analyses. There are some notable differences here. For example, SCT automatically regresses RAW_total.counts so we do not need to specify this however, the others you do. These parameters are set as default, any deviation from these is at your own risk since they could produce incorrect results. Nonetheless, feel free to play around and observe the difference.</p>
+<p>For these methods, we transformed our raw counts, and regressed some QC metrics from our datasets to not allow them to confound our downstream analyses. There are some notable differences here. For example, SCT automatically regresses RAW_total.counts so we do not need to specify this however, the others you do. These parameters are set as default, any deviation from these is at your own risk since they could produce incorrect results. Nonetheless, feel free to play around and observe the difference.</p>
 </div>
 <div id="section-4-2-how-functions-work-downstream" class="section level3">
 <h3 class="hasAnchor">
@@ -274,7 +280,7 @@
 <div id="section-5-removing-certain-highly-variable-genes" class="section level2">
 <h2 class="hasAnchor">
 <a href="#section-5-removing-certain-highly-variable-genes" class="anchor" aria-hidden="true"></a>Section 5: Removing Certain Highly Variable Genes</h2>
-<p>In some instances, certain genes require omission from the highly varaible genes. This can be achieved with the following function:</p>
+<p>In some instances, certain genes require omission from the highly variable genes. This can be achieved with the following function:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R">
 <span class="co"># This function finds all ribosomal genes and removes them from the HVG list of the three assays</span>
@@ -288,7 +294,7 @@
 <div id="section-6-1-principal-component-analysis" class="section level3">
 <h3 class="hasAnchor">
 <a href="#section-6-1-principal-component-analysis" class="anchor" aria-hidden="true"></a>Section 6.1: Principal Component Analysis</h3>
-<p>Now that our data has been appropriately transformed and highly varaible genes have been identified we can reduce the number of dimensions using Principal Component Analysis (PCA). Reduction methods summarise as much information from the higher dimensions into lower dimensions as possible. Therefore, these lower dimensions facilitate a faster computing time and require less computational resources.</p>
+<p>Now that our data has been appropriately transformed and highly variable genes have been identified we can reduce the number of dimensions using Principal Component Analysis (PCA). Reduction methods summarise as much information from the higher dimensions into lower dimensions as possible. Therefore, these lower dimensions facilitate a faster computing time and require less computational resources.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R">
 <span class="va">bmmc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/perform.pca.html">perform.pca</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">bmmc</span>, 

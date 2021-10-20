@@ -75,9 +75,6 @@
       <a href="../articles/singleR_annotation.html">Automated Annotation</a>
     </li>
     <li>
-      <a href="../articles/decontX.html">decontX</a>
-    </li>
-    <li>
       <a href="../articles/data_transform.html">Data Transformation</a>
     </li>
     <li>
@@ -131,11 +128,7 @@
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">'devtools'</span><span class="op">)</span>
 <span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/devtools/man/remote-reexports.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">'connorhknight/IBRAP'</span><span class="op">)</span></code></pre></div>
-<p>Once installed we must prepare our reticulate environment which enables us to access python.</p>
-</div>
-<div id="preparing-reticulate" class="section level2">
-<h2 class="hasAnchor">
-<a href="#preparing-reticulate" class="anchor" aria-hidden="true"></a>Preparing reticulate</h2>
+<p>Once installed we must prepare our reticulate environment which enables us to access python. ## Preparing reticulate</p>
 <p>IBRAP not only uses packages within R, but also through python. For this, we use reticulate to interface python into the R environment. To setup reticulate we must start by installing miniconda:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu">reticulate</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/reticulate/man/install_miniconda.html" class="external-link">install_miniconda</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>

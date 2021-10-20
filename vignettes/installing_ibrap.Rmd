@@ -36,7 +36,6 @@ devtools::install_github('connorhknight/IBRAP')
 ```
 
 Once installed we must prepare our reticulate environment which enables us to access python. 
-
 ## Preparing reticulate
 
 IBRAP not only uses packages within R, but also through python. For this, we use reticulate to interface python into the R environment. To setup reticulate we must start by installing miniconda:
