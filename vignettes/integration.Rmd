@@ -80,10 +80,10 @@ pancreas <- perform.sct(object = pancreas,
 pancreas <- perform.scran(object = pancreas, 
                           assay = 'RAW', 
                           slot = 'counts', 
-                          vars.to.regress = 'RAW_total.counts', do.scale = T)
+                          vars.to.regress = 'RAW_total.counts')
 
 pancreas <- perform.scanpy(object = pancreas, 
-                           vars.to.regress = 'RAW_total.counts', do.scale = T)
+                           vars.to.regress = 'RAW_total.counts')
 
 pancreas <- perform.pca(object = pancreas, 
                         assay = c('SCT', 'SCRAN', 'SCANPY'), 
@@ -93,7 +93,7 @@ pancreas <- perform.umap(object = pancreas,
                          assay = c('SCT', 'SCRAN', 'SCANPY'), 
                          reduction = c('pca'), 
                          n_components = 2, 
-                         n.dims = list(1:10))
+                         n.dims = list(10))
 
 plot1 <- plot.reduced.dim(object = pancreas, reduction = 'pca_umap', assay = 'SCT',
                           clust.method = 'metadata', column = 'original.project', pt.size = 0.1) + 
@@ -192,7 +192,7 @@ pancreas <- perform.umap(object = pancreas,
                          assay = c('SCT', 'SCRAN', 'SCANPY'), 
                          reduction = c('pca_harmony', 'scanorama', 'seurat'), 
                          n_components = 2, 
-                         n.dims = list(50, 50, 50))
+                         n.dims = list(50, 50, 10))
 
 pancreas <- perform.umap(object = pancreas, assay = c('SCT', 'SCRAN', 'SCANPY'), graph = 'pca_bbknn_bbknn')
 
@@ -204,62 +204,62 @@ We nex created UAMP reduced embeddings from the previously generated corrected r
 
 plot.list <- list()
 
-plot.list[[1]] <- plot.reduced.dim(object = object.tmp, reduction = 'pca_harmony_umap', assay = 'SCT',
+plot.list[[1]] <- plot.reduced.dim(object = pancreas, reduction = 'pca_harmony_umap', assay = 'SCT',
                                    clust.method = 'metadata', column = 'original.project', pt.size = 0.1) + 
   ggplot2::ggtitle('SCT_harmony') + 
   ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5))
 
-plot.list[[2]] <- plot.reduced.dim(object = object.tmp, reduction = 'pca_harmony_umap', assay = 'SCRAN',
+plot.list[[2]] <- plot.reduced.dim(object = pancreas, reduction = 'pca_harmony_umap', assay = 'SCRAN',
                                    clust.method = 'metadata', column = 'original.project', pt.size = 0.1) + 
   ggplot2::ggtitle('SCRAN_harmony') + 
   ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5))
 
-plot.list[[3]] <- plot.reduced.dim(object = object.tmp, reduction = 'pca_harmony_umap', assay = 'SCANPY',
+plot.list[[3]] <- plot.reduced.dim(object = pancreas, reduction = 'pca_harmony_umap', assay = 'SCANPY',
                                    clust.method = 'metadata', column = 'original.project', pt.size = 0.1) + 
   ggplot2::ggtitle('SCANPY_harmony') + 
   ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5))
 
-plot.list[[4]] <- plot.reduced.dim(object = object.tmp, reduction = 'scanorama_umap', assay = 'SCT',
+plot.list[[4]] <- plot.reduced.dim(object = pancreas, reduction = 'scanorama_umap', assay = 'SCT',
                                    clust.method = 'metadata', column = 'original.project', pt.size = 0.1) + 
   ggplot2::ggtitle('SCT_harmony') + 
   ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5))
 
-plot.list[[5]] <- plot.reduced.dim(object = object.tmp, reduction = 'scanorama_umap', assay = 'SCRAN',
+plot.list[[5]] <- plot.reduced.dim(object = pancreas, reduction = 'scanorama_umap', assay = 'SCRAN',
                                    clust.method = 'metadata', column = 'original.project', pt.size = 0.1) + 
   ggplot2::ggtitle('SCRAN_harmony') + 
   ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5))
 
-plot.list[[6]] <- plot.reduced.dim(object = object.tmp, reduction = 'scanorama_umap', assay = 'SCANPY',
+plot.list[[6]] <- plot.reduced.dim(object = pancreas, reduction = 'scanorama_umap', assay = 'SCANPY',
                                    clust.method = 'metadata', column = 'original.project', pt.size = 0.1) + 
   ggplot2::ggtitle('SCANPY_harmony') + 
   ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5))
 
-plot.list[[7]] <- plot.reduced.dim(object = object.tmp, reduction = 'pca_bbknn_bbknn:umap', assay = 'SCT',
+plot.list[[7]] <- plot.reduced.dim(object = pancreas, reduction = 'pca_bbknn_bbknn:umap', assay = 'SCT',
                                    clust.method = 'metadata', column = 'original.project', pt.size = 0.1) + 
   ggplot2::ggtitle('SCT_bbknn') + 
   ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5))
 
-plot.list[[8]] <- plot.reduced.dim(object = object.tmp, reduction = 'pca_bbknn_bbknn:umap', assay = 'SCRAN',
+plot.list[[8]] <- plot.reduced.dim(object = pancreas, reduction = 'pca_bbknn_bbknn:umap', assay = 'SCRAN',
                                    clust.method = 'metadata', column = 'original.project', pt.size = 0.1) + 
   ggplot2::ggtitle('SCRAN_bbknn') + 
   ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5))
 
-plot.list[[9]] <- plot.reduced.dim(object = object.tmp, reduction = 'pca_bbknn_bbknn:umap', assay = 'SCANPY',
+plot.list[[9]] <- plot.reduced.dim(object = pancreas, reduction = 'pca_bbknn_bbknn:umap', assay = 'SCANPY',
                                    clust.method = 'metadata', column = 'original.project', pt.size = 0.1) + 
   ggplot2::ggtitle('SCANPY_bbknn') + 
   ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5))
 
-plot.list[[10]] <- plot.reduced.dim(object = object.tmp, reduction = 'CCA_pca_umap', assay = 'SCT',
+plot.list[[10]] <- plot.reduced.dim(object = pancreas, reduction = 'seurat_umap', assay = 'SCT',
                                    clust.method = 'metadata', column = 'original.project', pt.size = 0.1) + 
   ggplot2::ggtitle('SCT_cca') + 
   ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5))
 
-plot.list[[11]] <- plot.reduced.dim(object = object.tmp, reduction = 'CCA_pca_umap', assay = 'SCRAN',
+plot.list[[11]] <- plot.reduced.dim(object = pancreas, reduction = 'seurat_umap', assay = 'SCRAN',
                                     clust.method = 'metadata', column = 'original.project', pt.size = 0.1) + 
   ggplot2::ggtitle('SCRAN_cca') + 
   ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5))
 
-plot.list[[12]] <- plot.reduced.dim(object = object.tmp, reduction = 'CCA_pca_umap', assay = 'SCANPY',
+plot.list[[12]] <- plot.reduced.dim(object = pancreas, reduction = 'seurat_umap', assay = 'SCANPY',
                                     clust.method = 'metadata', column = 'original.project', pt.size = 0.1) + 
   ggplot2::ggtitle('SCANPY_cca') + 
   ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5))
@@ -315,18 +315,35 @@ We can visualise the results using our plot.reduced.dim function.
 
 ```{r, eval=F, echo=T}
 
-plot.reduced.dim(object = pancreas, reduction = 'pca_harmony_umap', assay = 'SCT',
+plot.reduced.dim(object = pancreas, reduction = 'pca_harmony_umap', assay = 'SCRAN',
                                    clust.method = 'metadata', column = 'celltype', pt.size = 0.1)
 
 ```
 
 ```{r, echo=FALSE, out.width="150%", out.height="150%"}
 
-knitr::include_graphics(path = 'celltype_labels.png')
+knitr::include_graphics(path = 'integrated_labels.png')
 
 ```
 
-As we can see, SCTransform with harmony integration led to a well defined separation of cell types. 
+As we can see, SCRAN with seurat integration led to a well defined separation of cell types. To confirm this we can produce feature plots to see how canonical markers were separated from eachother during the analysis. 
+
+```{r, eval=F, echo=T}
+
+plot.features(object = pancreas, assay = c('SCRAN'), slot = 'normalised', reduction = 'seurat_umap', features = c('PPY','GHRL','TPSB2',
+                                                                                                                  'PLVAP','RGS5','CLPS',
+                                                                                                                  'COL1A1','CCL22', 'INS',
+                                                                                                                  'SPP1','NOV','SST','GCG'))
+
+```
+
+```{r, echo=FALSE, out.width="150%", out.height="150%"}
+
+knitr::include_graphics(path = 'integrated_features.png')
+
+```
+
+From these we can gather that the analytical pipeline separated cell type by their canonical markers correctly. We can also confirm this with a differential expression analysis that should identify all the celltypes gene markers. 
 
 ## Differential Expression Analysis 
 
@@ -334,10 +351,10 @@ Differential expression analyses can be perfortmed using the integrated clusteri
 
 ```{r, eval=F, echo=T}
 
-SCT_DE <- perform.diffexp.all(object = pancreas, assay = 'SCT', 
+SCT_DE <- perform.diffexp.all(object = pancreas, assay = 'SCRAN', 
                               test = 'MAST', 
-                              clust.method = 'pca_harmony_nn:umap', 
-                              column = "neighbourhood_graph_res.0.4", 
+                              clust.method = 'metadata', 
+                              column = "celltype", 
                               latent.vars = c('RAW_total.counts', 'original.project'))
 
 ```
