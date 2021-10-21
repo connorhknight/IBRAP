@@ -48,7 +48,7 @@ reticulate::install_miniconda()
 Once miniconda is installed it will produce an environment called r-reticulate. Next, we must assure the correct packages are installed within the new environment:
 
 ```{r, eval=F, echo=T}
-prepare.reticulate()
+IBRAP::prepare.reticulate()
 
 ```
 

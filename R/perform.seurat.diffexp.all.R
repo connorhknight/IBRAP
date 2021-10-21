@@ -81,9 +81,13 @@ perform.diffexp.all <- function(object,
   
   if(!is.null(clust.method)) {
     
-    if(!clust.method %in% names(object@methods[[assay]]@cluster_assignments)) {
+    if(clust.method != 'metadata') {
       
-      stop('clust.method is not present in cluster_assignments \n')
+      if(!clust.method %in% names(object@methods[[assay]]@cluster_assignments)) {
+        
+        stop('clust.method is not present in cluster_assignments \n')
+        
+      }
       
     }
     
@@ -95,9 +99,21 @@ perform.diffexp.all <- function(object,
   
   if(!is.null(column)) {
     
-    if(!column %in% names(object@methods[[assay]]@cluster_assignments[[clust.method]])) {
+    if(clust.method != 'metadata') {
       
-      stop('column is not present in clust.method \n')
+      if(!column %in% names(object@methods[[assay]]@cluster_assignments[[clust.method]])) {
+        
+        stop('column is not present in clust.method \n')
+        
+      } 
+      
+    } else if(clust.method == 'metadata') {
+      
+      if(!column %in% colnames(object@sample_metadata)) {
+        
+        stop('column is not present in metadata \n')
+        
+      }
       
     }
     
@@ -152,9 +168,9 @@ perform.diffexp.all <- function(object,
       seuobj$cluster <- object@methods[[assay]]@cluster_assignments[[clust.method]][,column]
       
     } else if(clust.method == 'metadata') {
-
+      
       seuobj$cluster <- object@sample_metadata[,column]
-
+      
     }
     
     Seurat::Idents(seuobj) <- 'cluster'

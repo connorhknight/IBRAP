@@ -32,6 +32,8 @@ https://www.dropbox.com/s/s126bv59mjnhkre/marrow_A.rds?dl=0
 
 ```{r, eval=F, echo=T}
 
+library(IBRAP)
+
 bmmc <- readRDS(file.choose())
   
 ```
