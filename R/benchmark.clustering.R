@@ -248,14 +248,14 @@ benchmark.clustering <- function(object,
                                paste0(k, '_ARI.results'), 
                                paste0(k, '_NMI.results'))
         
-        object@methods[[l]]@benchmark_results[[k]] <- as.data.frame(results)
+        object@methods[[l]]@benchmark_results[[k]]$clustering <- as.data.frame(results)
         
       } else {
         
         results <- cbind(sil.results, dunn.results, conn.results)
         rownames(results) <- colnames(clusters)
         colnames(results) <- c(paste0(k, '_sil.results'), paste0(k, '_dunn.results'), paste0(k, '_conn.results'))
-        object@methods[[l]]@benchmark_results$clustering[[k]] <- as.data.frame(results)
+        object@methods[[l]]@benchmark_results$clustering[[k]]$clustering <- as.data.frame(results)
         
       }
     }

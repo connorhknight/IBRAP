@@ -137,7 +137,7 @@ perform.sc3.reduction.cluster <- function(object,
       
       red <- reduction.list[[r]]
       
-      dimen <- dims[[count]]
+      dimen <- 1:dims[[count]]
       
       if(is.null(dimen)) {
         
@@ -145,14 +145,26 @@ perform.sc3.reduction.cluster <- function(object,
         
       }
       
+      print(dimen)
+
+      print(t(red)[dimen,])
+      
       temp.2 <- SingleCellExperiment::SingleCellExperiment(list('logcounts' = t(red)[dimen,]))
+      
       SummarizedExperiment::rowData(temp.2)$feature_symbol <- rownames(temp.2)
+ 
       temp.2 <- temp.2[!duplicated(SummarizedExperiment::rowData(temp.2)$feature_symbol), ]
+
       temp.2 <- SC3::sc3_prepare(temp.2, gene_filter = FALSE, n_cores = n.core)
+
       temp.2 <- SC3::sc3_calc_dists(temp.2)
+
       temp.2 <- SC3::sc3_calc_transfs(temp.2)
+
       temp.2 <- SC3::sc3_kmeans(temp.2, ks = ks)
+
       temp.2 <- SC3::sc3_calc_consens(temp.2)
+
       object@methods[[p]]@cluster_assignments[[paste0(r, ':SC3', cluster.df.name.suffix)]] <- as.data.frame(SummarizedExperiment::colData(temp.2))
       cat(crayon::cyan(paste0(Sys.time(), ': SC3 clustering completed\n')))
       count <- count + 1
