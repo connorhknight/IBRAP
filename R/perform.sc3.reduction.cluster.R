@@ -137,11 +137,13 @@ perform.sc3.reduction.cluster <- function(object,
       
       red <- reduction.list[[r]]
       
-      dimen <- 1:dims[[count]]
-      
-      if(is.null(dimen)) {
+      if(is.null(dims[[count]])) {
         
         dimen <- 1:ncol(red)
+        
+      } else {
+        
+        dimen <- 1:dims[[count]]
         
       }
       
