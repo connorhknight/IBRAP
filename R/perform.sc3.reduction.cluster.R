@@ -147,10 +147,6 @@ perform.sc3.reduction.cluster <- function(object,
         
       }
       
-      print(dimen)
-
-      print(t(red)[dimen,])
-      
       temp.2 <- SingleCellExperiment::SingleCellExperiment(list('logcounts' = t(red)[dimen,]))
       
       SummarizedExperiment::rowData(temp.2)$feature_symbol <- rownames(temp.2)
