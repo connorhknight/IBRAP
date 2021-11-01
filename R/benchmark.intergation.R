@@ -158,9 +158,9 @@ benchmark.intergation <- function(object, batch, assays, reduction, result.names
         batch_tmp <- as.numeric(object@sample_metadata[,batch])
         
       }
-
-      object@methods[[p]]@benchmark_results[['integration']][[paste0(p, '_', result.names[counter])]] <- summary(cluster::silhouette(as.numeric(batch_tmp), dist))$avg.width
       
+      object@methods[[p]]@benchmark_results[['integration']][[paste0(p, '_', result.names[counter])]] <- summary(cluster::silhouette(as.numeric(batch_tmp), dist))$avg.width
+
       counter <- counter + 1
       
     }

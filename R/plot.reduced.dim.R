@@ -22,11 +22,26 @@ plot.reduced.dim <- function(object,
                              column,
                              pt.size=0.5, 
                              add.label = TRUE,
+                             label.size = NULL,
                              cells = NULL) {
   
   if(!is(object = object, class2 = 'IBRAP')) {
     
     stop('object must be of class IBRAP\n')
+    
+  }
+  
+  if(isTRUE(add.label)) {
+    
+    if(!is.null(label.size)) {
+      
+      if(!is.numeric(label.size)) {
+        
+        stop('label.size should be numeric\n')
+        
+      }
+      
+    }
     
   }
   
@@ -198,15 +213,32 @@ plot.reduced.dim <- function(object,
     ggplot2::guides(colour = ggplot2::guide_legend(override.aes = list(size=2)))
   
   if(isTRUE(add.label)) {
-
-    p <- p + 
-      ggrepel::geom_label_repel(data = clust_centres, mapping = 
-                                  ggplot2::aes_string(x = colnames(results)[1], 
-                                                      y = colnames(results)[2], 
-                                                      label = 'variable'), 
-                                color = 'black', label.size = NA, fill = NA) + 
+    
+    if(is.null(label.size)) {
       
-      ggplot2::theme(legend.position = "none")
+      p <- p + 
+        ggrepel::geom_label_repel(data = clust_centres, mapping = 
+                                    ggplot2::aes_string(x = colnames(results)[1], 
+                                                        y = colnames(results)[2], 
+                                                        label = 'variable'), 
+                                  color = 'black', label.size = NA, fill = NA,
+                                  box.padding = unit(0.5, "lines")) + 
+        
+        ggplot2::theme(legend.position = "none")
+      
+    } else {
+      
+      p <- p + 
+        ggrepel::geom_label_repel(data = clust_centres, mapping = 
+                                    ggplot2::aes_string(x = colnames(results)[1], 
+                                                        y = colnames(results)[2], 
+                                                        label = 'variable'), 
+                                  color = 'black', label.size = NA, fill = NA, size = label.size,
+                                  box.padding = unit(0.5, "lines")) + 
+        
+        ggplot2::theme(legend.position = "none")
+      
+    }
     
   }
   
