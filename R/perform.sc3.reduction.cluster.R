@@ -165,7 +165,7 @@ perform.sc3.reduction.cluster <- function(object,
       
       if(any(is.na(as.data.frame(SummarizedExperiment::colData(temp.2))))) {
         
-        SC3::sc3_run_svm(object = temp.2, ks = ks)
+        temp.2 <- SC3::sc3_run_svm(object = temp.2, ks = ks)
         
       }
 
