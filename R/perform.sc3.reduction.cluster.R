@@ -162,6 +162,12 @@ perform.sc3.reduction.cluster <- function(object,
       temp.2 <- SC3::sc3_kmeans(temp.2, ks = ks)
 
       temp.2 <- SC3::sc3_calc_consens(temp.2)
+      
+      if(any(is.na(as.data.frame(SummarizedExperiment::colData(temp.2))))) {
+        
+        SC3::sc3_run_svm(object = temp.2, ks = ks)
+        
+      }
 
       object@methods[[p]]@cluster_assignments[[paste0(r, ':SC3', cluster.df.name.suffix)]] <- as.data.frame(SummarizedExperiment::colData(temp.2))
       cat(crayon::cyan(paste0(Sys.time(), ': SC3 clustering completed\n')))
