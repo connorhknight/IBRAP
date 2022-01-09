@@ -120,7 +120,7 @@ shinyApp(
   ),
   server <- function(input, output) {
     
-    options(shiny.maxRequestSize=1000*1024^2)
+    options(shiny.maxRequestSize=1000000*1024^2)
     
     forout_reactive <- reactiveValues()
     
@@ -230,7 +230,8 @@ shinyApp(
     output$benchmark <- renderPlot({
       req(input$cluster_technique != 'metadata')
       g <- forout_reactive$obj
-      h <- names(forout_reactive$active.assay@benchmark_results$clustering[[input$cluster_technique]])
+      h <- colnames(forout_reactive$active.assay@benchmark_results$clustering[[input$cluster_technique]])
+      print(h)
       if(length(h) > 3) {
         temp <- plot.cluster.benchmarking(object = g, 
                                           assay = input$assay, 
@@ -248,7 +249,7 @@ shinyApp(
     output$integration_benchmarking <- renderPlot({
       req(forout_reactive$obj)
       
-      if(is.null(pancreas_bench@methods$SCT@benchmark_results$integration)) {
+      if(is.null(forout_reactive$active.assay@benchmark_results$integration)) {
         
         return(NULL)
         

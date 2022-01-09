@@ -199,15 +199,13 @@ plot.reduced.dim <- function(object,
     clust_centres$variable <- unique(results$variable)
     
   }
-  
 
-  
   p <- ggplot2::ggplot(data = results, 
                        mapping = ggplot2::aes_string(x = colnames(results)[1], 
                                                      y = colnames(results)[2], 
                                                      col = colnames(results)[3])) +
     ggplot2::geom_point(size = pt.size) + 
-    ggplot2::scale_color_manual(values = colorspace::qualitative_hcl(n = length(unique(results[,3])), palette = 'Dark 3')) + 
+    ggplot2::scale_color_manual(values = scales::hue_pal()(length(unique(results[,'variable'])))) + 
     ggplot2::theme_classic() + 
     ggplot2::theme(legend.title.align=0.5) + 
     ggplot2::guides(colour = ggplot2::guide_legend(override.aes = list(size=2)))
@@ -220,9 +218,9 @@ plot.reduced.dim <- function(object,
         ggrepel::geom_label_repel(data = clust_centres, mapping = 
                                     ggplot2::aes_string(x = colnames(results)[1], 
                                                         y = colnames(results)[2], 
-                                                        label = 'variable'), 
-                                  color = 'black', label.size = NA, fill = NA,
-                                  box.padding = unit(0.5, "lines")) + 
+                                                        label = 'variable', fontface = 2), 
+                                  color = 'black', label.size = NA, fill = NA, 
+                                  box.padding = grid::unit(0.5, "lines")) + 
         
         ggplot2::theme(legend.position = "none")
       
@@ -232,9 +230,9 @@ plot.reduced.dim <- function(object,
         ggrepel::geom_label_repel(data = clust_centres, mapping = 
                                     ggplot2::aes_string(x = colnames(results)[1], 
                                                         y = colnames(results)[2], 
-                                                        label = 'variable'), 
+                                                        label = 'variable', fontface = 2), 
                                   color = 'black', label.size = NA, fill = NA, size = label.size,
-                                  box.padding = unit(0.5, "lines")) + 
+                                  box.padding = grid::unit(0.5, "lines")) + 
         
         ggplot2::theme(legend.position = "none")
       

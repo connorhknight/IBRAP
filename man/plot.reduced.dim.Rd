@@ -13,6 +13,7 @@
   column,
   pt.size = 0.5,
   add.label = TRUE,
+  label.size = NULL,
   cells = NULL
 )
 }

@@ -96,7 +96,7 @@
 
       
 
-      </header><script src="using_IBRAP_files/header-attrs-2.10.1/header-attrs.js"></script><script src="using_IBRAP_files/clipboard-1.7.1/clipboard.min.js"></script><link href="using_IBRAP_files/primer-tooltips-1.4.0/build.css" rel="stylesheet">
+      </header><script src="using_IBRAP_files/clipboard-1.7.1/clipboard.min.js"></script><link href="using_IBRAP_files/primer-tooltips-1.4.0/build.css" rel="stylesheet">
 <link href="using_IBRAP_files/klippy-0.0.0.9500/css/klippy.min.css" rel="stylesheet">
 <script src="using_IBRAP_files/klippy-0.0.0.9500/js/klippy.min.js"></script><div class="row">
   <div class="col-md-9 contents">
@@ -134,19 +134,19 @@
 <h3 class="hasAnchor">
 <a href="#section-1-1-applying-the-functions" class="anchor" aria-hidden="true"></a>Section 1.1: Applying the functions</h3>
 <p>Droplet-based datasets present unique confounding effects, including: doublets and ambient RNA contamination. To remove them we have enlisted scrublet and decontX, respectively. Thus far, there is no consensus on the order of application. However, we prefer scrublet followed by decontX.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co"># We simply supply our generated count matrix to both functions</span></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>bmmc <span class="ot">&lt;-</span> <span class="fu">perform.scrublet</span>(<span class="at">counts =</span> bmmc)</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>NOTE<span class="sc">:</span> We have also included a <span class="cf">function</span> (perform.decontX) </span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>to perform ambient RNA decontamination. However, you need to </span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>install package<span class="sc">:</span> celda Please see the link </span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>(https<span class="sc">:</span><span class="er">//</span>github.com<span class="sc">/</span>campbio<span class="sc">/</span>celda) <span class="cf">for</span> installation instruction. </span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>In most cases, you do not need to perform this <span class="cf">function</span> unless </span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>your data suffers from ambient RNA contamination</span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>bmmc <span class="ot">&lt;-</span> <span class="fu">perform.decontX</span>(<span class="at">counts =</span> bmmc)</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"></a>
+<a class="sourceLine" id="cb2-2" data-line-number="2"><span class="co"># We simply supply our generated count matrix to both functions</span></a>
+<a class="sourceLine" id="cb2-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb2-4" data-line-number="4">bmmc &lt;-<span class="st"> </span><span class="kw">perform.scrublet</span>(<span class="dt">counts =</span> bmmc)</a>
+<a class="sourceLine" id="cb2-5" data-line-number="5"></a>
+<a class="sourceLine" id="cb2-6" data-line-number="6">NOTE<span class="op">:</span><span class="st"> </span>We have also included a <span class="cf">function</span> (perform.decontX) </a>
+<a class="sourceLine" id="cb2-7" data-line-number="7">to perform ambient RNA decontamination. However, you need to </a>
+<a class="sourceLine" id="cb2-8" data-line-number="8">install package<span class="op">:</span><span class="st"> </span>celda Please see the link </a>
+<a class="sourceLine" id="cb2-9" data-line-number="9">(https<span class="op">:</span><span class="er">//</span>github.com<span class="op">/</span>campbio<span class="op">/</span>celda) <span class="cf">for</span> installation instruction. </a>
+<a class="sourceLine" id="cb2-10" data-line-number="10">In most cases, you do not need to perform this <span class="cf">function</span> unless </a>
+<a class="sourceLine" id="cb2-11" data-line-number="11">your data suffers from ambient RNA contamination</a>
+<a class="sourceLine" id="cb2-12" data-line-number="12"></a>
+<a class="sourceLine" id="cb2-13" data-line-number="13">bmmc &lt;-<span class="st"> </span><span class="kw">perform.decontX</span>(<span class="dt">counts =</span> bmmc)</a></code></pre></div>
 </div>
 <div id="section-1-2-explaining-the-results" class="section level3">
 <h3 class="hasAnchor">
@@ -171,7 +171,7 @@
                           min.cells <span class="op">=</span> <span class="fl">3</span>,
                           min.features <span class="op">=</span> <span class="fl">200</span><span class="op">)</span>
                           </code></pre></div>
-<p>This produces an S4 class object that initially contains sample metadata and a raw method assay contained in <a href="mailto:object@methods" class="email">object@methods</a>. A couple of important steps happen here: metadata, including: total counts and total genes per cell are stored in <a href="mailto:object@sample" class="email">object@sample</a>_metadata, and some initial filtering of the count matrix happens. In this case, we removed any genes that are not present in at least 3 cells and removed cells with less than 200 genes, We performed the latter as to remove any droplets that are empty and do not contain true cells.</p>
+<p>This produces an S4 class object that initially contains sample metadata and a raw method assay contained in <a href="mailto:object@methods" class="email">object@methods</a>. A couple of important steps happen here: metadata, including: total counts and total genes per cell are stored in <a href="mailto:object@sample_metadata" class="email">object@sample_metadata</a>, and some initial filtering of the count matrix happens. In this case, we removed any genes that are not present in at least 3 cells and removed cells with less than 200 genes, We performed the latter as to remove any droplets that are empty and do not contain true cells.</p>
 </div>
 <div id="section-3-quality-control" class="section level2">
 <h2 class="hasAnchor">
@@ -212,7 +212,7 @@
                               slot <span class="op">=</span> <span class="st">'counts'</span>,
                               column.name <span class="op">=</span> <span class="st">'RAW_percent.mt'</span><span class="op">)</span>
                               </code></pre></div>
-<p>These fraction results will be saved under <a href="mailto:object@sample" class="email">object@sample</a>_metadata alongside total counts and total genes for use downstream.</p>
+<p>These fraction results will be saved under <a href="mailto:object@sample_metadata" class="email">object@sample_metadata</a> alongside total counts and total genes for use downstream.</p>
 </div>
 <div id="section-3-2-visualisation" class="section level3">
 <h3 class="hasAnchor">
@@ -254,18 +254,18 @@
 <h3 class="hasAnchor">
 <a href="#section-4-1-applying-the-functions" class="anchor" aria-hidden="true"></a>Section 4.1: Applying The Functions</h3>
 <p>To accommodate downstream analyses, we must promote a normal distribution and numerical scaling in our data. We included four separate <a href="https://connorhknight.github.io/IBRAP/articles/data_transform.html" class="external-link">normalisation</a> methods that are applied as such:</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>bmmc <span class="ot">&lt;-</span> <span class="fu">perform.sct</span>(<span class="at">object =</span> bmmc, </span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>                    <span class="at">assay =</span> <span class="st">'RAW'</span>, </span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>                    <span class="at">slot =</span> <span class="st">'counts'</span>, <span class="at">vars.to.regress =</span> <span class="st">'RAW_percent.mt'</span>)</span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>bmmc <span class="ot">&lt;-</span> <span class="fu">perform.scran</span>(<span class="at">object =</span> bmmc, </span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>                      <span class="at">assay =</span> <span class="st">'RAW'</span>, </span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>                      <span class="at">slot =</span> <span class="st">'counts'</span>, </span>
-<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>                      <span class="at">vars.to.regress =</span> <span class="fu">c</span>(<span class="st">'RAW_percent.mt'</span> <span class="st">'RAW_total.counts'</span>))</span>
-<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>bmmc <span class="ot">&lt;-</span> <span class="fu">perform.scanpy</span>(<span class="at">object =</span> bmmc, </span>
-<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>                       <span class="at">vars.to.regress =</span> <span class="fu">c</span>(<span class="st">'RAW_percent.mt'</span> <span class="st">'RAW_total.counts'</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" data-line-number="1"></a>
+<a class="sourceLine" id="cb8-2" data-line-number="2">bmmc &lt;-<span class="st"> </span><span class="kw">perform.sct</span>(<span class="dt">object =</span> bmmc, </a>
+<a class="sourceLine" id="cb8-3" data-line-number="3">                    <span class="dt">assay =</span> <span class="st">'RAW'</span>, </a>
+<a class="sourceLine" id="cb8-4" data-line-number="4">                    <span class="dt">slot =</span> <span class="st">'counts'</span>, <span class="dt">vars.to.regress =</span> <span class="st">'RAW_percent.mt'</span>)</a>
+<a class="sourceLine" id="cb8-5" data-line-number="5"></a>
+<a class="sourceLine" id="cb8-6" data-line-number="6">bmmc &lt;-<span class="st"> </span><span class="kw">perform.scran</span>(<span class="dt">object =</span> bmmc, </a>
+<a class="sourceLine" id="cb8-7" data-line-number="7">                      <span class="dt">assay =</span> <span class="st">'RAW'</span>, </a>
+<a class="sourceLine" id="cb8-8" data-line-number="8">                      <span class="dt">slot =</span> <span class="st">'counts'</span>, </a>
+<a class="sourceLine" id="cb8-9" data-line-number="9">                      <span class="dt">vars.to.regress =</span> <span class="kw">c</span>(<span class="st">'RAW_percent.mt'</span> <span class="st">'RAW_total.counts'</span>))</a>
+<a class="sourceLine" id="cb8-10" data-line-number="10"></a>
+<a class="sourceLine" id="cb8-11" data-line-number="11">bmmc &lt;-<span class="st"> </span><span class="kw">perform.scanpy</span>(<span class="dt">object =</span> bmmc, </a>
+<a class="sourceLine" id="cb8-12" data-line-number="12">                       <span class="dt">vars.to.regress =</span> <span class="kw">c</span>(<span class="st">'RAW_percent.mt'</span> <span class="st">'RAW_total.counts'</span>))</a></code></pre></div>
 <p>For these methods, we transformed our raw counts, and regressed some QC metrics from our datasets to not allow them to confound our downstream analyses. There are some notable differences here. For example, SCT automatically regresses RAW_total.counts so we do not need to specify this however, the others you do. These parameters are set as default, any deviation from these is at your own risk since they could produce incorrect results. Nonetheless, feel free to play around and observe the difference.</p>
 </div>
 <div id="section-4-2-how-functions-work-downstream" class="section level3">
@@ -313,7 +313,7 @@
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R">
 <span class="va">bmmc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/perform.diffusion.map.html">perform.diffusion.map</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">bmmc</span>, assay <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'SCT'</span>, <span class="st">'SCRAN'</span>, <span class="st">'SCANPY'</span><span class="op">)</span>, reduction <span class="op">=</span> <span class="st">'pca'</span>, dims <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fl">0</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<p>Again, we have requested for IBRAP to iterate through our three assays whilst using their PCA reduction. We specified the dimensions to use as 0 (which means all components) and the default setting for this function produces 15 diffusion components. Both the PCA and diffusion map will be saved in the method assay in <a href="mailto:assay@computational" class="email">assay@computational</a>_reductions.</p>
+<p>Again, we have requested for IBRAP to iterate through our three assays whilst using their PCA reduction. We specified the dimensions to use as 0 (which means all components) and the default setting for this function produces 15 diffusion components. Both the PCA and diffusion map will be saved in the method assay in <a href="mailto:assay@computational_reductions" class="email">assay@computational_reductions</a>.</p>
 <p>We will then process these downstream. Next, we will cluster our datasets.</p>
 </div>
 </div>
@@ -402,7 +402,7 @@
 </tr>
 </tbody>
 </table>
-<p>To set up the function, supply the dataframes contained within the <a href="mailto:assay@cluster" class="email">assay@cluster</a>_assignments you wish to benchmark under clustering. Next, include the corresponding reductions for them, normally this will be a umap reduction using 1:2 dimensions. For example, if clustering and the umap were calculated using PCA these should be paired, likewise if they were calcualted using pca:diffmap then they should be paired.</p>
+<p>To set up the function, supply the dataframes contained within the <a href="mailto:assay@cluster_assignments" class="email">assay@cluster_assignments</a> you wish to benchmark under clustering. Next, include the corresponding reductions for them, normally this will be a umap reduction using 1:2 dimensions. For example, if clustering and the umap were calculated using PCA these should be paired, likewise if they were calcualted using pca:diffmap then they should be paired.</p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R">
 <span class="va">bmmc</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/benchmark.clustering.html">benchmark.clustering</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">bmmc</span>, 
@@ -423,7 +423,7 @@
 <h2 class="hasAnchor">
 <a href="#section-10-visualising-clustering-results" class="anchor" aria-hidden="true"></a>Section 10: Visualising Clustering Results</h2>
 <p>Since we have 3 different normalisation method it is beneficial to observe the difference in their produces topology and clustering.</p>
-<p>The main challenge with the plotting function in IBRAP is isolating the correct labelling. In general, plotting functions will ask for the assay which is contained within <a href="mailto:object@methods" class="email">object@methods</a>, the clust.method that is contained withing <span class="citation">@cluster_assignments</span>, and the column which would be contained with in that cluster assignment. One thing to note, is that if you wish to access columns that are contained within <a href="mailto:object@sample" class="email">object@sample</a>_metadata.</p>
+<p>The main challenge with the plotting function in IBRAP is isolating the correct labelling. In general, plotting functions will ask for the assay which is contained within <a href="mailto:object@methods" class="email">object@methods</a>, the clust.method that is contained withing <span class="citation">@cluster_assignments</span>, and the column which would be contained with in that cluster assignment. One thing to note, is that if you wish to access columns that are contained within <a href="mailto:object@sample_metadata" class="email">object@sample_metadata</a>.</p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R">
 <span class="va">plot1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot.reduced.dim.html">plot.reduced.dim</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">bmmc</span>, 

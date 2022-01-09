@@ -25,6 +25,15 @@ klippy::klippy(tooltip_message = 'Click to copy', tooltip_success = 'Done', posi
 
 IBRAP requires R version >=4.0.0 to function.
 
+You must have gfortran installed on your system which is included in GCC. The GCC version must be up-to-date, which can be found in the following [link](https://gcc.gnu.org/wiki/GFortranBinaries) for mac users and this [link](https://linuxize.com/post/how-to-install-gcc-compiler-on-ubuntu-18-04/) for linux. 
+
+A further requirement for macOS users, is that xcode must be installed/updated. This can be performed using the following command in your terminal:
+
+```{r, eval=F, echo=T}
+xcode-select --install
+
+```
+
 ## Installing IBRAP
 
 IBRAP installation and its dependencies is fully automated and can be performed using the following command:
@@ -36,7 +45,8 @@ devtools::install_github('connorhknight/IBRAP')
 ```
 
 Once installed we must prepare our reticulate environment which enables us to access python. 
-## Preparing reticulate
+
+## Installing reticulate
 
 IBRAP not only uses packages within R, but also through python. For this, we use reticulate to interface python into the R environment. To setup reticulate we must start by installing miniconda:
 
@@ -45,7 +55,21 @@ reticulate::install_miniconda()
 
 ```
 
-Once miniconda is installed it will produce an environment called r-reticulate. Next, we must assure the correct packages are installed within the new environment:
+Once miniconda is installed it will produce an environment called r-reticulate. Reticulate install a default version of python that will change with time. To prevent version mis-alignments we will generate our own virtual environment to install IBRAP packages.
+
+```{r, eval=F, echo=T}
+reticulate::conda_create(envname = "IBRAP", packages = "python=3.8")
+
+```
+
+Once this is created, the pathway to the python version will be printed last. We need to make sure that the R session sources the correct python version. You can either do this manually each time you start an R session or add this command to your .Rprofile file which is found in your home directory. We recommend putting this command into the .Rprofile file.
+
+```{r, eval=F, echo=T}
+reticulate::use_python('copy the printed command here',required = T)
+
+```
+
+Next, we must assure the correct packages are installed within the new environment:
 
 ```{r, eval=F, echo=T}
 IBRAP::prepare.reticulate()

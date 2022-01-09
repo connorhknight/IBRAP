@@ -255,7 +255,7 @@ benchmark.clustering <- function(object,
         results <- cbind(sil.results, dunn.results, conn.results)
         rownames(results) <- colnames(clusters)
         colnames(results) <- c(paste0(k, '_sil.results'), paste0(k, '_dunn.results'), paste0(k, '_conn.results'))
-        object@methods[[l]]@benchmark_results$clustering[[k]]$clustering <- as.data.frame(results)
+        object@methods[[l]]@benchmark_results$clustering[[k]] <- as.data.frame(results)
         
       }
     }

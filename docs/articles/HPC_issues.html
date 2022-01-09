@@ -96,7 +96,7 @@
 
       
 
-      </header><script src="HPC_issues_files/header-attrs-2.10.1/header-attrs.js"></script><script src="HPC_issues_files/clipboard-1.7.1/clipboard.min.js"></script><link href="HPC_issues_files/primer-tooltips-1.4.0/build.css" rel="stylesheet">
+      </header><script src="HPC_issues_files/clipboard-1.7.1/clipboard.min.js"></script><link href="HPC_issues_files/primer-tooltips-1.4.0/build.css" rel="stylesheet">
 <link href="HPC_issues_files/klippy-0.0.0.9500/css/klippy.min.css" rel="stylesheet">
 <script src="HPC_issues_files/klippy-0.0.0.9500/js/klippy.min.js"></script><div class="row">
   <div class="col-md-9 contents">
@@ -120,12 +120,12 @@
 <h2 class="hasAnchor">
 <a href="#incorrect-gcc-version" class="anchor" aria-hidden="true"></a>Incorrect gcc version</h2>
 <p>In some instances old versions are automatically stored in your user bin. If you recieve the following error you may have an older version of gcc loaded.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>g<span class="sc">++</span><span class="er">:</span> error<span class="sc">:</span> unrecognized command line option ‘<span class="sc">-</span>fno<span class="sc">-</span>plt’</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>g<span class="sc">++</span><span class="er">:</span> error<span class="sc">:</span> unrecognized command line option ‘<span class="sc">-</span>fno<span class="sc">-</span>semantic<span class="sc">-</span>interposition’</span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1">g<span class="op">++</span><span class="er">:</span><span class="st"> </span>error<span class="op">:</span><span class="st"> </span>unrecognized command line option ‘<span class="op">-</span>fno<span class="op">-</span>plt’</a>
+<a class="sourceLine" id="cb1-2" data-line-number="2">g<span class="op">++</span><span class="er">:</span><span class="st"> </span>error<span class="op">:</span><span class="st"> </span>unrecognized command line option ‘<span class="op">-</span>fno<span class="op">-</span>semantic<span class="op">-</span>interposition’</a></code></pre></div>
 <p>If you see this you can use the following to see which version you have loaded:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>find gcc </span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>{paste previous output here} <span class="sc">--</span> version</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"></a>
+<a class="sourceLine" id="cb2-2" data-line-number="2">find gcc </a>
+<a class="sourceLine" id="cb2-3" data-line-number="3">{paste previous output here} <span class="op">--</span><span class="st"> </span>version</a></code></pre></div>
 <p>If you are in a HPC environemnt then you must load the correct version &gt;=7 using the HPC infastructure or compile the correct version yourself.</p>
 </div>
 <div id="imagemagick-for-celda" class="section level2">
@@ -135,23 +135,23 @@
 <div id="step-1-get-imagemagick-from-the-following-link-by-doing" class="section level3">
 <h3 class="hasAnchor">
 <a href="#step-1-get-imagemagick-from-the-following-link-by-doing" class="anchor" aria-hidden="true"></a>step 1: Get ImageMagick from the following link by doing:</h3>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>curl <span class="sc">-</span>L <span class="sc">-</span>O https<span class="sc">:</span><span class="er">//</span>download.imagemagick.org<span class="sc">/</span>ImageMagick<span class="sc">/</span>download<span class="sc">/</span>releases<span class="sc">/</span>ImageMagick<span class="dv">-6</span>.<span class="fl">9.10-86.</span>tar.xz</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1">curl <span class="op">-</span>L <span class="op">-</span>O https<span class="op">:</span><span class="er">//</span>download.imagemagick.org<span class="op">/</span>ImageMagick<span class="op">/</span>download<span class="op">/</span>releases<span class="op">/</span>ImageMagick<span class="dv">-6</span>.<span class="fl">9.10-86.</span>tar.xz</a></code></pre></div>
 </div>
 <div id="step-2-cd-into-the-downloaded-directory-containing-imagemagick--then-execute-the-following-command" class="section level3">
 <h3 class="hasAnchor">
 <a href="#step-2-cd-into-the-downloaded-directory-containing-imagemagick--then-execute-the-following-command" class="anchor" aria-hidden="true"></a>step 2: cd into the downloaded directory containing ImageMagick. Then execute the following command:</h3>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>tar <span class="sc">-</span>xf ImageMagick<span class="dv">-6</span>.<span class="fl">9.10-86.</span>tar.xz </span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>cd ImageMagick<span class="dv">-6</span>.<span class="fl">9.10</span><span class="dv">-86</span></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>.<span class="sc">/</span>configure</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>make</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>make install</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1">tar <span class="op">-</span>xf ImageMagick<span class="dv">-6</span>.<span class="fl">9.10-86.</span>tar.xz </a>
+<a class="sourceLine" id="cb4-2" data-line-number="2">cd ImageMagick<span class="dv">-6</span>.<span class="fl">9.10</span><span class="dv">-86</span></a>
+<a class="sourceLine" id="cb4-3" data-line-number="3">.<span class="op">/</span>configure</a>
+<a class="sourceLine" id="cb4-4" data-line-number="4">make</a>
+<a class="sourceLine" id="cb4-5" data-line-number="5">make install</a></code></pre></div>
 </div>
 <div id="step-3-now-we-must-export-the-ld_library_path-and-pkgconfig-path-to-the-library-location-of-imagemagick-package--for-example" class="section level3">
 <h3 class="hasAnchor">
 <a href="#step-3-now-we-must-export-the-ld_library_path-and-pkgconfig-path-to-the-library-location-of-imagemagick-package--for-example" class="anchor" aria-hidden="true"></a>step 3: now we must export the LD_LIBRARY_PATH and pkgconfig path to the library location of ImageMagick package. For example:</h3>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>export LD_LIBRARY_PATH<span class="ot">=</span><span class="er">$</span>LD_LIBRARY_PATH<span class="sc">:</span><span class="er">/</span>path<span class="sc">/</span>to<span class="sc">/</span>magick<span class="sc">/</span>ImageMagick<span class="dv">-6</span>.<span class="fl">9.10</span><span class="dv">-86</span><span class="sc">/</span>lib</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>export LD_LIBRARY_PATH<span class="ot">=</span><span class="er">$</span>LD_LIBRARY_PATH<span class="sc">:</span><span class="er">/</span>path<span class="sc">/</span>to<span class="sc">/</span>magick<span class="sc">/</span>ImageMagick<span class="dv">-6</span>.<span class="fl">9.10</span><span class="dv">-86</span><span class="sc">/</span>Magick<span class="sc">++</span><span class="er">/</span>lib</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>export PKG_CONFIG_PATH<span class="ot">=</span><span class="er">$</span>PKG_CONFIG_PATH<span class="sc">:</span><span class="er">/</span>path<span class="sc">/</span>to<span class="sc">/</span>magick<span class="sc">/</span>ImageMagick<span class="dv">-6</span>.<span class="fl">9.10</span><span class="dv">-86</span><span class="sc">/</span>lib<span class="sc">/</span>pkgconfig</span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1">export LD_LIBRARY_PATH=<span class="er">$</span>LD_LIBRARY_PATH<span class="op">:</span><span class="er">/</span>path<span class="op">/</span>to<span class="op">/</span>magick<span class="op">/</span>ImageMagick<span class="dv">-6</span>.<span class="fl">9.10</span><span class="dv">-86</span><span class="op">/</span>lib</a>
+<a class="sourceLine" id="cb5-2" data-line-number="2">export LD_LIBRARY_PATH=<span class="er">$</span>LD_LIBRARY_PATH<span class="op">:</span><span class="er">/</span>path<span class="op">/</span>to<span class="op">/</span>magick<span class="op">/</span>ImageMagick<span class="dv">-6</span>.<span class="fl">9.10</span><span class="dv">-86</span><span class="op">/</span>Magick<span class="op">++</span><span class="er">/</span>lib</a>
+<a class="sourceLine" id="cb5-3" data-line-number="3">export PKG_CONFIG_PATH=<span class="er">$</span>PKG_CONFIG_PATH<span class="op">:</span><span class="er">/</span>path<span class="op">/</span>to<span class="op">/</span>magick<span class="op">/</span>ImageMagick<span class="dv">-6</span>.<span class="fl">9.10</span><span class="dv">-86</span><span class="op">/</span>lib<span class="op">/</span>pkgconfig</a></code></pre></div>
 <p>This should allow R tofind the correct imagemagick librarys and allow celda to install. However, take now that every HPC environment is different and different troubleshooting may be required on a case-by-case basis.</p>
 <p>If you have any more isses/solutions please post them on our issues section in our github.</p>
 </div>

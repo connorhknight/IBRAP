@@ -96,7 +96,7 @@
 
       
 
-      </header><script src="installing_ibrap_files/header-attrs-2.10.1/header-attrs.js"></script><script src="installing_ibrap_files/clipboard-1.7.1/clipboard.min.js"></script><link href="installing_ibrap_files/primer-tooltips-1.4.0/build.css" rel="stylesheet">
+      </header><script src="installing_ibrap_files/clipboard-1.7.1/clipboard.min.js"></script><link href="installing_ibrap_files/primer-tooltips-1.4.0/build.css" rel="stylesheet">
 <link href="installing_ibrap_files/klippy-0.0.0.9500/css/klippy.min.css" rel="stylesheet">
 <script src="installing_ibrap_files/klippy-0.0.0.9500/js/klippy.min.js"></script><div class="row">
   <div class="col-md-9 contents">
@@ -120,20 +120,34 @@
 <h2 class="hasAnchor">
 <a href="#ibrap-requirements" class="anchor" aria-hidden="true"></a>IBRAP requirements</h2>
 <p>IBRAP requires R version &gt;=4.0.0 to function.</p>
+<p>You must have gfortran installed on your system which is included in GCC. The GCC version must be up-to-date, which can be found in the following <a href="https://gcc.gnu.org/wiki/GFortranBinaries" class="external-link">link</a> for mac users and this <a href="https://linuxize.com/post/how-to-install-gcc-compiler-on-ubuntu-18-04/" class="external-link">link</a> for linux.</p>
+<p>A further requirement for macOS users, is that xcode must be installed/updated. This can be performed using the following command in your terminal:</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">xcode</span><span class="op">-</span><span class="va">select</span> <span class="op">-</span><span class="op">-</span><span class="va">install</span></code></pre></div>
 </div>
 <div id="installing-ibrap" class="section level2">
 <h2 class="hasAnchor">
 <a href="#installing-ibrap" class="anchor" aria-hidden="true"></a>Installing IBRAP</h2>
 <p>IBRAP installation and its dependencies is fully automated and can be performed using the following command:</p>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">'devtools'</span><span class="op">)</span>
 <span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/devtools/man/remote-reexports.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">'connorhknight/IBRAP'</span><span class="op">)</span></code></pre></div>
-<p>Once installed we must prepare our reticulate environment which enables us to access python. ## Preparing reticulate</p>
+<p>Once installed we must prepare our reticulate environment which enables us to access python.</p>
+</div>
+<div id="installing-reticulate" class="section level2">
+<h2 class="hasAnchor">
+<a href="#installing-reticulate" class="anchor" aria-hidden="true"></a>Installing reticulate</h2>
 <p>IBRAP not only uses packages within R, but also through python. For this, we use reticulate to interface python into the R environment. To setup reticulate we must start by installing miniconda:</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">reticulate</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/reticulate/man/install_miniconda.html" class="external-link">install_miniconda</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
-<p>Once miniconda is installed it will produce an environment called r-reticulate. Next, we must assure the correct packages are installed within the new environment:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu">reticulate</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/reticulate/man/install_miniconda.html" class="external-link">install_miniconda</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<p>Once miniconda is installed it will produce an environment called r-reticulate. Reticulate install a default version of python that will change with time. To prevent version mis-alignments we will generate our own virtual environment to install IBRAP packages.</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu">reticulate</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/reticulate/man/conda_create.html" class="external-link">conda_create</a></span><span class="op">(</span>envname <span class="op">=</span> <span class="st">"IBRAP"</span>, packages <span class="op">=</span> <span class="st">"python=3.8"</span><span class="op">)</span></code></pre></div>
+<p>Once this is created, the pathway to the python version will be printed last. We need to make sure that the R session sources the correct python version. You can either do this manually each time you start an R session or add this command to your .Rprofile file which is found in your home directory. We recommend putting this command into the .Rprofile file.</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu">reticulate</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/reticulate/man/use_python.html" class="external-link">use_python</a></span><span class="op">(</span><span class="st">'copy the printed command here'</span>,required <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></code></pre></div>
+<p>Next, we must assure the correct packages are installed within the new environment:</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu">IBRAP</span><span class="fu">::</span><span class="fu"><a href="../reference/prepare.reticulate.html">prepare.reticulate</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <p>Once this has been completed, you are ready to use IBRAP! For a basic understand of a single sample workflow please use the <a href="https://connorhknight.github.io/IBRAP/articles/using_IBRAP.html" class="external-link">getting started</a> tutorial. For multi-sample analysis, you can divert to the <a href="https://connorhknight.github.io/IBRAP/articles/integration.html" class="external-link">integration</a> tutorial.</p>
 <p>Good luck!</p>
