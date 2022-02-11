@@ -4,20 +4,20 @@
 \alias{createIBRAPobject}
 \title{Create an IBRAP class object}
 \usage{
-createIBRAPobject(counts = counts, original.project = 'project_1', method.name = 'RAW', meta.data = df, min.cells = 3, min.features = 200)
+createIBRAPobject(counts = counts, original.project = 'project_1', meta.data = df, min.cells = 3, min.features = 200)
 }
 \arguments{
 \item{counts}{Counts matrix}
 
 \item{original.project}{Character string naming the project}
 
-\item{method.name}{Character string naming the original method-assay. Default = 'RAW' `(Recommended)`}
-
 \item{meta.data}{data.frame of extra metadata to append to generated dataframe. Warning: Must be in the same order and colnames}
 
 \item{min.cells}{Numerical value of the minimum number of cells a gene should be present in}
 
 \item{min.features}{Numerical value minimum features that should be present in a cell}
+
+\item{verbose}{Logical. Should function information be printed?}
 }
 \value{
 IBRAP S4 class object containing raw counts and metadata
@@ -29,7 +29,6 @@ Creates and produces project metadata into an IBRAP S4 class object
 object <- createIBRAPobject(counts = counts,
                                       meta.data = metadata_df,
                                       original.project = 'bmmc',
-                                      method.name = 'RAW',
                                       min.cells = 3,
                                       min.features = 200)
 

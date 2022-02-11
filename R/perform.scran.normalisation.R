@@ -16,6 +16,9 @@
 #' @param n.genes Numerical. Top number of genes to retain when finding HVGs. Default = 1500
 #' @param max.cluster.size Numerical. When performing quickCluster, what is the maximum size the clusters can be. Default = 1000
 #' @param center_size_factors Boolean Should size factor variance be centred. Default = TRUE
+#' @param verbose Logical Should function messages be printed?
+#' @param seed Numerical What seed should be set. Default = 1234
+#' @param ... Arguments to pass to Seurat::ScaleData
 #' 
 #' @return Produces a new 'methods' assay containing normalised, scaled and HVGs.
 #' 
@@ -38,13 +41,23 @@ perform.scran <- function(object,
                           new.assay.suffix = '',
                           n.genes=1500,
                           max.cluster.size = 1000,
-                          center_size_factors=TRUE) {
+                          center_size_factors=TRUE,
+                          verbose = FALSE,
+                          seed=1234,
+                          ...) {
   
   if(!is(object = object, class2 = 'IBRAP')) {
     
     stop('Object must be of class IBRAP\n')
     
   }
+  
+  if(!is.logical(verbose)) {
+    
+    stop('verbose must be logical, TRUE/FALSE\n')
+    
+  }
+  
   if(!is.character(assay)) {
     
     stop('Assay must be a character string\n')
@@ -73,7 +86,7 @@ perform.scran <- function(object,
     
     if(!is.character(vars.to.regress)) {
       
-      cstop('vars.to.regress must be a character string(s) of column name contained in sample_metadata\n')
+      stop('vars.to.regress must be a character string(s) of column name contained in sample_metadata\n')
       
     }
     
@@ -115,20 +128,41 @@ perform.scran <- function(object,
     
   }
   
+  if(!is.numeric(seed)) {
+    
+    stop('seed should be numerical\n')
+    
+  }
+  
+  set.seed(seed = seed, kind = "Mersenne-Twister", normal.kind = "Inversion")
+  
   assay.list <- list()
   mat <- object@methods[[assay]][[slot]]
   assay.list[[slot]] <- mat
   sce <- SingleCellExperiment::SingleCellExperiment(assay.list)
   
+  start_time <- Sys.time()
+  
   clusters <- scran::quickCluster(mat)
   
-  cat(crayon::cyan(paste0(Sys.time(), ': quickCluster completed\n')))
+  if(isTRUE(verbose)) {
+    
+    cat(crayon::cyan(paste0(Sys.time(), ': quickCluster completed\n')))
+    
+  }
+  
   sce <- scran::computeSumFactors(sce, clusters=clusters, max.cluster.size=max.cluster.size, assay.type=slot)
   sce <- scuttle::logNormCounts(x = sce, log = F, center.size.factors=center_size_factors, exprs_values=slot)
   .counts <- SummarizedExperiment::assay(sce, 'normcounts')
   SummarizedExperiment::assay(sce, 'logcounts') <- log2(.counts + 1)
   .normalised <- SummarizedExperiment::assay(sce, 'logcounts')
-  cat(crayon::cyan(paste0(Sys.time(), ': normalisation completed\n')))
+  
+  if(isTRUE(verbose)) {
+    
+    cat(crayon::cyan(paste0(Sys.time(), ': normalisation completed\n')))
+    
+  }
+  
   feat.meta <- feature_metadata(assay = .counts, col.prefix = paste0('SCRAN', new.assay.suffix))
   if(!is.null(batch)) {
     
@@ -142,7 +176,11 @@ perform.scran <- function(object,
   
   top.hvgs <- scran::getTopHVGs(stats = dec, n = n.genes)
   
-  cat(crayon::cyan(paste0(Sys.time(), ': HVGs identified\n')))
+  if(isTRUE(verbose)) {
+    
+    cat(crayon::cyan(paste0(Sys.time(), ': HVGs identified\n')))
+    
+  }
   
   seuobj <- Seurat::CreateSeuratObject(counts = object@methods[[assay]]@counts)
   
@@ -158,11 +196,11 @@ perform.scran <- function(object,
     colnames(seuobj@meta.data) <- c(names(seuobj@meta.data)[1:sum(length(names(seuobj@meta.data))-length(vars.to.regress))], vars.to.regress)
     
     seuobj@assays$RNA@data <- as(.normalised, 'dgCMatrix')[top.hvgs,]
-    seuobj <- Seurat::ScaleData(object = seuobj, vars.to.regress=vars.to.regress, do.scale=do.scale, do.center=do.center)
+    seuobj <- Seurat::ScaleData(object = seuobj, vars.to.regress=vars.to.regress, do.scale=do.scale, do.center=do.center, verbose = verbose, ...)
     
   } else {
     
-    seuobj <- Seurat::ScaleData(object = seuobj, do.scale=do.scale, do.center=do.center)
+    seuobj <- Seurat::ScaleData(object = seuobj, do.scale=do.scale, do.center=do.center, verbose=verbose, ...)
     
   }
   
@@ -172,7 +210,11 @@ perform.scran <- function(object,
   
   if('_' %in% unlist(strsplit(x = new.assay.suffix, split = ''))) {
     
-    cat(crayon::cyan(paste0(Sys.time(), ': _ cannot be used in new.assay.suffix, replacing with - \n')))
+    if(isTRUE(verbose)) {
+      
+      cat(crayon::cyan(paste0(Sys.time(), ': _ cannot be used in new.assay.suffix, replacing with - \n')))
+      
+    }
     
     new.assay.suffix <- sub(pattern = '_', replacement = '-', x = new.assay.suffix)
     
@@ -185,7 +227,29 @@ perform.scran <- function(object,
                                           highly.variable.genes = top.hvgs,
                                           feature_metadata = feat.meta)
   
-  cat(crayon::cyan(paste0(Sys.time(), ': Scran normalisation completed \n')))
+  if(isTRUE(verbose)) {
+    
+    cat(crayon::cyan(paste0(Sys.time(), ': Scran normalisation completed \n')))
+    
+  }
+  
+  end_time <- Sys.time()
+  
+  function_time <- end_time - start_time
+  
+  if(!'normalisation_method' %in% colnames(object@pipelines)) {
+    
+    object@pipelines <- data.frame(normalisation_method=paste0('SCRAN', new.assay.suffix), normalisation_time=function_time)
+    
+  } else if (paste0('SCRAN', new.assay.suffix) %in% object@pipelines[,'normalisation_method']) {
+    
+    object@pipelines[which(object@pipelines[,'normalisation_method']==paste0('SCRAN', new.assay.suffix)),] <- data.frame(normalisation_method=paste0('SCRAN', new.assay.suffix), normalisation_time=function_time)
+    
+  } else {
+    
+    object@pipelines <- rbind(object@pipelines, data.frame(normalisation_method=paste0('SCRAN', new.assay.suffix), normalisation_time=function_time))
+    
+  }
   
   return(object)
 }

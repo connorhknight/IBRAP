@@ -13,6 +13,9 @@
 #' @param do.centre Boolean. Whether to centre features to zero. Default = TRUE
 #' @param vars.to.regress Character. Which column in the metadata should be regressed. Default = NULL
 #' @param new.assay.suffix Character. What should the new assay be called. Default = 'SCRAN'
+#' @param verbose Logical Should function messages be printed?
+#' @param seed Numerical What seed should be set. Default = 1234
+#' @param ... Arguments to pass to Seurat::ScaleData
 #' 
 #' @return Produces a new 'methods' assay containing normalised, scaled and HVGs.
 #' 
@@ -30,13 +33,23 @@ perform.tpm <- function(object,
                         do.scale = FALSE,
                         do.center = TRUE,
                         vars.to.regress = NULL,
-                        new.assay.suffix = '') {
+                        new.assay.suffix = '',
+                        verbose = FALSE,
+                        seed = 1234,
+                        ...) {
   
   if(!is(object = object, class2 = 'IBRAP')) {
     
     stop('object must be of class IBRAP\n')
     
   }
+  
+  if(!is.logical(verbose)) {
+    
+    stop('verbose must be logical, TRUE/FALSE\n')
+    
+  }
+  
   if(!is.character(assay)) {
     
     stop('assay must be a character string\n')
@@ -104,27 +117,53 @@ perform.tpm <- function(object,
     
   }
   
+  if(!is.numeric(seed)) {
+    
+    stop('seed should be numerical\n')
+    
+  }
+  
+  set.seed(seed = seed, kind = "Mersenne-Twister", normal.kind = "Inversion")
+  
   if('_' %in% unlist(strsplit(x = new.assay.suffix, split = ''))) {
     
-    cat(crayon::cyan(paste0(Sys.time(), ': _ cannot be used in new.assay.suffix, replacing with - \n')))
+    if(isTRUE(verbose)) {
+      
+      cat(crayon::cyan(paste0(Sys.time(), ': _ cannot be used in new.assay.suffix, replacing with - \n')))
+      
+    }
     
     new.assay.suffix <- sub(pattern = '_', replacement = '-', x = new.assay.suffix)
     
   }
   
+  start_time <- Sys.time()
+  
   r$Gene.length <- r$end - r$start
   
   subset <- r[r$geneName %in% rownames(object),]
   
-  cat(crayon::cyan(paste0(Sys.time(), ': matrix subsetted\n')))
+  if(isTRUE(verbose)) {
+    
+    cat(crayon::cyan(paste0(Sys.time(), ': matrix subsetted\n')))
+    
+  }
   
   rownames(subset) <- make.unique(names = as.character(subset$geneName), '.')
   
-  cat(crayon::cyan(paste0(Sys.time(), ': rownames added\n')))
-  
+  if(isTRUE(verbose)) {
+    
+    cat(crayon::cyan(paste0(Sys.time(), ': rownames added\n')))
+    
+  }
+
   meta <- object@methods[[assay]]@feature_metadata[intersect(rownames((object@methods[[assay]]@feature_metadata)), rownames(subset)),]
   
-  cat(crayon::cyan(paste0(Sys.time(), ': gene names interesected\n')))
+  if(isTRUE(verbose)) {
+    
+    cat(crayon::cyan(paste0(Sys.time(), ': gene names interesected\n')))
+    
+  }
   
   mat <- as.matrix(object@methods[[assay]][[slot]])
   
@@ -132,9 +171,13 @@ perform.tpm <- function(object,
   
   ordered <- subset[match(rownames(mat), rownames(subset)),]
   
-  cat(crayon::cyan(paste0(Sys.time(), ': matrices ordered\n')))
-  
-  cat(crayon::cyan(paste0(Sys.time(), ': calculated counts/feature length\n')))
+  if(isTRUE(verbose)) {
+    
+    cat(crayon::cyan(paste0(Sys.time(), ': matrices ordered\n')))
+    
+    cat(crayon::cyan(paste0(Sys.time(), ': calculated counts/feature length\n')))
+    
+  }
   
   calc <- sweep(mat, 1, as.numeric(ordered$Gene.length), `/`)
   
@@ -142,15 +185,29 @@ perform.tpm <- function(object,
   
   .counts <- sweep(calc, 2, as.numeric(scale.factor), `/`)
   
-  cat(crayon::cyan(paste0(Sys.time(), ': calculations completed\n')))
+  if(isTRUE(verbose)) {
+    
+    cat(crayon::cyan(paste0(Sys.time(), ': calculations completed\n')))
+    
+  }
   
-  cat(crayon::cyan(paste0(Sys.time(), ': log2(x+1) transforming\n')))
+  if(isTRUE(verbose)) {
+    
+    cat(crayon::cyan(paste0(Sys.time(), ': log2(x+1) transforming\n')))
+    
+  }
+  
   .normalised <- log2(.counts+1)
-  cat(crayon::cyan(paste0(Sys.time(), ': transformation completed\n')))
+  
+  if(isTRUE(verbose)) {
+    
+    cat(crayon::cyan(paste0(Sys.time(), ': transformation completed\n')))
+    
+  }
   
   dec <- scran::modelGeneVar(x = .normalised)
   .highly.variable.genes <- scran::getTopHVGs(stats = dec, n=n.genes)
-  seuobj <- Seurat::CreateSeuratObject(counts = mat)
+  seuobj <- suppressWarnings(Seurat::CreateSeuratObject(counts = mat))
   seuobj@assays$RNA@data <- .normalised[.highly.variable.genes,]
   
   if(!is.null(vars.to.regress)) {
@@ -165,11 +222,11 @@ perform.tpm <- function(object,
     
     colnames(seuobj@meta.data) <- c(names(seuobj@meta.data)[1:sum(length(names(seuobj@meta.data))-length(vars.to.regress))], vars.to.regress)
     
-    seuobj <- Seurat::ScaleData(object = seuobj, do.scale=do.scale, do.center=do.center,vars.to.regress=vars.to.regress)
+    seuobj <- Seurat::ScaleData(object = seuobj, do.scale=do.scale, do.center=do.center,vars.to.regress=vars.to.regress, verbose = verbose, ...)
     
   } else {
     
-    seuobj <- Seurat::ScaleData(object = seuobj, do.scale=do.scale, do.center=do.center)
+    seuobj <- Seurat::ScaleData(object = seuobj, do.scale=do.scale, do.center=do.center, verbose = verbose, ...)
     
   }
   
@@ -186,7 +243,29 @@ perform.tpm <- function(object,
                                           highly.variable.genes = .highly.variable.genes,
                                           feature_metadata = feat.meta)
   
-  cat(crayon::cyan(paste0(Sys.time(), ': TPM normalisation completed\n')))
+  if(isTRUE(verbose)) {
+    
+    cat(crayon::cyan(paste0(Sys.time(), ': TPM normalisation completed\n')))
+    
+  }
+  
+  end_time <- Sys.time()
+  
+  function_time <- end_time - start_time
+  
+  if(!'normalisation_method' %in% colnames(object@pipelines)) {
+    
+    object@pipelines <- data.frame(normalisation_method=paste0('TPM', new.assay.suffix), normalisation_time=function_time)
+    
+  } else if (paste0('TPM', new.assay.suffix) %in% object@pipelines[,'normalisation_method']) {
+    
+    object@pipelines[which(object@pipelines[,'normalisation_method']==paste0('TPM', new.assay.suffix)),] <- data.frame(normalisation_method=paste0('TPM', new.assay.suffix), normalisation_time=function_time)
+    
+  } else {
+    
+    object@pipelines <- rbind(object@pipelines, data.frame(normalisation_method=paste0('TPM', new.assay.suffix), normalisation_time=function_time))
+    
+  }
   
   return(object)
 }

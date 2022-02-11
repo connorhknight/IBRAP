@@ -22,6 +22,8 @@
 #' @param flavour Character. Choosing which HVG selection method to use when, options: 'seurat', 'cell_ranger', 'seurat_v3'. Default = 'seurat'
 #' @param batch_key Character. Which column in the metadata identifies the batches of the cells. Default = NULL
 #' @param vars.to.regress Character. A single or multiple columns of information in the metadata that should be regressed from the dataset. Default = NULL
+#' @param verbose Logical Should function messages be printed?
+#' @param seed Numerical What seed should be set. Default = 1234
 #' 
 #' @return Produces a new 'methods' assay containing normalised, scaled and HVGs.
 #' 
@@ -50,18 +52,27 @@ perform.scanpy <- function(object,
                            n_bins = 20, 
                            flavor = 'seurat', 
                            batch_key = NULL,
-                           vars.to.regress=NULL
+                           vars.to.regress=NULL,
+                           verbose = FALSE,
+                           seed = 1234
                            
 ) {
   
   if(!is(object = object, class2 = 'IBRAP')) {
     
-    stop('Object must be of class IBRAP\n')
+    stop('object must be of class IBRAP \n')
     
   }
+  
+  if(!is.logical(verbose)) {
+    
+    stop('verbose should be logical, TRUE/FALSE \n')
+    
+  }
+  
   if(!is.character(assay)) {
     
-    stop('Assay must be a character string\n')
+    stop('assay must be a character string\n')
     
   }
   
@@ -73,7 +84,7 @@ perform.scanpy <- function(object,
   
   if(!is.character(slot)) {
     
-    stop('Slot must be a character string\n')
+    stop('slot must be a character string\n')
     
   }
   
@@ -183,7 +194,20 @@ perform.scanpy <- function(object,
     
   }
   
+  if(!is.numeric(seed)) {
+    
+    stop('seed should be numerical\n')
+    
+  }
+  
+  set.seed(seed = seed, kind = "Mersenne-Twister", normal.kind = "Inversion")
+  
+  reticulate::py_set_seed(seed, disable_hash_randomization = TRUE)
+  
   sc <- reticulate::import('scanpy')
+  
+  pd <- reticulate::import('pandas')
+  
   scobj <- sc$AnnData(X = t(as.matrix(object@methods[[assay]][[slot]])))
   scobj$obs_names <- as.factor(colnames(object@methods[[assay]][[slot]]))
   scobj$var_names <- as.factor(rownames(object@methods[[assay]][[slot]]))
@@ -192,7 +216,13 @@ perform.scanpy <- function(object,
     scobj$obs <- object@sample_metadata
   }
   
-  cat(crayon::cyan(paste0(Sys.time(), ': normalising counts\n')))
+  if(isTRUE(verbose)) {
+    
+    cat(crayon::cyan(paste0(Sys.time(), ': normalising counts\n')))
+    
+  }
+  
+  start_time <- Sys.time()
   
   if(!is.null(target_sum) & !is.null(key_added)) {
     sc$pp$normalize_total(adata = scobj, target_sum = as.integer(target_sum), 
@@ -218,13 +248,21 @@ perform.scanpy <- function(object,
   
   if(isTRUE(log1)) {
     
-    cat(crayon::cyan(paste0(Sys.time(), ': log1 transforming data\n')))
-    
+    if(isTRUE(verbose)) {
+      
+      cat(crayon::cyan(paste0(Sys.time(), ': log1 transforming data\n')))
+      
+    }
+
     sc$pp$log1p(scobj)
     
   } else if(isFALSE(log1)) {
     
-    cat(crayon::cyan(paste0(Sys.time(), ': log2 transforming data\n')))
+    if(isTRUE(verbose)) {
+      
+      cat(crayon::cyan(paste0(Sys.time(), ': log2 transforming data\n')))
+      
+    }
     
     scobj$X <- log2(scobj$X+1)
     
@@ -234,8 +272,12 @@ perform.scanpy <- function(object,
   rownames(.normalised) <- rownames(object@methods$RAW@counts)
   colnames(.normalised) <- colnames(object@methods$RAW@counts)
   
-  cat(crayon::cyan(paste0(Sys.time(), ': computing highly variable genes\n')))
-  
+  if(isTRUE(verbose)) {
+    
+    cat(crayon::cyan(paste0(Sys.time(), ': computing highly variable genes\n')))
+    
+  }
+
   if (!is.null(n_top_genes) & !is.null(batch_key)) {
     
     sc$pp$highly_variable_genes(adata = scobj, 
@@ -285,8 +327,6 @@ perform.scanpy <- function(object,
 
   scobj2 <- sc$AnnData(X = t(.normalised[scobj$var$highly_variable,]))
 
-  pd <- reticulate::import('pandas')
-
   scobj2$var_names <- as.factor(rownames(object@methods$RAW@counts)[scobj$var$highly_variable])
 
   scobj2$obs_names <- as.factor(colnames(object@methods$RAW@counts))
@@ -304,16 +344,24 @@ perform.scanpy <- function(object,
     }
     
   }
-
-  cat(crayon::cyan(paste0(Sys.time(), ': regressing covaraites \n')))
+  
+  if(isTRUE(verbose)) {
+    
+    cat(crayon::cyan(paste0(Sys.time(), ': regressing covaraites \n')))
+    
+  }
   
   if(!is.null(vars.to.regress)) {
     
     sc$pp$regress_out(adata = scobj2, keys = vars.to.regress)
     
   }
-
-  cat(crayon::cyan(paste0(Sys.time(), ': scaling data \n')))
+  
+  if(isTRUE(verbose)) {
+    
+    cat(crayon::cyan(paste0(Sys.time(), ': scaling data \n')))
+    
+  }
   
   sc$pp$scale(scobj2)
 
@@ -327,8 +375,12 @@ perform.scanpy <- function(object,
   
   if('_' %in% unlist(strsplit(x = new.assay.suffix, split = ''))) {
     
-    cat(crayon::cyan(paste0(Sys.time(), ': _ cannot be used in new.assay.suffix, replacing with - \n')))
-    
+    if(isTRUE(verbose)) {
+      
+      cat(crayon::cyan(paste0(Sys.time(), ': _ cannot be used in new.assay.suffix, replacing with - \n')))
+      
+    }
+
     new.assay.suffix <- sub(pattern = '_', replacement = '-', x = new.assay.suffix)
     
   }
@@ -340,7 +392,29 @@ perform.scanpy <- function(object,
                                                               highly.variable.genes = .highly.variable.genes,
                                                               feature_metadata = feat.metadata)
   
-  cat(crayon::cyan(paste0(Sys.time(), ': Scanpy normalisation completed \n')))
+  if(isTRUE(verbose)) {
+    
+    cat(crayon::cyan(paste0(Sys.time(), ': Scanpy normalisation completed \n')))
+    
+  }
+  
+  end_time <- Sys.time()
+  
+  function_time <- end_time - start_time
+  
+  if(!'normalisation_method' %in% colnames(object@pipelines)) {
+    
+    object@pipelines <- data.frame(normalisation_method=paste0('SCANPY', new.assay.suffix), normalisation_time=function_time)
+    
+  } else if (paste0('SCANPY', new.assay.suffix) %in% object@pipelines[,'normalisation_method']) {
+    
+    object@pipelines[which(object@pipelines[,'normalisation_method']==paste0('SCANPY', new.assay.suffix)),] <- data.frame(normalisation_method=paste0('SCANPY', new.assay.suffix), normalisation_time=function_time)
+    
+  } else {
+    
+    object@pipelines <- rbind(object@pipelines, data.frame(normalisation_method=paste0('SCANPY', new.assay.suffix), normalisation_time=function_time))
+    
+  }
   
   return(object)
 }

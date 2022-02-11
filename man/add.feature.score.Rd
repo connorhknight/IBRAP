@@ -18,6 +18,10 @@ add.cell.cycle(object = obj, assay = 'RAW', slot = 'counts')
 \item{features}{A character vector of genes to be scored}
 
 \item{column.name}{Character naming the column containing the scores in the metadata dataframe}
+
+\item{verbose}{Logical should function messages be printed?}
+
+\item{seed}{Numerical What seed should be set. Default = 1234}
 }
 \value{
 IBRAP S4 class object containing module scores for each cell in the metadata

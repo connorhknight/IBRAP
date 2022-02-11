@@ -15,7 +15,10 @@ perform.scran(
   new.assay.suffix = "",
   n.genes = 1500,
   max.cluster.size = 1000,
-  center_size_factors = TRUE
+  center_size_factors = TRUE,
+  verbose = FALSE,
+  seed = 1234,
+  ...
 )
 }
 \arguments{
@@ -40,6 +43,12 @@ perform.scran(
 \item{max.cluster.size}{Numerical. When performing quickCluster, what is the maximum size the clusters can be. Default = 1000}
 
 \item{center_size_factors}{Boolean Should size factor variance be centred. Default = TRUE}
+
+\item{verbose}{Logical Should function messages be printed?}
+
+\item{seed}{Numerical What seed should be set. Default = 1234}
+
+\item{...}{Arguments to pass to Seurat::ScaleData}
 }
 \value{
 Produces a new 'methods' assay containing normalised, scaled and HVGs.

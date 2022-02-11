@@ -11,6 +11,8 @@
 #' @param transform Boolean. If raw counts are supplied, this must be TRUE to normalise data
 #' @param features A character vector of genes to be scored
 #' @param column.name Character naming the column containing the scores in the metadata dataframe
+#' @param verbose Logical should function messages be printed?
+#' @param seed Numerical What seed should be set. Default = 1234
 #' 
 #' @usage add.cell.cycle(object = obj, assay = 'RAW', slot = 'counts')
 #' 
@@ -35,6 +37,8 @@ add.feature.score <- function(object,
                               transform, 
                               features, 
                               column.name,
+                              verbose=FALSE,
+                              seed=1234,
                               ...) {
   
   if(!is(object = object, class2 = 'IBRAP')) {
@@ -85,45 +89,114 @@ add.feature.score <- function(object,
     
   }
   
-  genes <- rownames(object)
-  genes <- list(genes[genes %in% features])
-  if(transform == TRUE) {
-    seuobj <- Seurat::CreateSeuratObject(counts = object@methods[[assay]][[slot]])
-    cat(crayon::cyan(paste0(Sys.time(), ': converted to Seurat object\n')))
-    seuobj <- Seurat::NormalizeData(object = seuobj)
-    cat(crayon::cyan(paste0(Sys.time(), ': data transformed\n')))
-    seuobj <- Seurat::AddModuleScore(object = seuobj, features = genes, ...)
-    cat(crayon::cyan(paste0(Sys.time(), ': seurat gene score calculated\n')))
-    for(o in names(seuobj@meta.data)) {
-      
-      if(o %in% names(object@sample_metadata)) {
-        
-        cat(crayon::cyan(paste0('found duplicated column name: ',o, 'removing old column names.\n')))
-        object@sample_metadata[,o] <- NULL
-        
-      }
-      
-    }
-    object@sample_metadata[[column.name]] <- seuobj@meta.data[, length(colnames(seuobj@meta.data))]
-    cat(crayon::cyan(paste0(Sys.time(), ': new metadata added\n')))
-  } else {
-    seuobj <- Seurat::CreateSeuratObject(counts = object@methods[[assay]][['counts']])
-    seuobj@assays$RNA@data <- object@methods[[assay]][[slot]]
-    cat(crayon::cyan(paste0(Sys.time(), ': converted to Seurat object\n')))
-    seuobj <- Seurat::AddModuleScore(object = seuobj, features = features, ...)
-    cat(crayon::cyan(paste0(Sys.time(), ': seurat gene score calculated\n')))
-    for(o in names(seuobj@meta.data)) {
-      
-      if(o %in% names(object@sample_metadata)) {
-        
-        cat(crayon::cyan(paste0(Sys.time(), ': found duplicated column name: ',o, 'removing old column names.\n')))
-        object@sample_metadata[,o] <- NULL
-        
-      }
-      
-    }
-    object@sample_metadata[[column.name]] <- seuobj@meta.data[, length(colnames(seuobj@meta.data))]
-    cat(crayon::cyan(paste0(Sys.time(), ': new metadata added\n')))
+  if(!is.logical(verbose)) {
+    
+    stop('verbose must be logical: TRUE/FALSE\n')
+    
   }
+  
+  set.seed(seed = seed, kind = "Mersenne-Twister", normal.kind = "Inversion")
+  
+  genes <- rownames(object)
+  
+  genes <- list(genes[genes %in% features])
+  
+  if(transform == TRUE) {
+    
+    seuobj <- Seurat::CreateSeuratObject(counts = object@methods[[assay]][[slot]])
+    
+    if(isTRUE(verbose)) {
+      
+      cat(crayon::cyan(paste0(Sys.time(), ': converted to Seurat object\n')))
+      
+    }
+
+    seuobj <- Seurat::NormalizeData(object = seuobj, verbose = verbose)
+    
+    if(isTRUE(verbose)) {
+      
+      cat(crayon::cyan(paste0(Sys.time(), ': data transformed\n')))
+      
+    }
+
+    seuobj <- Seurat::AddModuleScore(object = seuobj, features = genes, ...)
+    
+    if(isTRUE(verbose)) {
+      
+      cat(crayon::cyan(paste0(Sys.time(), ': seurat gene score calculated\n')))
+      
+    }
+
+    for(o in names(seuobj@meta.data)) {
+      
+      if(o %in% names(object@sample_metadata)) {
+        
+        if(isTRUE(verbose)) {
+          
+          cat(crayon::cyan(paste0('found duplicated column name: ',o, 'removing old column names.\n')))
+          
+        }
+
+        object@sample_metadata[,o] <- NULL
+        
+        
+      }
+      
+    }
+    
+    object@sample_metadata[[column.name]] <- seuobj@meta.data[, length(colnames(seuobj@meta.data))]
+    
+    if(isTRUE(verbose)) {
+      
+      cat(crayon::cyan(paste0(Sys.time(), ': new metadata added\n')))
+      
+    }
+
+  } else {
+    
+    seuobj <- Seurat::CreateSeuratObject(counts = object@methods[[assay]][['counts']])
+    
+    seuobj@assays$RNA@data <- object@methods[[assay]][[slot]]
+    
+    if(isTRUE(verbose)) {
+      
+      cat(crayon::cyan(paste0(Sys.time(), ': converted to Seurat object\n')))
+      
+    }
+
+    seuobj <- Seurat::AddModuleScore(object = seuobj, features = features, verbose = verbose, ...)
+    
+    if(isTRUE(verbose)) {
+      
+      cat(crayon::cyan(paste0(Sys.time(), ': seurat gene score calculated\n')))
+      
+    }
+
+    for(o in names(seuobj@meta.data)) {
+      
+      if(o %in% names(object@sample_metadata)) {
+        
+        if(isTRUE(verbose)) {
+          
+          cat(crayon::cyan(paste0(Sys.time(), ': found duplicated column name: ',o, ' removing old column names.\n')))
+          
+        }
+        
+        object@sample_metadata[,o] <- NULL
+        
+      }
+      
+    }
+    
+    object@sample_metadata[[column.name]] <- seuobj@meta.data[, length(colnames(seuobj@meta.data))]
+    
+    if(isTRUE(verbose)) {
+      
+      cat(crayon::cyan(paste0(Sys.time(), ': new metadata added\n')))
+      
+    }
+
+  }
+  
   return(object)
 }

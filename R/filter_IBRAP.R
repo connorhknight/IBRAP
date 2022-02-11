@@ -24,9 +24,19 @@ filter_IBRAP <- function(object, ...) {
   
   metadata <- object@sample_metadata
   
+  pre_filt <- nrow(metadata)
+  
   metadata <- subset(metadata, ...)
   
+  post_filt <- nrow(metadata)
+  
+  filt_loss <- pre_filt - post_filt
+  
   object <- object[,rownames(metadata)]
+  
+  cat(crayon::cyan(paste0(Sys.time(), ': a total of ', 
+                          filt_loss, ' cells were filtered from ', 
+                          pre_filt, ', ', post_filt, ' cells remain\n')))
   
   return(object)
   

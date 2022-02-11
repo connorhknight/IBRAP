@@ -19,7 +19,7 @@
 plot.QC.scatter <- function(object, 
                             x, 
                             y, 
-                            split.by) {
+                            split.by=NULL) {
   
   metadata <- object@sample_metadata
   
@@ -48,29 +48,42 @@ plot.QC.scatter <- function(object,
   new.df <- data.frame(as.factor(rownames(metadata)))
   new.df$x <- metadata[,x]
   new.df$y <- metadata[,y]
-  new.df$project <- metadata[,split.by]
   
-  proj.length <- length(unique(new.df$project))
-  
-  if(proj.length < 3) {
+  if(!is.null(split.by)) {
     
-    proj.length.new <- 3
-    cols.proj <- RColorBrewer::brewer.pal(n = proj.length.new, name = 'Pastel1')
-    cols.proj <- cols.proj[1:proj.length]
+    new.df$project <- metadata[,split.by]
     
-  } else {
+    proj.length <- length(unique(new.df$project))
     
-    cols.proj <- RColorBrewer::brewer.pal(n = proj.length, name = 'Pastel1')
+    if(proj.length < 3) {
+      
+      proj.length.new <- 3
+      cols.proj <- RColorBrewer::brewer.pal(n = proj.length.new, name = 'Pastel1')
+      cols.proj <- cols.proj[1:proj.length]
+      
+    } else {
+      
+      cols.proj <- RColorBrewer::brewer.pal(n = proj.length, name = 'Pastel1')
+      
+    }
+    
+    p <- ggplot2::ggplot(data = new.df, mapping = ggplot2::aes(x = x, y = y, col = project)) + 
+      ggplot2::geom_point() + ggplot2::theme_classic() + ggplot2::ggtitle(paste0(x,'_vs_',y)) + 
+      ggplot2::ylab(y) + ggplot2::xlab(x) + 
+      ggplot2::labs(color='identifier') + 
+      ggplot2::scale_color_manual(values=cols.proj) + 
+      ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5))
+    
+  } else { 
+    
+    p <- ggplot2::ggplot(data = new.df, mapping = ggplot2::aes(x = x, y = y)) + 
+      ggplot2::geom_point(color=RColorBrewer::brewer.pal(n = 3, name = 'Pastel1')[1]) + ggplot2::theme_classic() + ggplot2::ggtitle(paste0(x,'_vs_',y)) + 
+      ggplot2::ylab(y) + ggplot2::xlab(x) + 
+      ggplot2::labs(color='identifier') + 
+      ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5))
     
   }
   
-  p <- ggplot2::ggplot(data = new.df, mapping = ggplot2::aes(x = x, y = y, col = project)) + 
-    ggplot2::geom_point() + ggplot2::theme_classic() + ggplot2::ggtitle(paste0(x,'_vs_',y)) + 
-    ggplot2::ylab(y) + ggplot2::xlab(x) + 
-    ggplot2::labs(color='identifier') + 
-    ggplot2::scale_color_manual(values=cols.proj) + 
-    ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5))
-  
-  print(p)
-  
+print(p)
+
 }

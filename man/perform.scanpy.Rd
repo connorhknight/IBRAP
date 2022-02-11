@@ -22,7 +22,9 @@ perform.scanpy(
   n_bins = 20,
   flavor = "seurat",
   batch_key = NULL,
-  vars.to.regress = NULL
+  vars.to.regress = NULL,
+  verbose = FALSE,
+  seed = 1234
 )
 }
 \arguments{
@@ -57,6 +59,10 @@ perform.scanpy(
 \item{batch_key}{Character. Which column in the metadata identifies the batches of the cells. Default = NULL}
 
 \item{vars.to.regress}{Character. A single or multiple columns of information in the metadata that should be regressed from the dataset. Default = NULL}
+
+\item{verbose}{Logical Should function messages be printed?}
+
+\item{seed}{Numerical What seed should be set. Default = 1234}
 
 \item{flavour}{Character. Choosing which HVG selection method to use when, options: 'seurat', 'cell_ranger', 'seurat_v3'. Default = 'seurat'}
 }

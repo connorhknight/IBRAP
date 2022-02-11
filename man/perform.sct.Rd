@@ -4,7 +4,15 @@
 \alias{perform.sct}
 \title{Performs SCTransform}
 \usage{
-perform.sct(object, assay, slot, new.assay.suffix = "", ...)
+perform.sct(
+  object,
+  assay = "RAW",
+  slot = "counts",
+  new.assay.suffix = "",
+  verbose = FALSE,
+  seed = 1234,
+  ...
+)
 }
 \arguments{
 \item{object}{IBRAP S4 class object}
@@ -14,6 +22,10 @@ perform.sct(object, assay, slot, new.assay.suffix = "", ...)
 \item{slot}{String indicating which slot within the assay should be sourced}
 
 \item{new.assay.suffix}{Character. What should be added as a suffix for SCT}
+
+\item{verbose}{Logical Should function messages be printed?}
+
+\item{seed}{Numerical What seed should be set. Default = 1234}
 
 \item{do.scale}{Whether to scale residuals to have unit variance; default is FALSE}
 

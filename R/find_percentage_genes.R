@@ -10,6 +10,7 @@
 #' @param assay String indicating which assay to source the raw counts from
 #' @param slot String indicating which slot within the assay should be sourced
 #' @param column.name String naming the column name in the metadata
+#' @param verbose Logical should function messages be printed?
 #' 
 #' @usage find_percentage_genes(object = obj, pattern = '^MT-', assay = 'RAW', slot = 'RAW', column.name = 'RAW_percent.mt')
 #' 
@@ -27,7 +28,8 @@ find_percentage_genes <- function(object,
                                   pattern='^MT-', 
                                   assay='RAW', 
                                   slot='counts',
-                                  column.name = 'RAW_percent.mt') {
+                                  column.name='',
+                                  verbose=FALSE) {
   
   if(!is(object = object, class2 = 'IBRAP')) {
     
@@ -64,22 +66,64 @@ find_percentage_genes <- function(object,
     stop('slot does not exist\n')
     
   }
-
-  cat(crayon::cyan(paste0(Sys.time(), ': calculating percentage\n')))
+  
+  if(!is.character(column.name)) {
+    
+    stop('no column name was supplied\n')
+    
+  }
+  
+  if(!is.logical(verbose)) {
+    
+    stop('verbose must be logical. TRUE/FALSE\n')
+    
+  }
+  
+  if(isTRUE(verbose)) {
+    
+    cat(crayon::cyan(paste0(Sys.time(), ': calculating percentage\n')))
+    
+  }
+  
   mat <- as.matrix(object@methods[[assay]][[slot]])
+  
   subbed <- mat[grep(pattern = pattern, x = rownames(mat)),]
+  
   temp <- Matrix::colSums(subbed) / Matrix::colSums(mat) * 100
   
-  cat(crayon::cyan(paste0(Sys.time(), ': percentage calculated\n')))
-  temp <- as.data.frame(temp)
-  colnames(temp) <- column.name
-  if(column.name %in% colnames(object@sample_metadata)) {
-    cat(crayon::cyan(paste0(Sys.time(), ': removing old metadata column\n')))
-    object@sample_metadata <- object@sample_metadata[,colnames(object@sample_metadata) != column.name]
+  if(isTRUE(verbose)) {
+    
+    cat(crayon::cyan(paste0(Sys.time(), ': percentage calculated\n')))
+    
   }
-  cat(crayon::cyan(paste0(Sys.time(), ': appending new column\n')))
+
+  temp <- as.data.frame(temp)
+  
   colnames(temp) <- column.name
+  
+  if(column.name %in% colnames(object@sample_metadata)) {
+    
+    if(isTRUE(verbose)) {
+      
+      cat(crayon::cyan(paste0(Sys.time(), ': removing old metadata column\n')))
+      
+    }
+
+    object@sample_metadata <- object@sample_metadata[,colnames(object@sample_metadata) != column.name]
+    
+  }
+  
+  if(isTRUE(verbose)) {
+    
+    cat(crayon::cyan(paste0(Sys.time(), ': appending new column\n')))
+    
+  }
+ 
+  colnames(temp) <- column.name
+  
   temp <- apply(temp, 2, function(x) as.numeric(x))
+  
   object@sample_metadata <- cbind(object@sample_metadata, temp)
+  
   return(object)
 }

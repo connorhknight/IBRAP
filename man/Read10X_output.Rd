@@ -16,6 +16,8 @@ Read10X_output(directory, matrix.file, genes.file, barcodes.file, make.feat.uniq
 \item{barcodes.file}{Specify file name for barcodes. Default = barcodes.tsv}
 
 \item{make.feat.unique}{Should non-unique gene names be made unique.}
+
+\item{verbose}{Logical Should function messages be printed?}
 }
 \value{
 Sparse matrix of counts

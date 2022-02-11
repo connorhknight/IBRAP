@@ -12,5 +12,6 @@
 setClass(Class = 'IBRAP', 
          representation = representation(
            methods = 'list', 
-           sample_metadata = 'data.frame'
+           sample_metadata = 'data.frame',
+           pipelines = 'data.frame'
          ))

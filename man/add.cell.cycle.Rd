@@ -14,6 +14,10 @@ add.cell.cycle(object = obj, assay = 'RAW', slot = 'counts')
 \item{slot}{String indicating which slot within the assay should be sourced}
 
 \item{transform}{Boolean. If raw counts are supplied, this must be TRUE to normalise data}
+
+\item{verbose}{Logical should function messages be printed?}
+
+\item{seed}{Numerical What seed should be set. Default = 1234}
 }
 \value{
 IBRAP S4 class object containing cell cycle assignments and scores for each cell in the metadata

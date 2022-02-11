@@ -16,6 +16,8 @@ find_percentage_genes(object = obj, pattern = '^MT-', assay = 'RAW', slot = 'RAW
 \item{slot}{String indicating which slot within the assay should be sourced}
 
 \item{column.name}{String naming the column name in the metadata}
+
+\item{verbose}{Logical should function messages be printed?}
 }
 \value{
 IBRAP S4 class object containing highly varaible genes within the source assay

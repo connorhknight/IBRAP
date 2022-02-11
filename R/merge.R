@@ -12,9 +12,9 @@ setMethod(f = 'merge', signature = 'IBRAP',
             
             for(i in items) {
               
-              if(length(i@methods[[1]]) > 1) {
+              if(length(i@methods) > 1) {
                 
-                cat(crayon::cyan('No analysis can be performed prior to merging\n'))
+                cat(crayon::cyan('Onl the RAW assay can be present to merge datasets\n'))
                 return(NULL)
                 
               }
@@ -72,14 +72,14 @@ setMethod(f = 'merge', signature = 'IBRAP',
               }
               
               pb$tick()
-              
+
               .counts <- merge(x = .counts, y = counts.list[[t]], by = 'row.names', all = T)
               rownames(.counts) <- .counts$Row.names
               .counts$Row.names <- NULL
               
               pb$tick()
-              
-              .sample_metadata <- rbind(.sample_metadata, sample.list[[t]])
+  
+              .sample_metadata <- merge(.sample_metadata, sample.list[[t]], all=T)
               
               pb$tick()
               
@@ -96,7 +96,7 @@ setMethod(f = 'merge', signature = 'IBRAP',
               colnames(.feature_metadata) <- c('total.cells', 'total.counts')
               
               pb$tick()
-              
+
             }
             
             feat.met <- feature_metadata(assay = .counts, col.prefix = 'RAW')

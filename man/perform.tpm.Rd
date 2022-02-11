@@ -12,7 +12,10 @@ perform.tpm(
   do.scale = FALSE,
   do.center = TRUE,
   vars.to.regress = NULL,
-  new.assay.suffix = ""
+  new.assay.suffix = "",
+  verbose = FALSE,
+  seed = 1234,
+  ...
 )
 }
 \arguments{
@@ -29,6 +32,12 @@ perform.tpm(
 \item{vars.to.regress}{Character. Which column in the metadata should be regressed. Default = NULL}
 
 \item{new.assay.suffix}{Character. What should the new assay be called. Default = 'SCRAN'}
+
+\item{verbose}{Logical Should function messages be printed?}
+
+\item{seed}{Numerical What seed should be set. Default = 1234}
+
+\item{...}{Arguments to pass to Seurat::ScaleData}
 
 \item{do.centre}{Boolean. Whether to centre features to zero. Default = TRUE}
 }

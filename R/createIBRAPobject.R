@@ -7,19 +7,18 @@
 #' 
 #' @param counts Counts matrix
 #' @param original.project Character string naming the project
-#' @param method.name Character string naming the original method-assay. Default = 'RAW' `(Recommended)`
 #' @param meta.data data.frame of extra metadata to append to generated dataframe. Warning: Must be in the same order and colnames
 #' @param min.cells Numerical value of the minimum number of cells a gene should be present in
 #' @param min.features Numerical value minimum features that should be present in a cell
+#' @param verbose Logical. Should function information be printed?
 #' 
-#' @usage createIBRAPobject(counts = counts, original.project = 'project_1', method.name = 'RAW', meta.data = df, min.cells = 3, min.features = 200)
+#' @usage createIBRAPobject(counts = counts, original.project = 'project_1', meta.data = df, min.cells = 3, min.features = 200)
 #' 
 #' @return IBRAP S4 class object containing raw counts and metadata
 #' 
 #' @examples object <- createIBRAPobject(counts = counts,
 #'                                       meta.data = metadata_df,
 #'                                       original.project = 'bmmc',
-#'                                       method.name = 'RAW',
 #'                                       min.cells = 3,
 #'                                       min.features = 200)
 #'
@@ -28,20 +27,14 @@
 createIBRAPobject <- function(counts, 
                               original.project, 
                               add.suffix = FALSE,
-                              method.name = 'RAW', 
                               meta.data = NULL,
                               min.cells=NULL,
-                              min.features=NULL) {
+                              min.features=NULL,
+                              verbose=FALSE) {
   
   if(!is.character(original.project)) {
     
     stop('original.project must be a character string \n')
-    
-  }
-  
-  if(!is.character(method.name)) {
-    
-    stop('method.name must be a character string \n')
     
   }
   
@@ -115,7 +108,7 @@ createIBRAPobject <- function(counts,
   
   colnames(meta) <- as.character('original.project')
   
-  meta.2 <- cell_metadata(assay = counts, col.prefix = method.name)
+  meta.2 <- cell_metadata(assay = counts, col.prefix = 'RAW')
   
   for(f in colnames(meta.2)) {
     
@@ -125,11 +118,15 @@ createIBRAPobject <- function(counts,
   
   rownames(meta) <- colnames(counts)
 
-  f.metadata <- feature_metadata(assay = counts, col.prefix = method.name)
+  f.metadata <- feature_metadata(assay = counts, col.prefix = 'RAW')
   
   if(!is.null(meta.data)) {
-
-    cat(crayon::cyan('Concatenating metadata \n'))
+    
+    if(isTRUE(verbose)) {
+      
+      cat(crayon::cyan(paste0(Sys.time(), ': concatenating metadata \n')))
+      
+    }
     
     l1 <- colnames(meta)
     
@@ -160,7 +157,7 @@ createIBRAPobject <- function(counts,
   
   methods <- list()
   
-  methods[[as.character(method.name)]] <- first.method
+  methods[[as.character('RAW')]] <- first.method
   
   IBRAP.obj <- new(Class = 'IBRAP', 
                    methods = methods, 
