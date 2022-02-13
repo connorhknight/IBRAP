@@ -10,6 +10,7 @@
 #' @param slot Character. String indicating which slot within the assay should be sourced
 #' @param n.pcs Numerical. How many principal components should be produced. Default = 50
 #' @param reduction.save Character. What should this reduction be saved as in computation_reduction. Default = 'pca'
+#' @param print.variance Logical Should the plot be printed to the console
 #' @param ... Arguments to be passed to PCAtools::pca
 #' 
 #' @return PCA reductions contained within the computational_reduction list in the defined assays
@@ -28,7 +29,7 @@ perform.pca <- function(object,
                         slot='norm.scaled',
                         n.pcs=50,
                         reduction.save='pca', 
-                        save.plot = TRUE, 
+                        print.variance = FALSE, 
                         ...) {
   
   if(!is(object = object, class2 = 'IBRAP')) {
@@ -71,9 +72,9 @@ perform.pca <- function(object,
     
   }
   
-  if(!is.logical(save.plot)) {
+  if(!is.logical(print.variance)) {
     
-    stop('save.plot must be boolean. TRUE/FALSE \n')
+    stop('print.plot must be boolean. TRUE/FALSE \n')
     
   }
   
