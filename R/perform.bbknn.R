@@ -22,6 +22,8 @@
 #' @param generate.diffmap Boolean. Should diffusion maps be generated from the neighourhood graphs, these will be stored in computational_reductions and can be used for umap generation and further neighbourhood generation. Default = TRUE
 #' @param n_comps Numerical. How many components should be generated for the diffusion maps. Default = 15
 #' @param diffmap.name.sufix Character. Should a suffix be added to the end of bbknn:diffmap as the reduction name, i.e. parameter changes?
+#' @param verbose Logical Should function messages be printed?
+#' @param seed Numerical What seed should be set. Default = 1234
 #' 
 #' @return BBKNN connectivity graph contained in graphs in the indicated method-assays
 #' 
@@ -50,7 +52,9 @@ perform.bbknn <- function(object,
                           local_connectivity= 1,
                           generate.diffmap = FALSE,
                           n_comps = 15,
-                          diffmap.name.suffix='') {
+                          diffmap.name.suffix='',
+                          verbose = FALSE,
+                          seed=1234) {
   
   if(!is(object = object, class2 = 'IBRAP')) {
     
@@ -191,10 +195,32 @@ perform.bbknn <- function(object,
     
   }
   
+  
+  if(!is.logical(verbose)) {
+    
+    stop('verbose should be logical, TRUE/FALSE \n')
+    
+  }
+  
+  if(!is.numeric(seed)) {
+    
+    stop('seed should be numerical\n')
+    
+  }
+  
+  
+  set.seed(seed = seed, kind = "Mersenne-Twister", normal.kind = "Inversion")
+  
+  reticulate::py_set_seed(seed, disable_hash_randomization = TRUE)
+  
   sc <- reticulate::import('scanpy')
   pd <- reticulate::import('pandas')
   
+  tmp <- tibble::add_column(.data = pancreas@pipelines, integration_method=NA, integration_time=NA)
+  
   for(p in assay) {
+    
+    start_time <- Sys.time()
     
     count <- 1
     
@@ -351,8 +377,20 @@ perform.bbknn <- function(object,
 
       count <- count + 1
       
+      end_time <- Sys.time()
+      
+      function_time <- end_time - start_time
+      
+      tmp[which(x = tmp$normalisation_method==p),'integration_method'] <- 'BBKNN'
+      
+      print(function_time)
+      
+      tmp[which(x = tmp$normalisation_method==p),'integration_time'] <- function_time
+      
     }
     
+    object@pipelines <- tmp
+
   }
   
   return(object)

@@ -106,8 +106,6 @@ plot.variance <- function(object, assay, reduction, ...) {
       
       red <- reduction.list[[reduction]]
       
-      print(red)
-      
       sdev <- apply(red, MARGIN = 2, FUN = sd)
       
       eig <- sdev^2/sum(sdev^2)

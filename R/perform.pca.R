@@ -10,7 +10,7 @@
 #' @param slot Character. String indicating which slot within the assay should be sourced
 #' @param n.pcs Numerical. How many principal components should be produced. Default = 50
 #' @param reduction.save Character. What should this reduction be saved as in computation_reduction. Default = 'pca'
-#' @param print.variance Logical Should the plot be printed to the console
+#' @param print.variance Logical. Should the plot be printed to the console
 #' @param ... Arguments to be passed to PCAtools::pca
 #' 
 #' @return PCA reductions contained within the computational_reduction list in the defined assays
@@ -103,19 +103,7 @@ perform.pca <- function(object,
     if(ass %in% c('SCT','SCRAN','TPM')) {
       
       a <- PCAtools::pca(mat = mat, center = F, scale = F, ...)
-      eig <- a$sdev^2/sum(a$sdev^2)
-      eig <- as.data.frame(eig*100)
-      temp <- as.character(colnames(a$rotated))
-      eig[,2] <- factor(x = temp, levels = unique(temp))
-      colnames(eig) <- c ('Variance', 'PCs')
-      
-      p <- ggplot2::ggplot(data = eig[1:n.pcs,], mapping = ggplot2::aes(x = PCs, y = Variance)) + 
-        ggplot2::geom_point() + 
-        egg::theme_article() + 
-        ggplot2::ylab('Explained Variance (%)') +
-        ggplot2::ggtitle(t) + 
-        ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90, vjust = 0.5, hjust=1), plot.title = ggplot2::element_text(hjust = 0.5))
-      
+
       cat(crayon::cyan(paste0(Sys.time(), ': PCA completed\n')))
       
       object@methods[[t]]@computational_reductions[[reduction.save]] <- as.matrix(a$rotated[,1:n.pcs])
@@ -184,19 +172,7 @@ perform.pca <- function(object,
       
     }
     
-    if(isTRUE(save.plot)) {
-      
-      pdf(file = paste0('PCA_', t, '.pdf'), onefile = TRUE)
-      
-    }
-    
-    print(p)
-    
-    if(isTRUE(save.plot)) {
-      
-      dev.off()
-      
-    }
+    IBRAP::plot.variance(object, assay = assay, reduction = reduction.save)
 
   }
   
