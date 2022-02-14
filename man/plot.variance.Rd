@@ -21,3 +21,10 @@ Plots showing the supplied reductions explained variance
 \description{
 Shows the explained variance for a reduction for selecting how many dimensions to use downstream
 }
+\examples{
+
+object <- plot.variance(object = object, 
+                        assay = c('SCT', 'SCRAN', 'SCANPY'), 
+                        reduction = 'pca')
+
+}

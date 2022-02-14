@@ -32,9 +32,7 @@ add.cell.cycle <- function(object,
                            verbose=FALSE,
                            seed=1234,
                            ...) {
-  
-  data(homo_sapiens, envir=environment())
-  
+
   if(!is(object = object, class2 = 'IBRAP')) {
     
     stop('object must be of class IBRAP\n')
