@@ -25,7 +25,7 @@ perform.pca(
 
 \item{reduction.save}{Character. What should this reduction be saved as in computation_reduction. Default = 'pca'}
 
-\item{print.variance}{Logical Should the plot be printed to the console}
+\item{print.variance}{Logical. Should the plot be printed to the console}
 
 \item{...}{Arguments to be passed to PCAtools::pca}
 }

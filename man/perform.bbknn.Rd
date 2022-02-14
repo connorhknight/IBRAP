@@ -21,7 +21,9 @@ perform.bbknn(
   local_connectivity = 1,
   generate.diffmap = FALSE,
   n_comps = 15,
-  diffmap.name.suffix = ""
+  diffmap.name.suffix = "",
+  verbose = FALSE,
+  seed = 1234
 )
 }
 \arguments{
@@ -54,6 +56,10 @@ perform.bbknn(
 \item{generate.diffmap}{Boolean. Should diffusion maps be generated from the neighourhood graphs, these will be stored in computational_reductions and can be used for umap generation and further neighbourhood generation. Default = TRUE}
 
 \item{n_comps}{Numerical. How many components should be generated for the diffusion maps. Default = 15}
+
+\item{verbose}{Logical Should function messages be printed?}
+
+\item{seed}{Numerical What seed should be set. Default = 1234}
 
 \item{metric.}{Character. Which distance metric to use when approx is TRUE, options: 'angular', 'euclidean', 'manhattan' or 'hamming'. Default = 'euclidean'}
 
