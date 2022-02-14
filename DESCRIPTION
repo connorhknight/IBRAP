@@ -1,6 +1,6 @@
 Package: IBRAP
 Type: Package
-Title: Integrated Benchmarking scRNA-seq Analytical Pipeline
+Title: Integrated Benchmarking scRNA-seq Analytical Pipeline (IBRAP)
 Version: 1.0.0
 Author: Connor Harry Knight
 Maintainer: The package maintainer <c.h.knight@qmul.ac.uk>
@@ -13,7 +13,7 @@ Depends:
     R (>= 4.0.0)
 Authors@R: c(
     person("Connor", "Knight", ,"connorhknight@gmail.co.uk", 
-    role = c("aut", "cre", "dev"),
+    role = c("aut", "cre"),
     ),
     person("Faraz", "Khan", ,"faraz.k89@gmail.com",
     role = c("aut", "cre"))
@@ -55,4 +55,5 @@ Imports:
     shiny (>= 1.7.1),
     destiny (>= 3.8.1),
     progress (>= 1.2.2),
-    ggpubr (>= 0.4.0)
+    ggpubr (>= 0.4.0),
+    usethis (>= 2.1.5)
