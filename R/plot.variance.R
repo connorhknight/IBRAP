@@ -18,7 +18,7 @@
 #'                         assay = c('SCT', 'SCRAN', 'SCANPY'), 
 #'                         reduction = 'pca')
 #'
-#' @export
+#' @export plot.variance
 
 plot.variance <- function(object, assay, reduction, ...) {
   

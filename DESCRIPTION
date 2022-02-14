@@ -56,4 +56,5 @@ Imports:
     destiny (>= 3.8.1),
     progress (>= 1.2.2),
     ggpubr (>= 0.4.0),
-    usethis (>= 2.1.5)
+    usethis (>= 2.1.5),
+    biomaRt (>= 2.50.3)
