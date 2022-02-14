@@ -13,8 +13,9 @@ perform.tpm(
   do.center = TRUE,
   vars.to.regress = NULL,
   new.assay.suffix = "",
+  biomart.dataset = "hsapiens_gene_ensembl",
+  gene.lengths = NULL,
   verbose = FALSE,
-  seed = 1234,
   ...
 )
 }
@@ -33,9 +34,9 @@ perform.tpm(
 
 \item{new.assay.suffix}{Character. What should the new assay be called. Default = 'SCRAN'}
 
-\item{verbose}{Logical Should function messages be printed?}
+\item{biomart.dataset}{Character. Which biomart dataset should be used, this normally corresponds with the species in question, default = 'hsapiens_gene_ensembl'. Check available datasets by performing the following. ensembl <- biomaRt::useEnsembl(biomart = "genes", dataset = "hsapiens_gene_ensembl"), then biomaRt::listDatasets(ensembl)}
 
-\item{seed}{Numerical What seed should be set. Default = 1234}
+\item{verbose}{Logical Should function messages be printed?}
 
 \item{...}{Arguments to pass to Seurat::ScaleData}
 

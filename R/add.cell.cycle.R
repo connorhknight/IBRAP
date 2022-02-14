@@ -83,7 +83,7 @@ add.cell.cycle <- function(object,
   
   set.seed(seed = seed, kind = "Mersenne-Twister", normal.kind = "Inversion")
   
-  r <- read.table(text = as.character(IBRAP::Homo_sapiens$phase.geneID.GeneName), sep = ',')
+  r <- IBRAP::Homo_sapiens
   
   colnames(r) <- c('phase', 'geneID', 'geneName')
   

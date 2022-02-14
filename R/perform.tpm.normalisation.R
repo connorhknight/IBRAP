@@ -13,8 +13,9 @@
 #' @param do.centre Boolean. Whether to centre features to zero. Default = TRUE
 #' @param vars.to.regress Character. Which column in the metadata should be regressed. Default = NULL
 #' @param new.assay.suffix Character. What should the new assay be called. Default = 'SCRAN'
+#' @param biomart.dataset Character. Which biomart dataset should be used, this normally corresponds with the species in question, default = 'hsapiens_gene_ensembl'. Check available datasets by performing the following. ensembl <- biomaRt::useEnsembl(biomart = "genes", dataset = "hsapiens_gene_ensembl"), then biomaRt::listDatasets(ensembl)
+#' @
 #' @param verbose Logical Should function messages be printed?
-#' @param seed Numerical What seed should be set. Default = 1234
 #' @param ... Arguments to pass to Seurat::ScaleData
 #' 
 #' @return Produces a new 'methods' assay containing normalised, scaled and HVGs.
@@ -34,8 +35,9 @@ perform.tpm <- function(object,
                         do.center = TRUE,
                         vars.to.regress = NULL,
                         new.assay.suffix = '',
+                        biomart.dataset='hsapiens_gene_ensembl',
+                        gene.lengths=NULL,
                         verbose = FALSE,
-                        seed = 1234,
                         ...) {
   
   if(!is(object = object, class2 = 'IBRAP')) {
@@ -80,15 +82,6 @@ perform.tpm <- function(object,
     
   }
   
-  r <- read.table(text = as.character(IBRAP::mart_export$Gene.stable.ID.Gene.name.Gene.start..bp..Gene.end..bp.), sep = ',')
-  colnames(r) <- c('geneID', 'geneName', 'start', 'end')
-  
-  if(is.null(r)) {
-    
-    stop('cannot find gene lengths\n')
-    
-  }
-  
   if(!is.logical(do.scale)) {
     
     stop('do.scale must be logical: TRUE/FALSE\n')
@@ -117,14 +110,6 @@ perform.tpm <- function(object,
     
   }
   
-  if(!is.numeric(seed)) {
-    
-    stop('seed should be numerical\n')
-    
-  }
-  
-  set.seed(seed = seed, kind = "Mersenne-Twister", normal.kind = "Inversion")
-  
   if('_' %in% unlist(strsplit(x = new.assay.suffix, split = ''))) {
     
     if(isTRUE(verbose)) {
@@ -137,11 +122,42 @@ perform.tpm <- function(object,
     
   }
   
+  if(!is.null(gene.lengths)) {
+    
+    if(!is.data.frame(gene.lengths)) {
+      
+      stop('gene.lengths must be a dataframe\n')
+      
+    }
+    
+    if(!c('external_gene_name','transcript_length') %in% colnames(gene.lengths)) {
+      
+      stop('gene.lengths must contain column names external_gene_name and transcript_length\n')
+      
+    }
+    
+  }
+  
+  if(is.null(gene.lengths)) {
+    
+    ensembl <- biomaRt::useEnsembl(biomart = 'genes', dataset = biomart.dataset)
+    
+    query <- biomaRt::getBM(attributes = c('external_gene_name','transcript_start','transcript_end'), 
+                            filters = 'external_gene_name', mart = ensembl, values = rownames(object))
+    
+    query <- query[order(query$external_gene_name, decreasing = T),]
+    
+    query <- query[!duplicated(query$external_gene_name),]
+    
+    query$transcript_length <- query$transcript_end - query$transcript_start
+    
+    gene.lengths <- query[,c('external_gene_name','transcript_length')]
+    
+  }
+  
   start_time <- Sys.time()
   
-  r$Gene.length <- r$end - r$start
-  
-  subset <- r[r$geneName %in% rownames(object),]
+  gene.length.subset <- gene.lengths[gene.lengths$external_gene_name %in% rownames(object),]
   
   if(isTRUE(verbose)) {
     
@@ -149,15 +165,13 @@ perform.tpm <- function(object,
     
   }
   
-  rownames(subset) <- make.unique(names = as.character(subset$geneName), '.')
-  
   if(isTRUE(verbose)) {
     
     cat(crayon::cyan(paste0(Sys.time(), ': rownames added\n')))
     
   }
-
-  meta <- object@methods[[assay]]@feature_metadata[intersect(rownames((object@methods[[assay]]@feature_metadata)), rownames(subset)),]
+  
+  meta <- object@methods[[assay]]@feature_metadata[intersect(rownames((object@methods[[assay]]@feature_metadata)), gene.length.subset$external_gene_name),]
   
   if(isTRUE(verbose)) {
     
@@ -167,9 +181,9 @@ perform.tpm <- function(object,
   
   mat <- as.matrix(object@methods[[assay]][[slot]])
   
-  mat <- mat[intersect(rownames(mat), rownames(subset)),]
+  mat <- mat[intersect(rownames(mat), gene.length.subset$external_gene_name),]
   
-  ordered <- subset[match(rownames(mat), rownames(subset)),]
+  ordered <- gene.length.subset[match(rownames(mat), gene.length.subset$external_gene_name),]
   
   if(isTRUE(verbose)) {
     
@@ -179,7 +193,7 @@ perform.tpm <- function(object,
     
   }
   
-  calc <- sweep(mat, 1, as.numeric(ordered$Gene.length), `/`)
+  calc <- sweep(mat, 1, as.numeric(ordered$transcript_length), `/`)
   
   scale.factor <- colSums(calc)/1000000
   
@@ -237,11 +251,11 @@ perform.tpm <- function(object,
   object@sample_metadata <- cbind(object@sample_metadata, cell_metadata(assay = as.matrix(.normalised), col.prefix = paste0('TPM', new.assay.suffix)))
   
   object@methods[[paste0('TPM', new.assay.suffix)]] <- new(Class = 'methods',
-                                          counts = Matrix::Matrix(.counts, sparse = T), 
-                                          normalised = Matrix::Matrix(.normalised, sparse = T), 
-                                          norm.scaled = as.matrix(.norm.scaled),
-                                          highly.variable.genes = .highly.variable.genes,
-                                          feature_metadata = feat.meta)
+                                                           counts = Matrix::Matrix(.counts, sparse = T), 
+                                                           normalised = Matrix::Matrix(.normalised, sparse = T), 
+                                                           norm.scaled = as.matrix(.norm.scaled),
+                                                           highly.variable.genes = .highly.variable.genes,
+                                                           feature_metadata = feat.meta)
   
   if(isTRUE(verbose)) {
     
