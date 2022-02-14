@@ -51,3 +51,7 @@ Imports:
     colorspace (>= 2.0-2),
     utils (>= 4.0.4),
     ggrepel (>= 0.9.1),
+    MAST (>= 1.20.0),
+    shiny (>= 1.7.1),
+    destiny (>= 3.8.1),
+    progress (>= 1.2.2)
