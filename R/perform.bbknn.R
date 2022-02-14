@@ -99,6 +99,18 @@ perform.bbknn <- function(object,
     
   }
   
+  if(is.null(n_pcs)) {
+    
+    n_pcs <- list()
+    
+    for(x in 1:length(reduction))  {
+      
+      n_pcs[[x]] <- 0
+      
+    }
+    
+  }
+  
   if(!is.character(graph.name.suffix)) {
     
     stop('graph.name.suffix must be character string\n')
@@ -216,10 +228,18 @@ perform.bbknn <- function(object,
   sc <- reticulate::import('scanpy')
   pd <- reticulate::import('pandas')
   
-  tmp <- tibble::add_column(.data = pancreas@pipelines, integration_method=NA, integration_time=NA)
+  if(!'integration_method' %in% colnames(object@pipelines)) {
+    
+    tmp <- tibble::add_column(.data = object@pipelines, integration_method=NA, integration_time=NA)
+    
+  } else {
+    
+    tmp <- object@pipelines
+    
+  }
   
   for(p in assay) {
-    
+
     start_time <- Sys.time()
     
     count <- 1
@@ -381,16 +401,52 @@ perform.bbknn <- function(object,
       
       function_time <- end_time - start_time
       
-      tmp[which(x = tmp$normalisation_method==p),'integration_method'] <- 'BBKNN'
+      if(!'integration_method' %in% colnames(object@pipelines)) {
+        
+        tmp[which(x = tmp$normalisation_method==p),'integration_method'] <- paste0('BBKNN', graph.name.suffix)
+        
+        tmp[which(x = tmp$normalisation_method==p),'integration_time'] <- as.difftime(function_time, units = 'secs')
+        
+      }
       
-      print(function_time)
-      
-      tmp[which(x = tmp$normalisation_method==p),'integration_time'] <- function_time
-      
+      if('integration_method' %in% colnames(object@pipelines)) {
+        
+        if(paste0('BBKNN', graph.name.suffix) %in% tmp$integration_method) {
+          
+          tmp[which(tmp$normalisation_method==p & tmp$integration_method==paste0('BBKNN', graph.name.suffix)),] <- c(tmp[which(tmp$normalisation_method==p & tmp$integration_method==paste0('BBKNN', graph.name.suffix)),c('normalisation_method','normalisation_time')], paste0('BBKNN', graph.name.suffix), as.difftime(function_time, units = 'secs'))  
+          
+        }
+        
+        if(!paste0('BBKNN', graph.name.suffix) %in% object@pipelines$integration_method) {
+
+          df <- tmp[which(tmp$normalisation_method==p),]
+
+          df <- df[!duplicated(df$normalisation_method),]
+
+          df[,'integration_method'] <- paste0('BBKNN', graph.name.suffix)
+
+          df[,'integration_time'] <- function_time
+
+          tmp <- rbind(tmp, df)
+          
+        }
+        
+      }
+
     }
+
+  }
+  
+  if(!'integration_method' %in% colnames(object@pipelines)) {
     
     object@pipelines <- tmp
-
+    
+  } else if ('integration_method' %in% colnames(object@pipelines)) {
+    
+    tmp$integration_time <- as.difftime(tim = tmp$integration_time, units = 'secs')
+    
+    object@pipelines <- tmp
+    
   }
   
   return(object)

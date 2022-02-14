@@ -102,7 +102,7 @@ perform.pca <- function(object,
     
     if(ass %in% c('SCT','SCRAN','TPM')) {
       
-      a <- PCAtools::pca(mat = mat, center = F, scale = F, ...)
+      a <- suppressWarnings(PCAtools::pca(mat = mat, center = F, scale = F, ...))
 
       cat(crayon::cyan(paste0(Sys.time(), ': PCA completed\n')))
       
@@ -141,7 +141,7 @@ perform.pca <- function(object,
       
     } else {
       
-      a <- PCAtools::pca(mat = mat, center = F, scale = F, ...)
+      a <- suppressWarnings(PCAtools::pca(mat = mat, center = F, scale = F, ...))
 
       cat(crayon::cyan(paste0(Sys.time(), ': PCA completed\n')))
       

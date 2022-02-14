@@ -15,10 +15,6 @@ smartseq2 <- createIBRAPobject(counts = smartseq2.counts,
                                original.project = 'smartseq2', 
                                add.suffix = T, 
                                meta.data = smartseq2.meta, min.cells = 3, min.features = 200, verbose = T)
-smartseq2 <- createIBRAPobject(counts = smartseq2.counts, 
-                               original.project = 'smartseq2', 
-                               add.suffix = T, 
-                               meta.data = smartseq2.meta, min.cells = 3, min.features = 200)
 
 celseq2 <- createIBRAPobject(counts = celseq2.counts, 
                              original.project = 'celseq2', 
@@ -63,11 +59,15 @@ plot.QC.vln(object = pancreas,
             metadata.columns = c("RAW_total.counts",
                                  "SCT_total.counts",
                                  "SCRAN_total.counts",
-                                 "SCANPY_total.counts"))
+                                 "SCANPY_total.counts", 
+                                 "TPM_total.counts"))
 
 plot.QC.scatter(object = smartseq2, 
                 x = 'RAW_total.counts', 
                 y = 'RAW_total.features', 
                 split.by = 'Phase')
 
-pancreas <- perform.pca(object = pancreas, assay = c('SCT','SCRAN','SCANPY'), save.plot = F)
+pancreas <- perform.pca(object = pancreas, assay = c('SCT','SCRAN','SCANPY','TPM'), print.variance = T)
+
+pancreas <- perform.bbknn(object = pancreas, assay = c('SCT','SCRAN','SCANPY','TPM'), reduction = 'pca', batch = 'original.project', verbose = T)
+

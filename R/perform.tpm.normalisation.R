@@ -138,6 +138,8 @@ perform.tpm <- function(object,
     
   }
   
+  start_time <- Sys.time()
+  
   if(is.null(gene.lengths)) {
     
     ensembl <- biomaRt::useEnsembl(biomart = 'genes', dataset = biomart.dataset)
@@ -154,8 +156,6 @@ perform.tpm <- function(object,
     gene.lengths <- query[,c('external_gene_name','transcript_length')]
     
   }
-  
-  start_time <- Sys.time()
   
   gene.length.subset <- gene.lengths[gene.lengths$external_gene_name %in% rownames(object),]
   
