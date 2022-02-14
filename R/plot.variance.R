@@ -16,7 +16,7 @@
 #' 
 #' object <- plot.variance(object = object, 
 #'                         assay = c('SCT', 'SCRAN', 'SCANPY'), 
-#'                         reduction = 'pca)
+#'                         reduction = 'pca')
 #'
 #' @export
 
@@ -118,6 +118,7 @@ plot.variance <- function(object, assay, reduction, ...) {
         ggplot2::geom_point() + 
         egg::theme_article() + 
         ggplot2::ylab('Explained Variance (%)') +
+        ggplot2::xlab('Components')
         ggplot2::ggtitle(paste0(x,'_',p)) + 
         ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90, vjust = 0.5, hjust=1), 
                        plot.title = ggplot2::element_text(hjust = 0.5))

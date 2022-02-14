@@ -74,7 +74,7 @@ perform.pca <- function(object,
   
   if(!is.logical(print.variance)) {
     
-    stop('print.plot must be boolean. TRUE/FALSE \n')
+    stop('print.plot must be logical, TRUE/FALSE \n')
     
   }
   
@@ -135,17 +135,6 @@ perform.pca <- function(object,
     colnames(tmp) <- unlist(pc.names)
     rownames(tmp) <- colnames(object@methods[[t]][['norm.scaled']])
     
-    eig <- as.data.frame(apply(X = tmp, MARGIN = 2, FUN = sd)^2/sum(apply(X = tmp, MARGIN = 2, FUN = sd)^2)*100)
-    eig[,2] <- factor(x = colnames(tmp), levels = unique(colnames(tmp)))
-    colnames(eig) <- c('Variance', 'PCs')
-    
-    p <- ggplot2::ggplot(data = eig[1:n.pcs,], mapping = ggplot2::aes(x = PCs, y = Variance)) + 
-      ggplot2::geom_point() + 
-      egg::theme_article() + 
-      ggplot2::ylab('Explained Variance (%)') +
-      ggplot2::ggtitle(t) + 
-      ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90, vjust = 0.5, hjust=1), plot.title = ggplot2::element_text(hjust = 0.5))
-    
     cat(crayon::cyan(paste0(Sys.time(), ': PCA completed\n')))
     
     object@methods[[t]]@computational_reductions[[reduction.save]] <- as.matrix(tmp)
@@ -153,27 +142,19 @@ perform.pca <- function(object,
     } else {
       
       a <- PCAtools::pca(mat = mat, center = F, scale = F, ...)
-      eig <- a$sdev^2/sum(a$sdev^2)
-      eig <- as.data.frame(eig*100)
-      temp <- as.character(colnames(a$rotated))
-      eig[,2] <- factor(x = temp, levels = unique(temp))
-      colnames(eig) <- c('Variance', 'PCs')
-      
-      p <- ggplot2::ggplot(data = eig[1:n.pcs,], mapping = ggplot2::aes(x = PCs, y = Variance)) + 
-        ggplot2::geom_point() + 
-        egg::theme_article() + 
-        ggplot2::ylab('Explained Variance (%)') +
-        ggplot2::ggtitle(t) + 
-        ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90, vjust = 0.5, hjust=1), plot.title = ggplot2::element_text(hjust = 0.5))
-      
+
       cat(crayon::cyan(paste0(Sys.time(), ': PCA completed\n')))
       
       object@methods[[t]]@computational_reductions[[reduction.save]] <- as.matrix(a$rotated[,1:n.pcs])
       
     }
-    
-    IBRAP::plot.variance(object, assay = assay, reduction = reduction.save)
 
+  }
+  
+  if(isTRUE(print.variance)) {
+    
+    print(IBRAP::plot.variance(object = object, assay = assay, reduction = reduction.save))
+    
   }
   
   return(object)
