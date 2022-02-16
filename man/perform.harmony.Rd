@@ -11,7 +11,9 @@ perform.harmony(
   reduction = "pca",
   reduction.save.suffix = "",
   dims.use = NULL,
-  save.plot = TRUE,
+  print.harmony.plot = FALSE,
+  seed = 1234,
+  verbose = FALSE,
   ...
 )
 }
@@ -22,13 +24,15 @@ perform.harmony(
 
 \item{vars.use}{Character. A string of the column nmae that contains variables to regress.}
 
-\item{reduction}{Character. String defining the name of the reduction to provide for BBKNN. Default = 'pca'}
+\item{reduction}{Character. String defining the name of the reduction to provide for HARMONY. Default = 'pca'}
 
 \item{reduction.save.suffix}{Character. What should be appended to the end of harmony as the reduction name}
 
 \item{dims.use}{Numerical. Number of dimensions of the provided reduction to input into harmony, NULL equates to all dimensions. Default = NULL}
 
-\item{save.plot}{Boolean. Should the automatically genewrated plot be saved? Default = TRUE}
+\item{print.harmony.plot}{Boolean. Should the automatically generated plot be printed? Default = FALSE}
+
+\item{verbose}{Logical Should function messages be printed?}
 
 \item{...}{Arguments to be passed to harmony::HarmonyMatrix}
 }

@@ -12,7 +12,6 @@ perform.seurat.integration(
   batch,
   reduction.name.suffix = NULL,
   nfeatures = 2000,
-  reduction = "cca",
   anchors.dims = 1:30,
   l2.norm = T,
   k.anchor = 5,
@@ -28,7 +27,10 @@ perform.seurat.integration(
   sd.weight = 1,
   sample.tree = NULL,
   integrate.eps = 0,
-  save.plot = TRUE
+  print.variance = TRUE,
+  verbose = FALSE,
+  seed = 1234,
+  ...
 )
 }
 \arguments{
@@ -39,8 +41,6 @@ perform.seurat.integration(
 \item{batch}{Character. Which column in the metadata defines the batches}
 
 \item{nfeatures}{Numerical. How many features should be found as integration anchors. Default = 3000}
-
-\item{reduction}{Character. Which reduction method to use: cca = canonical correlation analysis, rpca = reciprocal PCA, rlsi = Reciprocal LSE. Default = cca}
 
 \item{l2.norm}{Logical. Perform L2 normalization on the CCA cell embeddings after dimensional reduction. Default = TRUE}
 
@@ -66,11 +66,11 @@ perform.seurat.integration(
 
 \item{integrate.eps}{Numerical. Error bound on the neighbor finding algorithm (from RANN)}
 
-\item{save.plot}{Boolean. Should the automatically genewrated plot be saved? Default = TRUE}
-
 \item{max.features.}{Numerical. The maximum number of features to use when specifying the neighborhood search space in the anchor filtering. Default = 200}
 
 \item{n.tree}{Numerical. More trees gives higher precision when using annoy approximate nearest neighbor search. Default = 50}
+
+\item{save.plot}{Boolean. Should the automatically genewrated plot be saved? Default = TRUE}
 }
 \value{
 Produces a new 'methods' assay containing normalised, scaled and HVGs.

@@ -17,7 +17,8 @@ perform.scanorama(
   alpha = 0.1,
   knn = 20,
   union = FALSE,
-  seed = 12345
+  verbose = FALSE,
+  seed = 1234
 )
 }
 \arguments{
@@ -43,9 +44,9 @@ perform.scanorama(
 
 \item{knn}{Numerical. Number of nearest neighbors to use for matching. Default = 20}
 
-\item{union}{Boolean. Should genes between datasets be intersected or not. Default = FALSE}
+\item{verbose}{Logical Should function messages be printed?}
 
-\item{seed}{Numerical. The seed to use when integrating these datasets. Default = 12345}
+\item{seed}{Numerical What seed should be set. Default = 1234}
 }
 \value{
 Scanorama reduction saved in the supplied method-assays

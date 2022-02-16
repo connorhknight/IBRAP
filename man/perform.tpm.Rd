@@ -36,6 +36,8 @@ perform.tpm(
 
 \item{biomart.dataset}{Character. Which biomart dataset should be used, this normally corresponds with the species in question, default = 'hsapiens_gene_ensembl'. Check available datasets by performing the following. ensembl <- biomaRt::useEnsembl(biomart = "genes", dataset = "hsapiens_gene_ensembl"), then biomaRt::listDatasets(ensembl)}
 
+\item{gene.lengths}{DataFrame. A dataframe containing two columns, external_gene_name and transcript_length.}
+
 \item{verbose}{Logical Should function messages be printed?}
 
 \item{...}{Arguments to pass to Seurat::ScaleData}
