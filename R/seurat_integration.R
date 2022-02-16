@@ -9,7 +9,6 @@
 #' @param assay Character. String containing indicating which assay to use
 #' @param batch Character. Which column in the metadata defines the batches
 #' @param nfeatures Numerical. How many features should be found as integration anchors. Default = 3000
-#' @param reduction Character. Which reduction method to use: cca = canonical correlation analysis, rpca = reciprocal PCA, rlsi = Reciprocal LSE. Default = cca
 #' @param l2.norm Logical. Perform L2 normalization on the CCA cell embeddings after dimensional reduction. Default = TRUE
 #' @param k.anchor Numerical. How many neighbors (k) to use when picking anchors. Default = 5
 #' @param k.filter Numerical. How many neighbors (k) to use when filtering anchors. Default = 200
@@ -59,7 +58,6 @@ perform.seurat.integration <- function(object,
                                        batch, 
                                        reduction.name.suffix=NULL,
                                        nfeatures = 2000,
-                                       reduction = 'cca',
                                        anchors.dims = 1:30,
                                        l2.norm = T,
                                        k.anchor = 5,
@@ -75,7 +73,10 @@ perform.seurat.integration <- function(object,
                                        sd.weight = 1, 
                                        sample.tree = NULL, 
                                        integrate.eps = 0,
-                                       save.plot = TRUE) {
+                                       print.variance = TRUE,
+                                       verbose=FALSE,
+                                       seed = 1234,
+                                       ...) {
   
   if(!is(object = object, class2 = 'IBRAP')) {
     
@@ -154,20 +155,6 @@ perform.seurat.integration <- function(object,
   if(!is.numeric(nfeatures)) {
     
     stop('nfeatures must be cnumerical \n')
-    
-  }
-  
-  if(!is.character(reduction)) {
-    
-    stop('reduction must be character string \n')
-    
-  } else if(is.character(reduction)) {
-    
-    if(!reduction %in% c('cca','rpca','rlsi')) {
-      
-      stop('reduction must be either: cca, rpca or rlsi \n')
-      
-    }
     
   }
   
@@ -263,9 +250,15 @@ perform.seurat.integration <- function(object,
     
   }
   
-  if(!is.logical(save.plot)) {
+  if(!is.logical(print.variance)) {
     
-    stop('save.plot must be boolean. TRUE/FALSE \n')
+    stop('print.variance must be boolean. TRUE/FALSE \n')
+    
+  }
+  
+  if(!is.logical(verbose)) {
+    
+    stop('verbose must be boolean. TRUE/FALSE \n')
     
   }
   
@@ -289,11 +282,33 @@ perform.seurat.integration <- function(object,
     
   }
   
+  if(!is.numeric(seed)) {
+    
+    stop('seed must be numerical \n')
+    
+  }
+  
+  set.seed(seed = seed, kind = "Mersenne-Twister", normal.kind = "Inversion")
+  
+  if(!'integration_method' %in% colnames(object@pipelines)) {
+    
+    tmp <- tibble::add_column(.data = object@pipelines, integration_method=NA, integration_time=NA)
+    
+  } else {
+    
+    tmp <- object@pipelines
+    
+  }
+  
   count <- 1
   
   for(a in assay) {
     
-    cat(crayon::cyan(paste0(Sys.time(), ': initialising seurat integration for assay: ', a, ' using method: ', reduction, '\n')))
+    if(isTRUE(verbose)) {
+      
+      cat(crayon::cyan(paste0(Sys.time(), ': initialising seurat integration for assay: ', a, '\n')))
+      
+    }
     
     if(normalisation.method[[count]] != 'perform.sct') {
       
@@ -317,7 +332,7 @@ perform.seurat.integration <- function(object,
         
         normalise <- function(...) {
           
-          perform.tpm(...)
+          IBRAP::perform.tpm(...)
           
         }      
         
@@ -330,9 +345,10 @@ perform.seurat.integration <- function(object,
       obj.list <- list()
       
       for(x in unique(object2@sample_metadata[,batch])) {
-        
+        print('.')
         obj.list[[x]] <- suppressMessages(IBRAP::createIBRAPobject(counts = object@methods$RAW@counts[,object2@sample_metadata[,batch]==x], 
-                                                                   original.project = x, add.suffix = F))
+                                                                   original.project = x, add.suffix = F, verbose = F, 
+                                                                   min.cells = 0, min.features = 0))
 
       }
 
@@ -348,7 +364,7 @@ perform.seurat.integration <- function(object,
         
       }
       
-      features.list <- suppressWarnings(Seurat::SelectIntegrationFeatures(object.list = new.list, nfeatures = nfeatures))
+      features.list <- suppressWarnings(Seurat::SelectIntegrationFeatures(object.list = new.list, nfeatures = nfeatures, verbose = verbose, ... = ))
       
       anchors <- suppressWarnings(Seurat::FindIntegrationAnchors(object.list = new.list, 
                                                                  anchor.features = features.list, 
@@ -362,7 +378,8 @@ perform.seurat.integration <- function(object,
                                                                  max.features = max.features,
                                                                  nn.method = nn.method, 
                                                                  n.trees = n.trees, 
-                                                                 eps = anchor.eps))
+                                                                 eps = anchor.eps, 
+                                                                 verbose = verbose))
 
       to_integrate <- Reduce(intersect, lapply(anchors@object.list, rownames))
       
@@ -374,7 +391,8 @@ perform.seurat.integration <- function(object,
                                                          sd.weight = sd.weight, 
                                                          sample.tree = sample.tree, 
                                                          preserve.order = T, 
-                                                         eps = integrate.eps))
+                                                         eps = integrate.eps, 
+                                                         verbose = verbose))
       
       Seurat::DefaultAssay(combined) <- 'integrated'
       
@@ -382,14 +400,13 @@ perform.seurat.integration <- function(object,
       
       tmp.obj <- IBRAP::createIBRAPobject(counts = combined@assays$integrated@data, 
                                           original.project = 'tmp', 
-                                          add.suffix = F,
-                                          method.name = paste0(a,'_integrated'))
+                                          add.suffix = F)
       
-      tmp.obj@methods[[paste0(a,'_integrated')]]@norm.scaled <- as.matrix(combined@assays$integrated@scale.data)
+      tmp.obj@methods[['RAW']]@norm.scaled <- as.matrix(combined@assays$integrated@scale.data)
       
-      tmp.obj@methods[[paste0(a,'_integrated')]]@highly.variable.genes <- combined@assays$integrated@var.features
+      tmp.obj@methods[['RAW']]@highly.variable.genes <- combined@assays$integrated@var.features
       
-      tmp.obj <- IBRAP::perform.pca(object = tmp.obj, assay = paste0(a,'_integrated'), slot = 'norm.scaled', save.plot = F)
+      tmp.obj <- IBRAP::perform.pca(object = tmp.obj, assay = 'RAW', slot = 'norm.scaled', print.variance = T)
       
       if(is.null(reduction.name.suffix)) {
         
@@ -405,7 +422,12 @@ perform.seurat.integration <- function(object,
           
           if('_' %in% unlist(strsplit(x = reduction.name.suffix, split = ''))) {
             
-            cat(crayon::cyan(paste0(Sys.time(), ': _ cannot be used in reduction.name.suffix, replacing with - \n')))
+            if(isTRUE(verbose)) {
+              
+              cat(crayon::cyan(paste0(Sys.time(), ': _ cannot be used in reduction.name.suffix, replacing with - \n')))
+              
+            }
+            
             reduction.name.suffix <- sub(pattern = '_', replacement = '-', x = reduction.name.suffix)
             
           }
@@ -434,14 +456,14 @@ perform.seurat.integration <- function(object,
       
       obj.list <- lapply(X = obj.list, FUN = 'normalise')
       
-      features <- suppressWarnings(Seurat::SelectIntegrationFeatures(object.list = obj.list, nfeatures = nfeatures))
+      features <- suppressWarnings(Seurat::SelectIntegrationFeatures(object.list = obj.list, nfeatures = nfeatures, verbose = verbose))
       
-      obj.list <- suppressWarnings(Seurat::PrepSCTIntegration(object.list = obj.list,anchor.features = features))
+      obj.list <- suppressWarnings(Seurat::PrepSCTIntegration(object.list = obj.list,anchor.features = features, verbose = verbose))
       
       anchors <- suppressWarnings(Seurat::FindIntegrationAnchors(object.list = obj.list, 
                                                                  normalization.method = "SCT", 
                                                                  anchor.features = features, 
-                                                                 reduction = reduction,
+                                                                 reduction = 'cca',
                                                                  scale = F, 
                                                                  l2.norm = l2.norm, 
                                                                  dims = anchors.dims, 
@@ -451,7 +473,8 @@ perform.seurat.integration <- function(object,
                                                                  max.features = max.features,
                                                                  nn.method = nn.method, 
                                                                  n.trees = n.trees, 
-                                                                 eps = anchor.eps))
+                                                                 eps = anchor.eps, 
+                                                                 verbose = verbose))
       
       to_integrate <- Reduce(intersect, lapply(anchors@object.list, rownames))
       
@@ -464,18 +487,18 @@ perform.seurat.integration <- function(object,
                                                          sd.weight = sd.weight, 
                                                          sample.tree = sample.tree, 
                                                          preserve.order = T, 
-                                                         eps = integrate.eps))
+                                                         eps = integrate.eps, 
+                                                         verbose = verbose))
       
       tmp.obj <- IBRAP::createIBRAPobject(counts = combined@assays$integrated@data, 
                                           original.project = 'tmp', 
-                                          add.suffix = F,
-                                          method.name = paste0(a,'_integrated'))
+                                          add.suffix = F)
       
-      tmp.obj@methods[[paste0(a,'_integrated')]]@norm.scaled <- as.matrix(combined@assays$integrated@scale.data)
+      tmp.obj@methods[['RAW']]@norm.scaled <- as.matrix(combined@assays$integrated@scale.data)
       
-      tmp.obj@methods[[paste0(a,'_integrated')]]@highly.variable.genes <- combined@assays$integrated@var.features
+      tmp.obj@methods[['RAW']]@highly.variable.genes <- combined@assays$integrated@var.features
       
-      tmp.obj <- IBRAP::perform.pca(object = tmp.obj, assay = paste0(a,'_integrated'), slot = 'norm.scaled', save.plot = F)
+      tmp.obj <- IBRAP::perform.pca(object = tmp.obj, assay = 'RAW', slot = 'norm.scaled', print.variance = print.variance)
       
       if(is.null(reduction.name.suffix)) {
         
@@ -491,7 +514,12 @@ perform.seurat.integration <- function(object,
           
           if('_' %in% unlist(strsplit(x = reduction.name.suffix, split = ''))) {
             
-            cat(crayon::cyan(paste0(Sys.time(), ': _ cannot be used in reduction.name.suffix, replacing with - \n')))
+            if(isTRUE(verbose)) {
+              
+              cat(crayon::cyan(paste0(Sys.time(), ': _ cannot be used in reduction.name.suffix, replacing with - \n')))
+              
+            }
+
             reduction.name.suffix <- sub(pattern = '_', replacement = '-', x = reduction.name.suffix)
             
           }
@@ -505,6 +533,60 @@ perform.seurat.integration <- function(object,
     }
     
     count <- count + 1
+    
+    end_time <- Sys.time()
+    
+    function_time <- end_time - start_time
+    
+    if(!'integration_method' %in% colnames(object@pipelines)) {
+      
+      tmp[which(x = tmp$normalisation_method==p),'integration_method'] <- paste0('CCA', reduction.save.suffix)
+      
+      tmp[which(x = tmp$normalisation_method==p),'integration_time'] <- as.difftime(function_time, units = 'secs')
+      
+    }
+    
+    if('integration_method' %in% colnames(object@pipelines)) {
+      
+      if(paste0('CCA', reduction.save.suffix) %in% tmp$integration_method) {
+        
+        tmp[which(tmp$normalisation_method==p & tmp$integration_method==paste0('CCA', reduction.save.suffix)),] <- c(tmp[which(tmp$normalisation_method==p & tmp$integration_method==paste0('CCA', reduction.save.suffix)),c('normalisation_method','normalisation_time')], paste0('CCA', reduction.save.suffix), as.difftime(function_time, units = 'secs'))  
+        
+      }
+      
+      if(!paste0('CCA', reduction.save.suffix) %in% object@pipelines$integration_method) {
+        
+        df <- tmp[which(tmp$normalisation_method==p),]
+        
+        df <- df[!duplicated(df$normalisation_method),]
+        
+        df[,'integration_method'] <- paste0('CCA', reduction.save.suffix)
+        
+        df[,'integration_time'] <- function_time
+        
+        tmp <- rbind(tmp, df)
+        
+      }
+      
+    }
+    
+  }
+  
+  if(!'integration_method' %in% colnames(object@pipelines)) {
+    
+    tmp$integration_time <- as.difftime(tim = tmp$integration_time, units = 'secs')
+    
+    rownames(tmp) <- 1:nrow(tmp)
+    
+    object@pipelines <- tmp
+    
+  } else if ('integration_method' %in% colnames(object@pipelines)) {
+    
+    tmp$integration_time <- as.difftime(tim = tmp$integration_time, units = 'secs')
+    
+    rownames(tmp) <- 1:nrow(tmp)
+    
+    object@pipelines <- tmp
     
   }
   

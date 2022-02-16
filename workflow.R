@@ -1,5 +1,6 @@
 library('SeuratData')
 library('Seurat')
+library('IBRAP')
 
 panc8 <- LoadData('panc8')
 
@@ -62,7 +63,7 @@ plot.QC.vln(object = pancreas,
                                  "SCANPY_total.counts", 
                                  "TPM_total.counts"))
 
-plot.QC.scatter(object = smartseq2, 
+plot.QC.scatter(object = pancreas, 
                 x = 'RAW_total.counts', 
                 y = 'RAW_total.features', 
                 split.by = 'Phase')

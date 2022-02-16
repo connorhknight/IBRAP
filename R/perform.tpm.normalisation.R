@@ -14,7 +14,7 @@
 #' @param vars.to.regress Character. Which column in the metadata should be regressed. Default = NULL
 #' @param new.assay.suffix Character. What should the new assay be called. Default = 'SCRAN'
 #' @param biomart.dataset Character. Which biomart dataset should be used, this normally corresponds with the species in question, default = 'hsapiens_gene_ensembl'. Check available datasets by performing the following. ensembl <- biomaRt::useEnsembl(biomart = "genes", dataset = "hsapiens_gene_ensembl"), then biomaRt::listDatasets(ensembl)
-#' @gene.lengths DataFrame. A dataframe containing two columns, external_gene_name and transcript_length.
+#' @param gene.lengths DataFrame. A dataframe containing two columns, external_gene_name and transcript_length.
 #' @param verbose Logical Should function messages be printed?
 #' @param ... Arguments to pass to Seurat::ScaleData
 #' 
@@ -137,6 +137,14 @@ perform.tpm <- function(object,
     }
     
   }
+  
+  if(!is.numeric(seed)) {
+    
+    stop('seed must be numerical \n')
+    
+  }
+  
+  set.seed(seed = seed, kind = "Mersenne-Twister", normal.kind = "Inversion")
   
   start_time <- Sys.time()
   

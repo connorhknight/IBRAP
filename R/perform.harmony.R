@@ -8,10 +8,11 @@
 #' @param object IBRAP S4 class object
 #' @param assay Character. String containing indicating which assay to use
 #' @param vars.use Character. A string of the column nmae that contains variables to regress. 
-#' @param reduction Character. String defining the name of the reduction to provide for BBKNN. Default = 'pca'
+#' @param reduction Character. String defining the name of the reduction to provide for HARMONY. Default = 'pca'
 #' @param reduction.save.suffix Character. What should be appended to the end of harmony as the reduction name
 #' @param dims.use Numerical. Number of dimensions of the provided reduction to input into harmony, NULL equates to all dimensions. Default = NULL
-#' @param save.plot Boolean. Should the automatically genewrated plot be saved? Default = TRUE
+#' @param print.harmony.plot Boolean. Should the automatically generated plot be printed? Default = FALSE
+#' @param verbose Logical Should function messages be printed?
 #' @param ... Arguments to be passed to harmony::HarmonyMatrix
 #' 
 #' @return PCA reductions contained within the computational_reduction list in the defined assays
@@ -33,7 +34,9 @@ perform.harmony <- function(object,
                             reduction = 'pca', 
                             reduction.save.suffix = '',
                             dims.use = NULL, 
-                            save.plot = TRUE,
+                            print.harmony.plot = FALSE,
+                            seed=1234,
+                            verbose = FALSE,
                             ...) {
   
   if(!is(object = object, class2 = 'IBRAP')) {
@@ -124,7 +127,45 @@ perform.harmony <- function(object,
     
   }
   
+  if(is.null(dims.use)) {
+    
+    dims.use <- list()
+    
+    for(x in 1:length(reduction))  {
+      
+      dims.use[[x]] <- 0
+      
+    }
+    
+  }
+  
+  if(!is.logical(verbose)) {
+    
+    stop('verbose should be logical, TRUE/FALSE \n')
+    
+  } 
+  
+  if(!is.numeric(seed)) {
+    
+    stop('seed must be a numerical value \n')
+    
+  }
+  
+  set.seed(seed = seed, kind = "Mersenne-Twister", normal.kind = "Inversion")
+  
+  if(!'integration_method' %in% colnames(object@pipelines)) {
+    
+    tmp <- tibble::add_column(.data = object@pipelines, integration_method=NA, integration_time=NA)
+    
+  } else {
+    
+    tmp <- object@pipelines
+    
+  }
+  
   for(p in assay) {
+    
+    start_time <- Sys.time()
     
     reduction.list <- list()
     red.names <- c(names(object@methods[[p]]@computational_reductions), 
@@ -179,23 +220,121 @@ perform.harmony <- function(object,
       
       if('_' %in% unlist(strsplit(x = reduction.save.suffix, split = ''))) {
         
-        cat(crayon::cyan(paste0(Sys.time(), ': _ cannot be used in reduction.save.suffix, replacing with - \n')))
+        if(isTRUE(verbose)) {
+          
+          cat(crayon::cyan(paste0(Sys.time(), ': _ cannot be used in reduction.save.suffix, replacing with - \n')))
+          
+        }
+
         reduction.save.suffix <- sub(pattern = '_', replacement = '-', x = reduction.save.suffix)
         
       }
       
-      cat(crayon::cyan(paste0(Sys.time(), ': initialising harmony for assay: ', p, ', reduction: ', g, '\n')))
+      if(isTRUE(verbose)) {
+        
+        cat(crayon::cyan(paste0(Sys.time(), ': initialising harmony for assay: ', p, ', reduction: ', g, '\n')))
+        
+      }
       
-      harm <- harmony::HarmonyMatrix(data_mat = red[,1:dims], meta_data = object@sample_metadata, vars_use = vars.use, do_pca = FALSE, verbose = TRUE, plot_convergence = TRUE, ...)
+      if(isTRUE(print.harmony.plot)) {
+        
+        if(isTRUE(verbose)) {
+          
+          harm <- harmony::HarmonyMatrix(data_mat = red[,1:dims], meta_data = object@sample_metadata, vars_use = vars.use, do_pca = FALSE, verbose = TRUE, plot_convergence = TRUE, ...)
+          
+        }
+        
+        if(isFALSE(verbose)) {
+          
+          harm <- harmony::HarmonyMatrix(data_mat = red[,1:dims], meta_data = object@sample_metadata, vars_use = vars.use, do_pca = FALSE, verbose = FALSE, plot_convergence = TRUE, ...)
+          
+        }
+        
+      }
       
+      if(isFALSE(print.harmony.plot)) {
+        
+        if(isTRUE(verbose)) {
+          
+          harm <- harmony::HarmonyMatrix(data_mat = red[,1:dims], meta_data = object@sample_metadata, vars_use = vars.use, do_pca = FALSE, verbose = TRUE, plot_convergence = FALSE, ...)
+          
+        }
+        
+        if(isFALSE(verbose)) {
+          
+          harm <- harmony::HarmonyMatrix(data_mat = red[,1:dims], meta_data = object@sample_metadata, vars_use = vars.use, do_pca = FALSE, verbose = FALSE, plot_convergence = FALSE, ...)
+          
+        }
+        
+      }
+
       object@methods[[p]]@integration_reductions[[paste0(r, '_harmony', reduction.save.suffix)]] <- harm
       
       count <- count + 1
+
+      end_time <- Sys.time()
+      
+      function_time <- end_time - start_time
+      
+      if(!'integration_method' %in% colnames(object@pipelines)) {
+        
+        tmp[which(x = tmp$normalisation_method==p),'integration_method'] <- paste0('HARMONY', reduction.save.suffix)
+        
+        tmp[which(x = tmp$normalisation_method==p),'integration_time'] <- as.difftime(function_time, units = 'secs')
+        
+      }
+      
+      if('integration_method' %in% colnames(object@pipelines)) {
+        
+        if(paste0('HARMONY', reduction.save.suffix) %in% tmp$integration_method) {
+          
+          tmp[which(tmp$normalisation_method==p & tmp$integration_method==paste0('HARMONY', reduction.save.suffix)),] <- c(tmp[which(tmp$normalisation_method==p & tmp$integration_method==paste0('HARMONY', reduction.save.suffix)),c('normalisation_method','normalisation_time')], paste0('HARMONY', reduction.save.suffix), as.difftime(function_time, units = 'secs'))  
+          
+        }
+        
+        if(!paste0('HARMONY', reduction.save.suffix) %in% object@pipelines$integration_method) {
+          
+          df <- tmp[which(tmp$normalisation_method==p),]
+          
+          df <- df[!duplicated(df$normalisation_method),]
+          
+          df[,'integration_method'] <- paste0('HARMONY', reduction.save.suffix)
+          
+          df[,'integration_time'] <- function_time
+          
+          tmp <- rbind(tmp, df)
+          
+        }
+        
+      }
       
     }
     
   }
   
-  cat(crayon::cyan(paste0(Sys.time(), ': harmony completed\n')))
+  if(isTRUE(verbose)) {
+    
+    cat(crayon::cyan(paste0(Sys.time(), ': harmony completed\n')))
+    
+  }
+  
+  if(!'integration_method' %in% colnames(object@pipelines)) {
+    
+    tmp$integration_time <- as.difftime(tim = tmp$integration_time, units = 'secs')
+    
+    rownames(tmp) <- 1:nrow(tmp)
+    
+    object@pipelines <- tmp
+    
+  } else if ('integration_method' %in% colnames(object@pipelines)) {
+    
+    tmp$integration_time <- as.difftime(tim = tmp$integration_time, units = 'secs')
+    
+    rownames(tmp) <- 1:nrow(tmp)
+    
+    object@pipelines <- tmp
+    
+  }
+  
   return(object)
 }

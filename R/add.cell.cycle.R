@@ -83,7 +83,7 @@ add.cell.cycle <- function(object,
   
   set.seed(seed = seed, kind = "Mersenne-Twister", normal.kind = "Inversion")
   
-  r <- IBRAP::Homo_sapiens
+  r <- as.data.frame(stringr::str_split_fixed(string = as.character(IBRAP::Homo_sapiens$phase.geneID.GeneName), pattern = ',', n = 3))
   
   colnames(r) <- c('phase', 'geneID', 'geneName')
   
@@ -172,7 +172,7 @@ add.cell.cycle <- function(object,
         
         if(isTRUE(verbose)) {
           
-          cat(crayon::cyan(paste0(Sys.time(), ': found duplicated column name: ',o, 'removing old column names.\n')))
+          cat(crayon::cyan(paste0(Sys.time(), ': found duplicated column name: ',o, ' removing old column names.\n')))
           
         }
         

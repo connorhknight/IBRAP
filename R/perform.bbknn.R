@@ -220,13 +220,12 @@ perform.bbknn <- function(object,
     
   }
   
+  sc <- reticulate::import('scanpy')
+  pd <- reticulate::import('pandas')
   
   set.seed(seed = seed, kind = "Mersenne-Twister", normal.kind = "Inversion")
   
   reticulate::py_set_seed(seed, disable_hash_randomization = TRUE)
-  
-  sc <- reticulate::import('scanpy')
-  pd <- reticulate::import('pandas')
   
   if(!'integration_method' %in% colnames(object@pipelines)) {
     
@@ -439,11 +438,17 @@ perform.bbknn <- function(object,
   
   if(!'integration_method' %in% colnames(object@pipelines)) {
     
+    tmp$integration_time <- as.difftime(tim = tmp$integration_time, units = 'secs')
+    
+    rownames(tmp) <- 1:nrow(tmp)
+    
     object@pipelines <- tmp
     
   } else if ('integration_method' %in% colnames(object@pipelines)) {
     
     tmp$integration_time <- as.difftime(tim = tmp$integration_time, units = 'secs')
+    
+    rownames(tmp) <- 1:nrow(tmp)
     
     object@pipelines <- tmp
     
