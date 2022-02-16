@@ -98,7 +98,17 @@ perform.scanorama <- function(object,
     
   }
   
-  if(!is.numeric(n.dims)) {
+  if(is.null(n.dims)) {
+    
+    n.dims <- list()
+    
+    for(x in 1:length(reduction))  {
+      
+      n.dims[[x]] <- 0
+      
+    }
+    
+  } else if(!is.numeric(n.dims)) {
     
     stop('n.dims must be numerical\n')
     
