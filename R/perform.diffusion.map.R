@@ -29,6 +29,8 @@ perform.diffusion.map <- function(object,
                                   n.dcs = 15,
                                   k = 15, 
                                   diffmap.name.suffix='',
+                                  verbose=FALSE,
+                                  seed=1234,
                                   ...) {
   
   if(!is(object, 'IBRAP')) {
@@ -139,9 +141,30 @@ perform.diffusion.map <- function(object,
       
     }
     
+    
+    if(!is.logical(verbose)) {
+      
+      stop('verbose should be logical, TRUE/FALSE \n')
+      
+    } 
+    
+    if(!is.numeric(seed)) {
+      
+      stop('seed must be a numerical value \n')
+      
+    }
+    
+    set.seed(seed = seed, kind = "Mersenne-Twister", normal.kind = "Inversion")
+    
     count <- 1
     
     for(r in reduction) {
+      
+      if(isTRUE(verbose)) {
+        
+        cat(crayon::cyan(paste0(Sys.time(), ': calculating diffusion map for assay: ', p, ' reduction: ', r, '\n')))
+        
+      }
       
       cat(crayon::cyan(paste0(Sys.time(), ': calculating diffusion map for assay: ', p, ' reduction: ', r, '\n')))
       
@@ -153,7 +176,7 @@ perform.diffusion.map <- function(object,
         
       }
       
-      object@methods[[p]]@computational_reductions[[paste0(r, ':diffmap', diffmap.name.suffix)]] <- destiny::DiffusionMap(data = reduction.list[[r]][,1:dim], k = k, n_eigs = n.dcs, verbose = T, ...)@eigenvectors
+      object@methods[[p]]@computational_reductions[[paste0(r, ':DIFFUSIONMAP', diffmap.name.suffix)]] <- destiny::DiffusionMap(data = reduction.list[[r]][,1:dim], k = k, n_eigs = n.dcs, verbose = T, ...)@eigenvectors
       
     }
     

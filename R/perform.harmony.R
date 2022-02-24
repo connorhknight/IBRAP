@@ -7,12 +7,13 @@
 #' 
 #' @param object IBRAP S4 class object
 #' @param assay Character. String containing indicating which assay to use
-#' @param vars.use Character. A string of the column nmae that contains variables to regress. 
+#' @param batch Character. A string of the column nmae that contains variables to regress. 
 #' @param reduction Character. String defining the name of the reduction to provide for HARMONY. Default = 'pca'
 #' @param reduction.save.suffix Character. What should be appended to the end of harmony as the reduction name
 #' @param dims.use Numerical. Number of dimensions of the provided reduction to input into harmony, NULL equates to all dimensions. Default = NULL
 #' @param print.harmony.plot Boolean. Should the automatically generated plot be printed? Default = FALSE
 #' @param verbose Logical Should function messages be printed?
+#' @param seed Numeric. What should the seed be set as. Default = 1234
 #' @param ... Arguments to be passed to harmony::HarmonyMatrix
 #' 
 #' @return PCA reductions contained within the computational_reduction list in the defined assays
@@ -21,7 +22,7 @@
 #' 
 #' object <- perform.harmony(object = object, 
 #'                           assay = c('SCRAN', 'SCT', 'SCANPY'), 
-#'                           vars.use = 'original.project', 
+#'                           batch = 'original.project', 
 #'                           reduction = c('pca'),  
 #'                           max.iter.harmony = 100,
 #'                           dims.use = list(NULL))
@@ -30,7 +31,7 @@
 
 perform.harmony <- function(object, 
                             assay, 
-                            vars.use, 
+                            batch, 
                             reduction = 'pca', 
                             reduction.save.suffix = '',
                             dims.use = NULL, 
@@ -61,15 +62,15 @@ perform.harmony <- function(object,
     
   }
   
-  if(!is.character(vars.use)) {
+  if(!is.character(batch)) {
     
-    stop('vars.use must be character string(s)\n')
+    stop('batch must be character string(s)\n')
     
   }
   
-  if(!vars.use %in% names(object@sample_metadata)) {
+  if(!batch %in% names(object@sample_metadata)) {
     
-    stop('vars.use does not exist\n')
+    stop('batch does not exist\n')
     
   }
   
@@ -225,7 +226,7 @@ perform.harmony <- function(object,
           cat(crayon::cyan(paste0(Sys.time(), ': _ cannot be used in reduction.save.suffix, replacing with - \n')))
           
         }
-
+        
         reduction.save.suffix <- sub(pattern = '_', replacement = '-', x = reduction.save.suffix)
         
       }
@@ -240,13 +241,13 @@ perform.harmony <- function(object,
         
         if(isTRUE(verbose)) {
           
-          harm <- harmony::HarmonyMatrix(data_mat = red[,1:dims], meta_data = object@sample_metadata, vars_use = vars.use, do_pca = FALSE, verbose = TRUE, plot_convergence = TRUE, ...)
+          harm <- harmony::HarmonyMatrix(data_mat = red[,1:dims], meta_data = object@sample_metadata, vars_use = batch, do_pca = FALSE, verbose = TRUE, plot_convergence = TRUE, ...)
           
         }
         
         if(isFALSE(verbose)) {
           
-          harm <- harmony::HarmonyMatrix(data_mat = red[,1:dims], meta_data = object@sample_metadata, vars_use = vars.use, do_pca = FALSE, verbose = FALSE, plot_convergence = TRUE, ...)
+          harm <- harmony::HarmonyMatrix(data_mat = red[,1:dims], meta_data = object@sample_metadata, vars_use = batch, do_pca = FALSE, verbose = FALSE, plot_convergence = TRUE, ...)
           
         }
         
@@ -256,22 +257,22 @@ perform.harmony <- function(object,
         
         if(isTRUE(verbose)) {
           
-          harm <- harmony::HarmonyMatrix(data_mat = red[,1:dims], meta_data = object@sample_metadata, vars_use = vars.use, do_pca = FALSE, verbose = TRUE, plot_convergence = FALSE, ...)
+          harm <- harmony::HarmonyMatrix(data_mat = red[,1:dims], meta_data = object@sample_metadata, vars_use = batch, do_pca = FALSE, verbose = TRUE, plot_convergence = FALSE, ...)
           
         }
         
         if(isFALSE(verbose)) {
           
-          harm <- harmony::HarmonyMatrix(data_mat = red[,1:dims], meta_data = object@sample_metadata, vars_use = vars.use, do_pca = FALSE, verbose = FALSE, plot_convergence = FALSE, ...)
+          harm <- harmony::HarmonyMatrix(data_mat = red[,1:dims], meta_data = object@sample_metadata, vars_use = batch, do_pca = FALSE, verbose = FALSE, plot_convergence = FALSE, ...)
           
         }
         
       }
-
-      object@methods[[p]]@integration_reductions[[paste0(r, '_harmony', reduction.save.suffix)]] <- harm
+      
+      object@methods[[p]]@integration_reductions[[paste0(r, '_HARMONY', reduction.save.suffix)]] <- harm
       
       count <- count + 1
-
+      
       end_time <- Sys.time()
       
       function_time <- end_time - start_time
@@ -318,23 +319,12 @@ perform.harmony <- function(object,
     
   }
   
-  if(!'integration_method' %in% colnames(object@pipelines)) {
-    
-    tmp$integration_time <- as.difftime(tim = tmp$integration_time, units = 'secs')
-    
-    rownames(tmp) <- 1:nrow(tmp)
-    
-    object@pipelines <- tmp
-    
-  } else if ('integration_method' %in% colnames(object@pipelines)) {
-    
-    tmp$integration_time <- as.difftime(tim = tmp$integration_time, units = 'secs')
-    
-    rownames(tmp) <- 1:nrow(tmp)
-    
-    object@pipelines <- tmp
-    
-  }
+  tmp$integration_time <- as.difftime(tim = tmp$integration_time, units = 'secs')
+  
+  rownames(tmp) <- 1:nrow(tmp)
+  
+  object@pipelines <- tmp
+  
   
   return(object)
 }

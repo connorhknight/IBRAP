@@ -12,6 +12,8 @@ perform.diffusion.map(
   n.dcs = 15,
   k = 15,
   diffmap.name.suffix = "",
+  verbose = FALSE,
+  seed = 1234,
   ...
 )
 }

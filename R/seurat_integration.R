@@ -6,8 +6,9 @@
 #' @description Performs Seurat integration on the supplied assay names. Results are saved under integration_reductions 
 #' 
 #' @param object IBRAP S4 class object
+#' @param object.list list of individual sample IBRAP S4 class objects.
 #' @param assay Character. String containing indicating which assay to use
-#' @param batch Character. Which column in the metadata defines the batches
+#' @param reduction.save.suffix. Character. What should be added as a suffix to reduction name. Default = ''
 #' @param nfeatures Numerical. How many features should be found as integration anchors. Default = 3000
 #' @param l2.norm Logical. Perform L2 normalization on the CCA cell embeddings after dimensional reduction. Default = TRUE
 #' @param k.anchor Numerical. How many neighbors (k) to use when picking anchors. Default = 5
@@ -29,9 +30,7 @@
 #' 
 #' @examples perform.seurat.cca <- function(object = object, 
 #'                                          assay = c('SCT', 'SCRAN', 'SCANPY'), 
-#'                                          normalisation.method = c('perform.sct', 'perform.scran', 'perform.scanpy'), 
-#'                                          batch = original.project, 
-#'                                          reduction.name.suffix=NULL,
+#'                                          reduction.save.suffix=NULL,
 #'                                          nfeatures = 3000,
 #'                                          reduction = 'cca',
 #'                                          anchors.dims = 1:30,
@@ -53,10 +52,9 @@
 #' @export
 
 perform.seurat.integration <- function(object, 
+                                       object.list,
                                        assay, 
-                                       normalisation.method, 
-                                       batch, 
-                                       reduction.name.suffix=NULL,
+                                       reduction.save.suffix=NULL,
                                        nfeatures = 2000,
                                        anchors.dims = 1:30,
                                        l2.norm = T,
@@ -84,6 +82,24 @@ perform.seurat.integration <- function(object,
     
   }
   
+  if(!is.list(object.list)) {
+    
+    stop('object.list must be a list of objects \n')
+    
+  } else if (is.list(object.list)) {
+    
+    for(x in object.list) {
+      
+      if(!is(object = x, class2 = 'IBRAP')) {
+        
+        stop('items in object.list must be IBRAP S4 class objects \n')
+        
+      }
+      
+    }
+    
+  }
+  
   if(!is.character(assay)) {
     
     stop('assay must be character string(s) \n')
@@ -98,23 +114,11 @@ perform.seurat.integration <- function(object,
         
       }
       
-    }
-    
-  }
-  
-  if(!is.character(normalisation.method)) {
-    
-    stop('normalisation.method must be character string(s) \n')
-    
-  } else if(is.character(normalisation.method)) {
-    
-    for(x in normalisation.method) {
-      
-      if(!x %in% c('perform.sct', 'perform.scran', 'perform.scanpy', 'perform.tpm')) {
+      for(g in object.list) {
         
-        if(isFALSE(x = x)) {
+        if(!x %in% names(g@methods)) {
           
-          stop(paste0(x, ' function does not exist in the global environment. Does it exist? \n'))
+          stop(paste0(x, ' is not contained within one of your object.list items \n'))
           
         }
         
@@ -124,29 +128,11 @@ perform.seurat.integration <- function(object,
     
   }
   
-  if(!is.character(batch)) {
+  if(!is.null(reduction.save.suffix)) {
     
-    stop('batch must be character string(s) \n')
-    
-  } else if (is.character(batch)) {
-    
-    for(x in batch) {
+    if(!is.character(reduction.save.suffix)) {
       
-      if(!x %in% names(object@sample_metadata)) {
-        
-        stop(paste0(x, ' is not contained within object@sample_metadata \n'))
-        
-      }
-      
-    }
-    
-  }
-  
-  if(!is.null(reduction.name.suffix)) {
-    
-    if(!is.character(reduction.name.suffix)) {
-      
-      stop('reduction.name.suffix must be a character string \n')
+      stop('reduction.save.suffix must be a character string \n')
       
     }
     
@@ -262,25 +248,39 @@ perform.seurat.integration <- function(object,
     
   }
   
-  if(length(batch) > 1) {
+  for(x in names(object@methods)) {
     
-    temp <- function(x) {
+    for(g in object.list) {
       
-      return(paste(x, collapse = '_'))
+      if(!x %in% names(g@methods)) {
+        
+        stop(paste0(x, ' is not contained within one of your items in onf of your object.list \n'))
+        
+      }
       
     }
     
-    df <- object@sample_metadata[,batch]
-    object2 <- object
-    object2@sample_metadata$batch <- apply(X = df, MARGIN = 1, FUN = temp)
-    
-    batch <- 'batch'
-    
-  } else {
-    
-    object2 <- object
-    
   }
+  
+  # if(length(batch) > 1) {
+  #   
+  #   temp <- function(x) {
+  #     
+  #     return(paste(x, collapse = '_'))
+  #     
+  #   }
+  #   
+  #   df <- object@sample_metadata[,batch]
+  #   object2 <- object
+  #   object2@sample_metadata$batch <- apply(X = df, MARGIN = 1, FUN = temp)
+  #   
+  #   batch <- 'batch'
+  #   
+  # } else {
+  #   
+  #   object2 <- object
+  #   
+  # }
   
   if(!is.numeric(seed)) {
     
@@ -304,165 +304,47 @@ perform.seurat.integration <- function(object,
   
   for(a in assay) {
     
+    start_time <- Sys.time()
+    
     if(isTRUE(verbose)) {
       
       cat(crayon::cyan(paste0(Sys.time(), ': initialising seurat integration for assay: ', a, '\n')))
       
     }
     
-    if(normalisation.method[[count]] != 'perform.sct') {
+    new.list <- list()
+
+    for(x in 1:length(object.list)) {
       
-      if(normalisation.method[[count]] == 'perform.scran') {
+      if('SCT' %in% strsplit(x = a, split = '_')) {
         
-        normalise <- function(...) {
-          
-          perform.scran(...)
-          
-        }
+        new.list[[x]] <- suppressWarnings(Seurat::CreateSeuratObject(counts = object.list[[x]]@methods[[a]]@counts))
+        new.list[[x]]@assays$RNA@data <- object.list[[x]]@methods[[a]]@normalised
+        new.list[[x]]@assays$RNA@scale.data <- object.list[[x]]@methods[[a]]@norm.scaled
+        new.list[[x]]@assays$RNA@var.features <- object.list[[x]]@methods[[a]]@highly.variable.genes
         
-      } else if (normalisation.method[[count]] == 'perform.scanpy') {
-        
-        normalise <- function(...) {
-          
-          perform.scanpy(...)
-          
-        }
-        
-      } else if (normalisation.method[[count]] == 'perform.tpm') {
-        
-        normalise <- function(...) {
-          
-          IBRAP::perform.tpm(...)
-          
-        }      
+        new.list[[x]]@assays$SCT <- new.list[[x]]@assays$RNA
         
       } else {
         
-        stop('normalisation.method must be either: perform.sct, perform.scran, perfrom.scanpy or perform.tpm \n')
+        new.list[[x]] <- suppressWarnings(Seurat::CreateSeuratObject(counts = object.list[[x]]@methods[[a]]@counts))
+        new.list[[x]]@assays$RNA@data <- object.list[[x]]@methods[[a]]@normalised
+        new.list[[x]]@assays$RNA@scale.data <- object.list[[x]]@methods[[a]]@norm.scaled
+        new.list[[x]]@assays$RNA@var.features <- object.list[[x]]@methods[[a]]@highly.variable.genes
         
       }
       
-      obj.list <- list()
+    }
+    
+    features.list <- suppressWarnings(Seurat::SelectIntegrationFeatures(object.list = new.list, nfeatures = nfeatures, verbose = verbose, ...))
+   
+    if('SCT' %in% strsplit(x = a, split = '_')) {
       
-      for(x in unique(object2@sample_metadata[,batch])) {
-        print('.')
-        obj.list[[x]] <- suppressMessages(IBRAP::createIBRAPobject(counts = object@methods$RAW@counts[,object2@sample_metadata[,batch]==x], 
-                                                                   original.project = x, add.suffix = F, verbose = F, 
-                                                                   min.cells = 0, min.features = 0))
-
-      }
-
-      obj.list <- lapply(X = obj.list, FUN = 'normalise')
-
-      new.list <- list()
-      
-      for(x in names(obj.list)) {
-        
-        new.list[[x]] <- suppressWarnings(Seurat::CreateSeuratObject(counts = obj.list[[x]]@methods[[2]]@normalised, project = x))
-        
-        new.list[[x]]@assays$RNA@var.features <- obj.list[[x]]@methods[[2]]@highly.variable.genes
-        
-      }
-      
-      features.list <- suppressWarnings(Seurat::SelectIntegrationFeatures(object.list = new.list, nfeatures = nfeatures, verbose = verbose, ... = ))
+      new.list <- suppressWarnings(Seurat::PrepSCTIntegration(object.list = new.list, anchor.features = features.list, verbose = verbose))
       
       anchors <- suppressWarnings(Seurat::FindIntegrationAnchors(object.list = new.list, 
-                                                                 anchor.features = features.list, 
-                                                                 reduction = reduction,
-                                                                 scale = T, 
-                                                                 l2.norm = l2.norm, 
-                                                                 dims = anchors.dims, 
-                                                                 k.anchor = k.anchor, 
-                                                                 k.filter = k.filter, 
-                                                                 k.score = k.score, 
-                                                                 max.features = max.features,
-                                                                 nn.method = nn.method, 
-                                                                 n.trees = n.trees, 
-                                                                 eps = anchor.eps, 
-                                                                 verbose = verbose))
-
-      to_integrate <- Reduce(intersect, lapply(anchors@object.list, rownames))
-      
-      combined <- suppressWarnings(Seurat::IntegrateData(anchorset = anchors, 
-                                                         features = features,
-                                                         features.to.integrate = to_integrate, 
-                                                         dims = integrate.dims,
-                                                         k.weight = k.weight,
-                                                         sd.weight = sd.weight, 
-                                                         sample.tree = sample.tree, 
-                                                         preserve.order = T, 
-                                                         eps = integrate.eps, 
-                                                         verbose = verbose))
-      
-      Seurat::DefaultAssay(combined) <- 'integrated'
-      
-      combined <- suppressWarnings(Seurat::ScaleData(object = combined))
-      
-      tmp.obj <- IBRAP::createIBRAPobject(counts = combined@assays$integrated@data, 
-                                          original.project = 'tmp', 
-                                          add.suffix = F)
-      
-      tmp.obj@methods[['RAW']]@norm.scaled <- as.matrix(combined@assays$integrated@scale.data)
-      
-      tmp.obj@methods[['RAW']]@highly.variable.genes <- combined@assays$integrated@var.features
-      
-      tmp.obj <- IBRAP::perform.pca(object = tmp.obj, assay = 'RAW', slot = 'norm.scaled', print.variance = T)
-      
-      if(is.null(reduction.name.suffix)) {
-        
-        object@methods[[a]]@integration_reductions[[paste0('seurat', reduction.name.suffix[[count]])]] <- tmp.obj@methods[[1]]@computational_reductions[[1]]
-        
-      } else if(!is.null(reduction.name.suffix)) {
-        
-        if(!is.character(reduction.name.suffix)) {
-          
-          stop('reduction.name.suffix must be character string \n')
-          
-        } else {
-          
-          if('_' %in% unlist(strsplit(x = reduction.name.suffix, split = ''))) {
-            
-            if(isTRUE(verbose)) {
-              
-              cat(crayon::cyan(paste0(Sys.time(), ': _ cannot be used in reduction.name.suffix, replacing with - \n')))
-              
-            }
-            
-            reduction.name.suffix <- sub(pattern = '_', replacement = '-', x = reduction.name.suffix)
-            
-          }
-          
-          object@methods[[a]]@integration_reductions[[paste0('seurat', reduction.name.suffix[[count]])]] <- tmp.obj@methods[[1]]@computational_reductions[[1]]
-          
-        }
-        
-      }
-      
-    } else if(normalisation.method[[count]] == 'perform.sct') {
-      
-      normalise <- function(...) {
-        
-        Seurat::SCTransform(...)
-        
-      }
-      
-      obj.list <- list()
-      
-      for(x in unique(object2@sample_metadata[,batch])) {
-        
-        obj.list[[x]] <- suppressWarnings(Seurat::CreateSeuratObject(counts = object@methods$RAW@counts[,object2@sample_metadata[,batch]==x]))
-        
-      }
-      
-      obj.list <- lapply(X = obj.list, FUN = 'normalise')
-      
-      features <- suppressWarnings(Seurat::SelectIntegrationFeatures(object.list = obj.list, nfeatures = nfeatures, verbose = verbose))
-      
-      obj.list <- suppressWarnings(Seurat::PrepSCTIntegration(object.list = obj.list,anchor.features = features, verbose = verbose))
-      
-      anchors <- suppressWarnings(Seurat::FindIntegrationAnchors(object.list = obj.list, 
                                                                  normalization.method = "SCT", 
-                                                                 anchor.features = features, 
+                                                                 anchor.features = features.list, 
                                                                  reduction = 'cca',
                                                                  scale = F, 
                                                                  l2.norm = l2.norm, 
@@ -476,57 +358,77 @@ perform.seurat.integration <- function(object,
                                                                  eps = anchor.eps, 
                                                                  verbose = verbose))
       
-      to_integrate <- Reduce(intersect, lapply(anchors@object.list, rownames))
+    } else {
       
-      combined <- suppressWarnings(Seurat::IntegrateData(anchorset = anchors, 
-                                                         normalization.method = "SCT", 
-                                                         features = features,
-                                                         features.to.integrate = to_integrate, 
-                                                         dims = integrate.dims,
-                                                         k.weight = k.weight,
-                                                         sd.weight = sd.weight, 
-                                                         sample.tree = sample.tree, 
-                                                         preserve.order = T, 
-                                                         eps = integrate.eps, 
-                                                         verbose = verbose))
+      anchors <- suppressWarnings(Seurat::FindIntegrationAnchors(object.list = new.list, 
+                                                                 anchor.features = features.list, 
+                                                                 reduction = 'cca',
+                                                                 scale = T, 
+                                                                 l2.norm = l2.norm, 
+                                                                 dims = anchors.dims, 
+                                                                 k.anchor = k.anchor, 
+                                                                 k.filter = k.filter, 
+                                                                 k.score = k.score, 
+                                                                 max.features = max.features,
+                                                                 nn.method = nn.method, 
+                                                                 n.trees = n.trees, 
+                                                                 eps = anchor.eps, 
+                                                                 verbose = verbose))
       
-      tmp.obj <- IBRAP::createIBRAPobject(counts = combined@assays$integrated@data, 
-                                          original.project = 'tmp', 
-                                          add.suffix = F)
+    }
+    
+    to_integrate <- Reduce(intersect, lapply(anchors@object.list, rownames))
+    
+    combined <- suppressWarnings(Seurat::IntegrateData(anchorset = anchors, 
+                                                       features = features,
+                                                       features.to.integrate = to_integrate, 
+                                                       dims = integrate.dims,
+                                                       k.weight = k.weight,
+                                                       sd.weight = sd.weight, 
+                                                       sample.tree = sample.tree, 
+                                                       preserve.order = T, 
+                                                       eps = integrate.eps, 
+                                                       verbose = verbose))
+    
+    Seurat::DefaultAssay(combined) <- 'integrated'
+    
+    combined <- suppressWarnings(Seurat::ScaleData(object = combined))
+    
+    tmp.obj <- IBRAP::createIBRAPobject(counts = combined@assays$integrated@data, 
+                                        original.project = 'tmp', 
+                                        add.suffix = F)
+    
+    tmp.obj@methods[['RAW']]@norm.scaled <- as.matrix(combined@assays$integrated@scale.data)
+    
+    tmp.obj@methods[['RAW']]@highly.variable.genes <- combined@assays$integrated@var.features
+    
+    tmp.obj <- IBRAP::perform.pca(object = tmp.obj, assay = 'RAW', slot = 'norm.scaled', print.variance = T)
+    
+    if(is.null(reduction.save.suffix)) {
       
-      tmp.obj@methods[['RAW']]@norm.scaled <- as.matrix(combined@assays$integrated@scale.data)
+      object@methods[[a]]@integration_reductions[[paste0('CCA ', reduction.save.suffix[[count]])]] <- tmp.obj@methods[[1]]@computational_reductions[[1]]
       
-      tmp.obj@methods[['RAW']]@highly.variable.genes <- combined@assays$integrated@var.features
+    } else if(!is.null(reduction.save.suffix)) {
       
-      tmp.obj <- IBRAP::perform.pca(object = tmp.obj, assay = 'RAW', slot = 'norm.scaled', print.variance = print.variance)
-      
-      if(is.null(reduction.name.suffix)) {
+      if(!is.character(reduction.save.suffix)) {
         
-        object@methods[[a]]@integration_reductions[[paste0('seurat', reduction.name.suffix[[count]])]] <- tmp.obj@methods[[1]]@computational_reductions[[1]]
+        stop('reduction.save.suffix must be character string \n')
         
-      } else if(!is.null(reduction.name.suffix)) {
+      } else {
         
-        if(!is.character(reduction.name.suffix)) {
+        if('_' %in% unlist(strsplit(x = reduction.save.suffix, split = ''))) {
           
-          stop('reduction.name.suffix must be character string \n')
-          
-        } else {
-          
-          if('_' %in% unlist(strsplit(x = reduction.name.suffix, split = ''))) {
+          if(isTRUE(verbose)) {
             
-            if(isTRUE(verbose)) {
-              
-              cat(crayon::cyan(paste0(Sys.time(), ': _ cannot be used in reduction.name.suffix, replacing with - \n')))
-              
-            }
-
-            reduction.name.suffix <- sub(pattern = '_', replacement = '-', x = reduction.name.suffix)
+            cat(crayon::cyan(paste0(Sys.time(), ': _ cannot be used in reduction.save.suffix, replacing with - \n')))
             
           }
           
-          object@methods[[a]]@integration_reductions[[paste0('seurat', reduction.name.suffix[[count]])]] <- tmp.obj@methods[[1]]@computational_reductions[[1]]
+          reduction.save.suffix <- sub(pattern = '_', replacement = '-', x = reduction.save.suffix)
           
         }
+        
+        object@methods[[a]]@integration_reductions[[paste0('CCA', reduction.save.suffix[[count]])]] <- tmp.obj@methods[[1]]@computational_reductions[[1]]
         
       }
       
@@ -540,9 +442,9 @@ perform.seurat.integration <- function(object,
     
     if(!'integration_method' %in% colnames(object@pipelines)) {
       
-      tmp[which(x = tmp$normalisation_method==p),'integration_method'] <- paste0('CCA', reduction.save.suffix)
+      tmp[which(x = tmp$normalisation_method==a),'integration_method'] <- paste0('CCA', reduction.save.suffix)
       
-      tmp[which(x = tmp$normalisation_method==p),'integration_time'] <- as.difftime(function_time, units = 'secs')
+      tmp[which(x = tmp$normalisation_method==a),'integration_time'] <- as.difftime(function_time, units = 'secs')
       
     }
     
@@ -550,13 +452,13 @@ perform.seurat.integration <- function(object,
       
       if(paste0('CCA', reduction.save.suffix) %in% tmp$integration_method) {
         
-        tmp[which(tmp$normalisation_method==p & tmp$integration_method==paste0('CCA', reduction.save.suffix)),] <- c(tmp[which(tmp$normalisation_method==p & tmp$integration_method==paste0('CCA', reduction.save.suffix)),c('normalisation_method','normalisation_time')], paste0('CCA', reduction.save.suffix), as.difftime(function_time, units = 'secs'))  
+        tmp[which(tmp$normalisation_method==a & tmp$integration_method==paste0('CCA', reduction.save.suffix)),] <- c(tmp[which(tmp$normalisation_method==a & tmp$integration_method==paste0('CCA', reduction.save.suffix)),c('normalisation_method','normalisation_time')], paste0('CCA', reduction.save.suffix), as.difftime(function_time, units = 'secs'))  
         
       }
       
       if(!paste0('CCA', reduction.save.suffix) %in% object@pipelines$integration_method) {
         
-        df <- tmp[which(tmp$normalisation_method==p),]
+        df <- tmp[which(tmp$normalisation_method==a),]
         
         df <- df[!duplicated(df$normalisation_method),]
         

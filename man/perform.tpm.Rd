@@ -16,6 +16,7 @@ perform.tpm(
   biomart.dataset = "hsapiens_gene_ensembl",
   gene.lengths = NULL,
   verbose = FALSE,
+  seed = 1234,
   ...
 )
 }

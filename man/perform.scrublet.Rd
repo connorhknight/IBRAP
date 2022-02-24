@@ -9,8 +9,6 @@ perform.scrublet(counts = counts, expected_doublet_rate = 0.025)
 \arguments{
 \item{counts}{Counts matrix}
 
-\item{save.plot}{Boolean. Should the automatically genewrated plot be saved? Default = TRUE}
-
 \item{total_counts}{Total number of cells. NULL = automatically counts.}
 
 \item{sim_doublet_ratio}{Number of doublets to simulate relative to observed}
@@ -45,7 +43,15 @@ perform.scrublet(counts = counts, expected_doublet_rate = 0.025)
 
 \item{n_prin_comps}{Number of principal components to retain}
 
-\item{svd_solver}{Which SVD solver to use: 'auto', 'full', 'arpack', 'randomized'.}
+\item{svd_solver}{Character. Which SVD solver to use: 'auto', 'full', 'arpack', 'randomized'.}
+
+\item{print.plot}{Logical. Should doublet plots be printed ? Default = FALSE}
+
+\item{verbose}{Logical. Should function information be printed to hte terminal? Default = FALSE}
+
+\item{seed}{Numerical. What seed should be be set. Default = 1234}
+
+\item{save.plot}{Boolean. Should the automatically genewrated plot be saved? Default = TRUE}
 }
 \value{
 Doublet-omitted sparse matrix

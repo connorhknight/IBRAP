@@ -13,6 +13,8 @@
 #' @param n.dims Numerical. The number of UMAP dimensions to be produced. Must be supplied in list format relative to the order of reductions
 #' @param n_components Numerical. How many UMAP dimensions should be produced, if you are supplying graphs, only 2 dimensions can be produced. Default = 3
 #' @param n_neighbors Numerical. How many neighbours should be identified per cell. A higher value typically returns more accurate results. Default = 
+#' @param verbose Logical. Should system information be printed. Default = FALSE
+#' @param seed Numeric. What should the seed be set as. Default = 1234
 #' @param ... Numerical. Arguments to be passed to Seurat::RunUMAP
 #' 
 #' @return UMAP reduction saved in the visualisation_reductions section in the supplied method-assays
@@ -40,11 +42,13 @@ perform.umap <- function(object,
                          reduction=NULL,
                          graph=NULL,
                          reduction.name.suffix='',
-                         n.dims=NULL, 
+                         dims.use=NULL, 
                          n_components = 2, 
                          n_neighbors = 30,
                          metric = 'cosine',
                          min_dist = 0.3,
+                         verbose=FALSE,
+                         seed=1234,
                          ...) {
   
   if(!is(object = object, class2 = 'IBRAP')) {
@@ -90,10 +94,63 @@ perform.umap <- function(object,
   
   if('_' %in% unlist(strsplit(x = reduction.name.suffix, split = ''))) {
     
-    cat(crayon::cyan(paste0(Sys.time(), ': _ cannot be used in reduction.name.suffix, replacing with - \n')))
+    if(isTRUE(verbose)) {
+      
+      cat(crayon::cyan(paste0(Sys.time(), ': _ cannot be used in reduction.name.suffix, replacing with - \n')))
+      
+    }
+    
     reduction.name.suffix <- sub(pattern = '_', replacement = '-', x = reduction.name.suffix)
     
   }
+  
+  if(!is.logical(verbose)) {
+    
+    stop('verbose should be logical, TRUE/FALSE \n')
+    
+  }
+  
+  if(!is.numeric(seed)) {
+    
+    stop('seed should be numerical \n')
+    
+  }
+  
+  if(is.null(dims.use)) {
+    
+    dims.use <- list()
+    
+    count <- 1
+    
+    for(x in 1:length(reduction)) {
+      
+      dims.use[[count]] <- 0
+      
+      count <- count + 1
+      
+    }
+    
+  } else if(is.list(dims.use)) {
+    
+    for(x in dims.use) {
+      
+      if(!is.numeric(x)) {
+        
+        stop('dims.use items must be numerical \n')
+        
+      }
+      
+    }
+    
+  } else {
+    
+    stop('dims.use must be either NULL or a list of numerical values \n')
+    
+  }
+  
+  set.seed(seed = seed, kind = "Mersenne-Twister", normal.kind = "Inversion")
+  
+  reticulate::py_set_seed(seed, disable_hash_randomization = TRUE)
   
   for(u in assay) {
     
@@ -105,17 +162,35 @@ perform.umap <- function(object,
       
       for (g in graph) {
         
-        cat(crayon::cyan(paste0(Sys.time(), ': processing ', g, ' for assay: ', u,'\n')))
-        
+        if(isTRUE(verbose)) {
+          
+          cat(crayon::cyan(paste0(Sys.time(), ': processing ', g, ' for assay: ', u,'\n')))
+          
+        }
+
         seuobj <- suppressWarnings(Seurat::CreateSeuratObject(counts = object@methods[[u]]@counts))
         
         seuobj@graphs[['temp']] <- suppressWarnings(Seurat::as.Graph(object@methods[[u]]@neighbours[[g]]$connectivities))
         
-        seuobj <- suppressWarnings(Seurat::RunUMAP(object = seuobj, 
-                                                   graph = 'temp', 
-                                                   n_components = n_components, 
-                                                   verbose = TRUE,
-                                                   ...))
+        if(isTRUE(verbose)) {
+          
+          seuobj <- suppressWarnings(Seurat::RunUMAP(object = seuobj, 
+                                                     graph = 'temp', 
+                                                     n_components = n_components, 
+                                                     verbose = TRUE,
+                                                     ...))
+          
+        } else if(isFALSE(verbose)) {
+          
+          seuobj <- suppressWarnings(Seurat::RunUMAP(object = seuobj, 
+                                                     graph = 'temp', 
+                                                     n_components = n_components, 
+                                                     verbose = FALSE,
+                                                     ...))
+          
+        }
+        
+
         
         red.iso <- Seurat::Embeddings(object = seuobj, 
                                       reduction = 'umap')
@@ -132,19 +207,13 @@ perform.umap <- function(object,
         
         colnames(red.iso) <- unlist(dim.names)
         
-        object@methods[[u]]@visualisation_reductions[[paste0(g, ':umap', reduction.name.suffix)]] <- red.iso
+        object@methods[[u]]@visualisation_reductions[[paste0(g, ':UMAP', reduction.name.suffix)]] <- red.iso
         
         count <- count + 1
         
       }
       
     } else {
-      
-      if(!is.list(n.dims)) {
-        
-        stop('dimensions must be supplied in list format\n')
-        
-      }
       
       if(!is.character(reduction)) {
         
@@ -196,7 +265,7 @@ perform.umap <- function(object,
       
       for(i in reduction) {
         
-        dim <- n.dims[[count]]
+        dim <- dims.use[[count]]
         
         red <- reduction.list[[i]]
         
@@ -206,18 +275,35 @@ perform.umap <- function(object,
           
         }
         
-        cat(crayon::cyan(paste0(Sys.time(), ': processing ', i, ' for assay: ', u,'\n')))
-        
+        if(isTRUE(verbose)) {
+          
+          cat(crayon::cyan(paste0(Sys.time(), ': processing ', i, ' for assay: ', u,'\n')))
+          
+        }
+
         seuobj <- suppressWarnings(Seurat::CreateSeuratObject(counts = object@methods[[u]]@counts))
         
         seuobj@reductions$pca <- suppressWarnings(Seurat::CreateDimReducObject(embeddings = red, assay = 'RNA', key = paste0(i, '_')))
-
-        seuobj <- suppressWarnings(Seurat::RunUMAP(object = seuobj, 
-                                                   dims = 1:dim,
-                                                   n_components = n_components, 
-                                                   reduction = 'pca',
-                                                   verbose = TRUE,
-                                                   ...))
+        
+        if(isTRUE(verbose)) {
+          
+          seuobj <- suppressWarnings(Seurat::RunUMAP(object = seuobj, 
+                                                     dims = 1:dim,
+                                                     n_components = n_components, 
+                                                     reduction = 'pca',
+                                                     verbose = TRUE,
+                                                     ...))
+          
+        } else if(isFALSE(verbose)) {
+          
+          seuobj <- suppressWarnings(Seurat::RunUMAP(object = seuobj, 
+                                                     dims = 1:dim,
+                                                     n_components = n_components, 
+                                                     reduction = 'pca',
+                                                     verbose = FALSE,
+                                                     ...))
+          
+        }
         
         red.iso <- Seurat::Embeddings(object = seuobj, 
                                       reduction = 'umap')
@@ -234,7 +320,7 @@ perform.umap <- function(object,
         
         colnames(red.iso) <- unlist(dim.names)
         
-        object@methods[[u]]@visualisation_reductions[[paste0(i, '_umap', reduction.name.suffix)]] <- red.iso
+        object@methods[[u]]@visualisation_reductions[[paste0(i, '_UMAP', reduction.name.suffix)]] <- red.iso
         
         count <- count + 1
         

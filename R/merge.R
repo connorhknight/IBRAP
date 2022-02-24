@@ -10,17 +10,6 @@ setMethod(f = 'merge', signature = 'IBRAP',
             
             items <- c(x,y)
             
-            for(i in items) {
-              
-              if(length(i@methods) > 1) {
-                
-                cat(crayon::cyan('Onl the RAW assay can be present to merge datasets\n'))
-                return(NULL)
-                
-              }
-              
-            }
-            
             feature.list <- list()
             
             for(i in 1:length(items)) {

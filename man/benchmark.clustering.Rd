@@ -11,7 +11,9 @@ benchmark.clustering(
   reduction,
   n.dims = 2,
   dist.method = "euclidean",
-  ground.truth = NULL
+  ground.truth.column = NULL,
+  verbose = FALSE,
+  seed = 1234
 )
 }
 \arguments{
@@ -27,7 +29,11 @@ benchmark.clustering(
 
 \item{dist.method}{Character. Which distance method should be used, options: 'euclidean', 'maximum', 'manhattan', 'canberra', 'binary', 'minkowski'. Default = 'euclidean'}
 
-\item{ground.truth}{Vector. If available, supply the vector in the same order as colnames of the ground truth, i.e. true cell type labels. If this is not supplied, only unsupervised methods will be supplied. Default = NULL}
+\item{ground.truth.column}{Character. If available, supply the column in the object metadata that contains ground truth labels, i.e. true cell type labels. If this is not supplied, only unsupervised methods will be supplied. Default = NULL}
+
+\item{verbose}{Logical. Should system information be printed. Default = FALSE}
+
+\item{seed}{Numeric. What should the seed be set as. Default = 1234}
 }
 \value{
 Benchmarking scores for the supplied cluster assignments

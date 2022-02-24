@@ -19,7 +19,7 @@
 #' @param annoy.metric Character. Distance metric for annoy method. Options: 'euclidean', 'cosine', 'manhattan', 'hamming'. Default = 'euclidean'
 #'
 #' @param n_neighbors Numerical. (scanpy only) How many neighbours should be found per cell, a higher value typically achieves more accurate results. Default = 15
-#' @param dims Numerical. (scanpy only) How many components of the reduction should be used, 0 means that all will be used. Default = 0
+#' @param dims.use Numerical. (scanpy only) How many components of the reduction should be used, 0 means that all will be used. Default = 0
 #' @param random_state Numerical. (scanpy only) The seed value to use. Default = 0
 #' @param method Character. (scanpy only) String indicating which methodology to use including: ‘umap’, ‘gauss’ or ‘rapids’
 #' @param metric Character. (scanpy only) String indicating which distance metric to use, including: ‘braycurtis’, ‘canberra’, ‘chebyshev’, ‘correlation’, ‘dice’, ‘hamming’, ‘jaccard’, ‘kulsinski’, ‘mahalanobis’, ‘minkowski’, ‘rogerstanimoto’, ‘russellrao’, ‘seuclidean’, ‘sokalmichener’, ‘sokalsneath’, ‘sqeuclidean’, ‘yule’, ‘cityblock’, ‘cosine’, ‘euclidean’, ‘l1’, ‘l2’ or ‘manhattan’
@@ -42,7 +42,8 @@ perform.nn <- function(object,
                        reduction, 
                        
                        neighbour.name.suffix = '',
-                       dims=0, 
+                       dims.use=NULL, 
+                       
                        k.param=20,
                        prune.SNN=1/15, 
                        nn.method='annoy', 
@@ -56,7 +57,10 @@ perform.nn <- function(object,
                        metric='euclidean',
                        generate.diffmap = FALSE,
                        n_comps = 15,
-                       diffmap.name.suffix = '') {
+                       diffmap.name.suffix = '',
+                       
+                       verbose=FALSE,
+                       seed=1234) {
   
   if(!is(object, 'IBRAP')) {
     
@@ -145,21 +149,35 @@ perform.nn <- function(object,
     
   }
   
-  if(!is.list(dims)) {
+  if(is.null(dims.use)) {
     
-    stop('dims must be supplied in list format \n')
+    dims.use <- list()
     
-  } else if(is.list(dims)) {
+    count <- 1
     
-    for(x in dims) {
+    for(x in 1:length(reduction)) {
+      
+      dims.use[[count]] <- 0
+      
+      count <- count + 1
+      
+    }
+    
+  } else if(is.list(dims.use)) {
+    
+    for(x in dims.use) {
       
       if(!is.numeric(x)) {
         
-        stop('dims items must be numerical \n')
+        stop('dims.use items must be numerical \n')
         
       }
       
     }
+    
+  } else {
+    
+    stop('dims.use must be either NULL or a list of numerical values \n')
     
   }
   
@@ -209,6 +227,32 @@ perform.nn <- function(object,
     
   }
   
+  if(!is.logical(verbose)) {
+    
+    stop('verbose should be logical, TRUE/FALSE \n')
+    
+  }
+  
+  if(!is.numeric(seed)) {
+    
+    stop('seed should be numerical \n')
+    
+  }
+  
+  set.seed(seed = seed, kind = "Mersenne-Twister", normal.kind = "Inversion")
+  
+  reticulate::py_set_seed(seed, disable_hash_randomization = TRUE)
+  
+  if(!'integration_method' %in% colnames(object@pipelines)) {
+    
+    tmp <- tibble::add_column(.data = object@pipelines, integration_method=NA, integration_time=NA)
+    
+  } else {
+    
+    tmp <- object@pipelines
+    
+  }
+
   for(p in assay) {
     
     ass <- strsplit(x = names(object@methods)[which(names(object@methods)==p)], split = '_')[[1]][1]
@@ -246,7 +290,7 @@ perform.nn <- function(object,
         
         if(!r %in% names(reduction.list)) {
           
-          stop('reductions could not be found\n')
+          stop('reductions could not be found \n')
           
         }
         
@@ -260,59 +304,113 @@ perform.nn <- function(object,
       
       for(g in reduction) {
         
-        cat(crayon::cyan(paste0(Sys.time(), ': processing assay: ', p, ', reduction: ', g, '\n')))
+        if(isTRUE(verbose)) {
+          
+          cat(crayon::cyan(paste0(Sys.time(), ': processing assay: ', p, ', reduction: ', g, '\n')))
+          
+        }
+        
+        
         
         seuobj <- Seurat::CreateSeuratObject(counts = object@methods[[1]]@counts)
         
         red <- reduction.list[[g]]
         red.key <- reduction[count]
-        dim <-dims[[count]]
+        dim <-dims.use[[count]]
         
         seuobj@reductions[[red.key]] <- suppressWarnings(Seurat::CreateDimReducObject(embeddings = as.matrix(red), key = paste0(red.key, '_')))
         
         if(dim != 0) {
           
-          seuobj <- suppressWarnings(Seurat::FindNeighbors(object = seuobj, 
-                                                           k.param = k.param,
-                                                           reduction = red.key, 
-                                                           verbose = FALSE, 
-                                                           dims = 1:dim, 
-                                                           prune.SNN = prune.SNN,
-                                                           nn.method = nn.method, 
-                                                           n.trees = n.trees,
-                                                           annoy.metric = annoy.metric, 
-                                                           nn.eps = nn.eps))
+          if(isTRUE(verbose)) {
+            
+            seuobj <- suppressWarnings(Seurat::FindNeighbors(object = seuobj, 
+                                                             k.param = k.param,
+                                                             reduction = red.key, 
+                                                             verbose = TRUE, 
+                                                             dims = 1:dim, 
+                                                             prune.SNN = prune.SNN,
+                                                             nn.method = nn.method, 
+                                                             n.trees = n.trees,
+                                                             annoy.metric = annoy.metric, 
+                                                             nn.eps = nn.eps))
+            
+          } else if (isFALSE(verbose)) {
+            
+            seuobj <- suppressWarnings(Seurat::FindNeighbors(object = seuobj, 
+                                                             k.param = k.param,
+                                                             reduction = red.key, 
+                                                             verbose = FALSE, 
+                                                             dims = 1:dim, 
+                                                             prune.SNN = prune.SNN,
+                                                             nn.method = nn.method, 
+                                                             n.trees = n.trees,
+                                                             annoy.metric = annoy.metric, 
+                                                             nn.eps = nn.eps))
+            
+          }
+
           
         } else if(dim == 0) {
           
-          seuobj <- suppressWarnings(Seurat::FindNeighbors(object = seuobj, 
-                                                           reduction = red.key, 
-                                                           verbose = FALSE, 
-                                                           dims = 1:ncol(red), 
-                                                           k.param = k.param,
-                                                           prune.SNN = prune.SNN,
-                                                           nn.method = nn.method, 
-                                                           n.trees = n.trees,
-                                                           annoy.metric = annoy.metric, 
-                                                           nn.eps = nn.eps))
-          
+          if(isTRUE(verbose)) {
+            
+            seuobj <- suppressWarnings(Seurat::FindNeighbors(object = seuobj, 
+                                                             reduction = red.key, 
+                                                             verbose = TRUE, 
+                                                             dims = 1:ncol(red), 
+                                                             k.param = k.param,
+                                                             prune.SNN = prune.SNN,
+                                                             nn.method = nn.method, 
+                                                             n.trees = n.trees,
+                                                             annoy.metric = annoy.metric, 
+                                                             nn.eps = nn.eps))
+            
+          } else if (isFALSE(verbose)) {
+            
+            seuobj <- suppressWarnings(Seurat::FindNeighbors(object = seuobj, 
+                                                             reduction = red.key, 
+                                                             verbose = FALSE, 
+                                                             dims = 1:ncol(red), 
+                                                             k.param = k.param,
+                                                             prune.SNN = prune.SNN,
+                                                             nn.method = nn.method, 
+                                                             n.trees = n.trees,
+                                                             annoy.metric = annoy.metric, 
+                                                             nn.eps = nn.eps))
+            
+          }
+
         }
         
-        cat(crayon::cyan(paste0(Sys.time(), ': neighbours calculated\n')))
-        
+        if(isTRUE(verbose)) {
+          
+          cat(crayon::cyan(paste0(Sys.time(), ': neighbours calculated\n')))
+          
+        }
+
         conn <- seuobj@graphs[[2]]
         
         if('_' %in% unlist(strsplit(x = neighbour.name.suffix, split = ''))) {
           
-          cat(crayon::cyan(paste0(Sys.time(), ': _ cannot be used in neighbour.save.suffix, replacing with - \n')))
+          if(isTRUE(verbose)) {
+            
+            cat(crayon::cyan(paste0(Sys.time(), ': _ cannot be used in neighbour.save.suffix, replacing with - \n')))
+            
+          }
+          
           neighbour.name.suffix <- sub(pattern = '_', replacement = '-', x = neighbour.name.suffix)
           
         }
         
-        object@methods[[p]]@neighbours[[paste0(g, '_nn', neighbour.name.suffix)]][['connectivities']] <- conn
+        object@methods[[p]]@neighbours[[paste0(g, '_NN', neighbour.name.suffix)]][['connectivities']] <- conn
         
-        cat(crayon::cyan(paste0(Sys.time(), ': results saved as ', paste0(g, '_nn', neighbour.name.suffix), '\n')))
-        
+        if(isTRUE(verbose)) {
+          
+          cat(crayon::cyan(paste0(Sys.time(), ': results saved as ', paste0(g, '_NN', neighbour.name.suffix), '\n')))
+          
+        }
+
         count <- count + 1
         
       }
@@ -321,7 +419,11 @@ perform.nn <- function(object,
       
       for(g in reduction) {
         
-        cat(crayon::cyan(paste0(Sys.time(), ': processing assay: ', p, ', reduction: ', g, '\n')))
+        if(isTRUE(verbose)) {
+          
+          cat(crayon::cyan(paste0(Sys.time(), ': processing assay: ', p, ', reduction: ', g, '\n')))
+          
+        }
         
         sc <- reticulate::import('scanpy')
         pd <- reticulate::import('pandas')
@@ -338,7 +440,7 @@ perform.nn <- function(object,
         
         red <- reduction.list[[g]]
         red.key <- reduction[count]
-        dim <-dims[[count]]
+        dim <-dims.use[[count]]
         
         scobj$obsm$update(X_pca = as.matrix(red))
         
@@ -351,12 +453,20 @@ perform.nn <- function(object,
         
         if(isTRUE(generate.diffmap)) {
           
-          cat(crayon::cyan(paste0(Sys.time(), ': calcualting diffusion map\n')))
-          
+          if(isTRUE(verbose)) {
+            
+            cat(crayon::cyan(paste0(Sys.time(), ': calcualting diffusion map\n')))
+            
+          }
+
           sc$tl$diffmap(adata = scobj, n_comps = as.integer(n_comps))
           
-          cat(crayon::cyan(paste0(Sys.time(), ': diffusion map calculated\n')))
-          
+          if(isTRUE(verbose)) {
+            
+            cat(crayon::cyan(paste0(Sys.time(), ': diffusion map calculated\n')))
+            
+          }
+
           diffmap <- as.matrix(scobj$obsm[['X_diffmap']])
           
           DC_names <- list()
@@ -378,43 +488,66 @@ perform.nn <- function(object,
           
         }
         
-        cat(crayon::cyan(paste0(Sys.time(), ': neighbours calculated\n')))
-        
+        if(isTRUE(verbose)) {
+          
+          cat(crayon::cyan(paste0(Sys.time(), ': neighbours calculated\n')))
+          
+        }
+
         conn <- as(as.matrix(scobj$obsp[['connectivities']]), 'dgCMatrix')
         colnames(conn) <- colnames(object@methods[[2]]@norm.scaled)
         rownames(conn) <- colnames(object@methods[[2]]@norm.scaled)
         
         if('_' %in% unlist(strsplit(x = neighbour.name.suffix, split = ''))) {
           
-          cat(crayon::cyan(paste0(Sys.time(), ': _ cannot be used in neighbour.name.suffix, replacing with - \n')))
+          if(isTRUE(verbose)) {
+            
+            cat(crayon::cyan(paste0(Sys.time(), ': _ cannot be used in neighbour.name.suffix, replacing with - \n')))
+            
+          }
+
           neighbour.name.suffix <- sub(pattern = '_', replacement = '-', x = neighbour.name.suffix)
           
         }
         
-        object@methods[[p]]@neighbours[[paste0(g, '_nn', neighbour.name.suffix)]][['connectivities']] <- conn
+        object@methods[[p]]@neighbours[[paste0(g, '_NN', neighbour.name.suffix)]][['connectivities']] <- conn
         
         dis <- as(as.matrix(scobj$obsp[['distances']]), 'dgCMatrix')
         colnames(dis) <- colnames(object@methods[[2]]@norm.scaled)
         rownames(dis) <- colnames(object@methods[[2]]@norm.scaled)
         
-        object@methods[[p]]@neighbours[[paste0(g, '_nn', neighbour.name.suffix)]][['distances']] <- dis
+        object@methods[[p]]@neighbours[[paste0(g, '_NN', neighbour.name.suffix)]][['distances']] <- dis
         
-        cat(crayon::cyan(paste0(Sys.time(), ': results saved as ', paste0(g, '_nn', neighbour.name.suffix), '\n')))
-        
+        if(isTRUE(verbose)) {
+          
+          cat(crayon::cyan(paste0(Sys.time(), ': results saved as ', paste0(g, '_NN', neighbour.name.suffix), '\n')))
+          
+        }
+
         if(isTRUE(generate.diffmap)) {
           
           if('_' %in% unlist(strsplit(x = diffmap.name.suffix, split = ''))) {
             
-            cat(crayon::cyan(paste0(Sys.time(), ': _ cannot be used in diffmap.name.suffix, replacing with - \n')))
+            if(isTRUE(verbose)) {
+              
+              cat(crayon::cyan(paste0(Sys.time(), ': _ cannot be used in diffmap.name.suffix, replacing with - \n')))
+              
+            }
+            
+            
             
             diffmap.name.suffix <- sub(pattern = '_', replacement = '-', x = diffmap.name.suffix)
             
           }
           
-          object@methods[[p]]@computational_reductions[[paste0(g, '_nn:diffmap', diffmap.name.suffix)]] <- diffmap
+          object@methods[[p]]@computational_reductions[[paste0(g, '_NN:DIFFUSIONMAP', diffmap.name.suffix)]] <- diffmap
           
-          cat(crayon::cyan(paste0(Sys.time(), ': diffmap saved as ', paste0(g, '_nn', diffmap.name.suffix), '\n')))
-          
+          if(isTRUE(verbose)) {
+            
+            cat(crayon::cyan(paste0(Sys.time(), ': diffmap saved as ', paste0(g, '_NN', diffmap.name.suffix), '\n')))
+            
+          }
+
         }
         
         count <- count + 1
@@ -423,13 +556,17 @@ perform.nn <- function(object,
       
     } else {
       
-      cat(crayon::cyan(paste0(Sys.time(), ': processing assay: ', p, ', reduction: ', g, '\n')))
-      
+      if(isTRUE(verbose)) {
+        
+        cat(crayon::cyan(paste0(Sys.time(), ': processing assay: ', p, ', reduction: ', g, '\n')))
+        
+      }
+
       seuobj <- Seurat::CreateSeuratObject(counts = object@methods[[1]]@counts)
       
       red <- reduction.list[[g]]
       red.key <- reduction[count]
-      dim <-dims[[count]]
+      dim <-dims.use[[count]]
       
       seuobj@reductions[[red.key]] <- suppressWarnings(Seurat::CreateDimReducObject(embeddings = as.matrix(red), key = paste0(red.key, '_')))
       
@@ -461,25 +598,38 @@ perform.nn <- function(object,
         
       }
       
-      cat(crayon::cyan(paste0(Sys.time(), ': neighbours calculated\n')))
-      
+      if(isTRUE(verbose)) {
+        
+        cat(crayon::cyan(paste0(Sys.time(), ': neighbours calculated\n')))
+        
+      }
+
       conn <- seuobj@graphs[[2]]
       
       if('_' %in% unlist(strsplit(x = neighbour.name.suffix, split = ''))) {
         
-        cat(crayon::cyan(paste0(Sys.time(), ': _ cannot be used in neighbour.save.suffix, replacing with - \n')))
+        if(isTRUE(verbose)) {
+          
+          cat(crayon::cyan(paste0(Sys.time(), ': _ cannot be used in neighbour.save.suffix, replacing with - \n')))
+          
+        }
+
         neighbour.name.suffix <- sub(pattern = '_', replacement = '-', x = neighbour.name.suffix)
         
       }
       
-      object@methods[[p]]@neighbours[[paste0(g, '_nn', neighbour.name.suffix)]][['connectivities']] <- conn
+      object@methods[[p]]@neighbours[[paste0(g, '_NN', neighbour.name.suffix)]][['connectivities']] <- conn
       
-      cat(crayon::cyan(paste0(Sys.time(), ': results saved as ', paste0(g, '_nn', neighbour.name.suffix), '\n')))
-      
+      if(isTRUE(verbose)) {
+        
+        cat(crayon::cyan(paste0(Sys.time(), ': results saved as ', paste0(g, '_NN', neighbour.name.suffix), '\n')))
+        
+      }
+
       count <- count + 1
       
     }
-      
+    
   }
   
   return(object)

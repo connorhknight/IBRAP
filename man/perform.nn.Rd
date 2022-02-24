@@ -9,7 +9,7 @@ perform.nn(
   assay,
   reduction,
   neighbour.name.suffix = "",
-  dims = 0,
+  dims.use = NULL,
   k.param = 20,
   prune.SNN = 1/15,
   nn.method = "annoy",
@@ -22,7 +22,9 @@ perform.nn(
   metric = "euclidean",
   generate.diffmap = FALSE,
   n_comps = 15,
-  diffmap.name.suffix = ""
+  diffmap.name.suffix = "",
+  verbose = FALSE,
+  seed = 1234
 )
 }
 \arguments{
@@ -34,7 +36,7 @@ perform.nn(
 
 \item{neighbour.name.suffix}{Character. String defining the names to store the neighbourhood graph results under.}
 
-\item{dims}{Numerical. (scanpy only) How many components of the reduction should be used, 0 means that all will be used. Default = 0}
+\item{dims.use}{Numerical. (scanpy only) How many components of the reduction should be used, 0 means that all will be used. Default = 0}
 
 \item{k.param}{Numerical. The number of k when calcuating k-nearest neighbour. Default = 20}
 

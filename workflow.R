@@ -2,6 +2,12 @@ library('SeuratData')
 library('Seurat')
 library('IBRAP')
 
+setwd( "/Users/knight05/work/Results/scRNA-seq/IBRAP_development/IBRAPwithdecontX/R")
+files.sources = list.files()
+sapply(files.sources, source)
+
+options(future.globals.maxSize = 4000 * 1024^2)
+
 panc8 <- LoadData('panc8')
 
 smartseq2.counts <- panc8@assays$RNA@counts[,panc8@meta.data$dataset=='smartseq2']
@@ -43,12 +49,12 @@ pancreas <- add.cell.cycle(object = pancreas,
                            transform = T)
 
 pancreas <- add.cell.cycle(object = pancreas, 
-                             assay = 'RAW', 
-                             slot = 'counts', 
-                             transform = T, 
-                             verbose = T)
+                           assay = 'RAW', 
+                           slot = 'counts', 
+                           transform = T, 
+                           verbose = T)
 
-pancreas <- perform.sct(object = pancreas, verbose = T)
+pancreas <- perform.sct(object = pancreas, verbose = T, conserve.memory=T)
 
 pancreas <- perform.scran(object = pancreas, vars.to.regress = 'RAW_total.counts', verbose = T)
 
@@ -64,11 +70,77 @@ plot.QC.vln(object = pancreas,
                                  "TPM_total.counts"))
 
 plot.QC.scatter(object = pancreas, 
-                x = 'RAW_total.counts', 
-                y = 'RAW_total.features', 
+                x = 'SCT_total.counts', 
+                y = 'SCT_total.features', 
                 split.by = 'Phase')
 
 pancreas <- perform.pca(object = pancreas, assay = c('SCT','SCRAN','SCANPY','TPM'), print.variance = T)
 
-pancreas <- perform.bbknn(object = pancreas, assay = c('SCT','SCRAN','SCANPY','TPM'), reduction = 'pca', batch = 'original.project', verbose = T)
+pancreas <- perform.bbknn(object = pancreas, assay = c('SCT','SCRAN','SCANPY','TPM'), 
+                          reduction = 'pca', batch = 'original.project', verbose = T)
+
+pancreas <- perform.scanorama(object = pancreas, assay = c('SCT','SCRAN','SCANPY','TPM'), 
+                              batch = 'original.project', verbose = T)
+
+pancreas <- perform.harmony(object = pancreas, assay = c('SCT','SCRAN','SCANPY','TPM'), 
+                            reduction = 'pca', batch = 'original.project', verbose = T)
+
+# list.of.objects <- splitIBRAP(object = pancreas, split.by = 'original.project')
+# 
+# list.of.objects <- lapply(X = list.of.objects, FUN = 'perform.sct', verbose = T)
+# 
+# list.of.objects <- lapply(X = list.of.objects, FUN = 'perform.scran', vars.to.regress = 'RAW_total.counts', verbose = T)
+# 
+# list.of.objects <- lapply(X = list.of.objects, FUN = 'perform.scanpy', vars.to.regress = 'RAW_total.counts', verbose = T)
+# 
+# list.of.objects <- lapply(X = list.of.objects, FUN = 'perform.tpm', vars.to.regress = 'RAW_total.counts', verbose = T)
+# 
+# tmp <- perform.seurat.integration(object = pancreas, 
+#                                   object.list = list.of.objects, 
+#                                   assay = c('SCT','SCRAN','SCANPY','TPM'), 
+#                                   nfeatures = 1500, print.variance = T, 
+#                                   verbose = T)
+
+pancreas <- perform.nn(object = pancreas, assay = c('SCT','SCRAN','SCANPY','TPM'), 
+                       reduction = c('scanorama','pca_harmony'))
+
+pancreas <- perform.graph.cluster(object = pancreas, assay = c('SCT','SCRAN','SCANPY','TPM'), 
+                      neighbours = c("pca_bbknn_bbknn","scanorama_nn","pca_harmony_nn"), 
+                      algorithm = 1, verbose = T)
+
+pancreas <- perform.graph.cluster(object = pancreas, assay = c('SCT','SCRAN','SCANPY','TPM'), 
+                                  neighbours = c("pca_bbknn_bbknn","scanorama_nn","pca_harmony_nn"), 
+                                  algorithm = 1, verbose = T)
+
+pancreas <- perform.graph.cluster(object = pancreas, assay = c('SCT','SCRAN','SCANPY','TPM'), 
+                                  neighbours = c("pca_bbknn_bbknn","scanorama_nn","pca_harmony_nn"), 
+                                  algorithm = 2, verbose = T)
+
+pancreas <- perform.graph.cluster(object = pancreas, assay = c('SCT','SCRAN','SCANPY','TPM'), 
+                                  neighbours = c("pca_nn"), 
+                                  algorithm = 1, verbose = T)
+
+pancreas <- perform.graph.cluster(object = pancreas, assay = c('SCT','SCRAN','SCANPY','TPM'), 
+                                  neighbours = c("pca_nn"), 
+                                  algorithm = 2, verbose = T)
+
+pancreas <- perform.umap(object = pancreas, assay = c('SCT','SCRAN','SCANPY','TPM'), 
+                         reduction = c('scanorama','pca_harmony'), verbose = F)
+
+pancreas <- perform.umap(object = pancreas, assay = c('SCT','SCRAN','SCANPY','TPM'), 
+                         graph = c('pca_bbknn_bbknn'), verbose = F)
+
+tmp <- benchmark.clustering(object = pancreas, 
+                            assay = c('SCT','SCRAN','SCANPY','TPM'), 
+                            clustering = c("pca_nn:louvain",
+                                           "pca_bbknn_bbknn:louvain",
+                                           "scanorama_nn:louvain",
+                                           "pca_harmony_nn:louvain"),
+                            reduction = c('pca_umap',
+                                          'pca_bbknn_bbknn:UMAP',
+                                          'scanorama_umap',
+                                          "pca_harmony_umap"), 
+                            ground.truth.column = 'celltype', 
+                            verbose = T)
+
 

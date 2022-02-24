@@ -11,7 +11,9 @@
 #' @param reduction Character. Which reduction(s) within the assay should be supplied for distance calcultions
 #' @param n.dims Numerical. How many dimensions of the reduction should be supplied. Default = 1:3
 #' @param dist.method Character. Which distance method should be used, options: 'euclidean', 'maximum', 'manhattan', 'canberra', 'binary', 'minkowski'. Default = 'euclidean'
-#' @param ground.truth Vector. If available, supply the vector in the same order as colnames of the ground truth, i.e. true cell type labels. If this is not supplied, only unsupervised methods will be supplied. Default = NULL
+#' @param ground.truth.column Character. If available, supply the column in the object metadata that contains ground truth labels, i.e. true cell type labels. If this is not supplied, only unsupervised methods will be supplied. Default = NULL
+#' @param verbose Logical. Should system information be printed. Default = FALSE
+#' @param seed Numeric. What should the seed be set as. Default = 1234
 #' 
 #' @return Benchmarking scores for the supplied cluster assignments 
 #' 
@@ -39,7 +41,9 @@ benchmark.clustering <- function(object,
                                  reduction, 
                                  n.dims = 2,
                                  dist.method='euclidean',
-                                 ground.truth=NULL) {
+                                 ground.truth.column=NULL,
+                                 verbose=FALSE,
+                                 seed=1234) {
   
   if(!is(object = object, class2 = 'IBRAP')) {
     
@@ -146,26 +150,52 @@ benchmark.clustering <- function(object,
       
     }
     
+    if(!is.logical(verbose)) {
+      
+      stop('verbose should be logical, TRUE/FALSE \n')
+      
+    }
+    
+    if(!is.numeric(seed)) {
+      
+      stop('seed should be numerical \n')
+      
+    }
+    
+    set.seed(seed = seed, kind = "Mersenne-Twister", normal.kind = "Inversion")
+    
+    reticulate::py_set_seed(seed, disable_hash_randomization = TRUE)
+    
     count <- 1
     
     reduction.list <- reduction.list[reduction]
+    
     reduction.list <- reduction.list[match(reduction, names(reduction.list))]
     
     for(k in clustering) {
       
-      cat(crayon::cyan(paste0(Sys.time(), ': benchmarking for assay: ', l, ' cluster dataframe: ', k, '\n')))
-      
+      if(isTRUE(verbose)) {
+        
+        cat(crayon::cyan(paste0(Sys.time(), ': benchmarking for assay: ', l, ' cluster dataframe: ', k, '\n')))
+        
+      }
+
       reduction_sub <- reduction.list[[reduction[count]]][,1:n.dims]
       
       count <- count + 1
       
       clusters <- object@methods[[l]]@cluster_assignments[[k]]
-      
+
       for(p in colnames(clusters)) {
         
         if(length(unique(clusters[,p])) <= 1) {
           
-          cat(crayon::cyan(paste0(Sys.time(), ': cluster column: ', p, ' contains only 1 cluster group, omitting now\n')))
+          if(isTRUE(verbose)) {
+            
+            cat(crayon::cyan(paste0(Sys.time(), ': cluster column: ', p, ' contains only 1 cluster group, omitting now\n')))
+            
+          }
+
           clusters[,p] <- NULL
           
         }
@@ -178,90 +208,145 @@ benchmark.clustering <- function(object,
       
       for (v in colnames(clusters)[1:length(colnames(clusters))]) {
         
-        cat(crayon::cyan(paste0(Sys.time(), ': calculating silhouette for ', v, '\n')))
+        if(isTRUE(verbose)) {
+          
+          cat(crayon::cyan(paste0(Sys.time(), ': calculating silhouette for ', v, '\n')))
+          
+        }
+
         tmp <- cluster::silhouette(x = as.numeric(x = as.factor(x = clusters[,v])), dist = dist.matrix)
+        
         average <- sum(tmp[,3])/length(tmp[,3])
+        
         sil.results[v,] <- average
         
       }
       
       sil.results <- sil.results[complete.cases(sil.results),]
-      max.AS <- max(sil.results)
-      print(max.AS)
       
+      max.AS <- max(sil.results)
+  
       dunn.results <- data.frame(dunn.index=NA)
+      
       for (p in colnames(clusters)[1:length(colnames(clusters))]){
         
-        cat(crayon::cyan(paste0(Sys.time(), ': calculating dunn index for ', p, '\n')))
+        if(isTRUE(verbose)) {
+          
+          cat(crayon::cyan(paste0(Sys.time(), ': calculating dunn index for ', p, '\n')))
+          
+        }
+        
         dunn.results[p,] <- clValid::dunn(distance = dist.matrix, 
                                           clusters = as.numeric(x = as.factor(x = clusters[,p])))
         
       }
       
       dunn.results <- dunn.results[complete.cases(dunn.results),]
-      max.dunn <- max(dunn.results)
-      print(max.dunn)
       
-      conn.results <- data.frame(connectivity=NA)
-      for (p in colnames(clusters)[1:length(colnames(clusters))]){
+      max.dunn <- max(dunn.results)
+      
+      conn.results <- data.frame(connectivity = NA)
+      
+      for (p in colnames(clusters)[1:length(colnames(clusters))]) {
         
-        cat(crayon::cyan(paste0(Sys.time(), ': calculating connectivity for ', p, '\n')))
-        conn.results[p,] <- clValid::connectivity(distance = dist.matrix, clusters = clusters[,p])
+        if(isTRUE(verbose)) {
+          
+          cat(crayon::cyan(paste0(Sys.time(), ": calculating connectivity for ", p, "\n")))
+          
+        }
+
+        conn.results[p, ] <- clValid::connectivity(distance = dist.matrix, clusters = clusters[, p])
         
       }
       
       conn.results <- conn.results[complete.cases(conn.results),]
-      min.conn <- min(conn.results)
-      print(min.conn)
       
-      if(!is.null(ground.truth)) {
+      cluster.results <- data.frame(N_CLUSTERS=NA)
+      
+      for (p in colnames(clusters)[1:length(colnames(clusters))]){
+        
+        if(isTRUE(verbose)) {
+          
+          cat(crayon::cyan(paste0(Sys.time(), ': calculating connectivity for ', p, '\n')))
+          
+        }
+        
+        cluster.results[p,] <- length(unique(clusters[,p]))
+        
+      }
+      
+      cluster.results <- cluster.results[complete.cases(cluster.results),]
+
+      if(!is.null(ground.truth.column)) {
+        
+        ground.truth <- object@sample_metadata[,ground.truth.column]
         
         ARI.results <- data.frame(ARI=NA)
+        
         for (p in colnames(clusters)[1:length(colnames(clusters))]){
           
-          cat(crayon::cyan(paste0(Sys.time(), ': calculating ARI for ', p, '\n')))
+          if(isTRUE(verbose)) {
+            
+            cat(crayon::cyan(paste0(Sys.time(), ': calculating ARI for ', p, '\n')))
+            
+          }
+          
           ARI.results[p,] <- mclust::adjustedRandIndex(x = clusters[,p], y = ground.truth)
           
         }
         
         ARI.results <- ARI.results[complete.cases(ARI.results),]
-        max.ARI <- max(ARI.results)
-        print(max.ARI)
-        
+
         NMI.results <- data.frame(NMI=NA)
+        
         for (p in colnames(clusters)[1:length(colnames(clusters))]) {
           
-          cat(crayon::cyan(paste0(Sys.time(), ': calculating NMI for ', p, '\n')))
+          if(isTRUE(verbose)) {
+            
+            cat(crayon::cyan(paste0(Sys.time(), ': calculating NMI for ', p, '\n')))
+            
+          }
+          
           NMI.results[p,] <- aricode::AMI(c1 = clusters[,p], c2 = ground.truth)
           
         }
         
         NMI.results <- NMI.results[complete.cases(NMI.results),]
-        max.nmi <- max(NMI.results)
-        print(max.nmi)
+
+        results <- cbind(sil.results, dunn.results, conn.results, ARI.results, NMI.results,cluster.results)
         
-        results <- cbind(sil.results, dunn.results, conn.results, ARI.results, NMI.results)
         rownames(results) <- colnames(clusters)
-        colnames(results) <- c(paste0(k, '_sil.results'), 
-                               paste0(k, '_dunn.results'), 
-                               paste0(k, '_conn.results'), 
-                               paste0(k, '_ARI.results'), 
-                               paste0(k, '_NMI.results'))
+        
+        colnames(results) <- c('ASW', 
+                               'DUNN_INDEX', 
+                               'CONNECTIVITY', 
+                               'ARI', 
+                               'ASW',
+                               'N_CLUSTERS')
         
         object@methods[[l]]@benchmark_results[[k]]$clustering <- as.data.frame(results)
         
       } else {
         
-        results <- cbind(sil.results, dunn.results, conn.results)
+        results <- cbind(sil.results, dunn.results, conn.results,cluster.results)
+        
         rownames(results) <- colnames(clusters)
-        colnames(results) <- c(paste0(k, '_sil.results'), paste0(k, '_dunn.results'), paste0(k, '_conn.results'))
+        
+        colnames(results) <- c('ASW', 'DUNN_INDEX', 'CONNECTIVITY','N_CLUSTERS')
+        
         object@methods[[l]]@benchmark_results$clustering[[k]] <- as.data.frame(results)
         
       }
+      
     }
+    
   }
   
-  cat(crayon::cyan(paste0(Sys.time(), ': completed calculating benchmarking metrices \n')))
+  if(isTRUE(verbose)) {
+    
+    cat(crayon::cyan(paste0(Sys.time(), ': completed calculating benchmarking metrices \n')))
+    
+  }
   
   return(object)
   

@@ -38,6 +38,7 @@ perform.tpm <- function(object,
                         biomart.dataset='hsapiens_gene_ensembl',
                         gene.lengths=NULL,
                         verbose = FALSE,
+                        seed=1234,
                         ...) {
   
   if(!is(object = object, class2 = 'IBRAP')) {

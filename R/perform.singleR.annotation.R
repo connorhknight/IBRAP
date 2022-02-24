@@ -13,6 +13,8 @@
 #' @param tpm.transform Boolean. Should the reference data be tpm normalised. Default = FALSE
 #' @param ref.labels Vector. The cluster assignments for the reference data. Default = NULL
 #' @param column.suffix Character. A suffix to append the end of the new metadata columns if this functiuons is to be used multiple times. Default = '1'
+#' @param verbose Logical Should function messages be printed?
+#' @param seed Numeric. What should the seed be set as. Default = 1234
 #' @param ... arguments to be passed to singleR::SingleR
 #' 
 #' @return Produces a new 'methods' assay containing normalised, scaled and HVGs.
@@ -32,7 +34,9 @@ perform.singleR.annotation <- function(object,
                                        log.transform.ref = TRUE, 
                                        tpm.transform.ref = FALSE, 
                                        ref.labels, 
-                                       column.suffix='1', 
+                                       column.suffix='1',
+                                       verbose=FALSE,
+                                       seed=1234,
                                        ...) {
   
   if(!is(object, 'IBRAP')) {
@@ -78,7 +82,6 @@ perform.singleR.annotation <- function(object,
     
   }
   
-  
   if(!is.logical(tpm.transform.ref)) {
     
     stop('tpm.transform.ref must be logical, TRUE/FALSE \n')
@@ -90,24 +93,51 @@ perform.singleR.annotation <- function(object,
     stop('ref.labels must be vector, TRUE/FALSE \n')
     
   }
+  
   if(!is.character(column.suffix)) {
     
     stop('column.suffix must be character string \n')
     
   }
+
+  if(!is.logical(verbose)) {
+    
+    stop('verbose should be logical, TRUE/FALSE \n')
+    
+  }
+  
+  if(!is.numeric(seed)) {
+    
+    stop('seed should be numerical\n')
+    
+  }
+  
+  set.seed(seed = seed, kind = "Mersenne-Twister", normal.kind = "Inversion")
+  
+  reticulate::py_set_seed(seed, disable_hash_randomization = TRUE)
   
   if(isTRUE(tpm.transform.ref)) {
     
-    cat(crayon::cyan(paste0(Sys.time(), ': tpm transforming reference data \n')))
-    
+    if(isTRUE(verbose)) {
+      
+      cat(crayon::cyan(paste0(Sys.time(), ': tpm transforming reference data \n')))
+      
+    }
+
     temp <- createIBRAPobject(counts = ref, original.project = 'tpm_transform')
+    
     temp <- perform.tpm(object = temp)
+    
     ref <- temp@methods$TPM@normalised
     
   } else if (isTRUE(log.transform.ref) && isFALSE(tpm.transform.ref)) {
     
-    cat(crayon::cyan(paste0(Sys.time(), ': log2 transforming reference data \n')))
-    
+    if(isTRUE(verbose)) {
+      
+      cat(crayon::cyan(paste0(Sys.time(), ': log2 transforming reference data \n')))
+      
+    }
+
     ref <- log2(ref+1)
     
   }
@@ -116,25 +146,41 @@ perform.singleR.annotation <- function(object,
   
   if(isTRUE(tpm.transform.query)) {
     
-    cat(crayon::cyan(paste0(Sys.time(), ': tpm transforming query data \n')))
-    
+    if(isTRUE(verbose)) {
+      
+      cat(crayon::cyan(paste0(Sys.time(), ': tpm transforming query data \n')))
+      
+    }
+
     temp <- createIBRAPobject(counts = query, original.project = 'tpm_transform')
     temp <- perform.tpm(object = temp)
     query <- temp@methods$TPM@normalised
     
   } else if (isTRUE(log.transform.query) && isFALSE(tpm.transform.query)) {
     
-    cat(crayon::cyan(paste0(Sys.time(), ': log2 transforming query data \n')))
+    if(isTRUE(verbose)) {
+      
+      cat(crayon::cyan(paste0(Sys.time(), ': log2 transforming query data \n')))
+      
+    }
     
     query <- log2(query+1)
     
   }
-
-  cat(crayon::cyan(paste0(Sys.time(), ': initiating singleR automated labelling \n')))
+  
+  if(isTRUE(verbose)) {
+    
+    cat(crayon::cyan(paste0(Sys.time(), ': initiating singleR automated labelling \n')))
+    
+  }
   
   result <- SingleR::SingleR(test = query, ref = ref, labels = ref.labels, ...)
   
-  cat(crayon::cyan(paste0(Sys.time(), ': completed singleR automated labelling \n')))
+  if(isTRUE(verbose)) {
+    
+    cat(crayon::cyan(paste0(Sys.time(), ': completed singleR automated labelling \n')))
+    
+  }
   
   result$pruned.labels[is.na(result$pruned.labels)] <- 'X'
   result$labels[is.na(result$labels)] <- 'X'
@@ -142,8 +188,12 @@ perform.singleR.annotation <- function(object,
   object@sample_metadata[,paste0('singleR_pruned_labels_', column.suffix)] <- result$pruned.labels
   object@sample_metadata[,paste0('singleR_labels_', column.suffix)] <- result$labels
   
-  cat(crayon::cyan(paste0(Sys.time(), ': appending annotations to metadata \n')))
-  cat(crayon::cyan(paste0(Sys.time(), ': complete \n')))
+  if(isTRUE(verbose)) {
+    
+    cat(crayon::cyan(paste0(Sys.time(), ': appending annotations to metadata \n')))
+    cat(crayon::cyan(paste0(Sys.time(), ': complete \n')))
+    
+  }
   
   return(object)
   

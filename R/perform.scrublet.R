@@ -24,7 +24,10 @@
 #' @param mean_center Should the dataset be centred around the mean
 #' @param normalize_variance Should the genes have a total variance of 1
 #' @param n_prin_comps Number of principal components to retain
-#' @param svd_solver Which SVD solver to use: 'auto', 'full', 'arpack', 'randomized'.
+#' @param svd_solver Character. Which SVD solver to use: 'auto', 'full', 'arpack', 'randomized'.
+#' @param print.plot Logical. Should doublet plots be printed ? Default = FALSE
+#' @param verbose Logical. Should function information be printed to hte terminal? Default = FALSE
+#' @param seed Numerical. What seed should be be set. Default = 1234
 #' 
 #' @usage perform.scrublet(counts = counts, expected_doublet_rate = 0.025)
 #' 
@@ -37,7 +40,6 @@
 #' @export
 
 perform.scrublet <- function(counts,
-                             save.plot = TRUE, 
                              total_counts = NULL, 
                              sim_doublet_ratio = 2.0, 
                              n_neighbors = NULL, 
@@ -55,7 +57,10 @@ perform.scrublet <- function(counts,
                              mean_center = TRUE, 
                              normalize_variance = TRUE,
                              n_prin_comps = 30L,
-                             svd_solver = 'arpack') {
+                             svd_solver = 'arpack',
+                             print.plot=FALSE,
+                             verbose=FALSE,
+                             seed=1234) {
   
   if(!is(object = counts, class2 = 'matrix')) {
     
@@ -66,12 +71,6 @@ perform.scrublet <- function(counts,
     }
     
   } 
-  
-  if(!is.logical(save.plot)) {
-    
-    stop('save.plot must be boolean. TRUE/FALSE \n')
-    
-  }
   
   if(!is.null(total_counts)) {
     
@@ -189,9 +188,41 @@ perform.scrublet <- function(counts,
     
   }
   
-  cat(crayon::cyan(paste0(Sys.time(), ': initialising scrublet\n')))
+  if(!is.logical(print.plot)) {
+    
+    stop('print.plot must be logical. TRUE/FALSE \n')
+    
+  }
+  
+  if(!is.logical(verbose)) {
+    
+    stop('verbose must be logical. TRUE/FALSE \n')
+    
+  }
+  
+  if(!is.numeric(seed)) {
+    
+    stop('seed mustb be numerical \n')
+    
+  }
+  
+  if(isTRUE(verbose)) {
+    
+    cat(crayon::cyan(paste0(Sys.time(), ': initialising scrublet\n')))
+    
+  }
+  
+  set.seed(seed = seed, kind = "Mersenne-Twister", normal.kind = "Inversion")
+  
+  reticulate::py_set_seed(seed, disable_hash_randomization = TRUE)
+  
   scrublet <- reticulate::import('scrublet', convert = FALSE)
-  cat(crayon::cyan(paste0(Sys.time(), ': python modules loaded\n')))
+  
+  if(isTRUE(verbose)) {
+    
+    cat(crayon::cyan(paste0(Sys.time(), ': python modules loaded\n')))
+    
+  }
   
   scrub1 <- scrublet$Scrublet(counts_matrix = as.data.frame(as.matrix(t(counts))), 
                               total_counts = total_counts, 
@@ -201,21 +232,45 @@ perform.scrublet <- function(counts,
                               stdev_doublet_rate = stdev_doublet_rate, 
                               random_state = random_state)
   
-  cat(crayon::cyan(paste0(Sys.time(), ': scrublet object created\n')))
+  if(isTRUE(verbose)) {
+    
+    cat(crayon::cyan(paste0(Sys.time(), ': scrublet object created\n')))
+    
+  }
   
-  res1 <- reticulate::py_to_r(scrub1$scrub_doublets(synthetic_doublet_umi_subsampling = synthetic_doublet_umi_subsampling,
-                                                    use_approx_neighbors = use_approx_neighbors, 
-                                                    distance_metric = distance_metric, 
-                                                    get_doublet_neighbor_parents = get_doublet_neighbor_parents, 
-                                                    min_counts = min_counts,
-                                                    min_cells = min_cells, 
-                                                    min_gene_variability_pctl = min_gene_variability_pctl,
-                                                    log_transform = log_transform,
-                                                    mean_center = mean_center,
-                                                    normalize_variance = normalize_variance,
-                                                    n_prin_comps = n_prin_comps,
-                                                    svd_solver = svd_solver,
-                                                    verbose = TRUE))
+  if(isTRUE(verbose)) {
+    
+    res1 <- reticulate::py_to_r(scrub1$scrub_doublets(synthetic_doublet_umi_subsampling = synthetic_doublet_umi_subsampling,
+                                                      use_approx_neighbors = use_approx_neighbors, 
+                                                      distance_metric = distance_metric, 
+                                                      get_doublet_neighbor_parents = get_doublet_neighbor_parents, 
+                                                      min_counts = min_counts,
+                                                      min_cells = min_cells, 
+                                                      min_gene_variability_pctl = min_gene_variability_pctl,
+                                                      log_transform = log_transform,
+                                                      mean_center = mean_center,
+                                                      normalize_variance = normalize_variance,
+                                                      n_prin_comps = n_prin_comps,
+                                                      svd_solver = svd_solver,
+                                                      verbose = TRUE))
+    
+  } else if (isFALSE(verbose)) {
+    
+    res1 <- reticulate::py_to_r(scrub1$scrub_doublets(synthetic_doublet_umi_subsampling = synthetic_doublet_umi_subsampling,
+                                                      use_approx_neighbors = use_approx_neighbors, 
+                                                      distance_metric = distance_metric, 
+                                                      get_doublet_neighbor_parents = get_doublet_neighbor_parents, 
+                                                      min_counts = min_counts,
+                                                      min_cells = min_cells, 
+                                                      min_gene_variability_pctl = min_gene_variability_pctl,
+                                                      log_transform = log_transform,
+                                                      mean_center = mean_center,
+                                                      normalize_variance = normalize_variance,
+                                                      n_prin_comps = n_prin_comps,
+                                                      svd_solver = svd_solver,
+                                                      verbose = FALSE))
+    
+  }
   
   sim.plot <- ggplot2::qplot(as.vector(reticulate::py_to_r(scrub1$doublet_scores_sim_)), 
                              geom = 'histogram') + 
@@ -237,23 +292,27 @@ perform.scrublet <- function(counts,
   
   comb.plot <- cowplot::plot_grid(sim.plot, obs.plot, ncol = 2, nrow = 1)
   
-  if(isTRUE(save.plot)) {
-    
-    pdf(file = paste0('scrublet_', as.character(as.integer(runif(1, min = 1, max = 1000))), '.pdf'), onefile = T)
-    print(comb.plot)
-    dev.off()
-    
-  } else {
+  if(isTRUE(print.plot)) {
     
     print(comb.plot)
+    
+  } 
+  
+  if(isTRUE(verbose)) {
+    
+    cat(crayon::cyan(paste0(Sys.time(), ': doublets detected\n')))
     
   }
   
-  cat(crayon::cyan(paste0(Sys.time(), ': doublets detected\n')))
   counts <- as.matrix(counts)
   counts <- counts[,!res1[[2]]]
   counts <- Matrix::Matrix(data = counts, sparse = T)
-  cat(crayon::cyan(paste0(Sys.time(), ': matrix scrubbed\n')))
+  
+  if(isTRUE(verbose)) {
+    
+    cat(crayon::cyan(paste0(Sys.time(), ': matrix scrubbed\n')))
+    
+  }
   
   return(counts)
 }

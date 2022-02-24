@@ -12,6 +12,8 @@
 #' @param column Character. Which column within the isolated clust.method should be used to define cell type annoation. 
 #' @param start.clus Character. Which cluster should start the trajectory, if NULL then slingshot will attempt to discover this. Default = NULL
 #' @param end.clus Character. Which cluster should end the trajectory, if NULL then slingshot will attempt to discover this. Default = NULL
+#' @param verbose Logical Should function messages be printed?
+#' @param seed Numeric. What should the seed be set as. Default = 1234
 #' @param ... arguments to be passed to slingshot::slingshot
 #' 
 #' @return A SingleshotDataSet class results object containing cellular lineages/curves
@@ -33,6 +35,8 @@ perform.slingshot.trajectory <- function(object,
                                          column, 
                                          start.clus = NULL, 
                                          end.clus = NULL,
+                                         verbose=FALSE,
+                                         seed=1234,
                                          ...) {
   
   if(!is(object, 'IBRAP')) {
@@ -165,14 +169,38 @@ perform.slingshot.trajectory <- function(object,
     
   }
   
-  cat(crayon::cyan(paste0(Sys.time(), ': initiating slingshot \n')))
+  if(!is.logical(verbose)) {
+    
+    stop('verbose should be logical, TRUE/FALSE \n')
+    
+  }
   
+  if(!is.numeric(seed)) {
+    
+    stop('seed should be numerical\n')
+    
+  }
+
+  set.seed(seed = seed, kind = "Mersenne-Twister", normal.kind = "Inversion")
+  
+  reticulate::py_set_seed(seed, disable_hash_randomization = TRUE)
+  
+  if(isTRUE(verbose)) {
+    
+    cat(crayon::cyan(paste0(Sys.time(), ': initiating slingshot \n')))
+    
+  }
+
   res <- slingshot::slingshot(data = red, clusterLabels = clusters, start.clus = start.clus, end.clus = end.clus, ...)
   
   pt <- slingshot::slingPseudotime(res)
   
-  cat(crayon::cyan(paste0(Sys.time(), ': initiating slingshot \n')))
-  
+  if(isTRUE(verbose)) {
+    
+    cat(crayon::cyan(paste0(Sys.time(), ': initiating slingshot \n')))
+    
+  }
+
   slingres <- list(assignments = res, pseudotimes = pt)
   
   return(slingres)

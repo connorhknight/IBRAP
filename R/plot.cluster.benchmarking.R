@@ -72,23 +72,11 @@ plot.cluster.benchmarking <- function(object,
   
   clust.bench[,'cluster_index'] <- rownames(clust.bench)
   
-  if(ARI == TRUE) {
-    
-    labels <- c('ASW', 'Dunn_index', 'Connectivity', 'ARI', 'NMI', 'cluster_index')
-    
-  } else {
-    
-    labels <- c('ASW', 'Dunn_index', 'Connectivity', 'cluster_index')
-    
-  }
-  
-  colnames(clust.bench) <- labels
-  
   list.plot <- list()
   
-  for(o in 1:sum(length(labels)-2)) {
+  for(o in 1:sum(length(colnames(clust.bench))-2)) {
     
-    label <- labels[as.numeric(o)]
+    label <- colnames(clust.bench)[o]
     
     fig <- ggplot2::ggplot(clust.bench, ggplot2::aes_string(x = 'cluster_index', y = as.character(label), group = 1)) +
       ggplot2::geom_point() +
@@ -100,7 +88,7 @@ plot.cluster.benchmarking <- function(object,
     
   }
   
-  last.label <- labels[as.numeric(sum(length(labels)-1))]
+  last.label <- colnames(clust.bench)[sum(ncol(clust.bench)-1)]
   
   last.fig <- ggplot2::ggplot(clust.bench, ggplot2::aes_string(x = 'cluster_index', y = as.character(last.label), group = 1)) +
     ggplot2::geom_point() +
@@ -108,16 +96,9 @@ plot.cluster.benchmarking <- function(object,
     ggplot2::theme_bw() +
     ggplot2::theme(axis.text.x = ggplot2::element_text(angle = 90, vjust = 0.5, hjust=1))
   
-  list.plot[[as.numeric(sum(length(labels)-1))]] <- last.fig
+  list.plot[[sum(ncol(clust.bench)-1)]] <- last.fig
   
-  if(ARI == TRUE) {
-    
-    do.call('ggarrange.tmp', c(plots = list.plot, ncol = 5))
-    
-  } else {
-    
-    do.call('ggarrange.tmp', c(plots = list.plot, ncol = 3))
-    
-  }
+  
+  do.call('ggarrange.tmp', c(plots = list.plot, ncol = sum(ncol(clust.bench)-1)))
   
 }

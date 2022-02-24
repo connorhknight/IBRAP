@@ -207,7 +207,6 @@ perform.bbknn <- function(object,
     
   }
   
-  
   if(!is.logical(verbose)) {
     
     stop('verbose should be logical, TRUE/FALSE \n')
@@ -376,7 +375,7 @@ perform.bbknn <- function(object,
         
       }
       
-      object@methods[[p]]@neighbours[[paste0(r, '_bbknn_bbknn', graph.name.suffix[count])]] <- graph.list
+      object@methods[[p]]@neighbours[[paste0(r, '_BBKNN_BBKNN', graph.name.suffix[count])]] <- graph.list
       
       cat(crayon::cyan(paste0(Sys.time(), ': bbknn results added to IBRAP object\n')))
       
@@ -390,7 +389,7 @@ perform.bbknn <- function(object,
           
         }
         
-        object@methods[[p]]@computational_reductions[[paste0(r, '_bbknn_bbknn:diffmap', diffmap.name.suffix[count])]] <- diffmap
+        object@methods[[p]]@computational_reductions[[paste0(r, '_BBKNN_BBKNN:DIFFUSIONMAP', diffmap.name.suffix[count])]] <- diffmap
         
       }
 
@@ -436,23 +435,12 @@ perform.bbknn <- function(object,
 
   }
   
-  if(!'integration_method' %in% colnames(object@pipelines)) {
-    
-    tmp$integration_time <- as.difftime(tim = tmp$integration_time, units = 'secs')
-    
-    rownames(tmp) <- 1:nrow(tmp)
-    
-    object@pipelines <- tmp
-    
-  } else if ('integration_method' %in% colnames(object@pipelines)) {
-    
-    tmp$integration_time <- as.difftime(tim = tmp$integration_time, units = 'secs')
-    
-    rownames(tmp) <- 1:nrow(tmp)
-    
-    object@pipelines <- tmp
-    
-  }
+  tmp$integration_time <- as.difftime(tim = tmp$integration_time, units = 'secs')
+  
+  rownames(tmp) <- 1:nrow(tmp)
+  
+  object@pipelines <- tmp
+
   
   return(object)
   

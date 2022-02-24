@@ -94,6 +94,8 @@ perform.diffexp <- function(object,
   seuobj@assays$RNA@data <- object@methods[[assay]]@normalised
   seuobj@assays$RNA@scale.data <- object@methods[[assay]]@norm.scaled
   
+  
+  
   if(!is.null(identity)) {
     
     if(!is.vector(identity)) {

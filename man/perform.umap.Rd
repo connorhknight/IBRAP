@@ -10,11 +10,13 @@ perform.umap(
   reduction = NULL,
   graph = NULL,
   reduction.name.suffix = "",
-  n.dims = NULL,
+  dims.use = NULL,
   n_components = 2,
   n_neighbors = 30,
   metric = "cosine",
   min_dist = 0.3,
+  verbose = FALSE,
+  seed = 1234,
   ...
 )
 }
@@ -29,13 +31,17 @@ perform.umap(
 
 \item{reduction.name.suffix}{Character. What should be appended to the end of umap as the reduction name.}
 
-\item{n.dims}{Numerical. The number of UMAP dimensions to be produced. Must be supplied in list format relative to the order of reductions}
-
 \item{n_components}{Numerical. How many UMAP dimensions should be produced, if you are supplying graphs, only 2 dimensions can be produced. Default = 3}
 
 \item{n_neighbors}{Numerical. How many neighbours should be identified per cell. A higher value typically returns more accurate results. Default =}
 
+\item{verbose}{Logical. Should system information be printed. Default = FALSE}
+
+\item{seed}{Numeric. What should the seed be set as. Default = 1234}
+
 \item{...}{Numerical. Arguments to be passed to Seurat::RunUMAP}
+
+\item{n.dims}{Numerical. The number of UMAP dimensions to be produced. Must be supplied in list format relative to the order of reductions}
 }
 \value{
 UMAP reduction saved in the visualisation_reductions section in the supplied method-assays

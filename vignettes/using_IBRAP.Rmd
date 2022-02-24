@@ -24,17 +24,21 @@ knitr::opts_chunk$set(
 klippy::klippy(tooltip_message = 'Click to copy', tooltip_success = 'Done', position = c('bottom', 'right'))
 ```
 
+Welcome to IBRAPs Getting Started tutorial page that teaches you how to use some fundamental functions in IBRAP. IBRAP combines analytical components from different packages in R and python to create new pipelines that analyse their datasets better! Please enjoy our tutorial and if you require any help please leave a comment on our GitHub.
+
 # Analysing 2994 Bone Marrow Mononuclear Cells (BMMC) from a single sample.
 
 To demonstrate IBRAP we enlisted a sample produced by [Oetjen](https://insight.jci.org/articles/view/124928) *et al*. This can be downloaded using the following link:  
 
 https://www.dropbox.com/s/s126bv59mjnhkre/marrow_A.rds?dl=0
 
+Marrow_A is a bone marrow sample from a set of 25. It contains 2994 cells and was sequenced using 10x Genomics and aligned using CellRanger. Please download the sample and load it into R using the following command: 
+
 ```{r, eval=F, echo=T}
 
 library(IBRAP)
 
-bmmc <- readRDS(file.choose())
+marrow_A <- readRDS(file.choose())
   
 ```
 
@@ -50,12 +54,12 @@ Droplet-based datasets present unique confounding effects, including: doublets a
 
 bmmc <- perform.scrublet(counts = bmmc)
 
-NOTE: We have also included a function (perform.decontX) 
-to perform ambient RNA decontamination. However, you need to 
-install package: celda Please see the link 
-(https://github.com/campbio/celda) for installation instruction. 
-In most cases, you do not need to perform this function unless 
-your data suffers from ambient RNA contamination
+# NOTE: We have also included a function (perform.decontX) 
+# to perform ambient RNA decontamination. However, you need to 
+# install package: celda Please see the link 
+# (https://github.com/campbio/celda) for installation instruction. 
+# In most cases, you do not need to perform this function unless 
+# your data suffers from ambient RNA contamination
 
 bmmc <- perform.decontX(counts = bmmc)
 
@@ -69,7 +73,7 @@ knitr::include_graphics(path = 'scrublet_plot.png')
 
 ```
 
-Scrublet functions by simulating multiplets from out datasets (by integrating similar cells); we can see these simulated cells with high doublet scores. For this example, we can see a minimal number of cells in our observed cells with high doublet scores. Cells that are above a certain doublet score threshold are omitted from the dataset. 
+Scrublet functions by simulating multiplets from out datasets (by integrating similar cells); we can see these simulated cells with high doublet scores. For this example, we can see a minimal number of cells in our observed cells with high doublet scores. Cells that are above a certain doublet score threshold are omitted from the dataset.
 
 ```{r, echo=FALSE, out.width="150%", out.height="150%"}
 
@@ -77,9 +81,9 @@ knitr::include_graphics(path = 'decontX.png')
 
 ```
 
-DecontX creates a umap projection of samples and colours them according the amount of contamination presented within a cell. In this sample, we observe minimal contaminaton. WARNING: DecontX should only be used if you expect ambient RNA otherwise it can drastically affect downstream results. 
+DecontX creates a umap projection of samples and scales the colours according the amount of contamination presented within a cell. In this sample, we observe minimal contaminaton. WARNING: DecontX should only be used if you expect ambient RNA otherwise it can drastically affect downstream results. 
 
-Now that we have removed these confounding effects from our dataset we can move on with our analysis. 
+Now that we have removed these confounding effects from our dataset we can continue with our analysis. 
 
 ## Section 2: Initiating the IBRAP S4 object
 
@@ -88,11 +92,11 @@ Lets start by initiating our IBRAP class object ready for downstream analyses. Y
 ```{r, eval=F, echo=T}
 
 # whilst creating the object we begin filtering the cells and genes using min.cells and min.features
-bmmc <- createIBRAPobject(counts = bmmc,
-                          original.project = 'bmmc',
-                          method.name = 'RAW',
-                          min.cells = 3,
-                          min.features = 200)
+marrow_A <- createIBRAPobject(counts = marrow_A,
+                              original.project = 'bmmc',
+                              method.name = 'RAW',
+                              min.cells = 3,
+                              min.features = 200)
                           
 ```
 
@@ -114,14 +118,20 @@ As previously mentioned we already generated total count and total genes whilst 
 
 ```{r, eval=F, echo=T}
 
-bmmc <- find_percentage_genes(object = bmmc, pattern = '^MT-',
-                              assay = 'RAW', 
-                              slot = 'counts',
-                              column.name = 'RAW_percent.mt')
+marrow_A <- find_percentage_genes(object = marrow_A, pattern = '^MT-',
+                                  assay = 'RAW', 
+                                  slot = 'counts',
+                                  column.name = 'RAW_percent.mt')
                               
 ```
 
-These fraction results will be saved under object@sample_metadata alongside total counts and total genes for use downstream. 
+We can check the data out in out metadata folder by performing the following:
+
+```{r, eval=T, echo=T}
+
+marrow_A@sample_metadata
+                              
+```
 
 ### Section 3.2: Visualisation
 
@@ -129,7 +139,7 @@ Visualising this information is important for high dimensional data. Thus, we ca
 
 ```{r, eval=F, echo=T}
 
-plot.QC.vln(object = bmmc, 
+plot.QC.vln(object = marrow_A, 
             metadata.columns = c('RAW_total.features', 
                                  'RAW_total.counts', 
                                  'RAW_percent.mt'))
@@ -170,7 +180,7 @@ We clean our data further by applyng filtration cut-offs. We remove cells with a
 
 ```{r, eval=F, echo=T}
 
-bmmc <- filter_IBRAP(object = bmmc, RAW_total.features < 3000 & RAW_percent.mt < 8)
+marrow_A <- filter_IBRAP(object = marrow_A, RAW_total.features < 3000 & RAW_percent.mt < 8)
 
 ```
 
@@ -182,29 +192,39 @@ To accommodate downstream analyses, we must promote a normal distribution and nu
 
 ```{r, eval=F, echo=T}
 
-bmmc <- perform.sct(object = bmmc, 
-                    assay = 'RAW', 
-                    slot = 'counts', vars.to.regress = 'RAW_percent.mt')
+marrow_A <- perform.sct(object = marrow_A, 
+                        assay = 'RAW', 
+                        slot = 'counts', vars.to.regress = 'RAW_percent.mt')
 
-bmmc <- perform.scran(object = bmmc, 
-                      assay = 'RAW', 
-                      slot = 'counts', 
-                      vars.to.regress = c('RAW_percent.mt' 'RAW_total.counts'))
+marrow_A <- perform.scran(object = marrow_A, 
+                          assay = 'RAW', 
+                          slot = 'counts', 
+                          vars.to.regress = c('RAW_percent.mt' 'RAW_total.counts'))
 
-bmmc <- perform.scanpy(object = bmmc, 
-                       vars.to.regress = c('RAW_percent.mt' 'RAW_total.counts'))
+marrow_A <- perform.scanpy(object = marrow_A, 
+                           vars.to.regress = c('RAW_percent.mt', 'RAW_total.counts'))
 
 ```
+
+Now, we can see the available normalisation assays through the following command:
+
+```{r, eval=T, echo=T}
+
+marrow_A
+                              
+```
+
+Please note, that if your computer has small RAM, then you can change the conserve.memory parameter in sctransform to TRUE, this will make the function slower by more memory efficient. 
 
 For these methods, we transformed our raw counts, and regressed some QC metrics from our datasets to not allow them to confound our downstream analyses. There are some notable differences here. For example, SCT automatically regresses RAW_total.counts so we do not need to specify this however, the others you do. These parameters are set as default, any deviation from these is at your own risk since they could produce incorrect results. Nonetheless, feel free to play around and observe the difference. 
 
 ### Section 4.2: How Functions Work Downstream
 
-Each normalisation function produces a new method-assay which contains the results. Any downstream analyses will be stored in these separate compartments, respective to the normalisation method. i.e. object@methods contains all of the method assays. Hereon, function will iterate through the indicated method-assays and any other inputs within the assays. For example, if you supply c('SCT','SCRAN','SCANPY') as assays and c('pca_umap', 'pca_t-SNE') as reductions. A function will perform firstly on 'pca_umap' in the 'SCT' assay, then the 'pca_t-SNE' in the 'SCT' assay. After these the function will move on to 'pca_umap' in the 'SCRAN' assay and so on.
+Each normalisation function produces a new method-assay which contains the results. Any downstream analyses will be stored in these separate compartments, respective to the normalisation method. i.e. object@methods contains all of the method assays. Hereon, function will iterate through the indicated method-assays and any other inputs within the assays. For example, if you supply c('SCT','SCRAN','SCANPY') as assays and c('pca_umap', 'pca_t-SNE') as reductions. A function will perform firstly on 'pca_umap' in the 'SCT' assay, then the 'pca_t-SNE' in the 'SCT' assay. After these the function will move on to 'pca_umap' in the 'SCRAN' assay and so on. You will see this as we progress through the tutorial. 
 
 ### Section 4.3: Downstream Pipeline Deviations
 
-Since IBRAP incorporated multiple pipelines some pipelines begin to vary at this point. For example, Scanpy PCA calculation and neighbourhood graph generation slightly differ. IBRAP accomodates this by identifyig the assay name and automatically applying the correct function. When adding suffixes to any result naming it is important not to include your own underscores.
+Since IBRAP incorporated multiple pipelines, some pipelines begin to vary at this point. For example, Scanpy PCA calculation and neighbourhood graph generation slightly differ. IBRAP accomodates this by identifyig the assay name and automatically applying the correct function. When adding suffixes to any result naming it is important not to include your own underscores.
 
 ## Section 5: Removing Certain Highly Variable Genes
 
@@ -213,8 +233,8 @@ In some instances, certain genes require omission from the highly variable genes
 ```{r, eval=F, echo=T}
 
 # This function finds all ribosomal genes and removes them from the HVG list of the three assays
-unwanted <- as.character(rownames(bmmc)[grepl("^RPL" ,x=rownames(bmmc))])
-bmmc <- remove.hvgs(object = bmmc, assay = c('SCT', 'SCRAN', 'SCANPY'), 
+unwanted <- as.character(rownames(marrow_A)[grepl("^RPL" ,x=rownames(marrow_A))])
+marrow_A <- remove.hvgs(object = marrow_A, assay = c('SCT', 'SCRAN', 'SCANPY'), 
                     hvgs.omit = list(unwanted,unwanted,unwanted))
 
 ```
@@ -223,39 +243,27 @@ bmmc <- remove.hvgs(object = bmmc, assay = c('SCT', 'SCRAN', 'SCANPY'),
 
 ### Section 6.1: Principal Component Analysis
 
-Now that our data has been appropriately transformed and highly variable genes have been identified we can reduce the number of dimensions using Principal Component Analysis (PCA). Reduction methods summarise as much information from the higher dimensions into lower dimensions as possible. Therefore, these lower dimensions facilitate a faster computing time and require less computational resources. 
+Now that our data has been appropriately transformed our data and highly variable genes have been identified we can reduce the number of dimensions using Principal Component Analysis (PCA). Reduction methods summarise as much information from the higher dimensions into lower dimensions as possible. Therefore, these lower dimensions facilitate a faster computing time and require less computational resources. 
 
 ```{r, eval=F, echo=T}
 
-bmmc <- perform.pca(object = bmmc, 
-                    assay = c('SCT', 'SCRAN', 'SCANPY'), 
-                    n.pcs = 50, reduction.save = 'pca')
+marrow_A <- perform.pca(object = marrow_A, 
+                        assay = c('SCT', 'SCRAN', 'SCANPY'), 
+                        n.pcs = 50)
 
 ```
 
-As you can see, we have requested this function to iterate through all three assays and to save the reduction as pca. The produced principal components (PCs) contain a different explained variance, high variance PCs contain the most information between points and low provide the opposite. Furthermore, low variation PCs create a false closeness between cell points and thus require exclusion from *some* downstream analyses. A simple way to identify the number of PCs to retain is to plot them in descending order and find the elbow point. The elbow point being the bend in the plot of points. 
+As you can see, we have requested this function to iterate through all three assays and to save the reduction as pca. The produced principal components (PCs) contain a different explained variance, high variance PCs contain the most information between points and low provide the opposite. Furthermore, low variation PCs create a false closeness between cell points and thus require exclusion from *some* downstream analyses. A simple way to identify the number of PCs to retain is to plot them in descending order and find the elbow point. The elbow point being the bend in the plot of points. We can observe the amount of variance by plotting an elbow plot using the following function:
 
-```{r, echo=FALSE, out.width="150%", out.height="150%"}
+```{r, eval=T, echo=T, out.width="200%", out.height="150%"}
 
-knitr::include_graphics(path = 'PCA_screeplot.png')
+plot.variance(object = marrow_A, 
+              assay = c('SCT','SCRAN','SCANPY'), 
+              reduction = 'PCA')
 
 ```
 
 For these assays, the elbow point is around 10-15 PCs. 
-
-### Section 6.2: Diffusion Maps
-
-We use next calculate diffusion maps from our PCA reduction. Diffusion maps are useful in visualising the developmental trajectory in our cellular population once processed with a non-linear method, such as: UMAP. To create this we apply the following function:
-
-```{r, eval=F, echo=T}
-
-bmmc <- perform.diffusion.map(object = bmmc, assay = c('SCT', 'SCRAN', 'SCANPY'), reduction = 'pca', dims = list(0))
-
-```
-
-Again, we have requested for IBRAP to iterate through our three assays whilst using their PCA reduction. We specified the dimensions to use as 0 (which means all components) and the default setting for this function produces 15 diffusion components. Both the PCA and diffusion map will be saved in the method assay in assay@computational_reductions. 
-
-We will then process these downstream. Next, we will cluster our datasets. 
 
 ## Section 7: Generating Neighbourhood Graphs & Clustering 
 
@@ -266,14 +274,13 @@ Prior to clustering it is important to ascertain the relationship and closeness 
 ```{r, eval=F, echo=T}
 # here we generate the neighbour graph for PCA and produce a diffusion map from the PCA-neighbour graph
 
-bmmc <- perform.nn(object = bmmc, assay = c('SCT', 'SCRAN', 'SCANPY'), 
-                   reduction = c('pca', 'pca:diffmap'), 
-                   dims = list(0,0))
+marrow_A <- perform.nn(object = marrow_A, 
+                       assay = c('SCT', 'SCRAN', 'SCANPY'), 
+                       reduction = c('PCA'), dims.use = list(15))
                           
 ```
 
 In this function, we have requested that the function iterate through all three assays, within each assay to use pca and then pca:diffmap using all dimensions (seen as list(0,0)). These results will be stored under assay@neighbours ready for use downstream. 
-
 ### Section 7.2: Clustering
 
 Finally, using our neighbourhood graph we must cluster close networks together to infer individual cell types. perform.graph.cluster() provides either:
@@ -286,10 +293,10 @@ These methods can be adjusted using thre res parameter in the function typically
 
 ```{r, eval=F, echo=T}
 
-bmmc <- perform.graph.cluster(object = bmmc, 
-                              assay = c('SCT', 'SCRAN', 'SCANPY'), 
-                              neighbours = c("pca_nn", "pca:diffmap_nn"), 
-                              algorithm = 1)
+marrow_A <- perform.graph.cluster(object = marrow_A, 
+                                  assay = c('SCT', 'SCRAN', 'SCANPY'), 
+                                  neighbours = c('PCA_NN'), 
+                                  algorithm = 1)
 
 ```
 
@@ -308,30 +315,14 @@ For this tutorial we will focus on UMAP.
 
 ```{r, eval=F, echo=T}
 
-bmmc <- perform.umap(object = bmmc, 
-                     assay = c('SCT', 'SCRAN'), 
-                     reduction = c('pca', 'pca:diffmap'), 
-                     n.dims = list(15,0))
+marrow_A <- perform.umap(object = marrow_A, 
+                         assay = c('SCT', 'SCRAN', 'SCANPY'), 
+                         reduction = 'PCA', 
+                         n.dims = list(15))
 
 ```
 
-Scanpy UMAP reductions are produced from the nearest neighbourhood graph that we previously preoduced using the perform.nn() function previously. SCANPY would therefore be processed like this: 
-
-```{r, eval=F, echo=T}
-
-bmmc <- perform.umap(object = bmmc, 
-                     assay = c('SCANPY'), 
-                     graph = c('pca_nn'), 
-                     n.dims = list(15))
-
-bmmc <- perform.umap(object = bmmc, 
-                     assay = c('SCANPY'), 
-                     reduction = c('pca:diffmap'), 
-                     n.dims = list(0))
-
-```
-
-Simply, we asked this function to iterate through all assays, and use the first 15 components of the pca reduction and to use all components of the diffusion map. 
+Simply, we asked this function to iterate through all assays, and use the first 15 components of the pca reduction. 
 
 Now, we have generated a high volume of results, especially clustering results. Therefore, it is beneficial to applying to some benchmarking comparisons. 
 
@@ -345,30 +336,32 @@ df <- data.frame(`QC Metric` = c('Average Silhouette Width (ASW)', 'Dunn Index',
 knitr::kable(df)
 ```
 
-To set up the function, supply the dataframes contained within the assay@cluster_assignments you wish to benchmark under clustering. Next, include the corresponding reductions for them, normally this will be a umap reduction using 1:2 dimensions. For example, if clustering and the umap were calculated using PCA these should be paired, likewise if they were calcualted using pca:diffmap then they should be paired.
+Now, lets take a look at the data that we have produced so far: 
+
+```{r, eval=T, echo=T}
+
+showObjectContents(marrow_A, c('SCT','SCRAN','SCANPY'))
+
+```
+
+To set up the function, supply the names you want to benchmark from cluster_assignments. Next, include the corresponding reductions for them, normally this will be a umap reduction using 1:2 dimensions. For example, if clustering and the umap were calculated using PCA these should be paired, likewise if they were calculated using an integration method we would do the same.
 
 ```{r, eval=F, echo=T}
 
-bmmc <- benchmark.clustering(object = bmmc, 
-                             assay = c('SCT', 'SCRAN', 'SCANPY'), 
-                             clustering = c('pca_nn:louvain', 'pca:diffmap_nn:louvain'), 
-                             reduction = c('pca_umap', 'pca:diffmap_umap'), 
-                             n.dims = 2)
+marrow_A <- benchmark.clustering(object = marrow_A, 
+                                 assay = c('SCT', 'SCRAN', 'SCANPY'), 
+                                 clustering = c('PCA_NN:LOUVAIN'), 
+                                 reduction = c('PCA_UMAP'), 
+                                 n.dims = 2)
 
 ```
 
 We can visualise the comparison within a clustering method dataframe using the following function: 
 
-```{r, eval=F, echo=T}
+```{r, eval=T, echo=T}
 
-plot.cluster.benchmarking(object = bmmc, assay = 'SCT', 
-                          clustering = 'pca_nn:louvain')
-
-```
-
-```{r, echo=FALSE, out.width="150%", out.height="150%"}
-
-knitr::include_graphics(path = 'cluster_benchmarking.png')
+plot.cluster.benchmarking(object = marrow_A, assay = 'SCT', 
+                          clustering = 'PCA_NN:LOUVAIN')
 
 ```
 
@@ -382,29 +375,29 @@ Since we have 3 different normalisation method it is beneficial to observe the d
 
 The main challenge with the plotting function in IBRAP is isolating the correct labelling. In general, plotting functions will ask for the assay which is contained within object@methods, the clust.method that is contained withing @cluster_assignments, and the column which would be contained with in that cluster assignment. One thing to note, is that if you wish to access columns that are contained within object@sample_metadata.
 
-```{r, eval=F, echo=T}
+```{r, eval=T, echo=T}
 
-plot1 <- plot.reduced.dim(object = bmmc, 
-                          reduction = 'pca_umap', 
+plot1 <- plot.reduced.dim(object = marrow_A, 
+                          reduction = 'PCA_UMAP', 
                           assay = 'SCT', 
-                          clust.method = 'pca_nn:louvain', 
-                          column = 'neighbourhood_graph_res.0.8', pt.size = 0.1) + 
+                          clust.method = 'PCA_NN:LOUVAIN', 
+                          column = 'res_0.8', pt.size = 0.1) + 
   ggplot2::ggtitle('SCT') + 
   ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5))
 
-plot2 <- plot.reduced.dim(object = bmmc, 
-                          reduction = 'pca_umap', 
+plot2 <- plot.reduced.dim(object = marrow_A, 
+                          reduction = 'PCA_UMAP', 
                           assay = 'SCRAN', 
-                          clust.method = 'pca_nn:louvain', 
-                          column = 'neighbourhood_graph_res.0.8', pt.size = 0.1) + 
+                          clust.method = 'PCA_NN:LOUVAIN', 
+                          column = 'res_0.8', pt.size = 0.1) + 
   ggplot2::ggtitle('SCRAN') + 
   ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5))
 
-plot3 <- plot.reduced.dim(object = bmmc, 
-                          reduction = 'pca_umap', 
+plot3 <- plot.reduced.dim(object = marrow_A, 
+                          reduction = 'PCA_UMAP', 
                           assay = 'SCANPY', 
-                          clust.method = 'pca_nn:louvain', 
-                          column = 'neighbourhood_graph_res.0.8', pt.size = 0.1) + 
+                          clust.method = 'PCA_NN:LOUVAIN', 
+                          column = 'res_0.8', pt.size = 0.1) + 
   ggplot2::ggtitle('SCANPY') + 
   ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5))
 
@@ -418,7 +411,7 @@ knitr::include_graphics(path = 'diff_norm_method.png')
 
 ```
 
-As we can see, each normalisation method changes the final topology of the data. Furthermore, we can see that SCT, SCRAN, and SCANPY produced 18, 14, and 14 communities, respectively. Therefore, it is important to assess all normalisation methods and their subsequent results since they can differ and some perform better than others according to datasets. For this analysis we will proceed using the SCT results. 
+As we can see, each normalisation method changes the final topology of the data. Furthermore, we can see that SCT, SCRAN, and SCANPY produced 19, 15, and 13 communities, respectively. Therefore, it is important to assess all normalisation methods and their subsequent results since they can differ and some perform better than others according to datasets. For this analysis we will proceed using the SCT results. 
 
 ## Section 11: Biological Analysis 
 
@@ -430,10 +423,19 @@ Differential expression analyses can be performed either 1 cluster compared agai
 
 ```{r, eval=F, echo=T}
 
-DE_res <- perform.diffexp.all(object = samp, 
+DE_res <- perform.diffexp.all(object = marrow_A, 
                               assay = 'SCT', 
                               test = 'MAST', 
-                              identity = as.vector(samp@methods$SCT@cluster_assignments$`pca_nn.v1:louvain`$neighbourhood_graph_res.0.8))
+                              clust.method = 'PCA_NN:LOUVAIN', 
+                              column = 'res_0.8')
+
+```
+
+Now, lets take a look at the results: 
+
+```{r, eval=, echo=T}
+
+DE_res
 
 ```
 
@@ -443,7 +445,7 @@ In this case, we can use feature plots:
 
 ```{r, eval=F, echo=T}
 
-plot.features(object = samp, assay = 'SCT', reduction = 'pca_umap', 
+plot.features(object = marrow_A, assay = 'SCT', reduction = 'PCA_UMAP', 
               features = c('JCHAIN','MS4A1','MME','IRF8','HLA-DRA','LYZ',
                            'ELANE','ALAS2','CD34','NKG7','CCR7','IL7R','GZMK'), 
               pt_size = 1, 
@@ -457,17 +459,19 @@ knitr::include_graphics(path = 'Feature_plots.png')
 
 ```
 
-Next, we must indicate which cell type belongs to which clusters
+Next, we must indicate which cell type belongs to which clusters. We can fetch results using our FetchResults function. 
 
 ```{r, eval=F, echo=T}
 
-clusters <- as.character(bmmc@methods$SCT@cluster_assignments$`pca_nn:louvain`$neighbourhood_graph_res.0.8)
+clusters <- as.character(FetchResults(object = marrow_A, assay = 'SCT', assay.slot = 'cluster_assignments', sub.slot.name = 'PCA_NN:LOUVAIN', column = 'res_0.8'))
 
-clusters[clusters == '18'] <- 'plasma'
-clusters[clusters == '17'] <- 'immature B cells'
-clusters[clusters == '11'] <- 'pro B cells'
-clusters[clusters == '14'] <- 'dendritic cells'
-clusters[clusters == '15'] <- 'dendritic cells'
+# here we are replacing the clusters with their cell types
+
+clusters[clusters == '18'] = 'plasma'
+clusters[clusters == '17'] = 'immature B cells'
+clusters[clusters == '11'] = 'pro B cells'
+clusters[clusters == '14'] = 'dendritic cells'
+clusters[clusters == '15'] = 'dendritic cells'
 clusters[clusters == '1'] = 'monocytes/macrophage'
 clusters[clusters == '10'] = 'monocytes/macrophage'
 clusters[clusters == '6'] = 'neutrophil'
@@ -483,10 +487,14 @@ clusters[clusters == '2'] = 'CD8+ naive T cells'
 clusters[clusters == '13'] = 'CD8+ naive T cells'
 clusters[clusters == '7'] = 'CD8+ cytotoxic T cells'
 
-bmmc@sample_metadata$celltypes <- clusters
+# and we are going to simply put the cell types into our metadata
 
-plot.reduced.dim(object = bmmc, 
-                 reduction = 'pca_umap', 
+print(clusters)
+
+marrow_A@sample_metadata$celltypes <- clusters
+
+plot.reduced.dim(object = marrow_A, 
+                 reduction = 'PCA_UMAP', 
                  assay = 'SCT', 
                  clust.method = 'metadata', 
                  column = 'celltypes', 
@@ -494,9 +502,5 @@ plot.reduced.dim(object = bmmc,
 
 ```
 
-```{r, echo=FALSE, out.width="150%", out.height="150%"}
-
-knitr::include_graphics(path = 'cell_types.png')
-
-```
+Congratulations for completing your first run through of IBRAP! Thus far, you have installed a great collection of packages for single-cell analytics, produced 3 pipelines, benchmarked them, performed a differential expression, and produced plots. This is just a snippet of what IBRAP is capable of, feel free to explore the available functions and investigate the rest of our tutorial website to further elucidate IBRAP. 
 

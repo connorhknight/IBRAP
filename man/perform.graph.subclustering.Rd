@@ -13,6 +13,8 @@ perform.graph.subclustering(
   neighbours,
   algorithm = 1,
   res = 0.6,
+  verbose = FALSE,
+  seed = 1234,
   ...
 )
 }
@@ -32,6 +34,10 @@ perform.graph.subclustering(
 \item{algorithm}{Numerical. Algorithm for modularity optimization (1 = original Louvain algorithm; 2 = Louvain algorithm with multilevel refinement; 3 = SLM algorithm; 4 = Leiden algorithm). Leiden requires the leidenalg python. Default = 1 Default = NULL}
 
 \item{res}{Numerical vector. Which resolution to run the clusterign algorithm at, a smaller and larger value identified less and more clusters, respectively. Default = c(0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1,1.1,1.2,1.3,1.4,1.5)}
+
+\item{verbose}{Logical Should function messages be printed?}
+
+\item{seed}{Numeric. What should the seed be set as. Default = 1234}
 
 \item{...}{arguments to be passed to Seurat::FindClusters}
 

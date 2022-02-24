@@ -12,6 +12,8 @@ perform.slingshot.trajectory(
   column,
   start.clus = NULL,
   end.clus = NULL,
+  verbose = FALSE,
+  seed = 1234,
   ...
 )
 }
@@ -29,6 +31,10 @@ perform.slingshot.trajectory(
 \item{start.clus}{Character. Which cluster should start the trajectory, if NULL then slingshot will attempt to discover this. Default = NULL}
 
 \item{end.clus}{Character. Which cluster should end the trajectory, if NULL then slingshot will attempt to discover this. Default = NULL}
+
+\item{verbose}{Logical Should function messages be printed?}
+
+\item{seed}{Numeric. What should the seed be set as. Default = 1234}
 
 \item{...}{arguments to be passed to slingshot::slingshot}
 }

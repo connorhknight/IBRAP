@@ -9,8 +9,6 @@ perform.decontX(counts = counts)
 \arguments{
 \item{counts}{Counts matrix}
 
-\item{save.plot}{Boolean. Should the automatically genewrated plot be saved? Default = TRUE}
-
 \item{z}{Cluster assignments for cells}
 
 \item{maxIter}{Maximum number of iterations to be performed}
@@ -25,7 +23,11 @@ perform.decontX(counts = counts)
 
 \item{dbscanEps}{Numeric. The clustering resolution parameter used in 'dbscan' to estimate broad cell clusters. Used only when z is not provided. Default 1.}
 
-\item{seed}{Integer. Passed to with_seed. For reproducibility, a default value of 12345 is used. If NULL, no calls to with_seed are made.}
+\item{print.plot}{Logical. Should the UMAP plot displaying contaimination in each cell be printed? Default = FALSE}
+
+\item{verbose}{Logical. Should function information be printed to the console? Default = FALSE}
+
+\item{seed}{Integer. Passed to with_seed. For reproducibility. Default = 1234}
 }
 \value{
 Doublet-omitted sparse matrix

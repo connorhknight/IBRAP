@@ -15,6 +15,8 @@ perform.singleR.annotation(
   tpm.transform.ref = FALSE,
   ref.labels,
   column.suffix = "1",
+  verbose = FALSE,
+  seed = 1234,
   ...
 )
 }
@@ -30,6 +32,10 @@ perform.singleR.annotation(
 \item{ref.labels}{Vector. The cluster assignments for the reference data. Default = NULL}
 
 \item{column.suffix}{Character. A suffix to append the end of the new metadata columns if this functiuons is to be used multiple times. Default = '1'}
+
+\item{verbose}{Logical Should function messages be printed?}
+
+\item{seed}{Numeric. What should the seed be set as. Default = 1234}
 
 \item{...}{arguments to be passed to singleR::SingleR}
 

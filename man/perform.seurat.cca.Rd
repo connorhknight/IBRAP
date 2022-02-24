@@ -7,10 +7,9 @@
 \usage{
 perform.seurat.integration(
   object,
+  object.list,
   assay,
-  normalisation.method,
-  batch,
-  reduction.name.suffix = NULL,
+  reduction.save.suffix = NULL,
   nfeatures = 2000,
   anchors.dims = 1:30,
   l2.norm = T,
@@ -36,9 +35,9 @@ perform.seurat.integration(
 \arguments{
 \item{object}{IBRAP S4 class object}
 
-\item{assay}{Character. String containing indicating which assay to use}
+\item{object.list}{list of individual sample IBRAP S4 class objects.}
 
-\item{batch}{Character. Which column in the metadata defines the batches}
+\item{assay}{Character. String containing indicating which assay to use}
 
 \item{nfeatures}{Numerical. How many features should be found as integration anchors. Default = 3000}
 
@@ -66,6 +65,11 @@ perform.seurat.integration(
 
 \item{integrate.eps}{Numerical. Error bound on the neighbor finding algorithm (from RANN)}
 
+<<<<<<< HEAD
+\item{reduction.save.suffix.}{Character. What should be added as a suffix to reduction name. Default = ''}
+
+=======
+>>>>>>> 810d7c0084d3f20c6f22b5e0fc8fff0259de0f1d
 \item{max.features.}{Numerical. The maximum number of features to use when specifying the neighborhood search space in the anchor filtering. Default = 200}
 
 \item{n.tree}{Numerical. More trees gives higher precision when using annoy approximate nearest neighbor search. Default = 50}
@@ -81,9 +85,7 @@ Performs Seurat integration on the supplied assay names. Results are saved under
 \examples{
 perform.seurat.cca <- function(object = object, 
                                          assay = c('SCT', 'SCRAN', 'SCANPY'), 
-                                         normalisation.method = c('perform.sct', 'perform.scran', 'perform.scanpy'), 
-                                         batch = original.project, 
-                                         reduction.name.suffix=NULL,
+                                         reduction.save.suffix=NULL,
                                          nfeatures = 3000,
                                          reduction = 'cca',
                                          anchors.dims = 1:30,

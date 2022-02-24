@@ -28,8 +28,10 @@ perform.pca <- function(object,
                         assay,
                         slot='norm.scaled',
                         n.pcs=50,
-                        reduction.save='pca', 
+                        reduction.save='PCA', 
                         print.variance = FALSE, 
+                        verbose=FALSE,
+                        seed=1234,
                         ...) {
   
   if(!is(object = object, class2 = 'IBRAP')) {
@@ -78,6 +80,22 @@ perform.pca <- function(object,
     
   }
   
+  if(!is.logical(verbose)) {
+    
+    stop('verbose must be logical, TRUE/FALSE \n')
+    
+  }
+  
+  if(!is.numeric(seed)) {
+    
+    stop('seed mus be numerical \n')
+    
+  }
+  
+  set.seed(seed = seed, kind = "Mersenne-Twister", normal.kind = "Inversion")
+  
+  reticulate::py_set_seed(seed, disable_hash_randomization = TRUE)
+  
   ggarrange.tmp <- function(...) {
     
     egg::ggarrange(...)
@@ -96,16 +114,24 @@ perform.pca <- function(object,
     
     mat <- as.matrix(object@methods[[t]][[slot]][rownames(object@methods[[t]][[slot]]) %in% object@methods[[t]]@highly.variable.genes,])
     
-    cat(crayon::cyan(paste0(Sys.time(), ': initialising PCA for assay:', t, '\n')))
-    
+    if(isTRUE(verbose)) {
+      
+      cat(crayon::cyan(paste0(Sys.time(), ': initialising PCA for assay:', t, '\n')))
+      
+    }
+
     ass <- strsplit(x = names(object@methods)[which(names(object@methods)==t)], split = '_')[[1]][1]
     
     if(ass %in% c('SCT','SCRAN','TPM')) {
       
       a <- suppressWarnings(PCAtools::pca(mat = mat, center = F, scale = F, ...))
-
-      cat(crayon::cyan(paste0(Sys.time(), ': PCA completed\n')))
       
+      if(isTRUE(verbose)) {
+        
+        cat(crayon::cyan(paste0(Sys.time(), ': PCA completed\n')))
+        
+      }
+
       object@methods[[t]]@computational_reductions[[reduction.save]] <- as.matrix(a$rotated[,1:n.pcs])
       
     } else if (ass == 'SCANPY') {
@@ -135,16 +161,24 @@ perform.pca <- function(object,
     colnames(tmp) <- unlist(pc.names)
     rownames(tmp) <- colnames(object@methods[[t]][['norm.scaled']])
     
-    cat(crayon::cyan(paste0(Sys.time(), ': PCA completed\n')))
-    
+    if(isTRUE(verbose)) {
+      
+      cat(crayon::cyan(paste0(Sys.time(), ': PCA completed\n')))
+      
+    }
+
     object@methods[[t]]@computational_reductions[[reduction.save]] <- as.matrix(tmp)
       
     } else {
       
       a <- suppressWarnings(PCAtools::pca(mat = mat, center = F, scale = F, ...))
-
-      cat(crayon::cyan(paste0(Sys.time(), ': PCA completed\n')))
       
+      if(isTRUE(verbose)) {
+        
+        cat(crayon::cyan(paste0(Sys.time(), ': PCA completed\n')))
+        
+      }
+
       object@methods[[t]]@computational_reductions[[reduction.save]] <- as.matrix(a$rotated[,1:n.pcs])
       
     }

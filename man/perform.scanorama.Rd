@@ -8,7 +8,7 @@ perform.scanorama(
   object,
   assay,
   slot = "norm.scaled",
-  split.by,
+  batch,
   n.dims = 50,
   reduction.save.suffix = "",
   batch_size = 5000,
@@ -28,7 +28,7 @@ perform.scanorama(
 
 \item{slot}{Character. String defining which slot in the assay to supply to Scanorama. Default = NULL}
 
-\item{split.by}{Character. indicating the metadata column containing the batch to split the assay by.}
+\item{batch}{Character. indicating the metadata column containing the batch to split the assay by.}
 
 \item{n.dims}{Numerical. The number of Scanorama dimensions to be produced. Default = 50}
 
@@ -59,7 +59,7 @@ Performs Scanorama integration on defined method-assays and reductions contained
 object <- perform.scanorama(object = object, 
                             assay = c('SCT', 'SCRAN', 'SCANPY'), 
                             slot = 'norm.scaled', 
-                            split.by = 'original.project', 
+                            batch = 'original.project', 
                             n.dims = 50)
 
 }

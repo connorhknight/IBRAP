@@ -12,6 +12,8 @@
 #' @param algorithm Numerical. Algorithm for modularity optimization (1 = original Louvain algorithm; 2 = Louvain algorithm with multilevel refinement; 3 = SLM algorithm; 4 = Leiden algorithm). Leiden requires the leidenalg python. Default = 1 Default = NULL
 #' @param cluster.df.name Character. What to call the df contained in clusters. Default = 'seurat
 #' @param res Numerical vector. Which resolution to run the clusterign algorithm at, a smaller and larger value identified less and more clusters, respectively. Default = c(0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1,1.1,1.2,1.3,1.4,1.5)
+#' @param verbose Logical Should function messages be printed?
+#' @param seed Numeric. What should the seed be set as. Default = 1234
 #' @param ... arguments to be passed to Seurat::FindClusters
 #' 
 #' @return A new column within the defined cluster_assignment dataframe containing original and new subclusters
@@ -32,7 +34,10 @@ perform.graph.subclustering <- function(object,
                                         clusters, 
                                         neighbours, 
                                         algorithm = 1, 
-                                        res = 0.6, ...) {
+                                        res = 0.6,
+                                        verbose=FALSE,
+                                        seed=1234, 
+                                        ...) {
   
   if(!is(object, 'IBRAP')) {
     
@@ -136,6 +141,22 @@ perform.graph.subclustering <- function(object,
     
   }
   
+  if(!is.logical(verbose)) {
+    
+    stop('verbose should be logical, TRUE/FALSE \n')
+    
+  }
+  
+  if(!is.numeric(seed)) {
+    
+    stop('seed should be numerical\n')
+    
+  }
+  
+  set.seed(seed = seed, kind = "Mersenne-Twister", normal.kind = "Inversion")
+  
+  reticulate::py_set_seed(seed, disable_hash_randomization = TRUE)
+  
   if(clust.method != 'metadata') {
     
     cell_subset <- object[,object@methods[[assay]]@cluster_assignments[[clust.method]][,column] %in% clusters]
@@ -144,8 +165,12 @@ perform.graph.subclustering <- function(object,
     
     subclusters <- as.character(cell_subset@methods[[assay]]@cluster_assignments[[paste0(neighbours, ':', algo.name)]][,1])
     
-    cat(crayon::cyan(paste0(Sys.time(), ': identified ', length(unique(subclusters)), ' subclusters\n')))
-    
+    if(isTRUE(verbose)) {
+      
+      cat(crayon::cyan(paste0(Sys.time(), ': identified ', length(unique(subclusters)), ' subclusters\n')))
+      
+    }
+
     subclusters <- as.data.frame(as.factor(subclusters))
     
     rownames(subclusters) <- colnames(cell_subset)
@@ -164,8 +189,12 @@ perform.graph.subclustering <- function(object,
     
     object@methods[[assay]]@cluster_assignments[[clust.method]][,paste0(column, '_subcluster_', res)][sub_ids] <- orig.names[,3]
     
-    cat(crayon::cyan(paste0(Sys.time(), ': subclusters added under column name: ', paste0(column, '_subcluster_', res), '\n')))
-    
+    if(isTRUE(verbose)) {
+      
+      cat(crayon::cyan(paste0(Sys.time(), ': subclusters added under column name: ', paste0(column, '_subcluster_', res), '\n')))
+      
+    }
+
   } else if (clust.method == 'metadata') {
     
     object2 <- object
@@ -198,12 +227,20 @@ perform.graph.subclustering <- function(object,
 
     object2@methods[[assay]]@cluster_assignments[['metadata']][,paste0(column, '_subcluster_', res)][sub_ids] <- as.character(orig.names[,3])
     
-    cat(crayon::cyan(paste0(Sys.time(), ': identified ', length(unique(subclusters)), ' subclusters\n')))
+    if(isTRUE(verbose)) {
+      
+      cat(crayon::cyan(paste0(Sys.time(), ': identified ', length(unique(subclusters)), ' subclusters\n')))
+      
+    }
     
     object@sample_metadata[,paste0(column, '_subcluster_', res)] <- object2@methods[[assay]]@cluster_assignments[['metadata']][,paste0(column, '_subcluster_', res)]
     
-    cat(crayon::cyan(paste0(Sys.time(), ': subclusters added under column name: ', paste0(column, '_subcluster_', res), '\n')))
-    
+    if(isTRUE(verbose)) {
+      
+      cat(crayon::cyan(paste0(Sys.time(), ': subclusters added under column name: ', paste0(column, '_subcluster_', res), '\n')))
+      
+    }
+
   }
   
   return(object)

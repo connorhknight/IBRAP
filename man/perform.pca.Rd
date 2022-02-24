@@ -9,8 +9,10 @@ perform.pca(
   assay,
   slot = "norm.scaled",
   n.pcs = 50,
-  reduction.save = "pca",
+  reduction.save = "PCA",
   print.variance = FALSE,
+  verbose = FALSE,
+  seed = 1234,
   ...
 )
 }
