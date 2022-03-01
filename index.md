@@ -10,4 +10,4 @@ Our currently integrated tools are the following:
 
 <img src="new_tools_table.png" align="middle"/>
 
-Tutorials for how to IBRAP can be seen within the article section. They have been separated for easier understanding
+Please observe our range of tutorials to gain a better understanding of IBRAP and how it functions! If you notice any problems, please notify us on our GitHub issues page.
