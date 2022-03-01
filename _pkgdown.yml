@@ -14,7 +14,7 @@ navbar:
       text: Tutorials
       menu:
       - text: Installation (linux)
-        href: articles/installation_linux.html
+        href: articles/Installation_linux.html
       - text: Installation (macos)
         href: articles/installation_macos.html
       - text: Getting Started
@@ -136,7 +136,7 @@ articles:
   desc: ~
   contents:
   - '`installation_macos`'
-  - '`installation_linux`'
+  - '`Installation_linux`'
   - '`using_IBRAP`'
   - '`data_transform`'
   - '`clustering_method`'
