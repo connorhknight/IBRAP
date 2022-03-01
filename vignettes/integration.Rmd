@@ -24,9 +24,12 @@ knitr::opts_chunk$set(
 klippy::klippy(tooltip_message = 'Click to copy', tooltip_success = 'Done', position = c('bottom', 'right'))
 ```
 
+It is common in single-cell analyses to integrate multiple samples. There are numerous package available for do this, however they function differently and generate different results.Therefore, it is becoming necessary to benchmark a few options before deciding on a method. For this, IBRAP contains 4 integration methods and benchmarking capabilities to distinguish the best solution. 
+
 # Integrating Multiple Datasets 
 
-Most analyses require more than a single sample. Especially, in meta-analyses. 
+For this tutorial, we have supplied two well characterised pancreas samples: 
+CELseq2 and Smartseq2 which contain 2285 and 2394 cells, respectively.
 
 You can download the data for this tutorial using the following links:
 
@@ -35,20 +38,41 @@ https://www.dropbox.com/s/txlq7875wkthb3y/celseq2.rds?dl=0
 
 ## Creating IBRAP objects
 
+```{r, eval=T, echo=F}
+
+library(IBRAP)
+
+pancreas <- readRDS('/Users/knight05/work/Results/scRNA-seq/IBRAP_tutorials/single_sample/pancreas.rds')
+
+```
+
 ```{r, eval=F, echo=T}
 
-celseq2_items <- readRDS(file.choose())
-smartseq2_items <- readRDS(file.choose())
+library(IBRAP)
+
+celseq2_items <- readRDS('/Users/knight05/work/Results/scRNA-seq/IBRAP_tutorials/integration_analysis/celseq2.rds')
+smartseq2_items <- readRDS('/Users/knight05/work/Results/scRNA-seq/IBRAP_tutorials/integration_analysis/smartseq2.rds')
+
+```
+
+```{r, eval=F, echo=T}
+
+# Here we set the maximum amount of RAM R may use, for this we have allowed 4GB
+
+options(future.globals.maxSize = 4000 * 1024^2)
+
+celseq2_items <- readRDS('~/path/to/celseq2/celseq2.rds')
+smartseq2_items <- readRDS('~/path/to/celseq2/celseq2.rds')
 
 celseq2 <- createIBRAPobject(counts = celseq2,
-                             meta.data = metadata_celseq2,
+                             meta.data = celseq2_items$metadata,
                              original.project = 'celseq2',
                              method.name = 'RAW',
                              min.cells = 3,
                              min.features = 200)
 
 smartseq2 <- createIBRAPobject(counts = smartseq2, 
-                               meta.data = metadata_smartseq2,
+                               meta.data = smartseq2_items$metadata,
                                original.project = 'smartseq2',
                                method.name = 'RAW',
                                min.cells = 3,
@@ -69,7 +93,7 @@ pancreas <- merge(x = celseq2, y = smartseq2)
 
 ## Pre-processing & Batch Visualisation
 
-We then continue our analysis as normal:
+We then continue our analysis as normal up until PCA reduction:
 
 ```{r, eval=F, echo=T}
 
@@ -92,31 +116,34 @@ pancreas <- perform.pca(object = pancreas,
 pancreas <- perform.umap(object = pancreas, 
                          assay = c('SCT', 'SCRAN', 'SCANPY'), 
                          reduction = c('pca'), 
-                         n_components = 2, 
-                         n.dims = list(10))
+                         n_components = 2)
 
-plot1 <- plot.reduced.dim(object = pancreas, reduction = 'pca_umap', assay = 'SCT',
+```
+
+Now that we have pre-processed our data, lets take a look at the unintegrated batches: 
+
+```{r, eval=F, echo=T}
+
+plot1 <- plot.reduced.dim(object = pancreas, reduction = 'PCA_UMAP', assay = 'SCT',
                           clust.method = 'metadata', column = 'original.project', pt.size = 0.1) + 
   ggplot2::ggtitle('SCT') + 
   ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5))
 
 
-plot2 <- plot.reduced.dim(object = pancreas, reduction = 'pca_umap', assay = 'SCRAN',
+plot2 <- plot.reduced.dim(object = pancreas, reduction = 'PCA_UMAP', assay = 'SCRAN',
                           clust.method = 'metadata', column = 'original.project', pt.size = 0.1) + 
   ggplot2::ggtitle('SCRAN') + 
   ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5))
 
 
-plot3 <- plot.reduced.dim(object = pancreas, reduction = 'pca_umap', assay = 'SCANPY',
+plot3 <- plot.reduced.dim(object = pancreas, reduction = 'PCA_UMAP', assay = 'SCANPY',
                           clust.method = 'metadata', column = 'original.project', pt.size = 0.1) + 
   ggplot2::ggtitle('SCANPY') + 
   ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5))
 
-plot1 + plot2 + plot3
+egg::ggarrange(plots = list(plot1, plot2, plot3), ncol = 3)
                         
 ```
-
-We merged the datasets and transformed the data using normalisation methods. Next, we reduced the embeddings linearly with PCA and generated UMAP embeddings for visualisation. Now, we can visualise batch effects present. 
 
 ```{r, echo=FALSE, out.width="150%", out.height="150%"}
 
@@ -130,25 +157,14 @@ As we can see there are profound differences between the samples due to technica
 
 We have included 4 integration techniques:
 
-- Seurat
-- Scanorama
-- BBKNN
-- Harmony
- 
-Lets begin the integration techniques
+- Seurat CCA (counts)
+- Scanorama (counts)
+- BBKNN (reduction)
+- Harmony (reduction)
+
+Some integration methods either correct the normalised counts or the reduction components. For this tutorial, we will compare Scanorama which corrects the counts and Harmony which corrects reductions.
 
 ## Integration Application & Visualisaiton
-
-```{r, eval=F, echo=T}
-
-pancreas <- perform.bbknn(object = pancreas, 
-                          assay = c('SCT', 'SCANPY', 'SCRAN'), 
-                          reduction = c('pca'),
-                          batch = 'tech')
-
-```
-
-Firstly we used BBKNN. BBKNN accepts reduced embeddings (i.e. PCA or diffusion maps) as input. BBKNN does not create a reduced embedding, but creates a nearest neighbourhood graph that has been corrected for batch effects. Therefore, this method is constrained to graph-based clustering methods and UMAP non-linear reduction methods. 
 
 ```{r, eval=F, echo=T}
 
@@ -161,7 +177,7 @@ pancreas <- perform.harmony(object = pancreas,
                             
 ```
 
-Next, we used harmony. Harmony accepts reduced embeddings and produces a new reduced embedding called harmony reducitons. These reductions can then be used to produce nearest neighbourhood graphs, any clusxtering method, and any reduction method. Harmony functions well since you can adjust the aggressiveness of the correction per covariate that you specify using the theta parameter.
+Harmony accepts reduced embeddings and produces a new reduced embedding called harmony reducitons. These reductions can then be used to produce nearest neighbourhood graphs, any clusxtering method, and any reduction method. Harmony functions well since you can adjust the aggressiveness of the correction per covariate that you specify using the theta parameter.
 
 ```{r, eval=F, echo=T}
 
@@ -173,122 +189,80 @@ pancreas <- perform.scanorama(object = pancreas,
 
 ```
 
-Scanorama is also available in IBRAP. Rather than functioning on reduced embeddings, scanorama uses the @norm.scaled slot of the method assay and stitches together the batches in order of similarity. Scanorama produces a reduced embedding that can be used for nearest neighbourhood graph generation, any clustering method, and non-linear reduction method. 
+Rather than functioning on reduced embeddings, scanorama uses the @norm.scaled slot of the method assay and stitches together the batches in order of similarity. Scanorama produces a reduced embedding that can be used for nearest neighbourhood graph generation, any clustering method, and non-linear reduction method. 
 
-```{r, eval=F, echo=T}
-
-pancreas <- perform.seurat.integration(object = pancreas,  
-                                     assay = c('SCT','SCRAN','SCANPY'),
-                                     normalisation.method = c('perform.sct','perform.scran','perform.scanpy'), 
-                                     batch = 'original.project')
-
-```
-
-Finally, we included seurats cca integration method. This method renormalises the individual batches separately (hence, why you must supply the normalisation method in the order of assays) and then projects them together. We finish by processing the corrected matrix with a PCA reduction and supply the new PCA reduction as seurat. This reduced embedding that can be used for nearest neighbourhood graph generation, any clustering method, and non-linear reduction method. 
 
 ```{r, eval=F, echo=T}
                               
 pancreas <- perform.umap(object = pancreas, 
                          assay = c('SCT', 'SCRAN', 'SCANPY'), 
-                         reduction = c('pca_harmony', 'scanorama', 'seurat'), 
+                         reduction = c('pca_harmony', 'scanorama'), 
                          n_components = 2, 
-                         n.dims = list(50, 50, 10))
-
-pancreas <- perform.umap(object = pancreas, assay = c('SCT', 'SCRAN', 'SCANPY'), graph = 'pca_bbknn_bbknn')
+                         n.dims = list(50, 50))
 
 ```
 
-We nex created UAMP reduced embeddings from the previously generated corrected reduced embeddings, including: pca_harmony, scanorama, and seurat. However, BBKNN only produced a corrected neighbourhood graph. Thus, we must supply the graph in a separate function to create the corrected UMAP embeddings. Lets visualise the effectiveness of the integration methods. 
+We next created UMAPP reduced embeddings from the previously generated corrected reduced embeddings, including: PCA_HARMONY and SCANORAMA.
 
-```{r, eval=F, echo=T}
+```{r, eval=T, echo=T}
 
 plot.list <- list()
 
-plot.list[[1]] <- plot.reduced.dim(object = pancreas, reduction = 'pca_harmony_umap', assay = 'SCT',
+plot.list[[1]] <- plot.reduced.dim(object = pancreas, reduction = 'PCA_HARMONY_UMAP', assay = 'SCT',
                                    clust.method = 'metadata', column = 'original.project', pt.size = 0.1) + 
   ggplot2::ggtitle('SCT_harmony') + 
   ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5))
 
-plot.list[[2]] <- plot.reduced.dim(object = pancreas, reduction = 'pca_harmony_umap', assay = 'SCRAN',
+plot.list[[2]] <- plot.reduced.dim(object = pancreas, reduction = 'PCA_HARMONY_UMAP', assay = 'SCRAN',
                                    clust.method = 'metadata', column = 'original.project', pt.size = 0.1) + 
   ggplot2::ggtitle('SCRAN_harmony') + 
   ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5))
 
-plot.list[[3]] <- plot.reduced.dim(object = pancreas, reduction = 'pca_harmony_umap', assay = 'SCANPY',
+plot.list[[3]] <- plot.reduced.dim(object = pancreas, reduction = 'PCA_HARMONY_UMAP', assay = 'SCANPY',
                                    clust.method = 'metadata', column = 'original.project', pt.size = 0.1) + 
   ggplot2::ggtitle('SCANPY_harmony') + 
   ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5))
 
-plot.list[[4]] <- plot.reduced.dim(object = pancreas, reduction = 'scanorama_umap', assay = 'SCT',
+plot.list[[4]] <- plot.reduced.dim(object = pancreas, reduction = 'SCANORAMA_UMAP', assay = 'SCT',
                                    clust.method = 'metadata', column = 'original.project', pt.size = 0.1) + 
-  ggplot2::ggtitle('SCT_harmony') + 
+  ggplot2::ggtitle('SCT_SCANORAMA') + 
   ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5))
 
-plot.list[[5]] <- plot.reduced.dim(object = pancreas, reduction = 'scanorama_umap', assay = 'SCRAN',
+plot.list[[5]] <- plot.reduced.dim(object = pancreas, reduction = 'SCANORAMA_UMAP', assay = 'SCRAN',
                                    clust.method = 'metadata', column = 'original.project', pt.size = 0.1) + 
-  ggplot2::ggtitle('SCRAN_harmony') + 
+  ggplot2::ggtitle('SCRAN_SCANORAMA') + 
   ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5))
 
-plot.list[[6]] <- plot.reduced.dim(object = pancreas, reduction = 'scanorama_umap', assay = 'SCANPY',
+plot.list[[6]] <- plot.reduced.dim(object = pancreas, reduction = 'SCANORAMA_UMAP', assay = 'SCANPY',
                                    clust.method = 'metadata', column = 'original.project', pt.size = 0.1) + 
-  ggplot2::ggtitle('SCANPY_harmony') + 
+  ggplot2::ggtitle('SCANPY_SCANORAMA') + 
   ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5))
 
-plot.list[[7]] <- plot.reduced.dim(object = pancreas, reduction = 'pca_bbknn_bbknn:umap', assay = 'SCT',
-                                   clust.method = 'metadata', column = 'original.project', pt.size = 0.1) + 
-  ggplot2::ggtitle('SCT_bbknn') + 
-  ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5))
-
-plot.list[[8]] <- plot.reduced.dim(object = pancreas, reduction = 'pca_bbknn_bbknn:umap', assay = 'SCRAN',
-                                   clust.method = 'metadata', column = 'original.project', pt.size = 0.1) + 
-  ggplot2::ggtitle('SCRAN_bbknn') + 
-  ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5))
-
-plot.list[[9]] <- plot.reduced.dim(object = pancreas, reduction = 'pca_bbknn_bbknn:umap', assay = 'SCANPY',
-                                   clust.method = 'metadata', column = 'original.project', pt.size = 0.1) + 
-  ggplot2::ggtitle('SCANPY_bbknn') + 
-  ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5))
-
-plot.list[[10]] <- plot.reduced.dim(object = pancreas, reduction = 'seurat_umap', assay = 'SCT',
-                                   clust.method = 'metadata', column = 'original.project', pt.size = 0.1) + 
-  ggplot2::ggtitle('SCT_cca') + 
-  ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5))
-
-plot.list[[11]] <- plot.reduced.dim(object = pancreas, reduction = 'seurat_umap', assay = 'SCRAN',
-                                    clust.method = 'metadata', column = 'original.project', pt.size = 0.1) + 
-  ggplot2::ggtitle('SCRAN_cca') + 
-  ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5))
-
-plot.list[[12]] <- plot.reduced.dim(object = pancreas, reduction = 'seurat_umap', assay = 'SCANPY',
-                                    clust.method = 'metadata', column = 'original.project', pt.size = 0.1) + 
-  ggplot2::ggtitle('SCANPY_cca') + 
-  ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5))
-
-egg::ggarrange(plots = plot.list, nrow = 4, ncol = 3)
+egg::ggarrange(plots = plot.list, nrow = 2, ncol = 3)
 
 ```
 
 ```{r, echo=FALSE, out.width="150%", out.height="150%"}
 
-knitr::include_graphics(path = 'integrations.png')
+knitr::include_graphics(path = 'integration.png')
 
 ```
 
-From initial inspection we can see that some worked better than others. For example seurat integration seems to produce a great overlap of batches. However, we cannot soley rely on visualising the batches to determine which worked best. To help us understand the results we have included benchmarking. 
+From initial inspection we can see that some worked better than others. For example scran normalisation with harmony integration seems to produce a great overlap of batches. However, we cannot soley rely on subjective visualisation of the batches to determine which worked best. To help us understand the results we have included benchmarking. 
 
 ## Benchmarking Integration
 
-Our benchmarking involves the same methodoogy proposed in the SCONE. An Average Silhouette Width quantativiely assesses the closeness of the batches in comparison to the uncorrected version. 
+Our benchmarking involves the same methodology proposed in the SCONE. An Average Silhouette Width assesses the closeness of the batches in comparison to the uncorrected version. 
 
-previously we calcualted the UMAP reductions for the uncorrected PCA and the corrected: harmony, bbknn, and scanorama data. We can use the UMAP reductions to assess the effectiveness of the data using this function:
+previously we calcualted the UMAP reductions for the uncorrected PCA and the corrected: harmony and scanorama data. We can use the UMAP reductions to assess the effectiveness of the data using this function:
 
 ```{r, eval=F, echo=T}
 
 pancreas <- benchmark.intergation(object = pancreas, 
                                   batch = 'original.project', assays = c('SCT','SCRAN','SCANPY'), 
-                                  reduction = c('pca_umap', 'pca_harmony_umap', 
-                                                'scanorama_umap', 'pca_bbknn_bbknn:umap', 'seurat_umap'), 
-                                  result.names = c('uncorrected', 'harmony', 'scanorama', 'bbknn', 'seurat'), 
+                                  reduction = c('PCA_UMAP', 'PCA_HARMONY_UMAP', 
+                                                'SCANORAMA_UMAP'), 
+                                  result.names = c('uncorrected', 'harmony', 'scanorama'), 
                                   n.components = 2)
 
 # we can plot the results with the following command
@@ -297,67 +271,15 @@ plot.integration.benchmarking(object = pancreas, assay = c('SCT','SCRAN','SCANPY
 
 ```
 
-We can plot the results using an IBRAP plotting function: 
-
 ```{r, echo=FALSE, out.width="150%", out.height="150%"}
 
 knitr::include_graphics(path = 'integration_benchmarking.png')
 
 ```
 
-For Average Silhouette Width (ASW) when observing clustering (biological effects) we wish to see a higher value. However, when reducing batches we wish to see a more negative value (even a negative value). As you can see, the uncorrected version has a high ASW value which indicates profound batch effects are present. Whereas, we can see the batch correction methods have reducd the batch effects to varying degrees. For example, harmony and seurat seemed to reduced the batch effect the best across all normalisation methods. Scanorama and BBKNN however performed less successfully. However, you should not use this as an absolute recommendation for whcih reduction to proceed with. 
+For Average Silhouette Width (ASW) when observing clustering (biological effects) we wish to see a higher value. However, when reducing batches we wish to see a more negative value (even a negative value). As you can see, the uncorrected version has a high ASW value which indicates profound batch effects are present. Whereas, we can see the batch correction methods have reducd the batch effects to varying degrees. For example, harmony seems to reduced the batch effect the best across all normalisation methods. Scanorama however performed less successfully. However, you should not use this as an absolute recommendation for which reduction to proceed with. 
 
-## Visualising ground truth labels
+From this point, we can continue the analysis as usual, using these integrated reductions to cluster our cells and identify their biological assignments.
 
-For this dataset we were provided with ground turht labels which enable us to observe how well the biological structure of was retained during integration. As an example, we can observe the labelling on a random projection. However, feel free to explore other UMAP reductions from other assays and integration methods. 
-
-We can visualise the results using our plot.reduced.dim function. 
-
-```{r, eval=F, echo=T}
-
-plot.reduced.dim(object = pancreas, reduction = 'pca_harmony_umap', assay = 'SCRAN',
-                                   clust.method = 'metadata', column = 'celltype', pt.size = 0.1)
-
-```
-
-```{r, echo=FALSE, out.width="150%", out.height="150%"}
-
-knitr::include_graphics(path = 'integrated_labels.png')
-
-```
-
-As we can see, SCRAN with seurat integration led to a well defined separation of cell types. To confirm this we can produce feature plots to see how canonical markers were separated from eachother during the analysis. 
-
-```{r, eval=F, echo=T}
-
-plot.features(object = pancreas, assay = c('SCRAN'), slot = 'normalised', reduction = 'seurat_umap', features = c('PPY','GHRL','TPSB2',
-                                                                                                                  'PLVAP','RGS5','CLPS',
-                                                                                                                  'COL1A1','CCL22', 'INS',
-                                                                                                                  'SPP1','NOV','SST','GCG'))
-
-```
-
-```{r, echo=FALSE, out.width="150%", out.height="150%"}
-
-knitr::include_graphics(path = 'integrated_features.png')
-
-```
-
-From these we can gather that the analytical pipeline separated cell type by their canonical markers correctly. We can also confirm this with a differential expression analysis that should identify all the celltypes gene markers. 
-
-## Differential Expression Analysis 
-
-Differential expression analyses can be perfortmed using the integrated clustering results. batch correction has not been performed on the counts matrices. Therefore it is beneficial to apply a method such as MAST which regresses out covrates such as total counts or batches. This is performed using the perform.diff.exp.all function. 
-
-```{r, eval=F, echo=T}
-
-SCT_DE <- perform.diffexp.all(object = pancreas, assay = 'SCRAN', 
-                              test = 'MAST', 
-                              clust.method = 'metadata', 
-                              column = "celltype", 
-                              latent.vars = c('RAW_total.counts', 'original.project'))
-
-```
-
-
+Benchmarking integration is useful since you can evidently witness that integration methods behave differently and produce varying results. IBRAP enables you to benchmark four different techniques and select the best option for your dataset!
 

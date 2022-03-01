@@ -1,15 +1,16 @@
 pandoc: 2.3.1
-pkgdown: 1.6.1.9001
-pkgdown_sha: ce9781a15c7ea07df9fb17a11295ba4abec0b54b
+pkgdown: 2.0.2
+pkgdown_sha: ~
 articles:
   HPC_issues: HPC_issues.html
+  Installation_linux: Installation_linux.html
   application: application.html
   clustering_method: clustering_method.html
   data_transform: data_transform.html
-  installing_ibrap: installing_ibrap.html
+  installation_macos: installation_macos.html
   integration: integration.html
   singleR_annotation: singleR_annotation.html
   trajectory: trajectory.html
   using_IBRAP: using_IBRAP.html
-last_built: 2022-01-09T18:30Z
+last_built: 2022-03-01T14:52Z
 

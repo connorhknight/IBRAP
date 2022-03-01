@@ -32,13 +32,21 @@ To demonstrate IBRAP we enlisted a sample produced by [Oetjen](https://insight.j
 
 https://www.dropbox.com/s/s126bv59mjnhkre/marrow_A.rds?dl=0
 
-Marrow_A is a bone marrow sample from a set of 25. It contains 2994 cells and was sequenced using 10x Genomics and aligned using CellRanger. Please download the sample and load it into R using the following command: 
+Marrow_A is a bone marrow sample from a set of 25. It contains 2994 cells, sequenced using 10x Genomics and aligned using CellRanger. Please download the sample and load it into R using the following command: 
+
+```{r, eval=T, echo=F}
+
+library(IBRAP)
+
+marrow_A <- readRDS('/Users/knight05/work/Results/scRNA-seq/IBRAP_tutorials/single_sample/marrow_A.rds')
+  
+```
 
 ```{r, eval=F, echo=T}
 
 library(IBRAP)
 
-marrow_A <- readRDS(file.choose())
+marrow_A <- readRDS('~/path/to/marrow_A/marrow_A.rds')
   
 ```
 
@@ -52,7 +60,7 @@ Droplet-based datasets present unique confounding effects, including: doublets a
 
 # We simply supply our generated count matrix to both functions
 
-bmmc <- perform.scrublet(counts = bmmc)
+marrow_A <- perform.scrublet(counts = marrow_A)
 
 # NOTE: We have also included a function (perform.decontX) 
 # to perform ambient RNA decontamination. However, you need to 
@@ -61,7 +69,7 @@ bmmc <- perform.scrublet(counts = bmmc)
 # In most cases, you do not need to perform this function unless 
 # your data suffers from ambient RNA contamination
 
-bmmc <- perform.decontX(counts = bmmc)
+marrow_A <- perform.decontX(counts = marrow_A)
 
 ```
 
@@ -125,14 +133,6 @@ marrow_A <- find_percentage_genes(object = marrow_A, pattern = '^MT-',
                               
 ```
 
-We can check the data out in out metadata folder by performing the following:
-
-```{r, eval=T, echo=T}
-
-marrow_A@sample_metadata
-                              
-```
-
 ### Section 3.2: Visualisation
 
 Visualising this information is important for high dimensional data. Thus, we can achieve this in two ways: using violin plots or comparing two metrics with scatter plots.
@@ -158,7 +158,7 @@ Scatter plots enable us to observe correlations between metrics, i.e. the higher
 
 ```{r, eval=F, echo=T}
 
-plot.qc.scatter(object = bmmc, 
+plot.QC.scatter(object = marrow_A, 
                 x = 'RAW_total.counts', 
                 y = 'RAW_total.features', 
                 split.by = 'original.project'
@@ -210,7 +210,7 @@ Now, we can see the available normalisation assays through the following command
 
 ```{r, eval=T, echo=T}
 
-marrow_A
+marrow_A@sample_metadata[1:10,]
                               
 ```
 
@@ -375,7 +375,7 @@ Since we have 3 different normalisation method it is beneficial to observe the d
 
 The main challenge with the plotting function in IBRAP is isolating the correct labelling. In general, plotting functions will ask for the assay which is contained within object@methods, the clust.method that is contained withing @cluster_assignments, and the column which would be contained with in that cluster assignment. One thing to note, is that if you wish to access columns that are contained within object@sample_metadata.
 
-```{r, eval=T, echo=T}
+```{r, eval=F, echo=T}
 
 plot1 <- plot.reduced.dim(object = marrow_A, 
                           reduction = 'PCA_UMAP', 
@@ -401,7 +401,7 @@ plot3 <- plot.reduced.dim(object = marrow_A,
   ggplot2::ggtitle('SCANPY') + 
   ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5))
 
-plot1 + plot2 + plot3
+egg::ggarrange(plots = list(plot1 + plot2 + plot3), nrow = 3)
 
 ```
 
@@ -421,6 +421,12 @@ To understand the biology driving the clustering we can tackle it in two ways: d
 
 Differential expression analyses can be performed either 1 cluster compared against all other cells or 1 cluster against 1 other cluster. In this tutorial we will use the 1 v all function. 
 
+```{r, eval=T, echo=F}
+
+DE_res <- readRDS('/Users/knight05/work/Results/scRNA-seq/IBRAP_tutorials/single_sample/marrow_A_DE.rds')
+
+```
+
 ```{r, eval=F, echo=T}
 
 DE_res <- perform.diffexp.all(object = marrow_A, 
@@ -433,9 +439,10 @@ DE_res <- perform.diffexp.all(object = marrow_A,
 
 Now, lets take a look at the results: 
 
-```{r, eval=, echo=T}
+```{r, eval=T, echo=F}
 
-DE_res
+DE_res[1:10,]
+
 
 ```
 

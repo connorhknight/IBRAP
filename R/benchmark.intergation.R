@@ -14,7 +14,7 @@
 #' 
 #' @return Benchmarking scores for the supplied integrations
 #' 
-#' @examples object <- benchmark.intergation(object = object, 
+#' @examples object <- benchmark.integration(object = object, 
 #'                                           batch = 'original.project', 
 #'                                           assays = c('SCT','SCRAN','SCANPY'), 
 #'                                           reduction = c('pca_umap', 'pca_harmony_umap', 
@@ -26,7 +26,7 @@
 #'
 #' @export
 
-benchmark.intergation <- function(object, batch, assays, reduction, result.names, n.components = 2) {
+benchmark.integration <- function(object, batch, assays, reduction, result.names, n.components = 2) {
   
   if(!is(object = object, class2 = 'IBRAP')) {
     

@@ -74,16 +74,16 @@ plot.QC.scatter(object = pancreas,
                 y = 'SCT_total.features', 
                 split.by = 'Phase')
 
-pancreas <- perform.pca(object = pancreas, assay = c('SCT','SCRAN','SCANPY','TPM'), print.variance = T)
+pancreas <- perform.pca(object = pancreas, assay = c('SCT','SCRAN','SCANPY'), print.variance = F)
 
-pancreas <- perform.bbknn(object = pancreas, assay = c('SCT','SCRAN','SCANPY','TPM'), 
-                          reduction = 'pca', batch = 'original.project', verbose = T)
+# pancreas <- perform.bbknn(object = pancreas, assay = c('SCT','SCRAN','SCANPY','TPM'), 
+#                           reduction = 'PCA', batch = 'original.project', verbose = T)
 
-pancreas <- perform.scanorama(object = pancreas, assay = c('SCT','SCRAN','SCANPY','TPM'), 
+pancreas <- perform.scanorama(object = pancreas, assay = c('SCT','SCRAN','SCANPY'), 
                               batch = 'original.project', verbose = T)
 
-pancreas <- perform.harmony(object = pancreas, assay = c('SCT','SCRAN','SCANPY','TPM'), 
-                            reduction = 'pca', batch = 'original.project', verbose = T)
+pancreas <- perform.harmony(object = pancreas, assay = c('SCT','SCRAN','SCANPY'), 
+                            reduction = 'PCA', batch = 'original.project', verbose = T)
 
 # list.of.objects <- splitIBRAP(object = pancreas, split.by = 'original.project')
 # 
@@ -102,44 +102,32 @@ pancreas <- perform.harmony(object = pancreas, assay = c('SCT','SCRAN','SCANPY',
 #                                   verbose = T)
 
 pancreas <- perform.nn(object = pancreas, assay = c('SCT','SCRAN','SCANPY','TPM'), 
-                       reduction = c('scanorama','pca_harmony'))
+                       reduction = c('SCANORAMA','PCA_HARMONY','PCA'))
 
 pancreas <- perform.graph.cluster(object = pancreas, assay = c('SCT','SCRAN','SCANPY','TPM'), 
-                      neighbours = c("pca_bbknn_bbknn","scanorama_nn","pca_harmony_nn"), 
-                      algorithm = 1, verbose = T)
-
-pancreas <- perform.graph.cluster(object = pancreas, assay = c('SCT','SCRAN','SCANPY','TPM'), 
-                                  neighbours = c("pca_bbknn_bbknn","scanorama_nn","pca_harmony_nn"), 
+                                  neighbours = c("PCA_BBKNN_BBKNN","SCANORAMA_NN","PCA_HARMONY_NN",'PCA_NN'), 
                                   algorithm = 1, verbose = T)
 
 pancreas <- perform.graph.cluster(object = pancreas, assay = c('SCT','SCRAN','SCANPY','TPM'), 
-                                  neighbours = c("pca_bbknn_bbknn","scanorama_nn","pca_harmony_nn"), 
+                                  neighbours = c("PCA_BBKNN_BBKNN","SCANORAMA_NN","PCA_HARMONY_NN", "PCA_NN"), 
                                   algorithm = 2, verbose = T)
 
-pancreas <- perform.graph.cluster(object = pancreas, assay = c('SCT','SCRAN','SCANPY','TPM'), 
-                                  neighbours = c("pca_nn"), 
-                                  algorithm = 1, verbose = T)
-
-pancreas <- perform.graph.cluster(object = pancreas, assay = c('SCT','SCRAN','SCANPY','TPM'), 
-                                  neighbours = c("pca_nn"), 
-                                  algorithm = 2, verbose = T)
+pancreas <- perform.umap(object = pancreas, assay = c('SCT','SCRAN','SCANPY'), 
+                         reduction = c('SCANORAMA','PCA_HARMONY','PCA'), verbose = F)
 
 pancreas <- perform.umap(object = pancreas, assay = c('SCT','SCRAN','SCANPY','TPM'), 
-                         reduction = c('scanorama','pca_harmony'), verbose = F)
-
-pancreas <- perform.umap(object = pancreas, assay = c('SCT','SCRAN','SCANPY','TPM'), 
-                         graph = c('pca_bbknn_bbknn'), verbose = F)
+                         graph = c('PCA_BBKNN_BBKNN'), verbose = F)
 
 tmp <- benchmark.clustering(object = pancreas, 
                             assay = c('SCT','SCRAN','SCANPY','TPM'), 
-                            clustering = c("pca_nn:louvain",
-                                           "pca_bbknn_bbknn:louvain",
-                                           "scanorama_nn:louvain",
-                                           "pca_harmony_nn:louvain"),
-                            reduction = c('pca_umap',
-                                          'pca_bbknn_bbknn:UMAP',
-                                          'scanorama_umap',
-                                          "pca_harmony_umap"), 
+                            clustering = c("PCA_NN:LOUVAIN",
+                                           "PCA_BBKNN_BBKNN:LOUVAIN",
+                                           "SCANORAMA_NN:LOUVAIN",
+                                           "PCA_HARMONY_NN:LOUVAIN"),
+                            reduction = c('PCA_UMAP',
+                                          'PCA_BBKNN_BBKNN:UMAP',
+                                          'SCANORAMA_UMAP',
+                                          "PCA_HARMONY_UMAP"), 
                             ground.truth.column = 'celltype', 
                             verbose = T)
 

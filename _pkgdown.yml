@@ -13,8 +13,10 @@ navbar:
     articles:
       text: Tutorials
       menu:
-      - text: Installation
-        href: articles/installing_ibrap.html
+      - text: Installation (linux)
+        href: articles/installation_linux.html
+      - text: Installation (macos)
+        href: articles/installation_macos.html
       - text: Getting Started
         href: articles/using_IBRAP.html
       - text: Data Integration
@@ -95,6 +97,7 @@ reference:
   - '`plot.integration.benchmarking`'
   - '`plot.GO.output`'
   - '`plot.slingshot`'
+  - '`plot.variance`'
 - title: Benchmarking Functions
   desc: >
   contents:
@@ -106,6 +109,8 @@ reference:
   - '`Read10X_output`'
   - '`perform.singleR.annotation`'
   - '`perform.slingshot.trajectory`'
+  - '`showObjectContents`'
+  - '`splitIBRAP`'
 - title: Backend Functions
   desc: >
   contents:
@@ -130,7 +135,8 @@ articles:
 - title: All vignettes
   desc: ~
   contents:
-  - '`installing_ibrap`'
+  - '`installation_macos`'
+  - '`installation_linux`'
   - '`using_IBRAP`'
   - '`data_transform`'
   - '`clustering_method`'

@@ -40,7 +40,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">IBRAP</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.0</span>
       </span>
     </div>
 
@@ -57,7 +57,10 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
-      <a href="../articles/installing_ibrap.html">Installation</a>
+      <a href="../articles/installation_linux.html">Installation (linux)</a>
+    </li>
+    <li>
+      <a href="../articles/installation_macos.html">Installation (macos)</a>
     </li>
     <li>
       <a href="../articles/using_IBRAP.html">Getting Started</a>
@@ -111,32 +114,32 @@
 
     
     
-<div id="available-methods" class="section level2">
-<h2 class="hasAnchor">
-<a href="#available-methods" class="anchor" aria-hidden="true"></a>Available Methods</h2>
+<div class="section level2">
+<h2 id="available-methods">Available Methods<a class="anchor" aria-label="anchor" href="#available-methods"></a>
+</h2>
 <p>Within IBRAP we have 7 possible clustering methods: - kmeans/PAM - SC3 consensus clustering - Louvain - Louvain with multilevel refinements (LouvainMR) - Smart Local Moving (SLM) - Leiden</p>
 </div>
-<div id="kmeanspam" class="section level2">
-<h2 class="hasAnchor">
-<a href="#kmeanspam" class="anchor" aria-hidden="true"></a>Kmeans/PAM</h2>
+<div class="section level2">
+<h2 id="kmeanspam">Kmeans/PAM<a class="anchor" aria-label="anchor" href="#kmeanspam"></a>
+</h2>
 <p><a href="https://connorhknight.github.io/IBRAP/reference/perform.reduction.kmeans.html" class="external-link">perform.reduction.kmeans()</a> applies either the kmeans or PAM algorithm to supplied reduced embeddings and iterates through a defined number of clusters. This method is applied to reduced embeddings, such as: t-SNE, UMAP or lvish.</p>
 </div>
-<div id="sc3-consensus-clustering" class="section level2">
-<h2 class="hasAnchor">
-<a href="#sc3-consensus-clustering" class="anchor" aria-hidden="true"></a>SC3 consensus clustering</h2>
+<div class="section level2">
+<h2 id="sc3-consensus-clustering">SC3 consensus clustering<a class="anchor" aria-label="anchor" href="#sc3-consensus-clustering"></a>
+</h2>
 <p><a href="https://connorhknight.github.io/IBRAP/reference/perform.sc3.slot.cluster.html" class="external-link">perform.sc3.slot.cluster()</a> is applied to tranformed counts matrices which can be used on a single sample or when minimal or no batch effects are present in multiple samples. <a href="https://connorhknight.github.io/IBRAP/reference/perform.sc3.reduction.cluster.html" class="external-link">perform.sc3.reduction.cluster()</a> can be applied when batch effects are present across samples and required omission. However, the algorithm was not designed to function on reduced embeddings and thus may be unreliable.</p>
 </div>
-<div id="louvain-louvainmr-slm-and-leiden" class="section level2">
-<h2 class="hasAnchor">
-<a href="#louvain-louvainmr-slm-and-leiden" class="anchor" aria-hidden="true"></a>Louvain, LouvainMR, SLM, and Leiden</h2>
-<div id="neighbourhood-graphs" class="section level3">
-<h3 class="hasAnchor">
-<a href="#neighbourhood-graphs" class="anchor" aria-hidden="true"></a>Neighbourhood Graphs</h3>
+<div class="section level2">
+<h2 id="louvain-louvainmr-slm-and-leiden">Louvain, LouvainMR, SLM, and Leiden<a class="anchor" aria-label="anchor" href="#louvain-louvainmr-slm-and-leiden"></a>
+</h2>
+<div class="section level3">
+<h3 id="neighbourhood-graphs">Neighbourhood Graphs<a class="anchor" aria-label="anchor" href="#neighbourhood-graphs"></a>
+</h3>
 <p>These algorithms are designed to function on k-nearest neighbour matrices. There are two versions available: perform.nn.v1() or perform.nn.v2(). These produces items within your method assay under neighbours. v1 provides the ability to produce diffusion map graphs from the neighbourhood graph object (this is not possible with v2) which function as an alternative to PCA embeddings and is known to represent cellular trajectories in visualisaton reductions. subsequently, new neighbourhood graphs are required on the diffusion map embedding (this is shown in the main tutorial: Getting Started)</p>
 </div>
-<div id="clusterin-the-neighbourhood-graphs" class="section level3">
-<h3 class="hasAnchor">
-<a href="#clusterin-the-neighbourhood-graphs" class="anchor" aria-hidden="true"></a>Clusterin the Neighbourhood Graphs</h3>
+<div class="section level3">
+<h3 id="clusterin-the-neighbourhood-graphs">Clusterin the Neighbourhood Graphs<a class="anchor" aria-label="anchor" href="#clusterin-the-neighbourhood-graphs"></a>
+</h3>
 <p><a href="file:///Users/knight05/Results/scRNA-seq/IBRAP_development/IBRAP/docs/reference/perform.graph.cluster.html">perform.graph.cluster()</a> is then performed using a selected algrith of choice and produces results according to resolutions (typically 0.1-1.5, a lower value identifies less clusters; define the algorithm paramete to change the cluster method)</p>
 </div>
 </div>
@@ -159,7 +162,7 @@
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link external-link">pkgdown</a> 1.6.1.9001.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
 </div>
 
       </footer>

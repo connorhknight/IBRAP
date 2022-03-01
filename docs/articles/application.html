@@ -40,7 +40,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">IBRAP</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.0</span>
       </span>
     </div>
 
@@ -57,7 +57,10 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
-      <a href="../articles/installing_ibrap.html">Installation</a>
+      <a href="../articles/installation_linux.html">Installation (linux)</a>
+    </li>
+    <li>
+      <a href="../articles/installation_macos.html">Installation (macos)</a>
     </li>
     <li>
       <a href="../articles/using_IBRAP.html">Getting Started</a>
@@ -116,12 +119,12 @@
 <script>
   addClassKlippyTo("pre.r, pre.markdown");
   addKlippy('right', 'bottom', 'auto', '1', 'Click to copy', 'Done');
-</script><div id="rshiny-application-tutorial" class="section level1">
-<h1 class="hasAnchor">
-<a href="#rshiny-application-tutorial" class="anchor" aria-hidden="true"></a>RShiny Application Tutorial</h1>
-<div id="activating-the-app" class="section level2">
-<h2 class="hasAnchor">
-<a href="#activating-the-app" class="anchor" aria-hidden="true"></a>Activating The App</h2>
+</script><div class="section level2">
+<h2 id="rshiny-application-tutorial">RShiny Application Tutorial<a class="anchor" aria-label="anchor" href="#rshiny-application-tutorial"></a>
+</h2>
+<div class="section level3">
+<h3 id="activating-the-app">Activating The App<a class="anchor" aria-label="anchor" href="#activating-the-app"></a>
+</h3>
 <p>In this tutorial we will explore how to use the rshiny application that create a GUI for users to observe results. We can activate the application using the following command:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R">
@@ -130,9 +133,9 @@
                        </code></pre></div>
 <p><img src="app_1.png" width="150%" height="150%"></p>
 </div>
-<div id="uploading-results" class="section level2">
-<h2 class="hasAnchor">
-<a href="#uploading-results" class="anchor" aria-hidden="true"></a>Uploading Results</h2>
+<div class="section level3">
+<h3 id="uploading-results">Uploading Results<a class="anchor" aria-label="anchor" href="#uploading-results"></a>
+</h3>
 <p>Next, we must upload our resultant file. The IBRAP objects must have been saved using the following command:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R">
@@ -144,9 +147,9 @@
 <p><img src="app_3.png" width="150%" height="150%"></p>
 <p>Now we can begin to explore the data. We can select between method assays on the left panel alongside the reduction technique contained within. On the right, we can create an interactive plot that will be based on the selected reduction technique. In the panel in the centre, we can select which dataframe of cluster results (or metadata) to access (this is constrained to relevant results to the selected reduction method), the point size is also adjustable below these selection boxes. Finally, we press plot and an interactive plot of the results is created. With this plot you are able to zoom in, remove certain clusters from the plot and even save it!</p>
 </div>
-<div id="interpreting-benchmarking-results" class="section level2">
-<h2 class="hasAnchor">
-<a href="#interpreting-benchmarking-results" class="anchor" aria-hidden="true"></a>Interpreting Benchmarking Results</h2>
+<div class="section level3">
+<h3 id="interpreting-benchmarking-results">Interpreting Benchmarking Results<a class="anchor" aria-label="anchor" href="#interpreting-benchmarking-results"></a>
+</h3>
 <p><img src="app_4.png" width="150%" height="150%"></p>
 <p>Underneath this we have some explanatory information from the benchmarking that was produced (this is not essential). The first box contains cluster assignemnt benchmarking. This either comes with 3 (no ground truth) or 5 (with ground truth) metrices.</p>
 <ul>
@@ -158,26 +161,26 @@
 </ul>
 <p>Underneath this we have a boxplot that will describe the ASW between batches if batch correction was performed. A higher value indicates higher batch effects whilst a lower demonstrates less.</p>
 </div>
-<div id="viewing-gene-information" class="section level2">
-<h2 class="hasAnchor">
-<a href="#viewing-gene-information" class="anchor" aria-hidden="true"></a>Viewing Gene Information</h2>
+<div class="section level3">
+<h3 id="viewing-gene-information">Viewing Gene Information<a class="anchor" aria-label="anchor" href="#viewing-gene-information"></a>
+</h3>
 <p>Once we have finished assessing our clustering results we can begin to understand the biology that drove the clustering. For this, we can select the feature tab on the left panel. WARNING: this may take some time to load since there are lots of gene names to load!</p>
 </div>
-<div id="feature-plots" class="section level2">
-<h2 class="hasAnchor">
-<a href="#feature-plots" class="anchor" aria-hidden="true"></a>Feature Plots</h2>
+<div class="section level3">
+<h3 id="feature-plots">Feature Plots<a class="anchor" aria-label="anchor" href="#feature-plots"></a>
+</h3>
 <p><img src="app_5.png" width="150%" height="150%"></p>
 <p>In this first part of the page we can produce multiple feature plots to observe (within a limit that fits the box). We can even filter the cells down to a cenrtain percentile range. the percentage is in decimals, i.e. 0.5 = 50%</p>
 </div>
-<div id="violin-plots" class="section level2">
-<h2 class="hasAnchor">
-<a href="#violin-plots" class="anchor" aria-hidden="true"></a>Violin Plots</h2>
+<div class="section level3">
+<h3 id="violin-plots">Violin Plots<a class="anchor" aria-label="anchor" href="#violin-plots"></a>
+</h3>
 <p><img src="app_6.png" width="150%" height="150%"></p>
 <p>We can also use violin plots to observe the data in a more categorical fashion</p>
 </div>
-<div id="dot-plots" class="section level2">
-<h2 class="hasAnchor">
-<a href="#dot-plots" class="anchor" aria-hidden="true"></a>Dot Plots</h2>
+<div class="section level3">
+<h3 id="dot-plots">Dot Plots<a class="anchor" aria-label="anchor" href="#dot-plots"></a>
+</h3>
 <p><img src="app_7.png" width="150%" height="150%"></p>
 <p>If we wish to observe a high dimension of genes at once, we an also opt for dot plots.</p>
 <p>We hope the RShiny application creates an easy-to-use platform to observe IBRAPs results. Please leave any recommendations of issues within the issue section of our github!</p>
@@ -202,7 +205,7 @@
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link external-link">pkgdown</a> 1.6.1.9001.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
 </div>
 
       </footer>

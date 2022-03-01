@@ -5,7 +5,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Installing &amp; Preparing IBRAP • IBRAP</title>
+<title>Installation • IBRAP</title>
 <!-- favicons --><link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
 <link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
 <link rel="apple-touch-icon" type="image/png" sizes="180x180" href="../apple-touch-icon.png">
@@ -17,7 +17,7 @@
 <script src="../bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
-<script src="../pkgdown.js"></script><meta property="og:title" content="Installing &amp; Preparing IBRAP">
+<script src="../pkgdown.js"></script><meta property="og:title" content="Installation">
 <meta property="og:description" content="IBRAP">
 <meta property="og:image" content="/logo.png">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
@@ -40,7 +40,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">IBRAP</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.0</span>
       </span>
     </div>
 
@@ -101,10 +101,10 @@
 <script src="installing_ibrap_files/klippy-0.0.0.9500/js/klippy.min.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
-      <h1 data-toc-skip>Installing &amp; Preparing IBRAP</h1>
-                        <h4 data-toc-skip class="author">Connor H Knight &amp; Faraz Khan</h4>
+      <h1 data-toc-skip>Installation</h1>
+                        <h4 data-toc-skip class="author">Connor H Knight</h4>
             
-            <h4 data-toc-skip class="date">11/08/2021</h4>
+            <h4 data-toc-skip class="date">23/02/2022</h4>
       
       
       <div class="hidden name"><code>installing_ibrap.Rmd</code></div>
@@ -116,41 +116,142 @@
 <script>
   addClassKlippyTo("pre.r, pre.markdown");
   addKlippy('right', 'bottom', 'auto', '1', 'Click to copy', 'Done');
-</script><div id="ibrap-requirements" class="section level2">
-<h2 class="hasAnchor">
-<a href="#ibrap-requirements" class="anchor" aria-hidden="true"></a>IBRAP requirements</h2>
-<p>IBRAP requires R version &gt;=4.0.0 to function.</p>
-<p>You must have gfortran installed on your system which is included in GCC. The GCC version must be up-to-date, which can be found in the following <a href="https://gcc.gnu.org/wiki/GFortranBinaries" class="external-link">link</a> for mac users and this <a href="https://linuxize.com/post/how-to-install-gcc-compiler-on-ubuntu-18-04/" class="external-link">link</a> for linux.</p>
-<p>A further requirement for macOS users, is that xcode must be installed/updated. This can be performed using the following command in your terminal:</p>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">xcode</span><span class="op">-</span><span class="va">select</span> <span class="op">-</span><span class="op">-</span><span class="va">install</span></code></pre></div>
+</script><div class="section level2">
+<h2 id="ibrap-dependencies">IBRAP dependencies<a class="anchor" aria-label="anchor" href="#ibrap-dependencies"></a>
+</h2>
+<table class="table">
+<colgroup>
+<col width="15%">
+<col width="84%">
+</colgroup>
+<thead><tr class="header">
+<th align="left">Software</th>
+<th align="left">Description</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td align="left">R version &gt;=4.0.0</td>
+<td align="left">IBRAP dependes on packages that are updated to at this version of R</td>
+</tr>
+<tr class="even">
+<td align="left">python version &gt;=3.8</td>
+<td align="left">IBRAP also uses python packages to analyse scRNA-seq data</td>
+</tr>
+<tr class="odd">
+<td align="left">Xcode version version &gt;=11.3.1</td>
+<td align="left">ImageMagick is an image processing software and is a dependency for the celda package which contains decontX. If you do not plan on using DecontX then this is not required</td>
+</tr>
+<tr class="even">
+<td align="left">ImageMagick version &gt;=6.9.10-86</td>
+<td align="left">Xcode installs fundamental compilers (including GCC) which are required for R and Python package installations</td>
+</tr>
+<tr class="odd">
+<td align="left">devtools any version</td>
+<td align="left">devtools enables the user to install packages directly from GitHub pages</td>
+</tr>
+<tr class="even">
+<td align="left">anaconda version &gt;=4.10.3</td>
+<td align="left">anaconda is required for R to access the python coding language</td>
+</tr>
+</tbody>
+</table>
 </div>
-<div id="installing-ibrap" class="section level2">
-<h2 class="hasAnchor">
-<a href="#installing-ibrap" class="anchor" aria-hidden="true"></a>Installing IBRAP</h2>
-<p>IBRAP installation and its dependencies is fully automated and can be performed using the following command:</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">'devtools'</span><span class="op">)</span>
-<span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/devtools/man/remote-reexports.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">'connorhknight/IBRAP'</span><span class="op">)</span></code></pre></div>
-<p>Once installed we must prepare our reticulate environment which enables us to access python.</p>
+<div class="section level2">
+<h2 id="installing-os-ibrap-dependencies">Installing OS IBRAP dependencies<a class="anchor" aria-label="anchor" href="#installing-os-ibrap-dependencies"></a>
+</h2>
+<div class="section level3">
+<h3 id="xcode-option-just-gcc">XCode option (just GCC)<a class="anchor" aria-label="anchor" href="#xcode-option-just-gcc"></a>
+</h3>
+<p>XCode is a requirment for R for installing packages and running some code, it is fast and provides many useful software you didn’t even realise were required. You can use it to install GCC with the following command in your bash terminal:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb1-1" data-line-number="1"></a>
+<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="ex">xcode-select</span> --install</a></code></pre></div>
+<p>However, if this does not seem to insall GCC you can install it with homebrew.</p>
 </div>
-<div id="installing-reticulate" class="section level2">
-<h2 class="hasAnchor">
-<a href="#installing-reticulate" class="anchor" aria-hidden="true"></a>Installing reticulate</h2>
-<p>IBRAP not only uses packages within R, but also through python. For this, we use reticulate to interface python into the R environment. To setup reticulate we must start by installing miniconda:</p>
+<div class="section level3">
+<h3 id="homebrew-option-gcc-and-imagemagick">Homebrew option (GCC and ImageMagick)<a class="anchor" aria-label="anchor" href="#homebrew-option-gcc-and-imagemagick"></a>
+</h3>
+<p>MacOS users can usually install operating system software using HomeBrew, which is an source software stuff that simply installs different packages for you with a single command (unless troubleshooting is required). If you do not have Homebrew, you can install it with the following command in your bash terminal:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb2-1" data-line-number="1"></a>
+<a class="sourceLine" id="cb2-2" data-line-number="2"><span class="ex">ruby</span> -e <span class="st">"</span><span class="va">$(</span><span class="ex">curl</span> -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install<span class="va">)</span><span class="st">"</span></a>
+<a class="sourceLine" id="cb2-3" data-line-number="3"></a>
+<a class="sourceLine" id="cb2-4" data-line-number="4"><span class="co"># if the previous command does not work try this one: </span></a>
+<a class="sourceLine" id="cb2-5" data-line-number="5"></a>
+<a class="sourceLine" id="cb2-6" data-line-number="6"><span class="ex">/bin/bash</span> -c <span class="st">"</span><span class="va">$(</span><span class="ex">curl</span> -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh<span class="va">)</span><span class="st">"</span></a>
+<a class="sourceLine" id="cb2-7" data-line-number="7"></a>
+<a class="sourceLine" id="cb2-8" data-line-number="8"><span class="co"># once homebrew is install, you must run this next command to configure brew and ensure all dependencies and directories are as they should be:</span></a>
+<a class="sourceLine" id="cb2-9" data-line-number="9"></a>
+<a class="sourceLine" id="cb2-10" data-line-number="10"><span class="ex">brew</span> doctor</a>
+<a class="sourceLine" id="cb2-11" data-line-number="11"><span class="ex">brew</span> update</a>
+<a class="sourceLine" id="cb2-12" data-line-number="12"></a>
+<a class="sourceLine" id="cb2-13" data-line-number="13"><span class="co"># you can then install our dependent packages using the following commands: </span></a>
+<a class="sourceLine" id="cb2-14" data-line-number="14"></a>
+<a class="sourceLine" id="cb2-15" data-line-number="15"><span class="co"># installs GCC</span></a>
+<a class="sourceLine" id="cb2-16" data-line-number="16"></a>
+<a class="sourceLine" id="cb2-17" data-line-number="17"><span class="ex">brew</span> install gcc</a>
+<a class="sourceLine" id="cb2-18" data-line-number="18"></a>
+<a class="sourceLine" id="cb2-19" data-line-number="19"><span class="co">#installs ImageMagick and its required dependencies</span></a>
+<a class="sourceLine" id="cb2-20" data-line-number="20"></a>
+<a class="sourceLine" id="cb2-21" data-line-number="21"><span class="ex">brew</span> install php</a>
+<a class="sourceLine" id="cb2-22" data-line-number="22"><span class="ex">brew</span> install imagemagick</a>
+<a class="sourceLine" id="cb2-23" data-line-number="23"><span class="ex">brew</span> install pkg-config</a>
+<a class="sourceLine" id="cb2-24" data-line-number="24"><span class="ex">pecl</span> install imagick</a></code></pre></div>
+<p>Hopefully, either homebrew or xcode installed GCC For you, and homebrew installed ImageMagick, if you require further help the internet is full of forums for troubleshooting, but if you are really stuck feel free to leave a comment on the issues page of our GitHub.</p>
+</div>
+</div>
+<div class="section level2">
+<h2 id="installing-ibrap">Installing IBRAP<a class="anchor" aria-label="anchor" href="#installing-ibrap"></a>
+</h2>
+<p>IBRAP installation and its dependencies R-based dependencies is fully automated and can be performed using the following command in R:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">reticulate</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/reticulate/man/install_miniconda.html" class="external-link">install_miniconda</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
-<p>Once miniconda is installed it will produce an environment called r-reticulate. Reticulate install a default version of python that will change with time. To prevent version mis-alignments we will generate our own virtual environment to install IBRAP packages.</p>
+<code class="sourceCode R">
+<span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">'devtools'</span><span class="op">)</span>
+<span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/devtools/man/remote-reexports.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">'connorhknight/IBRAP'</span><span class="op">)</span></code></pre></div>
+<p>IBRAP automatically installs 44 R-based packages and their dependencies, hence a long installation time is to be expected. This could be anywhere between 30 minutes to to more than 2 hours according to the computational resources available and internet speed.</p>
+<p>Now, we have installed the dependencies for IBRAP external to and within R. We now need to install the dependencies for Python.</p>
+</div>
+<div class="section level2">
+<h2 id="installing-destiny-and-celda">Installing destiny and celda<a class="anchor" aria-label="anchor" href="#installing-destiny-and-celda"></a>
+</h2>
+<p>To access diffusion maps, we must install celda, a package that is tricky to install automatically, thus it is easier for the user to install it directly using the following command in the R-terminal:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">reticulate</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/reticulate/man/conda_create.html" class="external-link">conda_create</a></span><span class="op">(</span>envname <span class="op">=</span> <span class="st">"IBRAP"</span>, packages <span class="op">=</span> <span class="st">"python=3.8"</span><span class="op">)</span></code></pre></div>
-<p>Once this is created, the pathway to the python version will be printed last. We need to make sure that the R session sources the correct python version. You can either do this manually each time you start an R session or add this command to your .Rprofile file which is found in your home directory. We recommend putting this command into the .Rprofile file.</p>
+<code class="sourceCode R">
+<span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BiocManager/man/install.html" class="external-link">install</a></span><span class="op">(</span><span class="st">"destiny"</span><span class="op">)</span></code></pre></div>
+<p>This should have successfully installed destiny into R. Next, we focus on celda.</p>
+<p>Celda requires ImageMagick which some users may experience difficulty in installing, hence we did not list it as a dependency. Please note that if you could not install ImageMagick do not install celda since it will not work. However, if you were successful you can install it manually in the R-terminal:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">reticulate</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/reticulate/man/use_python.html" class="external-link">use_python</a></span><span class="op">(</span><span class="st">'copy the printed command here'</span>,required <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></code></pre></div>
-<p>Next, we must assure the correct packages are installed within the new environment:</p>
+<code class="sourceCode R">
+<span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BiocManager/man/install.html" class="external-link">install</a></span><span class="op">(</span><span class="st">"celda"</span><span class="op">)</span></code></pre></div>
+<p>There is a second package</p>
+</div>
+<div class="section level2">
+<h2 id="installing-miniconda">Installing miniconda<a class="anchor" aria-label="anchor" href="#installing-miniconda"></a>
+</h2>
+<p>IBRAP not only uses scRNA-seq analytical packages contained in the R programming language, but also packages available in Python. Therefore, we are required to install a package that enables us to access python from within R. For this purpose, we installed Reticulate as one of our dependencies. Reticulate uses a bash-based software called miniconda, which enables a user to access python in a virtual environment from within the R terminal. Indeed, we can install miniconda from our R terminal using the following command in R:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># this command may ask to create a directory, which you can agree to and perhaps note where the package is being installed to. </span>
+
+<span class="fu">reticulate</span><span class="fu">::</span><span class="fu"><a href="https://rstudio.github.io/reticulate/reference/install_miniconda.html" class="external-link">install_miniconda</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<p>Once we have install miniconda, we must produce a virtual enviornment to install our python packages, as shown in the dependencies table we require the python version to be at least 3.8. Therefore, we can install an environment that is specific for IBRAP and contains the correct python package with the following command in R:</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu">reticulate</span><span class="fu">::</span><span class="fu"><a href="https://rstudio.github.io/reticulate/reference/conda-tools.html" class="external-link">conda_create</a></span><span class="op">(</span>envname <span class="op">=</span> <span class="st">"IBRAP"</span>, packages <span class="op">=</span> <span class="st">"python=3.8"</span><span class="op">)</span></code></pre></div>
+<p>This will install a fresh virtual environment for us to use. Normally, R will source the general operating systems python or a python package you installed to your system and will not automatically use our python version from our IBRAP environment, therefore we must tell it where to find OUR version of python. Below, we displayed the correct command to tell python where to find our version of Python, whcih requires us to specify the directory lcoation. When you created the virtual environment the pathway where python was installed is usually printed last on your R terminal. However, if you missed it we included some default saving locations for Linux and MacOS.</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R">
+<span class="co"># This is the pathway for MacOS</span>
+<span class="fu">reticulate</span><span class="fu">::</span><span class="fu"><a href="https://rstudio.github.io/reticulate/reference/use_python.html" class="external-link">use_python</a></span><span class="op">(</span><span class="st">'~/Library/r-miniconda/envs/IBRAP/bin/python'</span>,required <span class="op">=</span> <span class="cn">T</span><span class="op">)</span>
+<span class="co"># this one is for Linux</span>
+<span class="fu">reticulate</span><span class="fu">::</span><span class="fu"><a href="https://rstudio.github.io/reticulate/reference/use_python.html" class="external-link">use_python</a></span><span class="op">(</span><span class="st">'~/share/r-miniconda/envs/IBRAP/lib/python'</span>,required <span class="op">=</span> <span class="cn">T</span><span class="op">)</span>
+
+<span class="co"># note that his may not always be the pathway for your specific computer if there some configuration have happened. Therefore, it is always best to check. </span></code></pre></div>
+<p>Please note, this command will only work in the current session you are using and R will revert back to the original python when you next use R. You can overcome this by forcing R to use this version of python every time you open R. When R is first initiated it can be told to run a set of commands prior to you using it. These commands are within a file called .Rprofile which is contained in your home directory (~) (note than some users may not have this file, it is completely okay for you to create your own using Nano). To do this, perform the following in bash:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode bash"><code class="sourceCode bash"><a class="sourceLine" id="cb9-1" data-line-number="1"><span class="fu">nano</span> ~/.Rprofile</a>
+<a class="sourceLine" id="cb9-2" data-line-number="2"><span class="co">#copy and paste the previous reticulate::use_python command</span></a></code></pre></div>
+<p>Then you can close the editor using ctrl + x and then enter to save. Now, R will always source our version of python. Next, we must install the dependencies in our version of python. We actually constructed a script that will automate the installation process and install the correct packages for you! You can execute the following command and let the rest take care of itself.</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu">IBRAP</span><span class="fu">::</span><span class="fu"><a href="../reference/prepare.reticulate.html">prepare.reticulate</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
-<p>Once this has been completed, you are ready to use IBRAP! For a basic understand of a single sample workflow please use the <a href="https://connorhknight.github.io/IBRAP/articles/using_IBRAP.html" class="external-link">getting started</a> tutorial. For multi-sample analysis, you can divert to the <a href="https://connorhknight.github.io/IBRAP/articles/integration.html" class="external-link">integration</a> tutorial.</p>
-<p>Good luck!</p>
+<p>In total, 15 python packages are installed and their dependencies. You can repeat this command and it will tell you whether you have the correct versions installed or if any are missing, if it is unable to install the package itself it will tell which packages require manual installation.</p>
+<p>Well done for installing IBRAP, that may have been a slightly long progress, but you have now installed a wide range of IBRAP dependencies (61 directly installed packages and their own dependencies) for scRNA-seq analytics that you can not only use in IBRAP, but outside of IBRAP too! Next, you must get to grips with how IBRAP functions, for this we have included some tutorials to explain the process. For example, we have one dedicted to generally using IBRAP with a single sample in <a href="https://connorhknight.github.io/IBRAP/articles/using_IBRAP.html" class="external-link">getting started</a> tutorial, when the need arises for using multiple samples and integrating them, we have you covered in our <a href="https://connorhknight.github.io/IBRAP/articles/integration.html" class="external-link">integration</a> tutorial, in fact, you should also probably check out how we store data in IBRAP with our IBRAP object data structure page.</p>
+<p>Good luck! And if you need any help, please feel free to leave a comment in our issues page on our GitHub.</p>
 </div>
   </div>
 
@@ -171,7 +272,7 @@
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link external-link">pkgdown</a> 1.6.1.9001.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
 </div>
 
       </footer>

@@ -40,7 +40,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">IBRAP</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">1.0.0</span>
       </span>
     </div>
 
@@ -57,7 +57,10 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
-      <a href="../articles/installing_ibrap.html">Installation</a>
+      <a href="../articles/installation_linux.html">Installation (linux)</a>
+    </li>
+    <li>
+      <a href="../articles/installation_macos.html">Installation (macos)</a>
     </li>
     <li>
       <a href="../articles/using_IBRAP.html">Getting Started</a>
@@ -116,47 +119,58 @@
 <script>
   addClassKlippyTo("pre.r, pre.markdown");
   addKlippy('right', 'bottom', 'auto', '1', 'Click to copy', 'Done');
-</script><div id="integrating-multiple-datasets" class="section level1">
-<h1 class="hasAnchor">
-<a href="#integrating-multiple-datasets" class="anchor" aria-hidden="true"></a>Integrating Multiple Datasets</h1>
-<p>Most analyses require more than a single sample. Especially, in meta-analyses.</p>
+</script><p>It is common in single-cell analyses to integrate multiple samples. There are numerous package available for do this, however they function differently and generate different results.Therefore, it is becoming necessary to benchmark a few options before deciding on a method. For this, IBRAP contains 4 integration methods and benchmarking capabilities to distinguish the best solution.</p>
+<div class="section level2">
+<h2 id="integrating-multiple-datasets">Integrating Multiple Datasets<a class="anchor" aria-label="anchor" href="#integrating-multiple-datasets"></a>
+</h2>
+<p>For this tutorial, we have supplied two well characterised pancreas samples: CELseq2 and Smartseq2 which contain 2285 and 2394 cells, respectively.</p>
 <p>You can download the data for this tutorial using the following links:</p>
 <p><a href="https://www.dropbox.com/s/heughk2kl0lg6qc/smartseq2.rds?dl=0" class="external-link uri">https://www.dropbox.com/s/heughk2kl0lg6qc/smartseq2.rds?dl=0</a> <a href="https://www.dropbox.com/s/txlq7875wkthb3y/celseq2.rds?dl=0" class="external-link uri">https://www.dropbox.com/s/txlq7875wkthb3y/celseq2.rds?dl=0</a></p>
-<div id="creating-ibrap-objects" class="section level2">
-<h2 class="hasAnchor">
-<a href="#creating-ibrap-objects" class="anchor" aria-hidden="true"></a>Creating IBRAP objects</h2>
+<div class="section level3">
+<h3 id="creating-ibrap-objects">Creating IBRAP objects<a class="anchor" aria-label="anchor" href="#creating-ibrap-objects"></a>
+</h3>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R">
-<span class="va">celseq2_items</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.choose.html" class="external-link">file.choose</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
-<span class="va">smartseq2_items</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/file.choose.html" class="external-link">file.choose</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">IBRAP</span><span class="op">)</span>
+
+<span class="va">celseq2_items</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="st">'/Users/knight05/work/Results/scRNA-seq/IBRAP_tutorials/integration_analysis/celseq2.rds'</span><span class="op">)</span>
+<span class="va">smartseq2_items</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="st">'/Users/knight05/work/Results/scRNA-seq/IBRAP_tutorials/integration_analysis/smartseq2.rds'</span><span class="op">)</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R">
+<span class="co"># Here we set the maximum amount of RAM R may use, for this we have allowed 4GB</span>
+
+<span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>future.globals.maxSize <span class="op">=</span> <span class="fl">4000</span> <span class="op">*</span> <span class="fl">1024</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span>
+
+<span class="va">celseq2_items</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="st">'~/path/to/celseq2/celseq2.rds'</span><span class="op">)</span>
+<span class="va">smartseq2_items</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="st">'~/path/to/celseq2/celseq2.rds'</span><span class="op">)</span>
 
 <span class="va">celseq2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/createIBRAPobject.html">createIBRAPobject</a></span><span class="op">(</span>counts <span class="op">=</span> <span class="va">celseq2</span>,
-                             meta.data <span class="op">=</span> <span class="va">metadata_celseq2</span>,
+                             meta.data <span class="op">=</span> <span class="va">celseq2_items</span><span class="op">$</span><span class="va">metadata</span>,
                              original.project <span class="op">=</span> <span class="st">'celseq2'</span>,
                              method.name <span class="op">=</span> <span class="st">'RAW'</span>,
                              min.cells <span class="op">=</span> <span class="fl">3</span>,
                              min.features <span class="op">=</span> <span class="fl">200</span><span class="op">)</span>
 
 <span class="va">smartseq2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/createIBRAPobject.html">createIBRAPobject</a></span><span class="op">(</span>counts <span class="op">=</span> <span class="va">smartseq2</span>, 
-                               meta.data <span class="op">=</span> <span class="va">metadata_smartseq2</span>,
+                               meta.data <span class="op">=</span> <span class="va">smartseq2_items</span><span class="op">$</span><span class="va">metadata</span>,
                                original.project <span class="op">=</span> <span class="st">'smartseq2'</span>,
                                method.name <span class="op">=</span> <span class="st">'RAW'</span>,
                                min.cells <span class="op">=</span> <span class="fl">3</span>,
                                min.features <span class="op">=</span> <span class="fl">200</span><span class="op">)</span></code></pre></div>
 </div>
-<div id="merging-ibrap-objects" class="section level2">
-<h2 class="hasAnchor">
-<a href="#merging-ibrap-objects" class="anchor" aria-hidden="true"></a>Merging IBRAP objects</h2>
+<div class="section level3">
+<h3 id="merging-ibrap-objects">Merging IBRAP objects<a class="anchor" aria-label="anchor" href="#merging-ibrap-objects"></a>
+</h3>
 <p>Datasets are then merged together. WARNING: Datasets can only be merged straight after their creation with no downstream results.</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R">
 <span class="va">pancreas</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/merge.html">merge</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">celseq2</span>, y <span class="op">=</span> <span class="va">smartseq2</span><span class="op">)</span></code></pre></div>
 </div>
-<div id="pre-processing-batch-visualisation" class="section level2">
-<h2 class="hasAnchor">
-<a href="#pre-processing-batch-visualisation" class="anchor" aria-hidden="true"></a>Pre-processing &amp; Batch Visualisation</h2>
-<p>We then continue our analysis as normal:</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="section level3">
+<h3 id="pre-processing-batch-visualisation">Pre-processing &amp; Batch Visualisation<a class="anchor" aria-label="anchor" href="#pre-processing-batch-visualisation"></a>
+</h3>
+<p>We then continue our analysis as normal up until PCA reduction:</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R">
 <span class="va">pancreas</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/perform.sct.html">perform.sct</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">pancreas</span>, 
                         assay <span class="op">=</span> <span class="st">'RAW'</span>, 
@@ -177,55 +191,48 @@
 <span class="va">pancreas</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/perform.umap.html">perform.umap</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">pancreas</span>, 
                          assay <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'SCT'</span>, <span class="st">'SCRAN'</span>, <span class="st">'SCANPY'</span><span class="op">)</span>, 
                          reduction <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'pca'</span><span class="op">)</span>, 
-                         n_components <span class="op">=</span> <span class="fl">2</span>, 
-                         n.dims <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fl">10</span><span class="op">)</span><span class="op">)</span>
-
-<span class="va">plot1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot.reduced.dim.html">plot.reduced.dim</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">pancreas</span>, reduction <span class="op">=</span> <span class="st">'pca_umap'</span>, assay <span class="op">=</span> <span class="st">'SCT'</span>,
+                         n_components <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></code></pre></div>
+<p>Now that we have pre-processed our data, lets take a look at the unintegrated batches:</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R">
+<span class="va">plot1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot.reduced.dim.html">plot.reduced.dim</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">pancreas</span>, reduction <span class="op">=</span> <span class="st">'PCA_UMAP'</span>, assay <span class="op">=</span> <span class="st">'SCT'</span>,
                           clust.method <span class="op">=</span> <span class="st">'metadata'</span>, column <span class="op">=</span> <span class="st">'original.project'</span>, pt.size <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span> <span class="op">+</span> 
   <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">'SCT'</span><span class="op">)</span> <span class="op">+</span> 
   <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/theme.html" class="external-link">theme</a></span><span class="op">(</span>plot.title <span class="op">=</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/element.html" class="external-link">element_text</a></span><span class="op">(</span>hjust <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span><span class="op">)</span>
 
 
-<span class="va">plot2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot.reduced.dim.html">plot.reduced.dim</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">pancreas</span>, reduction <span class="op">=</span> <span class="st">'pca_umap'</span>, assay <span class="op">=</span> <span class="st">'SCRAN'</span>,
+<span class="va">plot2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot.reduced.dim.html">plot.reduced.dim</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">pancreas</span>, reduction <span class="op">=</span> <span class="st">'PCA_UMAP'</span>, assay <span class="op">=</span> <span class="st">'SCRAN'</span>,
                           clust.method <span class="op">=</span> <span class="st">'metadata'</span>, column <span class="op">=</span> <span class="st">'original.project'</span>, pt.size <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span> <span class="op">+</span> 
   <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">'SCRAN'</span><span class="op">)</span> <span class="op">+</span> 
   <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/theme.html" class="external-link">theme</a></span><span class="op">(</span>plot.title <span class="op">=</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/element.html" class="external-link">element_text</a></span><span class="op">(</span>hjust <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span><span class="op">)</span>
 
 
-<span class="va">plot3</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot.reduced.dim.html">plot.reduced.dim</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">pancreas</span>, reduction <span class="op">=</span> <span class="st">'pca_umap'</span>, assay <span class="op">=</span> <span class="st">'SCANPY'</span>,
+<span class="va">plot3</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot.reduced.dim.html">plot.reduced.dim</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">pancreas</span>, reduction <span class="op">=</span> <span class="st">'PCA_UMAP'</span>, assay <span class="op">=</span> <span class="st">'SCANPY'</span>,
                           clust.method <span class="op">=</span> <span class="st">'metadata'</span>, column <span class="op">=</span> <span class="st">'original.project'</span>, pt.size <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span> <span class="op">+</span> 
   <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">'SCANPY'</span><span class="op">)</span> <span class="op">+</span> 
   <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/theme.html" class="external-link">theme</a></span><span class="op">(</span>plot.title <span class="op">=</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/element.html" class="external-link">element_text</a></span><span class="op">(</span>hjust <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span><span class="op">)</span>
 
-<span class="va">plot1</span> <span class="op">+</span> <span class="va">plot2</span> <span class="op">+</span> <span class="va">plot3</span>
+<span class="fu">egg</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/egg/man/ggarrange.html" class="external-link">ggarrange</a></span><span class="op">(</span>plots <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">plot1</span>, <span class="va">plot2</span>, <span class="va">plot3</span><span class="op">)</span>, ncol <span class="op">=</span> <span class="fl">3</span><span class="op">)</span>
                         </code></pre></div>
-<p>We merged the datasets and transformed the data using normalisation methods. Next, we reduced the embeddings linearly with PCA and generated UMAP embeddings for visualisation. Now, we can visualise batch effects present.</p>
 <p><img src="unintegrated.png" width="150%" height="150%"></p>
 <p>As we can see there are profound differences between the samples due to technical variation. This requires correction.</p>
 </div>
-<div id="integration-techniques" class="section level2">
-<h2 class="hasAnchor">
-<a href="#integration-techniques" class="anchor" aria-hidden="true"></a>Integration Techniques</h2>
+<div class="section level3">
+<h3 id="integration-techniques">Integration Techniques<a class="anchor" aria-label="anchor" href="#integration-techniques"></a>
+</h3>
 <p>We have included 4 integration techniques:</p>
 <ul>
-<li>Seurat</li>
-<li>Scanorama</li>
-<li>BBKNN</li>
-<li>Harmony</li>
+<li>Seurat CCA (counts)</li>
+<li>Scanorama (counts)</li>
+<li>BBKNN (reduction)</li>
+<li>Harmony (reduction)</li>
 </ul>
-<p>Lets begin the integration techniques</p>
+<p>Some integration methods either correct the normalised counts or the reduction components. For this tutorial, we will compare Scanorama which corrects the counts and Harmony which corrects reductions.</p>
 </div>
-<div id="integration-application-visualisaiton" class="section level2">
-<h2 class="hasAnchor">
-<a href="#integration-application-visualisaiton" class="anchor" aria-hidden="true"></a>Integration Application &amp; Visualisaiton</h2>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R">
-<span class="va">pancreas</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/perform.bbknn.html">perform.bbknn</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">pancreas</span>, 
-                          assay <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'SCT'</span>, <span class="st">'SCANPY'</span>, <span class="st">'SCRAN'</span><span class="op">)</span>, 
-                          reduction <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'pca'</span><span class="op">)</span>,
-                          batch <span class="op">=</span> <span class="st">'tech'</span><span class="op">)</span></code></pre></div>
-<p>Firstly we used BBKNN. BBKNN accepts reduced embeddings (i.e. PCA or diffusion maps) as input. BBKNN does not create a reduced embedding, but creates a nearest neighbourhood graph that has been corrected for batch effects. Therefore, this method is constrained to graph-based clustering methods and UMAP non-linear reduction methods.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="section level3">
+<h3 id="integration-application-visualisaiton">Integration Application &amp; Visualisaiton<a class="anchor" aria-label="anchor" href="#integration-application-visualisaiton"></a>
+</h3>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R">
 <span class="va">pancreas</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/perform.harmony.html">perform.harmony</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">pancreas</span>, 
                             assay <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'SCRAN'</span>, <span class="st">'SCT'</span>, <span class="st">'SCANPY'</span><span class="op">)</span>, 
@@ -234,152 +241,83 @@
                             max.iter.harmony <span class="op">=</span> <span class="fl">100</span>,
                             dims.use <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="cn">NULL</span><span class="op">)</span><span class="op">)</span>
                             </code></pre></div>
-<p>Next, we used harmony. Harmony accepts reduced embeddings and produces a new reduced embedding called harmony reducitons. These reductions can then be used to produce nearest neighbourhood graphs, any clusxtering method, and any reduction method. Harmony functions well since you can adjust the aggressiveness of the correction per covariate that you specify using the theta parameter.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<p>Harmony accepts reduced embeddings and produces a new reduced embedding called harmony reducitons. These reductions can then be used to produce nearest neighbourhood graphs, any clusxtering method, and any reduction method. Harmony functions well since you can adjust the aggressiveness of the correction per covariate that you specify using the theta parameter.</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R">
 <span class="va">pancreas</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/perform.scanorama.html">perform.scanorama</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">pancreas</span>, 
                               assay <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'SCT'</span>, <span class="st">'SCRAN'</span>, <span class="st">'SCANPY'</span><span class="op">)</span>, 
                               slot <span class="op">=</span> <span class="st">'norm.scaled'</span>, 
                               split.by <span class="op">=</span> <span class="st">'original.project'</span>, 
                               n.dims <span class="op">=</span> <span class="fl">50</span><span class="op">)</span></code></pre></div>
-<p>Scanorama is also available in IBRAP. Rather than functioning on reduced embeddings, scanorama uses the <span class="citation">@norm.scaled</span> slot of the method assay and stitches together the batches in order of similarity. Scanorama produces a reduced embedding that can be used for nearest neighbourhood graph generation, any clustering method, and non-linear reduction method.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R">
-<span class="va">pancreas</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/perform.seurat.cca.html">perform.seurat.integration</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">pancreas</span>,  
-                                     assay <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'SCT'</span>,<span class="st">'SCRAN'</span>,<span class="st">'SCANPY'</span><span class="op">)</span>,
-                                     normalisation.method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'perform.sct'</span>,<span class="st">'perform.scran'</span>,<span class="st">'perform.scanpy'</span><span class="op">)</span>, 
-                                     batch <span class="op">=</span> <span class="st">'original.project'</span><span class="op">)</span></code></pre></div>
-<p>Finally, we included seurats cca integration method. This method renormalises the individual batches separately (hence, why you must supply the normalisation method in the order of assays) and then projects them together. We finish by processing the corrected matrix with a PCA reduction and supply the new PCA reduction as seurat. This reduced embedding that can be used for nearest neighbourhood graph generation, any clustering method, and non-linear reduction method.</p>
+<p>Rather than functioning on reduced embeddings, scanorama uses the <span class="citation">@norm.scaled</span> slot of the method assay and stitches together the batches in order of similarity. Scanorama produces a reduced embedding that can be used for nearest neighbourhood graph generation, any clustering method, and non-linear reduction method.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R">                              
 <span class="va">pancreas</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/perform.umap.html">perform.umap</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">pancreas</span>, 
                          assay <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'SCT'</span>, <span class="st">'SCRAN'</span>, <span class="st">'SCANPY'</span><span class="op">)</span>, 
-                         reduction <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'pca_harmony'</span>, <span class="st">'scanorama'</span>, <span class="st">'seurat'</span><span class="op">)</span>, 
+                         reduction <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'pca_harmony'</span>, <span class="st">'scanorama'</span><span class="op">)</span>, 
                          n_components <span class="op">=</span> <span class="fl">2</span>, 
-                         n.dims <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fl">50</span>, <span class="fl">50</span>, <span class="fl">10</span><span class="op">)</span><span class="op">)</span>
-
-<span class="va">pancreas</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/perform.umap.html">perform.umap</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">pancreas</span>, assay <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'SCT'</span>, <span class="st">'SCRAN'</span>, <span class="st">'SCANPY'</span><span class="op">)</span>, graph <span class="op">=</span> <span class="st">'pca_bbknn_bbknn'</span><span class="op">)</span></code></pre></div>
-<p>We nex created UAMP reduced embeddings from the previously generated corrected reduced embeddings, including: pca_harmony, scanorama, and seurat. However, BBKNN only produced a corrected neighbourhood graph. Thus, we must supply the graph in a separate function to create the corrected UMAP embeddings. Lets visualise the effectiveness of the integration methods.</p>
+                         n.dims <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fl">50</span>, <span class="fl">50</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<p>We next created UMAPP reduced embeddings from the previously generated corrected reduced embeddings, including: PCA_HARMONY and SCANORAMA.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R">
 <span class="va">plot.list</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>
 
-<span class="va">plot.list</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot.reduced.dim.html">plot.reduced.dim</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">pancreas</span>, reduction <span class="op">=</span> <span class="st">'pca_harmony_umap'</span>, assay <span class="op">=</span> <span class="st">'SCT'</span>,
+<span class="va">plot.list</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot.reduced.dim.html">plot.reduced.dim</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">pancreas</span>, reduction <span class="op">=</span> <span class="st">'PCA_HARMONY_UMAP'</span>, assay <span class="op">=</span> <span class="st">'SCT'</span>,
                                    clust.method <span class="op">=</span> <span class="st">'metadata'</span>, column <span class="op">=</span> <span class="st">'original.project'</span>, pt.size <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span> <span class="op">+</span> 
   <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">'SCT_harmony'</span><span class="op">)</span> <span class="op">+</span> 
   <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/theme.html" class="external-link">theme</a></span><span class="op">(</span>plot.title <span class="op">=</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/element.html" class="external-link">element_text</a></span><span class="op">(</span>hjust <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span><span class="op">)</span>
 
-<span class="va">plot.list</span><span class="op">[[</span><span class="fl">2</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot.reduced.dim.html">plot.reduced.dim</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">pancreas</span>, reduction <span class="op">=</span> <span class="st">'pca_harmony_umap'</span>, assay <span class="op">=</span> <span class="st">'SCRAN'</span>,
+<span class="va">plot.list</span><span class="op">[[</span><span class="fl">2</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot.reduced.dim.html">plot.reduced.dim</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">pancreas</span>, reduction <span class="op">=</span> <span class="st">'PCA_HARMONY_UMAP'</span>, assay <span class="op">=</span> <span class="st">'SCRAN'</span>,
                                    clust.method <span class="op">=</span> <span class="st">'metadata'</span>, column <span class="op">=</span> <span class="st">'original.project'</span>, pt.size <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span> <span class="op">+</span> 
   <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">'SCRAN_harmony'</span><span class="op">)</span> <span class="op">+</span> 
   <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/theme.html" class="external-link">theme</a></span><span class="op">(</span>plot.title <span class="op">=</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/element.html" class="external-link">element_text</a></span><span class="op">(</span>hjust <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span><span class="op">)</span>
 
-<span class="va">plot.list</span><span class="op">[[</span><span class="fl">3</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot.reduced.dim.html">plot.reduced.dim</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">pancreas</span>, reduction <span class="op">=</span> <span class="st">'pca_harmony_umap'</span>, assay <span class="op">=</span> <span class="st">'SCANPY'</span>,
+<span class="va">plot.list</span><span class="op">[[</span><span class="fl">3</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot.reduced.dim.html">plot.reduced.dim</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">pancreas</span>, reduction <span class="op">=</span> <span class="st">'PCA_HARMONY_UMAP'</span>, assay <span class="op">=</span> <span class="st">'SCANPY'</span>,
                                    clust.method <span class="op">=</span> <span class="st">'metadata'</span>, column <span class="op">=</span> <span class="st">'original.project'</span>, pt.size <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span> <span class="op">+</span> 
   <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">'SCANPY_harmony'</span><span class="op">)</span> <span class="op">+</span> 
   <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/theme.html" class="external-link">theme</a></span><span class="op">(</span>plot.title <span class="op">=</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/element.html" class="external-link">element_text</a></span><span class="op">(</span>hjust <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span><span class="op">)</span>
 
-<span class="va">plot.list</span><span class="op">[[</span><span class="fl">4</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot.reduced.dim.html">plot.reduced.dim</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">pancreas</span>, reduction <span class="op">=</span> <span class="st">'scanorama_umap'</span>, assay <span class="op">=</span> <span class="st">'SCT'</span>,
+<span class="va">plot.list</span><span class="op">[[</span><span class="fl">4</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot.reduced.dim.html">plot.reduced.dim</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">pancreas</span>, reduction <span class="op">=</span> <span class="st">'SCANORAMA_UMAP'</span>, assay <span class="op">=</span> <span class="st">'SCT'</span>,
                                    clust.method <span class="op">=</span> <span class="st">'metadata'</span>, column <span class="op">=</span> <span class="st">'original.project'</span>, pt.size <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span> <span class="op">+</span> 
-  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">'SCT_harmony'</span><span class="op">)</span> <span class="op">+</span> 
+  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">'SCT_SCANORAMA'</span><span class="op">)</span> <span class="op">+</span> 
   <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/theme.html" class="external-link">theme</a></span><span class="op">(</span>plot.title <span class="op">=</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/element.html" class="external-link">element_text</a></span><span class="op">(</span>hjust <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span><span class="op">)</span>
 
-<span class="va">plot.list</span><span class="op">[[</span><span class="fl">5</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot.reduced.dim.html">plot.reduced.dim</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">pancreas</span>, reduction <span class="op">=</span> <span class="st">'scanorama_umap'</span>, assay <span class="op">=</span> <span class="st">'SCRAN'</span>,
+<span class="va">plot.list</span><span class="op">[[</span><span class="fl">5</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot.reduced.dim.html">plot.reduced.dim</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">pancreas</span>, reduction <span class="op">=</span> <span class="st">'SCANORAMA_UMAP'</span>, assay <span class="op">=</span> <span class="st">'SCRAN'</span>,
                                    clust.method <span class="op">=</span> <span class="st">'metadata'</span>, column <span class="op">=</span> <span class="st">'original.project'</span>, pt.size <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span> <span class="op">+</span> 
-  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">'SCRAN_harmony'</span><span class="op">)</span> <span class="op">+</span> 
+  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">'SCRAN_SCANORAMA'</span><span class="op">)</span> <span class="op">+</span> 
   <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/theme.html" class="external-link">theme</a></span><span class="op">(</span>plot.title <span class="op">=</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/element.html" class="external-link">element_text</a></span><span class="op">(</span>hjust <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span><span class="op">)</span>
 
-<span class="va">plot.list</span><span class="op">[[</span><span class="fl">6</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot.reduced.dim.html">plot.reduced.dim</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">pancreas</span>, reduction <span class="op">=</span> <span class="st">'scanorama_umap'</span>, assay <span class="op">=</span> <span class="st">'SCANPY'</span>,
+<span class="va">plot.list</span><span class="op">[[</span><span class="fl">6</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot.reduced.dim.html">plot.reduced.dim</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">pancreas</span>, reduction <span class="op">=</span> <span class="st">'SCANORAMA_UMAP'</span>, assay <span class="op">=</span> <span class="st">'SCANPY'</span>,
                                    clust.method <span class="op">=</span> <span class="st">'metadata'</span>, column <span class="op">=</span> <span class="st">'original.project'</span>, pt.size <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span> <span class="op">+</span> 
-  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">'SCANPY_harmony'</span><span class="op">)</span> <span class="op">+</span> 
+  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">'SCANPY_SCANORAMA'</span><span class="op">)</span> <span class="op">+</span> 
   <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/theme.html" class="external-link">theme</a></span><span class="op">(</span>plot.title <span class="op">=</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/element.html" class="external-link">element_text</a></span><span class="op">(</span>hjust <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span><span class="op">)</span>
 
-<span class="va">plot.list</span><span class="op">[[</span><span class="fl">7</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot.reduced.dim.html">plot.reduced.dim</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">pancreas</span>, reduction <span class="op">=</span> <span class="st">'pca_bbknn_bbknn:umap'</span>, assay <span class="op">=</span> <span class="st">'SCT'</span>,
-                                   clust.method <span class="op">=</span> <span class="st">'metadata'</span>, column <span class="op">=</span> <span class="st">'original.project'</span>, pt.size <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span> <span class="op">+</span> 
-  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">'SCT_bbknn'</span><span class="op">)</span> <span class="op">+</span> 
-  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/theme.html" class="external-link">theme</a></span><span class="op">(</span>plot.title <span class="op">=</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/element.html" class="external-link">element_text</a></span><span class="op">(</span>hjust <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span><span class="op">)</span>
-
-<span class="va">plot.list</span><span class="op">[[</span><span class="fl">8</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot.reduced.dim.html">plot.reduced.dim</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">pancreas</span>, reduction <span class="op">=</span> <span class="st">'pca_bbknn_bbknn:umap'</span>, assay <span class="op">=</span> <span class="st">'SCRAN'</span>,
-                                   clust.method <span class="op">=</span> <span class="st">'metadata'</span>, column <span class="op">=</span> <span class="st">'original.project'</span>, pt.size <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span> <span class="op">+</span> 
-  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">'SCRAN_bbknn'</span><span class="op">)</span> <span class="op">+</span> 
-  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/theme.html" class="external-link">theme</a></span><span class="op">(</span>plot.title <span class="op">=</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/element.html" class="external-link">element_text</a></span><span class="op">(</span>hjust <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span><span class="op">)</span>
-
-<span class="va">plot.list</span><span class="op">[[</span><span class="fl">9</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot.reduced.dim.html">plot.reduced.dim</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">pancreas</span>, reduction <span class="op">=</span> <span class="st">'pca_bbknn_bbknn:umap'</span>, assay <span class="op">=</span> <span class="st">'SCANPY'</span>,
-                                   clust.method <span class="op">=</span> <span class="st">'metadata'</span>, column <span class="op">=</span> <span class="st">'original.project'</span>, pt.size <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span> <span class="op">+</span> 
-  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">'SCANPY_bbknn'</span><span class="op">)</span> <span class="op">+</span> 
-  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/theme.html" class="external-link">theme</a></span><span class="op">(</span>plot.title <span class="op">=</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/element.html" class="external-link">element_text</a></span><span class="op">(</span>hjust <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span><span class="op">)</span>
-
-<span class="va">plot.list</span><span class="op">[[</span><span class="fl">10</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot.reduced.dim.html">plot.reduced.dim</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">pancreas</span>, reduction <span class="op">=</span> <span class="st">'seurat_umap'</span>, assay <span class="op">=</span> <span class="st">'SCT'</span>,
-                                   clust.method <span class="op">=</span> <span class="st">'metadata'</span>, column <span class="op">=</span> <span class="st">'original.project'</span>, pt.size <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span> <span class="op">+</span> 
-  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">'SCT_cca'</span><span class="op">)</span> <span class="op">+</span> 
-  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/theme.html" class="external-link">theme</a></span><span class="op">(</span>plot.title <span class="op">=</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/element.html" class="external-link">element_text</a></span><span class="op">(</span>hjust <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span><span class="op">)</span>
-
-<span class="va">plot.list</span><span class="op">[[</span><span class="fl">11</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot.reduced.dim.html">plot.reduced.dim</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">pancreas</span>, reduction <span class="op">=</span> <span class="st">'seurat_umap'</span>, assay <span class="op">=</span> <span class="st">'SCRAN'</span>,
-                                    clust.method <span class="op">=</span> <span class="st">'metadata'</span>, column <span class="op">=</span> <span class="st">'original.project'</span>, pt.size <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span> <span class="op">+</span> 
-  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">'SCRAN_cca'</span><span class="op">)</span> <span class="op">+</span> 
-  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/theme.html" class="external-link">theme</a></span><span class="op">(</span>plot.title <span class="op">=</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/element.html" class="external-link">element_text</a></span><span class="op">(</span>hjust <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span><span class="op">)</span>
-
-<span class="va">plot.list</span><span class="op">[[</span><span class="fl">12</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/plot.reduced.dim.html">plot.reduced.dim</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">pancreas</span>, reduction <span class="op">=</span> <span class="st">'seurat_umap'</span>, assay <span class="op">=</span> <span class="st">'SCANPY'</span>,
-                                    clust.method <span class="op">=</span> <span class="st">'metadata'</span>, column <span class="op">=</span> <span class="st">'original.project'</span>, pt.size <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span> <span class="op">+</span> 
-  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/labs.html" class="external-link">ggtitle</a></span><span class="op">(</span><span class="st">'SCANPY_cca'</span><span class="op">)</span> <span class="op">+</span> 
-  <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/theme.html" class="external-link">theme</a></span><span class="op">(</span>plot.title <span class="op">=</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/ggplot2/man/element.html" class="external-link">element_text</a></span><span class="op">(</span>hjust <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span><span class="op">)</span>
-
-<span class="fu">egg</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/egg/man/ggarrange.html" class="external-link">ggarrange</a></span><span class="op">(</span>plots <span class="op">=</span> <span class="va">plot.list</span>, nrow <span class="op">=</span> <span class="fl">4</span>, ncol <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></code></pre></div>
-<p><img src="integrations.png" width="150%" height="150%"></p>
-<p>From initial inspection we can see that some worked better than others. For example seurat integration seems to produce a great overlap of batches. However, we cannot soley rely on visualising the batches to determine which worked best. To help us understand the results we have included benchmarking.</p>
+<span class="fu">egg</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/egg/man/ggarrange.html" class="external-link">ggarrange</a></span><span class="op">(</span>plots <span class="op">=</span> <span class="va">plot.list</span>, nrow <span class="op">=</span> <span class="fl">2</span>, ncol <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></code></pre></div>
+<p><img src="integration_files/figure-html/unnamed-chunk-11-1.png" width="700"></p>
+<p><img src="integration.png" width="150%" height="150%"></p>
+<p>From initial inspection we can see that some worked better than others. For example scran normalisation with harmony integration seems to produce a great overlap of batches. However, we cannot soley rely on subjective visualisation of the batches to determine which worked best. To help us understand the results we have included benchmarking.</p>
 </div>
-<div id="benchmarking-integration" class="section level2">
-<h2 class="hasAnchor">
-<a href="#benchmarking-integration" class="anchor" aria-hidden="true"></a>Benchmarking Integration</h2>
-<p>Our benchmarking involves the same methodoogy proposed in the SCONE. An Average Silhouette Width quantativiely assesses the closeness of the batches in comparison to the uncorrected version.</p>
-<p>previously we calcualted the UMAP reductions for the uncorrected PCA and the corrected: harmony, bbknn, and scanorama data. We can use the UMAP reductions to assess the effectiveness of the data using this function:</p>
+<div class="section level3">
+<h3 id="benchmarking-integration">Benchmarking Integration<a class="anchor" aria-label="anchor" href="#benchmarking-integration"></a>
+</h3>
+<p>Our benchmarking involves the same methodology proposed in the SCONE. An Average Silhouette Width assesses the closeness of the batches in comparison to the uncorrected version.</p>
+<p>previously we calcualted the UMAP reductions for the uncorrected PCA and the corrected: harmony and scanorama data. We can use the UMAP reductions to assess the effectiveness of the data using this function:</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R">
 <span class="va">pancreas</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/benchmark.integration.html">benchmark.intergation</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">pancreas</span>, 
                                   batch <span class="op">=</span> <span class="st">'original.project'</span>, assays <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'SCT'</span>,<span class="st">'SCRAN'</span>,<span class="st">'SCANPY'</span><span class="op">)</span>, 
-                                  reduction <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'pca_umap'</span>, <span class="st">'pca_harmony_umap'</span>, 
-                                                <span class="st">'scanorama_umap'</span>, <span class="st">'pca_bbknn_bbknn:umap'</span>, <span class="st">'seurat_umap'</span><span class="op">)</span>, 
-                                  result.names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'uncorrected'</span>, <span class="st">'harmony'</span>, <span class="st">'scanorama'</span>, <span class="st">'bbknn'</span>, <span class="st">'seurat'</span><span class="op">)</span>, 
+                                  reduction <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'PCA_UMAP'</span>, <span class="st">'PCA_HARMONY_UMAP'</span>, 
+                                                <span class="st">'SCANORAMA_UMAP'</span><span class="op">)</span>, 
+                                  result.names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'uncorrected'</span>, <span class="st">'harmony'</span>, <span class="st">'scanorama'</span><span class="op">)</span>, 
                                   n.components <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>
 
 <span class="co"># we can plot the results with the following command</span>
 
 <span class="fu">plot.integration.benchmarking</span><span class="op">(</span>object <span class="op">=</span> <span class="va">pancreas</span>, assay <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'SCT'</span>,<span class="st">'SCRAN'</span>,<span class="st">'SCANPY'</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<p>We can plot the results using an IBRAP plotting function:</p>
 <p><img src="integration_benchmarking.png" width="150%" height="150%"></p>
-<p>For Average Silhouette Width (ASW) when observing clustering (biological effects) we wish to see a higher value. However, when reducing batches we wish to see a more negative value (even a negative value). As you can see, the uncorrected version has a high ASW value which indicates profound batch effects are present. Whereas, we can see the batch correction methods have reducd the batch effects to varying degrees. For example, harmony and seurat seemed to reduced the batch effect the best across all normalisation methods. Scanorama and BBKNN however performed less successfully. However, you should not use this as an absolute recommendation for whcih reduction to proceed with.</p>
-</div>
-<div id="visualising-ground-truth-labels" class="section level2">
-<h2 class="hasAnchor">
-<a href="#visualising-ground-truth-labels" class="anchor" aria-hidden="true"></a>Visualising ground truth labels</h2>
-<p>For this dataset we were provided with ground turht labels which enable us to observe how well the biological structure of was retained during integration. As an example, we can observe the labelling on a random projection. However, feel free to explore other UMAP reductions from other assays and integration methods.</p>
-<p>We can visualise the results using our plot.reduced.dim function.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R">
-<span class="fu"><a href="../reference/plot.reduced.dim.html">plot.reduced.dim</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">pancreas</span>, reduction <span class="op">=</span> <span class="st">'pca_harmony_umap'</span>, assay <span class="op">=</span> <span class="st">'SCRAN'</span>,
-                                   clust.method <span class="op">=</span> <span class="st">'metadata'</span>, column <span class="op">=</span> <span class="st">'celltype'</span>, pt.size <span class="op">=</span> <span class="fl">0.1</span><span class="op">)</span></code></pre></div>
-<p><img src="integrated_labels.png" width="150%" height="150%"></p>
-<p>As we can see, SCRAN with seurat integration led to a well defined separation of cell types. To confirm this we can produce feature plots to see how canonical markers were separated from eachother during the analysis.</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R">
-<span class="fu"><a href="../reference/plot.features.html">plot.features</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">pancreas</span>, assay <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'SCRAN'</span><span class="op">)</span>, slot <span class="op">=</span> <span class="st">'normalised'</span>, reduction <span class="op">=</span> <span class="st">'seurat_umap'</span>, features <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'PPY'</span>,<span class="st">'GHRL'</span>,<span class="st">'TPSB2'</span>,
-                                                                                                                  <span class="st">'PLVAP'</span>,<span class="st">'RGS5'</span>,<span class="st">'CLPS'</span>,
-                                                                                                                  <span class="st">'COL1A1'</span>,<span class="st">'CCL22'</span>, <span class="st">'INS'</span>,
-                                                                                                                  <span class="st">'SPP1'</span>,<span class="st">'NOV'</span>,<span class="st">'SST'</span>,<span class="st">'GCG'</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-<p><img src="integrated_features.png" width="150%" height="150%"></p>
-<p>From these we can gather that the analytical pipeline separated cell type by their canonical markers correctly. We can also confirm this with a differential expression analysis that should identify all the celltypes gene markers.</p>
-</div>
-<div id="differential-expression-analysis" class="section level2">
-<h2 class="hasAnchor">
-<a href="#differential-expression-analysis" class="anchor" aria-hidden="true"></a>Differential Expression Analysis</h2>
-<p>Differential expression analyses can be perfortmed using the integrated clustering results. batch correction has not been performed on the counts matrices. Therefore it is beneficial to apply a method such as MAST which regresses out covrates such as total counts or batches. This is performed using the perform.diff.exp.all function.</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R">
-<span class="va">SCT_DE</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/perform.diffexp.all.html">perform.diffexp.all</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">pancreas</span>, assay <span class="op">=</span> <span class="st">'SCRAN'</span>, 
-                              test <span class="op">=</span> <span class="st">'MAST'</span>, 
-                              clust.method <span class="op">=</span> <span class="st">'metadata'</span>, 
-                              column <span class="op">=</span> <span class="st">"celltype"</span>, 
-                              latent.vars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">'RAW_total.counts'</span>, <span class="st">'original.project'</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<p>For Average Silhouette Width (ASW) when observing clustering (biological effects) we wish to see a higher value. However, when reducing batches we wish to see a more negative value (even a negative value). As you can see, the uncorrected version has a high ASW value which indicates profound batch effects are present. Whereas, we can see the batch correction methods have reducd the batch effects to varying degrees. For example, harmony seems to reduced the batch effect the best across all normalisation methods. Scanorama however performed less successfully. However, you should not use this as an absolute recommendation for which reduction to proceed with.</p>
+<p>From this point, we can continue the analysis as usual, using these integrated reductions to cluster our cells and identify their biological assignments.</p>
+<p>Benchmarking integration is useful since you can evidently witness that integration methods behave differently and produce varying results. IBRAP enables you to benchmark four different techniques and select the best option for your dataset!</p>
 </div>
 </div>
   </div>
@@ -401,7 +339,7 @@
 
 <div class="pkgdown">
   <p></p>
-<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link external-link">pkgdown</a> 1.6.1.9001.</p>
+<p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.2.</p>
 </div>
 
       </footer>
