@@ -32,11 +32,8 @@ perform.harmony(
 
 \item{print.harmony.plot}{Boolean. Should the automatically generated plot be printed? Default = FALSE}
 
-<<<<<<< HEAD
 \item{seed}{Numeric. What should the seed be set as. Default = 1234}
 
-=======
->>>>>>> 810d7c0084d3f20c6f22b5e0fc8fff0259de0f1d
 \item{verbose}{Logical Should function messages be printed?}
 
 \item{...}{Arguments to be passed to harmony::HarmonyMatrix}

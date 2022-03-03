@@ -2,10 +2,9 @@
 % Please edit documentation in R/benchmark.intergation.R
 \name{benchmark.integration}
 \alias{benchmark.integration}
-\alias{benchmark.intergation}
 \title{Benchmarks the cluster assignmentws}
 \usage{
-benchmark.intergation(
+benchmark.integration(
   object,
   batch,
   assays,
@@ -34,7 +33,7 @@ Benchmarking scores for the supplied integrations
 Adopting scones method of Average Silhouette Width determination between batches. A depleted value is superior.
 }
 \examples{
-object <- benchmark.intergation(object = object, 
+object <- benchmark.integration(object = object, 
                                           batch = 'original.project', 
                                           assays = c('SCT','SCRAN','SCANPY'), 
                                           reduction = c('pca_umap', 'pca_harmony_umap', 

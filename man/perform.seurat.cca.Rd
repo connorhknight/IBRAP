@@ -65,11 +65,8 @@ perform.seurat.integration(
 
 \item{integrate.eps}{Numerical. Error bound on the neighbor finding algorithm (from RANN)}
 
-<<<<<<< HEAD
 \item{reduction.save.suffix.}{Character. What should be added as a suffix to reduction name. Default = ''}
 
-=======
->>>>>>> 810d7c0084d3f20c6f22b5e0fc8fff0259de0f1d
 \item{max.features.}{Numerical. The maximum number of features to use when specifying the neighborhood search space in the anchor filtering. Default = 200}
 
 \item{n.tree}{Numerical. More trees gives higher precision when using annoy approximate nearest neighbor search. Default = 50}

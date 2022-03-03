@@ -24,7 +24,7 @@
 #'                                                            'scanorama', 'bbknn', 'cca'), 
 #'                                           n.components = 2)
 #'
-#' @export
+#' @export benchmark.integration
 
 benchmark.integration <- function(object, batch, assays, reduction, result.names, n.components = 2) {
   
