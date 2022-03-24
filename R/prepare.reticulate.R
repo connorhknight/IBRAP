@@ -9,7 +9,7 @@
 
 prepare.reticulate <- function() {
   
-  reticulate::py_install('scrublet', pip = T)
+  reticulate::py_install('scrublet==0.2.3', pip = T)
   
   if(isFALSE(reticulate::py_module_available('scrublet'))) {
     
@@ -65,7 +65,7 @@ prepare.reticulate <- function() {
   
   ####################################################
   
-  reticulate::py_install('louvain', pip = T)
+  reticulate::py_install('louvain==0.7.1', pip = T)
   
   if(isFALSE(reticulate::py_module_available('louvain'))) {
     
@@ -79,7 +79,7 @@ prepare.reticulate <- function() {
   
   ####################################################
   
-  reticulate::py_install('leiden', pip = T)
+  reticulate::py_install('leiden==1.0.1', pip = T)
   
   if(isFALSE(reticulate::py_module_available('leiden'))) {
     
@@ -93,7 +93,7 @@ prepare.reticulate <- function() {
   
   ####################################################
   
-  reticulate::py_install('leidenalg', pip = T)
+  reticulate::py_install('leidenalg==0.8.8', pip = T)
   
   if(isFALSE(reticulate::py_module_available('leidenalg'))) {
     

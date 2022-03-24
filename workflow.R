@@ -6,7 +6,7 @@ setwd( "/Users/knight05/work/Results/scRNA-seq/IBRAP_development/IBRAPwithdecont
 files.sources = list.files()
 sapply(files.sources, source)
 
-options(future.globals.maxSize = 4000 * 1024^2)
+options(future.globals.maxSize = 10000 * 1024^2)
 
 panc8 <- LoadData('panc8')
 
@@ -54,7 +54,7 @@ pancreas <- add.cell.cycle(object = pancreas,
                            transform = T, 
                            verbose = T)
 
-pancreas <- perform.sct(object = pancreas, verbose = T, conserve.memory=T)
+pancreas <- perform.sct(object = pancreas, verbose = T)
 
 pancreas <- perform.scran(object = pancreas, vars.to.regress = 'RAW_total.counts', verbose = T)
 
@@ -74,7 +74,7 @@ plot.QC.scatter(object = pancreas,
                 y = 'SCT_total.features', 
                 split.by = 'Phase')
 
-pancreas <- perform.pca(object = pancreas, assay = c('SCT','SCRAN','SCANPY'), print.variance = F)
+pancreas <- perform.pca(object = pancreas, assay = c('SCT','SCRAN','SCANPY','TPM'), print.variance = F)
 
 # pancreas <- perform.bbknn(object = pancreas, assay = c('SCT','SCRAN','SCANPY','TPM'), 
 #                           reduction = 'PCA', batch = 'original.project', verbose = T)
