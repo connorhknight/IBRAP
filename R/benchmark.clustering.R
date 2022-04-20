@@ -324,7 +324,7 @@ benchmark.clustering <- function(object,
                                'ASW',
                                'N_CLUSTERS')
         
-        object@methods[[l]]@benchmark_results[[k]]$clustering <- as.data.frame(results)
+        object@methods[[l]]@benchmark_results$clustering[[paste0(k,'_benchmarked')]] <- as.data.frame(results)
         
       } else {
         
@@ -334,7 +334,7 @@ benchmark.clustering <- function(object,
         
         colnames(results) <- c('ASW', 'DUNN_INDEX', 'CONNECTIVITY','N_CLUSTERS')
         
-        object@methods[[l]]@benchmark_results$clustering[[k]] <- as.data.frame(results)
+        object@methods[[l]]@benchmark_results$clustering[[paste0(k,'_benchmarked')]] <- as.data.frame(results)
         
       }
       

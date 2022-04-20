@@ -33,8 +33,8 @@ CELseq2 and Smartseq2 which contain 2285 and 2394 cells, respectively.
 
 You can download the data for this tutorial using the following links:
 
-https://www.dropbox.com/s/heughk2kl0lg6qc/smartseq2.rds?dl=0
-https://www.dropbox.com/s/txlq7875wkthb3y/celseq2.rds?dl=0
+https://www.dropbox.com/s/zfurz0oc05d4uug/smartseq2.rds?dl=0
+https://www.dropbox.com/s/ug2di44habhkdn3/celseq2.rds?dl=0
 
 ## Creating IBRAP objects
 

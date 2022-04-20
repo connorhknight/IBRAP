@@ -389,7 +389,7 @@ perform.nn <- function(object,
           
         }
 
-        conn <- seuobj@graphs[[2]]
+        conn <- as(object = seuobj@graphs[[2]], Class = 'dgCMatrix')
         
         if('_' %in% unlist(strsplit(x = neighbour.name.suffix, split = ''))) {
           

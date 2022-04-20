@@ -4,7 +4,7 @@
 \alias{plot.dot.plot}
 \title{Plots a dot plot of gene expression}
 \usage{
-\method{plot}{dot.plot}(object, assay, slot = "normalised", clust.method, column, features)
+\method{plot}{dot.plot}(object, assay, slot = "normalised", clust.method, column, features, ...)
 }
 \arguments{
 \item{object}{An object of IBRAP class}
