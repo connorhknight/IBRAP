@@ -291,6 +291,8 @@ perform.graph.cluster <- function(object,
             
             tmp <- rbind(tmp, tmp_sub)
             
+            tmp <- tmp[!duplicated(tmp),]
+            
           }
           
         }
