@@ -153,7 +153,7 @@ perform.scran <- function(object,
   
   sce <- scran::computeSumFactors(sce, clusters=clusters, max.cluster.size=max.cluster.size, assay.type=slot)
   sce <- scuttle::logNormCounts(x = sce, log = F, center.size.factors=center_size_factors, exprs_values=slot)
-  .counts <- SummarizedExperiment::assay(sce, 'normcounts')
+  .counts <- object@methods[[assay]][[slot]]
   SummarizedExperiment::assay(sce, 'logcounts') <- log2(.counts + 1)
   .normalised <- SummarizedExperiment::assay(sce, 'logcounts')
   

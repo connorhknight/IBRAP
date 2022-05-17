@@ -259,6 +259,8 @@ perform.tpm <- function(object,
   
   object@sample_metadata <- cbind(object@sample_metadata, cell_metadata(assay = as.matrix(.normalised), col.prefix = paste0('TPM', new.assay.suffix)))
   
+  .counts <- object@methods[[assay]][[slot]]
+  
   object@methods[[paste0('TPM', new.assay.suffix)]] <- new(Class = 'methods',
                                                            counts = Matrix::Matrix(.counts, sparse = T), 
                                                            normalised = Matrix::Matrix(.normalised, sparse = T), 

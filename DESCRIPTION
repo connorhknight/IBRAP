@@ -54,7 +54,6 @@ Imports:
     ggrepel (>= 0.9.1),
     MAST (>= 1.16.0),
     shiny (>= 1.7.1),
-    destiny (>= 3.4.0),
     progress (>= 1.2.2),
     ggpubr (>= 0.4.0),
     usethis (>= 2.1.3),

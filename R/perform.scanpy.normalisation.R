@@ -240,7 +240,7 @@ perform.scanpy <- function(object,
     sc$pp$normalize_total(adata = scobj)
   }
   
-  .counts <- t(scobj$X)
+  .counts <- object@methods[[assay]][[slot]]
   rownames(.counts) <- rownames(object@methods$RAW@counts)
   colnames(.counts) <- colnames(object@methods$RAW@counts)
   
