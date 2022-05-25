@@ -109,7 +109,7 @@ perform.sct <- function(object,
   .counts <- as(object = as_matrix(seuratobj@assays$SCT@counts), Class = 'dgCMatrix')
   print('.')
   .normalised <- as(as_matrix(seuratobj@assays$SCT@data), Class = 'dgCMatrix')
-  print()
+  print('.')
   .norm.scaled <- seuratobj@assays$SCT@scale.data
   print('.')
   feat.meta <- feature_metadata(assay = as_matrix(.counts), col.prefix = paste0('SCT', new.assay.suffix))
