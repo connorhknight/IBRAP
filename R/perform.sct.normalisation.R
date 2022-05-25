@@ -103,19 +103,19 @@ perform.sct <- function(object,
   }
   
   seuratobj <- suppressWarnings(Seurat::SCTransform(object = seuratobj, verbose = verbose, seed.use = NULL, ...))
-  
+  print('.')
   .highly.variable.genes <- as.character(seuratobj@assays$SCT@var.features)
-  
+  print('.')
   .counts <- as(object = as_matrix(seuratobj@assays$SCT@counts), Class = 'dgCMatrix')
-  
+  print('.')
   .normalised <- as(as_matrix(seuratobj@assays$SCT@data), Class = 'dgCMatrix')
-  
+  print('.')
   .norm.scaled <- as_matrix(seuratobj@assays$SCT@scale.data)
-  
+  print('.')
   feat.meta <- feature_metadata(assay = as_matrix(.counts), col.prefix = paste0('SCT', new.assay.suffix))
-  
+  print('.')
   object@sample_metadata <- cbind(object@sample_metadata, cell_metadata(assay = as_matrix(.normalised), col.prefix = paste0('SCT', new.assay.suffix)))
-  
+  print('.')
   if('_' %in% unlist(strsplit(x = new.assay.suffix, split = ''))) {
     
     if(isTRUE(verbose)) {
@@ -125,7 +125,7 @@ perform.sct <- function(object,
     }
     
     new.assay.suffix <- sub(pattern = '_', replacement = '-', x = new.assay.suffix)
-    
+    print('.')
   }
   
   object@methods[[paste0('SCT', new.assay.suffix)]] <- new(Class = 'methods',
@@ -134,7 +134,7 @@ perform.sct <- function(object,
                                           norm.scaled = .norm.scaled,
                                           highly.variable.genes = .highly.variable.genes,
                                           feature_metadata = feat.meta)
-  
+  print('.')
   if(isTRUE(verbose)) {
     
     cat(crayon::cyan(paste0(Sys.time(), ': SCT normalisation completed\n')))
