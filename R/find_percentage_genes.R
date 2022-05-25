@@ -85,7 +85,7 @@ find_percentage_genes <- function(object,
     
   }
   
-  mat <- as.matrix(object@methods[[assay]][[slot]])
+  mat <- as_matrix(object@methods[[assay]][[slot]])
   
   subbed <- mat[grep(pattern = pattern, x = rownames(mat)),]
   

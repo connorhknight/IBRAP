@@ -398,7 +398,7 @@ perform.seurat.integration <- function(object,
                                         original.project = 'tmp', 
                                         add.suffix = F)
     
-    tmp.obj@methods[['RAW']]@norm.scaled <- as.matrix(combined@assays$integrated@scale.data)
+    tmp.obj@methods[['RAW']]@norm.scaled <- as_matrix(combined@assays$integrated@scale.data)
     
     tmp.obj@methods[['RAW']]@highly.variable.genes <- combined@assays$integrated@var.features
     

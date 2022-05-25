@@ -91,23 +91,6 @@ perform.sct <- function(object,
     
   }
   
-  as_matrix <- function(mat){
-    
-    tmp <- matrix(data=0L, nrow = mat@Dim[1], ncol = mat@Dim[2])
-    
-    row_pos <- mat@i+1
-    col_pos <- findInterval(seq(mat@x)-1,mat@p[-1])+1
-    val <- mat@x
-    
-    for (i in seq_along(val)){
-      tmp[row_pos[i],col_pos[i]] <- val[i]
-    }
-    
-    row.names(tmp) <- mat@Dimnames[[1]]
-    colnames(tmp) <- mat@Dimnames[[2]]
-    return(tmp)
-  }
-  
   seuratobj <- suppressWarnings(Seurat::CreateSeuratObject(counts = as_matrix(object@methods[[assay]][[slot]]), project = 'NA'))
   seuratobj@meta.data <- cbind(seuratobj@meta.data, object@sample_metadata)
   
@@ -123,15 +106,15 @@ perform.sct <- function(object,
   
   .highly.variable.genes <- as.character(seuratobj@assays$SCT@var.features)
   
-  .counts <- as(object = as.matrix(seuratobj@assays$SCT@counts), Class = 'dgCMatrix')
+  .counts <- as(object = as_matrix(seuratobj@assays$SCT@counts), Class = 'dgCMatrix')
   
-  .normalised <- as(as.matrix(seuratobj@assays$SCT@data), Class = 'dgCMatrix')
+  .normalised <- as(as_matrix(seuratobj@assays$SCT@data), Class = 'dgCMatrix')
   
-  .norm.scaled <- as.matrix(seuratobj@assays$SCT@scale.data)
+  .norm.scaled <- as_matrix(seuratobj@assays$SCT@scale.data)
   
-  feat.meta <- feature_metadata(assay = as.matrix(.counts), col.prefix = paste0('SCT', new.assay.suffix))
+  feat.meta <- feature_metadata(assay = as_matrix(.counts), col.prefix = paste0('SCT', new.assay.suffix))
   
-  object@sample_metadata <- cbind(object@sample_metadata, cell_metadata(assay = as.matrix(.normalised), col.prefix = paste0('SCT', new.assay.suffix)))
+  object@sample_metadata <- cbind(object@sample_metadata, cell_metadata(assay = as_matrix(.normalised), col.prefix = paste0('SCT', new.assay.suffix)))
   
   if('_' %in% unlist(strsplit(x = new.assay.suffix, split = ''))) {
     

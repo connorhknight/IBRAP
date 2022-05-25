@@ -27,7 +27,7 @@ setMethod(f = 'merge', signature = 'IBRAP',
             for(i in 1:length(items)) {
               
               column.names[[i]] <- colnames(items[[i]]@methods[[1]]@counts)
-              counts.list[[i]] <- as.matrix(items[[i]]@methods[[1]]@counts)[mutual_features,]
+              counts.list[[i]] <- as_matrix(items[[i]]@methods[[1]]@counts)[mutual_features,]
               sample.list[[i]] <- as.data.frame(items[[i]]@sample_metadata)
               
             }
@@ -93,7 +93,7 @@ setMethod(f = 'merge', signature = 'IBRAP',
             
             .counts[is.na(.counts)] <- 0
             
-            .counts <- Matrix::Matrix(data = as.matrix(.counts), sparse = T)
+            .counts <- Matrix::Matrix(data = as_matrix(.counts), sparse = T)
             
             .sample_metadata[match(colnames(.counts), rownames(.sample_metadata)),]
             .sample_metadata[,which(grepl(pattern = 'total.counts', x = colnames(.sample_metadata)))] <- samp.met[,1]

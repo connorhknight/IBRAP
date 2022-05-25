@@ -170,7 +170,7 @@ perform.decontX <- function(counts,
 
   clean.matrix <- round(clean.matrix)
   
-  zero.samples <- Matrix::colSums(as.matrix(clean.matrix)) > 0
+  zero.samples <- Matrix::colSums(as_matrix(clean.matrix)) > 0
   
   clean.matrix <- clean.matrix[,zero.samples]
   

@@ -38,7 +38,7 @@ createIBRAPobject <- function(counts,
     
   }
   
-  counts <- as.matrix(x = counts)
+  counts <- as_matrix(x = counts)
   
   if(!is(object = counts, class2 = 'matrix')) {
     

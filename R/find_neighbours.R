@@ -318,7 +318,7 @@ perform.nn <- function(object,
         red.key <- reduction[count]
         dim <-dims.use[[count]]
         
-        seuobj@reductions[[red.key]] <- suppressWarnings(Seurat::CreateDimReducObject(embeddings = as.matrix(red), key = paste0(red.key, '_')))
+        seuobj@reductions[[red.key]] <- suppressWarnings(Seurat::CreateDimReducObject(embeddings = as_matrix(red), key = paste0(red.key, '_')))
         
         if(dim != 0) {
           
@@ -428,7 +428,7 @@ perform.nn <- function(object,
         sc <- reticulate::import('scanpy')
         pd <- reticulate::import('pandas')
         
-        scobj <- sc$AnnData(X = t(as.matrix(object@methods[[2]]@norm.scaled)))
+        scobj <- sc$AnnData(X = t(as_matrix(object@methods[[2]]@norm.scaled)))
         scobj$obs_names <- as.factor(colnames(object@methods[[2]]@norm.scaled))
         scobj$var_names <- as.factor(rownames(object@methods[[2]]@norm.scaled))
         
@@ -442,7 +442,7 @@ perform.nn <- function(object,
         red.key <- reduction[count]
         dim <-dims.use[[count]]
         
-        scobj$obsm$update(X_pca = as.matrix(red))
+        scobj$obsm$update(X_pca = as_matrix(red))
         
         sc$pp$neighbors(adata = scobj, 
                         n_neighbors = as.integer(n_neighbors), 
@@ -467,7 +467,7 @@ perform.nn <- function(object,
             
           }
 
-          diffmap <- as.matrix(scobj$obsm[['X_diffmap']])
+          diffmap <- as_matrix(scobj$obsm[['X_diffmap']])
           
           DC_names <- list()
           
@@ -494,7 +494,7 @@ perform.nn <- function(object,
           
         }
 
-        conn <- as(as.matrix(scobj$obsp[['connectivities']]), 'dgCMatrix')
+        conn <- as(as_matrix(scobj$obsp[['connectivities']]), 'dgCMatrix')
         colnames(conn) <- colnames(object@methods[[2]]@norm.scaled)
         rownames(conn) <- colnames(object@methods[[2]]@norm.scaled)
         
@@ -512,7 +512,7 @@ perform.nn <- function(object,
         
         object@methods[[p]]@neighbours[[paste0(g, '_NN', neighbour.name.suffix)]][['connectivities']] <- conn
         
-        dis <- as(as.matrix(scobj$obsp[['distances']]), 'dgCMatrix')
+        dis <- as(as_matrix(scobj$obsp[['distances']]), 'dgCMatrix')
         colnames(dis) <- colnames(object@methods[[2]]@norm.scaled)
         rownames(dis) <- colnames(object@methods[[2]]@norm.scaled)
         
@@ -568,7 +568,7 @@ perform.nn <- function(object,
       red.key <- reduction[count]
       dim <-dims.use[[count]]
       
-      seuobj@reductions[[red.key]] <- suppressWarnings(Seurat::CreateDimReducObject(embeddings = as.matrix(red), key = paste0(red.key, '_')))
+      seuobj@reductions[[red.key]] <- suppressWarnings(Seurat::CreateDimReducObject(embeddings = as_matrix(red), key = paste0(red.key, '_')))
       
       if(dim != 0) {
         

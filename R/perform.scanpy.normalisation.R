@@ -208,7 +208,7 @@ perform.scanpy <- function(object,
   
   pd <- reticulate::import('pandas')
   
-  scobj <- sc$AnnData(X = t(as.matrix(object@methods[[assay]][[slot]])))
+  scobj <- sc$AnnData(X = t(as_matrix(object@methods[[assay]][[slot]])))
   scobj$obs_names <- as.factor(colnames(object@methods[[assay]][[slot]]))
   scobj$var_names <- as.factor(rownames(object@methods[[assay]][[slot]]))
   
@@ -371,7 +371,7 @@ perform.scanpy <- function(object,
 
   rownames(.norm.scaled) <- .highly.variable.genes
   
-  object@sample_metadata <- cbind(object@sample_metadata, cell_metadata(assay = as.matrix(.normalised), col.prefix = paste0('SCANPY', new.assay.suffix)))
+  object@sample_metadata <- cbind(object@sample_metadata, cell_metadata(assay = as_matrix(.normalised), col.prefix = paste0('SCANPY', new.assay.suffix)))
   
   if('_' %in% unlist(strsplit(x = new.assay.suffix, split = ''))) {
     
@@ -388,7 +388,7 @@ perform.scanpy <- function(object,
   object@methods[[paste0('SCANPY', new.assay.suffix)]] <- new(Class = 'methods',
                                                               counts = as(.counts, 'dgCMatrix'), 
                                                               normalised = as(.normalised, 'dgCMatrix'), 
-                                                              norm.scaled = as.matrix(.norm.scaled),
+                                                              norm.scaled = as_matrix(.norm.scaled),
                                                               highly.variable.genes = .highly.variable.genes,
                                                               feature_metadata = feat.metadata)
   

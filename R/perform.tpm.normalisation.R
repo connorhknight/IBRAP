@@ -188,7 +188,7 @@ perform.tpm <- function(object,
     
   }
   
-  mat <- as.matrix(object@methods[[assay]][[slot]])
+  mat <- as_matrix(object@methods[[assay]][[slot]])
   
   mat <- mat[intersect(rownames(mat), gene.length.subset$external_gene_name),]
   
@@ -257,14 +257,14 @@ perform.tpm <- function(object,
   
   feat.meta <- feature_metadata(assay = .counts, col.prefix = paste0('SCRAN', new.assay.suffix))
   
-  object@sample_metadata <- cbind(object@sample_metadata, cell_metadata(assay = as.matrix(.normalised), col.prefix = paste0('TPM', new.assay.suffix)))
+  object@sample_metadata <- cbind(object@sample_metadata, cell_metadata(assay = as_matrix(.normalised), col.prefix = paste0('TPM', new.assay.suffix)))
   
   .counts <- object@methods[[assay]][[slot]]
   
   object@methods[[paste0('TPM', new.assay.suffix)]] <- new(Class = 'methods',
                                                            counts = Matrix::Matrix(.counts, sparse = T), 
                                                            normalised = Matrix::Matrix(.normalised, sparse = T), 
-                                                           norm.scaled = as.matrix(.norm.scaled),
+                                                           norm.scaled = as_matrix(.norm.scaled),
                                                            highly.variable.genes = .highly.variable.genes,
                                                            feature_metadata = feat.meta)
   

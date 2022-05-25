@@ -99,14 +99,14 @@ perform.sc3.slot.cluster <- function(object,
     
     if(is.null(HVGs)) {
       
-      temp.2 <- SingleCellExperiment::SingleCellExperiment(list('counts' = as.matrix(object@methods[[p]]@counts[rownames(mat),]), 'logcounts' = as.matrix(mat)))
+      temp.2 <- SingleCellExperiment::SingleCellExperiment(list('counts' = as_matrix(object@methods[[p]]@counts[rownames(mat),]), 'logcounts' = as_matrix(mat)))
       SummarizedExperiment::rowData(temp.2)$feature_symbol <- rownames(temp.2)
       temp.2 <- temp.2[!duplicated(SummarizedExperiment::rowData(temp.2)$feature_symbol), ]
       temp.2 <- SC3::sc3_prepare(temp.2, gene_filter = TRUE, n_cores = n.core)
       
     } else {
       
-      temp.2 <- SingleCellExperiment::SingleCellExperiment(list('logcounts' = as.matrix(mat)))
+      temp.2 <- SingleCellExperiment::SingleCellExperiment(list('logcounts' = as_matrix(mat)))
       SummarizedExperiment::rowData(temp.2)$feature_symbol <- rownames(temp.2)
       temp.2 <- temp.2[!duplicated(SummarizedExperiment::rowData(temp.2)$feature_symbol), ]
       temp.2 <- SC3::sc3_prepare(temp.2, gene_filter = FALSE, n_cores = n.core)

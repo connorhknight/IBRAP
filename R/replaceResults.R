@@ -58,7 +58,7 @@ replaceResults <- function(object, assay, item.to.replace, replacement.item) {
     
     if(!is.matrix(replacement.item)) {
       
-      replacement.item <- as.matrix(replacement.item)
+      replacement.item <- as_matrix(replacement.item)
       
     }
     

@@ -112,7 +112,7 @@ perform.pca <- function(object,
       
     }
     
-    mat <- as.matrix(object@methods[[t]][[slot]][rownames(object@methods[[t]][[slot]]) %in% object@methods[[t]]@highly.variable.genes,])
+    mat <- as_matrix(object@methods[[t]][[slot]][rownames(object@methods[[t]][[slot]]) %in% object@methods[[t]]@highly.variable.genes,])
     
     if(isTRUE(verbose)) {
       
@@ -132,13 +132,13 @@ perform.pca <- function(object,
         
       }
 
-      object@methods[[t]]@computational_reductions[[reduction.save]] <- as.matrix(a$rotated[,1:n.pcs])
+      object@methods[[t]]@computational_reductions[[reduction.save]] <- as_matrix(a$rotated[,1:n.pcs])
       
     } else if (ass == 'SCANPY') {
       
       sc <- reticulate::import('scanpy')
       
-      scobj <- sc$AnnData(X = t(as.matrix(object@methods[[t]][['norm.scaled']])))
+      scobj <- sc$AnnData(X = t(as_matrix(object@methods[[t]][['norm.scaled']])))
       scobj$obs_names <- as.factor(colnames(object@methods[[t]][['norm.scaled']]))
       scobj$var_names <- as.factor(rownames(object@methods[[t]][['norm.scaled']]))
       
@@ -167,7 +167,7 @@ perform.pca <- function(object,
       
     }
 
-    object@methods[[t]]@computational_reductions[[reduction.save]] <- as.matrix(tmp)
+    object@methods[[t]]@computational_reductions[[reduction.save]] <- as_matrix(tmp)
       
     } else {
       
@@ -179,7 +179,7 @@ perform.pca <- function(object,
         
       }
 
-      object@methods[[t]]@computational_reductions[[reduction.save]] <- as.matrix(a$rotated[,1:n.pcs])
+      object@methods[[t]]@computational_reductions[[reduction.save]] <- as_matrix(a$rotated[,1:n.pcs])
       
     }
 
