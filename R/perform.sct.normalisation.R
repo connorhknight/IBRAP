@@ -103,19 +103,19 @@ perform.sct <- function(object,
   }
   
   seuratobj <- suppressWarnings(Seurat::SCTransform(object = seuratobj, verbose = verbose, seed.use = NULL, ...))
-  print('.')
+
   .highly.variable.genes <- as.character(seuratobj@assays$SCT@var.features)
-  print('.')
+
   .counts <- as(object = as_matrix(seuratobj@assays$SCT@counts), Class = 'dgCMatrix')
-  print('.')
+
   .normalised <- as(as_matrix(seuratobj@assays$SCT@data), Class = 'dgCMatrix')
-  print('.')
+
   .norm.scaled <- seuratobj@assays$SCT@scale.data
-  print('.')
+
   feat.meta <- feature_metadata(assay = as_matrix(.counts), col.prefix = paste0('SCT', new.assay.suffix))
-  print('.')
+
   object@sample_metadata <- cbind(object@sample_metadata, cell_metadata(assay = as_matrix(.normalised), col.prefix = paste0('SCT', new.assay.suffix)))
-  print('.')
+
   if('_' %in% unlist(strsplit(x = new.assay.suffix, split = ''))) {
     
     if(isTRUE(verbose)) {
