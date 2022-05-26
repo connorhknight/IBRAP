@@ -150,12 +150,17 @@ perform.scran <- function(object,
     cat(crayon::cyan(paste0(Sys.time(), ': quickCluster completed\n')))
     
   }
-  
+  print('.')
   sce <- scran::computeSumFactors(sce, clusters=clusters, max.cluster.size=max.cluster.size, assay.type=slot)
+  print('.')
   sce <- scuttle::logNormCounts(x = sce, log = F, center.size.factors=center_size_factors, exprs_values=slot)
+  print('.')
   .counts <- object@methods[[assay]][[slot]]
+  print('.')
   SummarizedExperiment::assay(sce, 'logcounts') <- log2(.counts + 1)
+  print('.')
   .normalised <- SummarizedExperiment::assay(sce, 'logcounts')
+  print('.')
   
   if(isTRUE(verbose)) {
     
