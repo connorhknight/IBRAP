@@ -371,7 +371,7 @@ perform.scanpy <- function(object,
 
   rownames(.norm.scaled) <- .highly.variable.genes
   
-  object@sample_metadata <- cbind(object@sample_metadata, cell_metadata(assay = as_matrix(.normalised), col.prefix = paste0('SCANPY', new.assay.suffix)))
+  object@sample_metadata <- cbind(object@sample_metadata, cell_metadata(assay = .normalised, col.prefix = paste0('SCANPY', new.assay.suffix)))
   
   if('_' %in% unlist(strsplit(x = new.assay.suffix, split = ''))) {
     
@@ -388,7 +388,7 @@ perform.scanpy <- function(object,
   object@methods[[paste0('SCANPY', new.assay.suffix)]] <- new(Class = 'methods',
                                                               counts = as(.counts, 'dgCMatrix'), 
                                                               normalised = as(.normalised, 'dgCMatrix'), 
-                                                              norm.scaled = as_matrix(.norm.scaled),
+                                                              norm.scaled = .norm.scaled,
                                                               highly.variable.genes = .highly.variable.genes,
                                                               feature_metadata = feat.metadata)
   
