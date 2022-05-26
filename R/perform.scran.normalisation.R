@@ -157,7 +157,7 @@ perform.scran <- function(object,
   print('.')
   .counts <- object@methods[[assay]][[slot]]
   print('.')
-  SummarizedExperiment::assay(sce, 'logcounts') <- log2(.counts + 1)
+  SummarizedExperiment::assay(sce, 'logcounts') <- log2(as_matrix(.counts) + 1)
   print('.')
   .normalised <- SummarizedExperiment::assay(sce, 'logcounts')
   print('.')
