@@ -253,9 +253,9 @@ perform.scanpy <- function(object,
       cat(crayon::cyan(paste0(Sys.time(), ': log1 transforming data\n')))
       
     }
-
+    print('.')
     sc$pp$log1p(scobj)
-    
+    print('.')
   } else if(isFALSE(log1)) {
     
     if(isTRUE(verbose)) {
@@ -267,11 +267,13 @@ perform.scanpy <- function(object,
     scobj$X <- log2(scobj$X+1)
     
   }
-  
+  print('.')
   .normalised <- t(scobj$X)
+  print('.')
   rownames(.normalised) <- rownames(object@methods$RAW@counts)
+  print('.')
   colnames(.normalised) <- colnames(object@methods$RAW@counts)
-  
+  print('.')
   if(isTRUE(verbose)) {
     
     cat(crayon::cyan(paste0(Sys.time(), ': computing highly variable genes\n')))
