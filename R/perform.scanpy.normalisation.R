@@ -268,7 +268,9 @@ perform.scanpy <- function(object,
     
   }
   print('.')
-  .normalised <- t(scobj$X)
+  iso <- scobj$X
+  print('.')
+  .normalised <- t(iso)
   print('.')
   rownames(.normalised) <- rownames(object@methods$RAW@counts)
   print('.')
