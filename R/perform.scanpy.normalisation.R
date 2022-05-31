@@ -209,7 +209,9 @@ perform.scanpy <- function(object,
   pd <- reticulate::import('pandas')
   print('.')
   scobj <- sc$AnnData(X = as(as_matrix_transpose(object@methods[[assay]][[slot]])), 'dgCMatrix')
+  print('.')
   scobj$obs_names <- as.factor(colnames(object@methods[[assay]][[slot]]))
+  print('.')
   scobj$var_names <- as.factor(rownames(object@methods[[assay]][[slot]]))
   print('.')
   if(length(names(object@sample_metadata)) >= 1) {
