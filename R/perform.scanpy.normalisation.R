@@ -208,7 +208,7 @@ perform.scanpy <- function(object,
   print('.')
   pd <- reticulate::import('pandas')
   print('.')
-  scobj <- sc$AnnData(X = as(as_matrix_transpose(object@methods[[assay]][[slot]])), 'dgCMatrix')
+  scobj <- sc$AnnData(X = as(as_matrix_transpose(object@methods[[assay]][[slot]]), 'dgCMatrix'))
   print('.')
   scobj$obs_names <- as.factor(colnames(object@methods[[assay]][[slot]]))
   print('.')
