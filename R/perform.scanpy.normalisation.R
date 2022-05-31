@@ -208,7 +208,7 @@ perform.scanpy <- function(object,
   
   pd <- reticulate::import('pandas')
   
-  scobj <- sc$AnnData(X = t(as_matrix(object@methods[[assay]][[slot]])))
+  scobj <- sc$AnnData(X = as(as_matrix_transpose(object@methods[[assay]][[slot]])), 'dgCMatrix')
   scobj$obs_names <- as.factor(colnames(object@methods[[assay]][[slot]]))
   scobj$var_names <- as.factor(rownames(object@methods[[assay]][[slot]]))
   
@@ -253,9 +253,9 @@ perform.scanpy <- function(object,
       cat(crayon::cyan(paste0(Sys.time(), ': log1 transforming data\n')))
       
     }
-    print('.')
+
     sc$pp$log1p(scobj)
-    print('.')
+
   } else if(isFALSE(log1)) {
     
     if(isTRUE(verbose)) {
@@ -267,15 +267,13 @@ perform.scanpy <- function(object,
     scobj$X <- log2(scobj$X+1)
     
   }
-  print('.')
+  
   iso <- scobj$X
-  print('.')
-  .normalised <- t(iso)
-  print('.')
+  
+  .normalised <- as(as_matrix_transpose(iso), 'dgCMatrix')
   rownames(.normalised) <- rownames(object@methods$RAW@counts)
-  print('.')
   colnames(.normalised) <- colnames(object@methods$RAW@counts)
-  print('.')
+  
   if(isTRUE(verbose)) {
     
     cat(crayon::cyan(paste0(Sys.time(), ': computing highly variable genes\n')))
