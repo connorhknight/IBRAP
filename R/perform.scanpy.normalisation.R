@@ -327,7 +327,7 @@ perform.scanpy <- function(object,
 
   .highly.variable.genes <- rownames(object@methods$RAW@counts)[scobj$var[['highly_variable']]]
 
-  scobj2 <- sc$AnnData(X = t(.normalised[scobj$var$highly_variable,]))
+  scobj2 <- sc$AnnData(X = iso[scobj$var$highly_variable,])
 
   scobj2$var_names <- as.factor(rownames(object@methods$RAW@counts)[scobj$var$highly_variable])
 
