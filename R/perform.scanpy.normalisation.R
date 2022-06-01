@@ -326,25 +326,25 @@ perform.scanpy <- function(object,
                                 flavor = as.character(flavor))
     
   }
-  print('.')
+  
   .highly.variable.genes <- rownames(object@methods$RAW@counts)[scobj$var[['highly_variable']]]
-  print('.')
+  
   scobj2 <- sc$AnnData(X = iso[,scobj$var$highly_variable])
-  print('.')
+  
   scobj2$var_names <- as.factor(rownames(object@methods$RAW@counts)[scobj$var$highly_variable])
-  print('.')
+  
   scobj2$obs_names <- as.factor(colnames(object@methods$RAW@counts))
-  print('.')
+  
   if(!is.null(vars.to.regress)) {
     
     if(length(vars.to.regress) > 1) {
       
       scobj2$obs <- pd$DataFrame(data = as.data.frame(object@sample_metadata[,vars.to.regress]))
-      print('.')
+      
     } else {
       
       scobj2$obs[,vars.to.regress] <- object@sample_metadata[,vars.to.regress]
-      print('.')
+      
     }
     
   }
