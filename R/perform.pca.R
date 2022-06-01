@@ -112,7 +112,15 @@ perform.pca <- function(object,
       
     }
     
-    mat <- as_matrix(object@methods[[t]][[slot]][rownames(object@methods[[t]][[slot]]) %in% object@methods[[t]]@highly.variable.genes,])
+    if(is(object = object@methods[[t]][[slot]], class2 = 'dgCMatrix')) {
+      
+      mat <- as_matrix(object@methods[[t]][[slot]][rownames(object@methods[[t]][[slot]]) %in% object@methods[[t]]@highly.variable.genes,])
+      
+    } else {
+      
+      mat <- object@methods[[t]][[slot]][rownames(object@methods[[t]][[slot]]) %in% object@methods[[t]]@highly.variable.genes,]
+      
+    }
     
     if(isTRUE(verbose)) {
       
