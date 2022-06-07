@@ -93,7 +93,7 @@ setMethod(f = 'merge', signature = 'IBRAP',
             
             .counts[is.na(.counts)] <- 0
             
-            .counts <- Matrix::Matrix(data = as_matrix(.counts), sparse = T)
+            .counts <- Matrix::Matrix(data = .counts, sparse = T)
             
             .sample_metadata[match(colnames(.counts), rownames(.sample_metadata)),]
             .sample_metadata[,which(grepl(pattern = 'total.counts', x = colnames(.sample_metadata)))] <- samp.met[,1]
