@@ -156,12 +156,6 @@ replaceResults <- function(object, assay, item.to.replace, replacement.item) {
   
   else if ('intergration' %in% names(object@methods[[assay]]@benchmark_results)) {
     
-    if(!is.data.frame(replacement.item)) {
-      
-      replacement.item <- as.data.frame(replacement.item)
-      
-    }
-    
     object@methods[[assay]]@benchmark_results$integration[[item.to.replace]] <- replacement.item
     
   } else {

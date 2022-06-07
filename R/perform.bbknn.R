@@ -333,7 +333,7 @@ perform.bbknn <- function(object,
         
         cat(crayon::cyan(paste0(Sys.time(), ': diffusion map calculated\n')))
         
-        diffmap <- as_matrix(scobj$obsm[['X_diffmap']])
+        diffmap <- as.matrix(scobj$obsm[['X_diffmap']])
         
         DC_names <- list()
         
@@ -361,8 +361,8 @@ perform.bbknn <- function(object,
       distances <- scobj$obsp[['distances']]
       colnames(distances) <- colnames(object)
       rownames(distances) <- colnames(object)
-      connectivities <- as(object = as_matrix(connectivities), Class = 'dgCMatrix')
-      distances <- as(object = as_matrix(distances), Class = 'dgCMatrix')
+      connectivities <- as(object = connectivities, Class = 'dgCMatrix')
+      distances <- as(object = distances, Class = 'dgCMatrix')
       
       graph.list[['connectivities']] <- connectivities
       graph.list[['distances']] <- distances

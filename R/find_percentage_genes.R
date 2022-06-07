@@ -85,7 +85,15 @@ find_percentage_genes <- function(object,
     
   }
   
-  mat <- as_matrix(object@methods[[assay]][[slot]])
+  if(is(object = object@methods[[assay]][[slot]], class2 = 'dgCMatrix')) {
+    
+    mat <- as_matrix(object@methods[[assay]][[slot]])
+    
+  } else if (!is(object = object@methods[[assay]][[slot]], class2 = 'Matrix'){
+    
+    mat <- as.matrix(object@methods[[assay]][[slot]])
+    
+  }
   
   subbed <- mat[grep(pattern = pattern, x = rownames(mat)),]
   
