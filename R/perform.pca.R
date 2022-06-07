@@ -140,7 +140,7 @@ perform.pca <- function(object,
         
       }
 
-      object@methods[[t]]@computational_reductions[[reduction.save]] <- as_matrix(a$rotated[,1:n.pcs])
+      object@methods[[t]]@computational_reductions[[reduction.save]] <- as.matrix(a$rotated[,1:n.pcs])
       
     } else if (ass == 'SCANPY') {
       
@@ -187,7 +187,7 @@ perform.pca <- function(object,
         
       }
 
-      object@methods[[t]]@computational_reductions[[reduction.save]] <- as_matrix(a$rotated[,1:n.pcs])
+      object@methods[[t]]@computational_reductions[[reduction.save]] <- as.matrix(a$rotated[,1:n.pcs])
       
     }
 

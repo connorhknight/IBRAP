@@ -129,7 +129,7 @@ Read10X_output <- function(directory,
     
   }
   
-  mm <- as_matrix(mm)
+  mm <- as_matrix(as(object = mm, Class = 'dgCMatrix'))
   
   return(mm)
 }

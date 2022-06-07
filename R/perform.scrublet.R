@@ -224,7 +224,9 @@ perform.scrublet <- function(counts,
     
   }
   
-  scrub1 <- scrublet$Scrublet(counts_matrix = as.data.frame(as_matrix(t(counts))), 
+  
+  
+  scrub1 <- scrublet$Scrublet(counts_matrix = as.data.frame(as_matrix_transpose(as(object = counts, 'dgCMatrix'))), 
                               total_counts = total_counts, 
                               sim_doublet_ratio = sim_doublet_ratio, 
                               n_neighbors = n_neighbors, 
@@ -304,7 +306,12 @@ perform.scrublet <- function(counts,
     
   }
   
-  counts <- as_matrix(counts)
+  if(!class(counts)[1] %in% c('matrix')) {
+    
+    counts <- as_matrix(counts)
+    
+  }
+
   counts <- counts[,!res1[[2]]]
   counts <- Matrix::Matrix(data = counts, sparse = T)
   
