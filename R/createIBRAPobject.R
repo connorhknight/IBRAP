@@ -38,11 +38,9 @@ createIBRAPobject <- function(counts,
     
   }
   
-  counts <- as_matrix(x = counts)
-  
-  if(!is(object = counts, class2 = 'matrix')) {
+  if(!is(object = counts, class2 = 'dgCMatrix')) {
     
-    stop('counts could not be converted into a matrix\n')
+    stop('counts could not be converted into a dgCMatrix\n')
     
   }
  
@@ -151,7 +149,7 @@ createIBRAPobject <- function(counts,
   ##########################################################
   
   first.method <- new('methods', 
-                      counts = Matrix::Matrix(counts, sparse = T),
+                      counts = as(object = counts, Class = 'dgCMatrix'),
                       normalised = as(matrix(nrow = 0, ncol = 0), 'dgCMatrix'),
                       feature_metadata = f.metadata)
   

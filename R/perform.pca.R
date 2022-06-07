@@ -146,7 +146,17 @@ perform.pca <- function(object,
       
       sc <- reticulate::import('scanpy')
       
-      scobj <- sc$AnnData(X = as(as_matrix_transpose(object@methods[[t]][['norm.scaled']]), 'dgCMatrix'))
+      if(is(object@methods[[t]][['norm.scaled']], 'dgCMatrix')) {
+        
+        matrix <- as(as_matrix_transpose(object@methods[[t]][['norm.scaled']]), 'dgCMatrix')
+        
+      } else {
+        
+        matrix <- t(object@methods[[t]][['norm.scaled']])
+        
+      }
+      
+      scobj <- sc$AnnData(X = matrix)
       scobj$obs_names <- as.factor(colnames(object@methods[[t]][['norm.scaled']]))
       scobj$var_names <- as.factor(rownames(object@methods[[t]][['norm.scaled']]))
       
@@ -175,7 +185,7 @@ perform.pca <- function(object,
       
     }
 
-    object@methods[[t]]@computational_reductions[[reduction.save]] <- as_matrix(tmp)
+    object@methods[[t]]@computational_reductions[[reduction.save]] <- as.matrix(tmp)
       
     } else {
       
