@@ -38,7 +38,9 @@ createIBRAPobject <- function(counts,
     
   }
   
-  if(!is(object = counts, class2 = 'dgCMatrix')) {
+  
+  
+  if(!is(object = as(object = counts, Class = 'dgCMatrix'), class2 = 'dgCMatrix')) {
     
     stop('counts could not be converted into a dgCMatrix\n')
     
