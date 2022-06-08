@@ -31,7 +31,7 @@ filter_IBRAP <- function(object, ...) {
   post_filt <- nrow(metadata)
   
   filt_loss <- pre_filt - post_filt
-  
+
   object <- object[,rownames(metadata)]
   
   cat(crayon::cyan(paste0(Sys.time(), ': a total of ', 

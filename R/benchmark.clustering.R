@@ -42,6 +42,7 @@ benchmark.clustering <- function(object,
                                  n.dims = 2,
                                  dist.method='euclidean',
                                  ground.truth.column=NULL,
+                                 threads=1,
                                  verbose=FALSE,
                                  seed=1234) {
   
@@ -202,7 +203,7 @@ benchmark.clustering <- function(object,
         
       }
       
-      dist.matrix <- dist(x = reduction_sub, method = dist.method)
+      dist.matrix <- parallelDist::pardist(x = reduction_sub, method = dist.method, threads = threads)
       
       sil.results <- data.frame(average_silhoeutte=NA)
       

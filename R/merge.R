@@ -69,6 +69,7 @@ setMethod(f = 'merge', signature = 'IBRAP',
               pb$tick()
   
               .sample_metadata <- merge(.sample_metadata, sample.list[[t]], all=T)
+              rownames(.sample_metadata) <- colnames(.counts)
               
               pb$tick()
               
@@ -92,8 +93,8 @@ setMethod(f = 'merge', signature = 'IBRAP',
             samp.met <- cell_metadata(assay = .counts, col.prefix = 'RAW')
             
             .counts[is.na(.counts)] <- 0
-            
-            .counts <- Matrix::Matrix(data = .counts, sparse = T)
+
+            .counts <- df_to_dgCMatrix(df = .counts)
             
             .sample_metadata[match(colnames(.counts), rownames(.sample_metadata)),]
             .sample_metadata[,which(grepl(pattern = 'total.counts', x = colnames(.sample_metadata)))] <- samp.met[,1]

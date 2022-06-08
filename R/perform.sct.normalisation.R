@@ -125,7 +125,7 @@ perform.sct <- function(object,
     }
     
     new.assay.suffix <- sub(pattern = '_', replacement = '-', x = new.assay.suffix)
-    print('.')
+
   }
   
   object@methods[[paste0('SCT', new.assay.suffix)]] <- new(Class = 'methods',

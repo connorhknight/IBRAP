@@ -506,7 +506,7 @@ perform.nn <- function(object,
           
         }
 
-        conn <- as(scobj$obsp[['connectivities']], 'dgCMatrix')
+        conn <- MatrixExtra::as.csc.matrix(scobj$obsp[['connectivities']])
         colnames(conn) <- colnames(object@methods[[2]]@norm.scaled)
         rownames(conn) <- colnames(object@methods[[2]]@norm.scaled)
         
@@ -524,7 +524,7 @@ perform.nn <- function(object,
         
         object@methods[[p]]@neighbours[[paste0(g, '_NN', neighbour.name.suffix)]][['connectivities']] <- conn
         
-        dis <- as(scobj$obsp[['distances']], 'dgCMatrix')
+        dis <- MatrixExtra::as.csc.matrix(scobj$obsp[['distances']])
         colnames(dis) <- colnames(object@methods[[2]]@norm.scaled)
         rownames(dis) <- colnames(object@methods[[2]]@norm.scaled)
         
