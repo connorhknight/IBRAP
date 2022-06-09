@@ -46,7 +46,7 @@ perform.nn <- function(object,
                        
                        k.param=20,
                        prune.SNN=1/15, 
-                       nn.method='annoy', 
+                       nn.method='annoy',
                        n.trees = 50,
                        nn.eps=0.0, 
                        annoy.metric='euclidean',
@@ -524,7 +524,7 @@ perform.nn <- function(object,
         
         object@methods[[p]]@neighbours[[paste0(g, '_NN', neighbour.name.suffix)]][['connectivities']] <- conn
         
-        dis <- MatrixExtra::as.csc.matrix(scobj$obsp[['distances']])
+        dis <- as.csc.matrix(scobj$obsp[['distances']])
         colnames(dis) <- colnames(object@methods[[2]]@norm.scaled)
         rownames(dis) <- colnames(object@methods[[2]]@norm.scaled)
         
