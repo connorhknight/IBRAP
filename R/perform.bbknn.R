@@ -361,8 +361,8 @@ perform.bbknn <- function(object,
       distances <- scobj$obsp[['distances']]
       colnames(distances) <- colnames(object)
       rownames(distances) <- colnames(object)
-      connectivities <- as(object = connectivities, Class = 'dgCMatrix')
-      distances <- as(object = distances, Class = 'dgCMatrix')
+      connectivities <- as.csc.matrix(connectivities)
+      distances <- as.csc.matrix(distances)
       
       graph.list[['connectivities']] <- connectivities
       graph.list[['distances']] <- distances
