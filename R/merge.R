@@ -62,7 +62,7 @@ setMethod(f = 'merge', signature = 'IBRAP',
               
               pb$tick()
 
-              .counts <- rbind(.counts, counts.list[[t]])
+              .counts <- cbind(.counts, counts.list[[t]])
               
               pb$tick()
   
