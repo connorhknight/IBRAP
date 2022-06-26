@@ -12,6 +12,7 @@ benchmark.clustering(
   n.dims = 2,
   dist.method = "euclidean",
   ground.truth.column = NULL,
+  threads = 1,
   verbose = FALSE,
   seed = 1234
 )
