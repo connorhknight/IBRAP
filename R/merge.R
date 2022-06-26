@@ -27,7 +27,7 @@ setMethod(f = 'merge', signature = 'IBRAP',
             for(i in 1:length(items)) {
               
               column.names[[i]] <- colnames(items[[i]]@methods[[1]]@counts)
-              counts.list[[i]] <- as_matrix(items[[i]]@methods[[1]]@counts)[mutual_features,]
+              counts.list[[i]] <- items[[i]]@methods[[1]]@counts[mutual_features,]
               sample.list[[i]] <- as.data.frame(items[[i]]@sample_metadata)
               
             }
@@ -62,28 +62,11 @@ setMethod(f = 'merge', signature = 'IBRAP',
               
               pb$tick()
 
-              .counts <- merge(x = .counts, y = counts.list[[t]], by = 'row.names', all = T)
-              rownames(.counts) <- .counts$Row.names
-              .counts$Row.names <- NULL
+              .counts <- rbind(.counts, counts.list[[t]])
               
               pb$tick()
   
-              .sample_metadata <- merge(.sample_metadata, sample.list[[t]], all=T)
-              rownames(.sample_metadata) <- colnames(.counts)
-              
-              pb$tick()
-              
-              .feature_metadata <- merge(.feature_metadata, 
-                                         as.data.frame(items[[t]]@methods[[1]]@feature_metadata[mutual_features,]), 
-                                         by = 'row.names', all = T)
-              
-              .feature_metadata[is.na(.feature_metadata)] <- 0
-              rownames(.feature_metadata) <- .feature_metadata$Row.names
-              .feature_metadata$Row.names <- NULL
-              .feature_metadata$total.cells.x <- .feature_metadata[,1] + .feature_metadata[,3]
-              .feature_metadata$total.counts.x <- .feature_metadata[,2] + .feature_metadata[,4]
-              .feature_metadata <- .feature_metadata[,1:2]
-              colnames(.feature_metadata) <- c('total.cells', 'total.counts')
+              .sample_metadata <- dplyr::bind_rows(.sample_metadata, sample.list[[t]])
               
               pb$tick()
 
@@ -91,19 +74,11 @@ setMethod(f = 'merge', signature = 'IBRAP',
             
             feat.met <- feature_metadata(assay = .counts, col.prefix = 'RAW')
             samp.met <- cell_metadata(assay = .counts, col.prefix = 'RAW')
-            
-            .counts[is.na(.counts)] <- 0
 
-            .counts <- df_to_dgCMatrix(df = .counts)
-            
             .sample_metadata[match(colnames(.counts), rownames(.sample_metadata)),]
-            .sample_metadata[,which(grepl(pattern = 'total.counts', x = colnames(.sample_metadata)))] <- samp.met[,1]
-            .sample_metadata[,which(grepl(pattern = 'total.features', x = colnames(.sample_metadata)))] <- samp.met[,2]
-            
-            .feature_metadata[match(rownames(.counts), rownames(.feature_metadata)),]
-            .feature_metadata[,which(grepl(pattern = 'total.counts', x = colnames(.sample_metadata)))] <- feat.met[,1]
-            .feature_metadata[,which(grepl(pattern = 'total.cells', x = colnames(.sample_metadata)))] <- feat.met[,2]
-            
+            .sample_metadata[,'RAW_total.counts'] <- samp.met[,'RAW_total.counts']
+            .sample_metadata[,'RAW_total.features'] <- samp.met[,'RAW_total.features']
+
             pb$tick()
             
             new.method <- list()
@@ -111,7 +86,7 @@ setMethod(f = 'merge', signature = 'IBRAP',
             new.method[[names(x@methods)[1]]] <- new(Class = 'methods',
                                                      counts = .counts,
                                                      normalised = as(matrix(nrow = 0, ncol = 0), 'dgCMatrix'),
-                                                     feature_metadata = .feature_metadata)
+                                                     feature_metadata = feat.met)
             
             ibrap <- new(Class = 'IBRAP',
                          methods = new.method, 
