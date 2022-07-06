@@ -29,7 +29,7 @@ setMethod(f = '[', signature = 'IBRAP',
               
               for(p in names(x@methods)) {
                 
-                if(length(as_matrix(x@methods[[p]]@counts)) != 0) {
+                if(is.na(x@methods[[p]]@counts[1])) {
 
                   genes <- ii[ii %in% rownames(x@methods[[p]]@counts)]
                   .counts <- x@methods[[p]]@counts[genes , , drop = FALSE]
@@ -40,7 +40,7 @@ setMethod(f = '[', signature = 'IBRAP',
                   
                 }
                 
-                if(length(as_matrix(x@methods[[p]]@normalised)) != 0) {
+                if(is.na(x@methods[[p]]@normalised[1])) {
 
                   genes <- ii[ii %in% rownames(x@methods[[p]]@normalised)]
                   .normalised <- x@methods[[p]]@normalised[genes, ,drop = FALSE]
@@ -50,10 +50,19 @@ setMethod(f = '[', signature = 'IBRAP',
                   .normalised <- x@methods[[p]]@normalised
                   
                 }
-
-                .norm.scaled <- x@methods[[p]]@norm.scaled
                 
-                if(length(as_matrix(x@methods[[p]]@feature_metadata)) != 0) {
+                if(is.na(x@methods[[p]]@norm.scaled[1])) {
+                  
+                  genes <- ii[ii %in% rownames(x@methods[[p]]@norm.scaled)]
+                  .norm.scaled <- x@methods[[p]]@norm.scaled[genes, ,drop = FALSE]
+                  
+                } else {
+                  
+                  .norm.scaled <- x@methods[[p]]@norm.scaled
+                  
+                }
+                
+                if(is.na(x@methods[[p]]@feature_metadata[1])) {
                   
                   genes <- ii[ii %in% rownames(x@methods[[p]]@feature_metadata)]
                   .feature_metadata <- x@methods[[p]]@feature_metadata[genes, , drop = FALSE]
@@ -127,7 +136,7 @@ setMethod(f = '[', signature = 'IBRAP',
               
               for(p in names(x@methods)) {
                 
-                if(length(as_matrix(x@methods[[p]]@counts)) != 0) {
+                if(is.na(x@methods[[p]]@counts[1])) {
                   
                   .counts <- x@methods[[p]]@counts[ , jj, drop = FALSE]
                   
@@ -137,7 +146,7 @@ setMethod(f = '[', signature = 'IBRAP',
                   
                 }
                 
-                if(length(as_matrix(x@methods[[p]]@normalised)) != 0) {
+                if(is.na(x@methods[[p]]@normalised[1])) {
                   
                   .normalised <- x@methods[[p]]@normalised[ , jj, drop = FALSE]
                   
@@ -146,9 +155,16 @@ setMethod(f = '[', signature = 'IBRAP',
                   .normalised <- x@methods[[p]]@normalised
                   
                 }
-
-                .norm.scaled <- x@methods[[p]]@norm.scaled
-
+                
+                if(is.na(x@methods[[p]]@norm.scaled[1])) {
+                  
+                  .norm.scaled <- x@methods[[p]]@norm.scaled[ , jj, drop = FALSE]
+                  
+                } else {
+                  
+                  .norm.scaled <- x@methods[[p]]@norm.scaled
+                  
+                }
                 
                 if(length(x@methods[[p]]@computational_reductions) != 0) {
                   
@@ -299,7 +315,7 @@ setMethod(f = '[', signature = 'IBRAP',
               
               for(p in names(x@methods)) {
                 
-                if(length(as_matrix(x@methods[[p]]@counts)) != 0) {
+                if(is.na(x@methods[[p]]@counts[1])) {
 
                   cells <- jj[jj %in% colnames(x@methods[[p]]@counts)]
                   genes <- ii[ii %in% rownames(x@methods[[p]]@counts)]
@@ -311,7 +327,7 @@ setMethod(f = '[', signature = 'IBRAP',
                   
                 }
                 
-                if(length(as_matrix(x@methods[[p]]@normalised)) != 0) {
+                if(is.na(x@methods[[p]]@normalised[1])) {
                   
                   cells <- jj[jj %in% colnames(x@methods[[p]]@normalised)]
                   genes <- ii[ii %in% rownames(x@methods[[p]]@normalised)]
@@ -323,9 +339,20 @@ setMethod(f = '[', signature = 'IBRAP',
                   
                 }
                 
-                .norm.scaled <- x@methods[[p]]@norm.scaled
+                
+                if(is.na(x@methods[[p]]@norm.scaled[1])) {
+                  
+                  cells <- jj[jj %in% colnames(x@methods[[p]]@norm.scaled)]
+                  genes <- ii[ii %in% rownames(x@methods[[p]]@norm.scaled)]
+                  .norm.scaled <- x@methods[[p]]@norm.scaled[genes , cells, drop = FALSE]
+                  
+                } else {
+                  
+                  .norm.scaled <- x@methods[[p]]@norm.scaled
+                  
+                }
 
-                if(length(as_matrix(x@methods[[p]]@feature_metadata)) != 0) {
+                if(is.na(x@methods[[p]]@feature_metadata[1])) {
                   
                   genes <- ii[ii %in% rownames(x@methods[[p]]@feature_metadata)]
                   .feature_metadata <- x@methods[[p]]@feature_metadata[genes, , drop = FALSE]

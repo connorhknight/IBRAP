@@ -21,3 +21,6 @@ Prints out the contents of the supplied assays
 \description{
 Shows the contents in your IBRAP object
 }
+\examples{
+
+}
