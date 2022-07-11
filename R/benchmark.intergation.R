@@ -135,7 +135,7 @@ benchmark.integration <- function(object, batch, assays, reduction, result.names
       
       cat(crayon::cyan(paste0(Sys.time(), ': benchmarking assay: ', p, ', reduction: ', t, '\n')))
       
-      dist <- as_matrix(dist(reduction.list[[t]][, seq_len(n.components)]))
+      dist <- parallelDist::parDist(reduction.list[[t]][, seq_len(n.components)])
       
       if(isTRUE(anyNA(as.numeric(object@sample_metadata[,batch])))) {
         

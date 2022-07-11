@@ -57,4 +57,5 @@ Imports:
     progress (>= 1.2.2),
     ggpubr (>= 0.4.0),
     usethis (>= 2.1.3),
-    biomaRt (>= 2.46.3)
+    biomaRt (>= 2.46.3),
+    parallelDist (>= 0.2.6)
