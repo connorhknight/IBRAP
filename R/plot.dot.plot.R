@@ -103,6 +103,6 @@ plot.dot.plot <- function(object, assay, slot='normalised', clust.method, column
   sce <- SingleCellExperiment::SingleCellExperiment(list(expression=object@methods[[assay]][[slot]]),
                                                     colData=data.frame(cell_assignment=assignment[,column]))
 
-  return(dittoDotPlot(object = sce, vars = features, group.by = 'cell_assignment', ...))
+  return(dittoSeq::dittoDotPlot(object = sce, vars = features, group.by = 'cell_assignment', ...))
   
 }
