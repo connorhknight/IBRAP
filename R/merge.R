@@ -47,7 +47,7 @@ setMethod(f = 'merge', signature = 'IBRAP',
             .sample_metadata <- sample.list[[1]]
             .feature_metadata <- as.data.frame(items[[1]]@methods[[1]]@feature_metadata[mutual_features,])
             
-            pb <- progress::progress_bar$new(total = sum(length(y)*4)+1)
+            pb <- progress::progress_bar$new(total = sum(length(y)*3)+1)
             
             for(t in 2:length(items)) {
               

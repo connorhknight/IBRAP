@@ -134,7 +134,7 @@ perform.sct <- function(object,
                                           norm.scaled = .norm.scaled,
                                           highly.variable.genes = .highly.variable.genes,
                                           feature_metadata = feat.meta)
-  print('.')
+
   if(isTRUE(verbose)) {
     
     cat(crayon::cyan(paste0(Sys.time(), ': SCT normalisation completed\n')))

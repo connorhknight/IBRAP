@@ -36,26 +36,43 @@ prepare.for.dittoSeq <- function(object, assay, slot='normalised', clust.method,
     
   }
   
-  if(!is.character(slot)) {
+  if(!is.null(slot)) {
     
-    stop('slot must be character string \n')
-    
-  } else if(is.character(slot)) {
-    
-    if(!slot %in% c('counts','normalised','norm.scaled')) {
+    if(!is.character(slot)) {
       
-      stop('slot must be either counts, normalised or norm.scaled \n')
+      stop('slot must be character string \n')
+      
+    } else if(is.character(slot)) {
+      
+      if(!slot %in% c('counts','normalised','norm.scaled')) {
+        
+        stop('slot must be either counts, normalised or norm.scaled \n')
+        
+      }
       
     }
     
   }
   
-  if(!is.character(clust.method)) {
+  if(!is.null(clust.method)) {
     
-    stop('clust.method must be character string \n')
+    if(!is.character(clust.method)) {
+      
+      stop('clust.method must be character string \n')
+      
+    } else if (is.character(clust.method)) {
+      
+      if(!clust.method %in% c(names(object@methods[[assay]]@cluster_assignments), 'metadata')) {
+        
+        stop('clust.method is not inside of cluster_assignments')
+        
+      } 
+      
+    }
     
-  } 
+  }
   
+
   if(!is.null(reduction)) {
     
     if(!reduction %in% names(c(object@methods[[assay]]@computational_reductions, 
@@ -98,7 +115,7 @@ prepare.for.dittoSeq <- function(object, assay, slot='normalised', clust.method,
 
   reduction <- reduction.list[reduction]
 
-  if(!is.null(clust.method)) {
+  if(clust.method != 'metadata') {
     
     assignment <- cbind(object@sample_metadata, object@methods[[assay]]@cluster_assignments[[clust.method]])
     
