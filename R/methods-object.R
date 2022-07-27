@@ -31,5 +31,6 @@ setClass(Class = 'methods',
            integration_reductions = 'list',
            visualisation_reductions = 'list',
            cluster_assignments = 'list',
-           benchmark_results = 'list'
+           benchmark_results = 'list',
+           misc = 'list'
          ))

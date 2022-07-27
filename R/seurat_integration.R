@@ -337,11 +337,11 @@ perform.seurat.integration <- function(object,
     }
     
     features.list <- suppressWarnings(Seurat::SelectIntegrationFeatures(object.list = new.list, nfeatures = nfeatures, verbose = verbose, ...))
-   
+    print(features.list)
     if('SCT' %in% strsplit(x = a, split = '_')) {
       
       new.list <- suppressWarnings(Seurat::PrepSCTIntegration(object.list = new.list, anchor.features = features.list, verbose = verbose))
-      
+
       anchors <- suppressWarnings(Seurat::FindIntegrationAnchors(object.list = new.list, 
                                                                  normalization.method = "SCT", 
                                                                  anchor.features = features.list, 
