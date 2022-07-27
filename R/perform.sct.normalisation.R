@@ -128,12 +128,19 @@ perform.sct <- function(object,
 
   }
   
+  assay <- seuratobj@assays$SCT
+  
+  assay@counts <- as(matrix(nrow = 0, ncol = 0), 'dgCMatrix')
+  assay@data <- as(matrix(nrow = 0, ncol = 0), 'dgCMatrix')
+  assay@scale.data <- matrix(nrow = 0, ncol = 0)
+  
   object@methods[[paste0('SCT', new.assay.suffix)]] <- new(Class = 'methods',
                                           counts = .counts, 
                                           normalised = .normalised, 
                                           norm.scaled = .norm.scaled,
                                           highly.variable.genes = .highly.variable.genes,
-                                          feature_metadata = feat.meta)
+                                          feature_metadata = feat.meta,
+                                          misc = list(SCT_Seurat_object=assay))
 
   if(isTRUE(verbose)) {
     
