@@ -319,11 +319,12 @@ perform.seurat.integration <- function(object,
       if('SCT' %in% strsplit(x = a, split = '_')) {
         
         new.list[[x]] <- suppressWarnings(Seurat::CreateSeuratObject(counts = object.list[[x]]@methods[[a]]@counts))
-        new.list[[x]]@assays$RNA@data <- object.list[[x]]@methods[[a]]@normalised
-        new.list[[x]]@assays$RNA@scale.data <- object.list[[x]]@methods[[a]]@norm.scaled
-        new.list[[x]]@assays$RNA@var.features <- object.list[[x]]@methods[[a]]@highly.variable.genes
         
-        new.list[[x]]@assays$SCT <- new.list[[x]]@assays$RNA
+        new.list[[x]]@assays$SCT <- object.list[[x]]@methods[[a]]@misc$SCT_Seurat_object
+        new.list[[x]]@assays$SCT@counts <- object.list[[x]]@methods[[a]]@counts)
+        new.list[[x]]@assays$SCT@data <- object.list[[x]]@methods[[a]]@normalised
+        new.list[[x]]@assays$SCTscale.data <- object.list[[x]]@methods[[a]]@norm.scaled
+        new.list[[x]]@assays$RNA@var.features <- object.list[[x]]@methods[[a]]@highly.variable.genes
         
       } else {
         
