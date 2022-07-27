@@ -137,8 +137,7 @@ setMethod(f = '[', signature = 'IBRAP',
               list.methods <- list()
               
               for(p in names(x@methods)) {
-                
-                print(paste0(p, '_', Sys.time()))
+              
                 
                 if(!is.na(x@methods[[p]]@counts[1])) {
                   
