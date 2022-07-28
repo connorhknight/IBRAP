@@ -106,7 +106,8 @@ setMethod(f = '[', signature = 'IBRAP',
                                          integration_reductions = .integration_reductions,
                                          visualisation_reductions = .visualisation_reductions,
                                          cluster_assignments = .cluster_assignments,
-                                         benchmark_results = .benchmark_results)
+                                         benchmark_results = .benchmark_results,
+                                         misc = x@methods[[p]]@misc)
                 
               }
               
@@ -279,7 +280,8 @@ setMethod(f = '[', signature = 'IBRAP',
                                          integration_reductions = .integration_reductions,
                                          visualisation_reductions = .visualisation_reductions,
                                          cluster_assignments = .cluster_assignments,
-                                         benchmark_results = .benchmark_results)
+                                         benchmark_results = .benchmark_results,
+                                         misc = x@methods[[p]]@misc)
                 
               }
               
@@ -482,7 +484,8 @@ setMethod(f = '[', signature = 'IBRAP',
                                          integration_reductions = .integration_reductions,
                                          visualisation_reductions = .visualisation_reductions,
                                          cluster_assignments = .cluster_assignments,
-                                         benchmark_results = .benchmark_results)
+                                         benchmark_results = .benchmark_results,
+                                         misc = x@methods[[p]]@misc)
                 
               }
               

@@ -392,24 +392,24 @@ perform.seurat.integration <- function(object,
                                                        preserve.order = T, 
                                                        eps = integrate.eps, 
                                                        verbose = verbose))
-    
+
     Seurat::DefaultAssay(combined) <- 'integrated'
-    
+
     combined <- suppressWarnings(Seurat::ScaleData(object = combined))
-    
+
     tmp.obj <- IBRAP::createIBRAPobject(counts = combined@assays$integrated@data, 
                                         original.project = 'tmp', 
                                         add.suffix = F)
     
-    tmp.obj@methods[['RAW']]@norm.scaled <- as_matrix(combined@assays$integrated@scale.data)
-    
+    tmp.obj@methods[['RAW']]@norm.scaled <- as(combined@assays$integrated@scale.data,'matrix')
+
     tmp.obj@methods[['RAW']]@highly.variable.genes <- combined@assays$integrated@var.features
-    
+
     tmp.obj <- IBRAP::perform.pca(object = tmp.obj, assay = 'RAW', slot = 'norm.scaled', print.variance = T)
-    
+
     if(is.null(reduction.save.suffix)) {
       
-      object@methods[[a]]@integration_reductions[[paste0('CCA ', reduction.save.suffix[[count]])]] <- tmp.obj@methods[[1]]@computational_reductions[[1]]
+      object@methods[[a]]@integration_reductions[[paste0('CCA', reduction.save.suffix[[count]])]] <- tmp.obj@methods[[1]]@computational_reductions[[1]]
       
     } else if(!is.null(reduction.save.suffix)) {
       

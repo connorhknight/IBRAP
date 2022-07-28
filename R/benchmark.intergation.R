@@ -26,7 +26,7 @@
 #'
 #' @export benchmark.integration
 
-benchmark.integration <- function(object, batch, assays, reduction, result.names, n.components = 2) {
+benchmark.integration <- function(object, batch, assays, reduction, result.names, n.components = 2, threads = 1) {
   
   if(!is(object = object, class2 = 'IBRAP')) {
     
@@ -135,7 +135,7 @@ benchmark.integration <- function(object, batch, assays, reduction, result.names
       
       cat(crayon::cyan(paste0(Sys.time(), ': benchmarking assay: ', p, ', reduction: ', t, '\n')))
       
-      dist <- parallelDist::parDist(reduction.list[[t]][, seq_len(n.components)])
+      dist <- parallelDist::parDist(reduction.list[[t]][, seq_len(n.components)], threads = threads)
       
       if(isTRUE(anyNA(as.numeric(object@sample_metadata[,batch])))) {
         
