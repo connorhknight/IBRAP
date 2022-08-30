@@ -66,11 +66,7 @@ perform.diffexp <- function(object,
       
     }
     
-  } else if (is.null(cells.1)) {
-    
-    stop('Please provide the cells.1 identities \n')
-    
-  }
+  } 
   
   if(!is.null(cells.2)) {
     
@@ -84,17 +80,11 @@ perform.diffexp <- function(object,
       
     }
     
-  } else if (is.null(cells.2)) {
-    
-    stop('Please provide the cells.2 identities \n')
-    
-  }
+  } 
   
   seuobj <- Seurat::CreateSeuratObject(counts = object@methods[[assay]]@counts)
   seuobj@assays$RNA@data <- object@methods[[assay]]@normalised
   seuobj@assays$RNA@scale.data <- object@methods[[assay]]@norm.scaled
-  
-  
   
   if(!is.null(identity)) {
     
@@ -108,17 +98,13 @@ perform.diffexp <- function(object,
       
     }
     
-  } else if (is.null(identity)) {
-    
-    stop('Please provide the cell identities \n')
-    
-  }
+  } 
   
   if(!is.null(ident.1) && !is.null(identity)) {
     
-    if(!is.vector(ident.1)) {
+    if(!is.character(ident.1)) {
       
-      stop('ident.1 must be a vector \n')
+      stop('ident.1 must be a string \n')
       
     } else if (!ident.1 %in% identity) {
       
@@ -135,9 +121,9 @@ perform.diffexp <- function(object,
   
   if(!is.null(ident.2) && !is.null(identity)) {
     
-    if(!is.vector(ident.2)) {
+    if(!is.character(ident.2)) {
       
-      stop('ident.2 must be a vector \n')
+      stop('ident.2 must be a string \n')
       
     } else if (!ident.2 %in% identity) {
       
@@ -159,7 +145,7 @@ perform.diffexp <- function(object,
       
     }
     
-    met <- merge(seuobj@meta.data, object@sample_metadata, by = 0)
+    met <- cbind(seuobj@meta.data, object@sample_metadata, by = 0)
     rownames(met) <- colnames(seuobj)
     seuobj@meta.data <- met
     
