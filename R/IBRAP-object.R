@@ -15,3 +15,4 @@ setClass(Class = 'IBRAP',
            sample_metadata = 'data.frame',
            pipelines = 'data.frame'
          ))
+

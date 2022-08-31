@@ -139,7 +139,6 @@ setMethod(f = '[', signature = 'IBRAP',
               
               for(p in names(x@methods)) {
               
-                
                 if(!is.na(x@methods[[p]]@counts[1])) {
                   
                   .counts <- x@methods[[p]]@counts[ , jj, drop = FALSE]
@@ -149,6 +148,7 @@ setMethod(f = '[', signature = 'IBRAP',
                   .counts <- x@methods[[p]]@counts
                   
                 }
+                
                 
                 
                 if(!is.na(x@methods[[p]]@normalised[1])) {
@@ -161,6 +161,8 @@ setMethod(f = '[', signature = 'IBRAP',
                   
                 }
                 
+                
+                
                 if(!is.na(x@methods[[p]]@norm.scaled[1])) {
                   
                   .norm.scaled <- x@methods[[p]]@norm.scaled[ , jj, drop = FALSE]
@@ -170,6 +172,8 @@ setMethod(f = '[', signature = 'IBRAP',
                   .norm.scaled <- x@methods[[p]]@norm.scaled
                   
                 }
+                
+                
                 
                 if(length(x@methods[[p]]@computational_reductions) != 0) {
                   
@@ -187,6 +191,8 @@ setMethod(f = '[', signature = 'IBRAP',
                   
                 }
                 
+                
+                
                 if(length(x@methods[[p]]@integration_reductions) != 0) {
                   
                   .integration_reductions <- list()
@@ -202,6 +208,8 @@ setMethod(f = '[', signature = 'IBRAP',
                   .integration_reductions <-x@methods[[p]]@integration_reductions
                   
                 }
+                
+                
                 
                 if(length(x@methods[[p]]@visualisation_reductions) != 0) {
                   
@@ -219,6 +227,8 @@ setMethod(f = '[', signature = 'IBRAP',
                   
                 }
                 
+                
+                
                 if(length(x@methods[[p]]@cluster_assignments) != 0) {
                   
                   .cluster_assignments <- list()
@@ -234,6 +244,8 @@ setMethod(f = '[', signature = 'IBRAP',
                   .cluster_assignments <- x@methods[[p]]@cluster_assignments
                   
                 }
+                
+                
                 
                 .highly.variable.genes <- x@methods[[p]]@highly.variable.genes
                 
@@ -267,7 +279,11 @@ setMethod(f = '[', signature = 'IBRAP',
                   
                 }
                 
+                
+                
                 .benchmark_results <- x@methods[[p]]@benchmark_results
+                
+                
                 
                 list.methods[[p]] <- new(Class = 'methods', 
                                          counts = .counts,
@@ -282,6 +298,8 @@ setMethod(f = '[', signature = 'IBRAP',
                                          cluster_assignments = .cluster_assignments,
                                          benchmark_results = .benchmark_results,
                                          misc = x@methods[[p]]@misc)
+                
+                
                 
               }
               

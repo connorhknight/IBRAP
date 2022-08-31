@@ -37,6 +37,7 @@ knitr::kable(df)
 ```
 
 ## Installing OS IBRAP dependencies
+## WARNING: only perform these if these dependencies are not alredy installed on your system
 
 ### Installing GCC and ImageMagick
 
@@ -130,7 +131,9 @@ reticulate::install_miniconda()
 Once we have install miniconda, we must produce a virtual enviornment to install our python packages, as shown in the dependencies table we require the python version to be at least 3.8. Therefore, we can install an environment that is specific for IBRAP and contains the correct python package with the following command in R:
 
 ```{r, eval=F, echo=T}
-reticulate::conda_create(envname = "IBRAP", packages = "python=3.8")
+system('curl -LJO https://github.com/connorhknight/IBRAP/blob/main/data/IBRAP.yml')
+
+reticulate::conda_create(envname = "IBRAP", environment = "IBRAP.yml")
 
 ```
 

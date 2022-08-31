@@ -49,69 +49,69 @@ setMethod(f = '[[', signature = 'methods',
             
             y <- as.list.methods(x)
             
-            if(i %in% 'counts') {
+            if(i == 'counts') {
               
-              return(y@counts)
-              
-            }
-            
-            if(i %in% 'normalised') {
-              
-              return(y@normalised)
+              return(y$counts)
               
             }
             
-            if(i %in% 'norm.scaled') {
+            if(i == 'normalised') {
               
-              return(y@norm.scaled)
-              
-            }
-            
-            if(i %in% 'highly.variable.genes') {
-              
-              return(y@highly.variable.genes)
+              return(y$normalised)
               
             }
             
-            if(i %in% names(y@neighbours)) {
+            if(i == 'norm.scaled') {
               
-              return(y@neighbours[[i]])
-              
-            }
-            
-            if(i %in% names(y@computational_reductions)) {
-              
-              return(y@computational_reductions[[i]])
+              return(y$norm.scaled)
               
             }
             
-            if(i %in% names(y@integration_reductions)) {
+            if(i == 'highly.variable.genes') {
               
-              return(y@integration_reductions[[i]])
-              
-            }
-            
-            if(i %in% names(y@visualisation_reductions)) {
-              
-              return(y@visualisation_reductions[[i]])
+              return(y$highly.variable.genes)
               
             }
             
-            if(i %in% names(y@cluster_assignments)) {
+            if(i %in% names(y$neighbours)) {
               
-              return(y@cluster_assignments[[i]])
-              
-            }
-            
-            if(i %in% names(y@benchmark_results$clustering)) {
-              
-              return(y@benchmark_results$clustering[[i]])
+              return(y$neighbours[[i]])
               
             }
             
-            if(i %in% names(y@benchmark_results$integration)) {
+            if(i %in% names(y$computational_reductions)) {
               
-              return(y@benchmark_results$integration[[i]])
+              return(y$computational_reductions[[i]])
+              
+            }
+            
+            if(i %in% names(y$integration_reductions)) {
+              
+              return(y$integration_reductions[[i]])
+              
+            }
+            
+            if(i %in% names(y$visualisation_reductions)) {
+              
+              return(y$visualisation_reductions[[i]])
+              
+            }
+            
+            if(i %in% names(y$cluster_assignments)) {
+              
+              return(y$cluster_assignments[[i]])
+              
+            }
+            
+            if(i %in% names(y$benchmark_results$clustering)) {
+              
+              return(y$benchmark_results$clustering[[i]])
+              
+            }
+            
+            if(i %in% names(y$benchmark_results$integration)) {
+              
+              return(y$benchmark_results$integration[[i]])
               
             }
             

@@ -14,17 +14,18 @@ setMethod(f = '[[<-', signature = 'IBRAP',
               
             } else if(i %in% names(x@methods)) {
               
-              x@methods[[i]] <- value
-              
-            } else if(i == 'pipelines'){
-              
-              x@pipelines <- value
-              
-            }
+              if(class(value) == 'methods') {
+                
+                x@methods[[i]] <- value
+                
+              } 
+
+            } 
             
             x@sample_metadata[[i]] <- value
             
             return(x)
+            
           })
 
 setMethod(f = '[[<-', signature = 'methods',
