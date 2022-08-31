@@ -7,7 +7,23 @@ setMethod(f = '[[<-', signature = 'IBRAP',
                    i, 
                    j, 
                    value) {
+            
+            if(i %in% names(x@sample_metadata)) {
+              
+              x@sample_metadata[[i, exact = T]] <- value
+              
+            } else if(i %in% names(x@methods)) {
+              
+              x@methods[[i]] <- value
+              
+            } else if(i == 'pipelines'){
+              
+              x@pipelines <- value
+              
+            }
+            
             x@sample_metadata[[i]] <- value
+            
             return(x)
           })
 
@@ -17,61 +33,89 @@ setMethod(f = '[[<-', signature = 'methods',
                    j, 
                    value){
             
-            y <- as.list(x)
-            y[[i]] <- value
-            
-            x@counts <- y$counts
-            if(length(as_matrix(y$normalised)) != 0) {
+            as.list.methods <- function(x) {
               
-              x@normalised <- y$normalised
-              
-            }
-            if(length(y$norm.scaled) != 0) {
-              
-              x@norm.scaled <- y$norm.scaled
-              
-            }
-            if(length(y$norm.scaled) != 0) {
-              
-              x@highly.variable.genes <- y$highly.varaible.genes
-              
-            }
-            if(length(y$norm.scaled) != 0) {
-              
-              x@feature_metadata <- y$feature_metadata
-              
-            }
-            if(length(y$norm.scaled) != 0) {
-              
-              x@neighbours <- y$neighbours
-              
-            }
-            if(length(y$norm.scaled) != 0) {
-              
-              x@computational_reductions <- y$computational_reductions
-              
-            }
-            if(length(y$norm.scaled)) {
-              
-              x@integration_reductions <- y$integration_reductions
-              
-            }
-            if(length(y$norm.scaled) != 0) {
-              
-              x@visualisation_reductions <- y$visualisation_reductions
-              
-            }
-            if(length(y$norm.scaled) != 0) {
-              
-              x@cluster_assignments <- y$cluster_assignments
-              
-            }
-            if(length(y$norm.scaled) != 0) {
-              
-              x@benchmark_results <- y$benchmark_results
+              new.list <- list(counts = x@counts, 
+                               normalised = x@normalised, 
+                               norm.scaled = x@norm.scaled,
+                               highly.variable.genes = x@highly.variable.genes,
+                               feature_metadata = x@feature_metadata,
+                               neighbours = x@neighbours,
+                               computational_reductions = x@computational_reductions,
+                               integration_reductions = x@integration_reductions,
+                               visualisation_reductions = x@visualisation_reductions,
+                               cluster_assignments = x@cluster_assignments,
+                               benchmark_results = x@benchmark_results)
+              return(new.list)
               
             }
             
-            return(x)
+            y <- as.list.methods(x)
+            
+            if(i %in% 'counts') {
+              
+              y@counts <- value
+              
+            }
+            
+            if(i %in% 'normalised') {
+              
+              y@normalised <- value
+              
+            }
+            
+            if(i %in% 'norm.scaled') {
+              
+              y@norm.scaled <- value
+              
+            }
+            
+            if(i %in% 'highly.variable.genes') {
+              
+              y@highly.variable.genes <- value
+              
+            }
+            
+            if(i %in% names(y@neighbours)) {
+              
+              y@neighbours[[i]] <- value
+              
+            }
+            
+            if(i %in% names(y@computational_reductions)) {
+              
+              y@computational_reductions[[i]] <- value
+              
+            }
+            
+            if(i %in% names(y@integration_reductions)) {
+              
+              y@integration_reductions[[i]] <- value
+              
+            }
+            
+            if(i %in% names(y@visualisation_reductions)) {
+              
+              y@visualisation_reductions[[i]] <- value
+              
+            }
+            
+            if(i %in% names(y@cluster_assignments)) {
+              
+              y@cluster_assignments[[i]] <- value
+              
+            }
+            
+            if(i %in% names(y@benchmark_results$clustering)) {
+              
+              y@benchmark_results$clustering[[i]] <- value
+              
+            }
+            
+            if(i %in% names(y@benchmark_results$integration)) {
+              
+              y@benchmark_results$integration[[i]] <- value
+              
+            }
             
           })

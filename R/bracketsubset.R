@@ -7,7 +7,21 @@ setMethod(f = '[[', signature = 'IBRAP',
                    i, 
                    j, 
                    ...) {
-            x@sample_metadata[[i, exact = TRUE]]
+            
+            if(i %in% names(x@sample_metadata)) {
+              
+              x@sample_metadata[[i, exact = T]]
+              
+            } else if(i %in% names(x@methods)) {
+              
+              x@methods[[i, exact = T]]
+              
+            } else if(i == 'pipelines'){
+              
+              x@pipelines
+              
+            }
+            
           })
 
 setMethod(f = '[[', signature = 'methods',
@@ -34,6 +48,71 @@ setMethod(f = '[[', signature = 'methods',
             }
             
             y <- as.list.methods(x)
-            y[[i]]
+            
+            if(i %in% 'counts') {
+              
+              return(y@counts)
+              
+            }
+            
+            if(i %in% 'normalised') {
+              
+              return(y@normalised)
+              
+            }
+            
+            if(i %in% 'norm.scaled') {
+              
+              return(y@norm.scaled)
+              
+            }
+            
+            if(i %in% 'highly.variable.genes') {
+              
+              return(y@highly.variable.genes)
+              
+            }
+            
+            if(i %in% names(y@neighbours)) {
+              
+              return(y@neighbours[[i]])
+              
+            }
+            
+            if(i %in% names(y@computational_reductions)) {
+              
+              return(y@computational_reductions[[i]])
+              
+            }
+            
+            if(i %in% names(y@integration_reductions)) {
+              
+              return(y@integration_reductions[[i]])
+              
+            }
+            
+            if(i %in% names(y@visualisation_reductions)) {
+              
+              return(y@visualisation_reductions[[i]])
+              
+            }
+            
+            if(i %in% names(y@cluster_assignments)) {
+              
+              return(y@cluster_assignments[[i]])
+              
+            }
+            
+            if(i %in% names(y@benchmark_results$clustering)) {
+              
+              return(y@benchmark_results$clustering[[i]])
+              
+            }
+            
+            if(i %in% names(y@benchmark_results$integration)) {
+              
+              return(y@benchmark_results$integration[[i]])
+              
+            }
             
           })
