@@ -44,7 +44,7 @@ marrow_A <- readRDS('/Users/knight05/work/Results/scRNA-seq/IBRAP_tutorials/tmp/
 
 library(IBRAP)
 
-marrow_A <- readRDS('~/path/to/marrow_A/marrow_A.rds')
+marrow_A <- readRDS('~/path/to/marrow_A.rds')
   
 ```
 
@@ -334,7 +334,7 @@ Since we have 3 different normalisation method it is beneficial to observe the d
 
 The main challenge with the plotting function in IBRAP is isolating the correct labelling. In general, plotting functions will ask for the assay which is contained within object@methods, the clust.method that is contained withing @cluster_assignments, and the column which would be contained with in that cluster assignment. One thing to note, is that if you wish to access columns that are contained within object@sample_metadata.
 
-```{r, include=T, out.width="200%", out.height="600%"}
+```{r, include=F, out.width="200%", out.height="600%"}
 
 plot1 <- plot.reduced.dim(object = marrow_A, 
                           reduction = 'PCA_UMAP', 
@@ -360,7 +360,39 @@ plot3 <- plot.reduced.dim(object = marrow_A,
   ggplot2::ggtitle('SCANPY') + 
   ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5))
 
-egg::ggarrange(plots = list(plot1,plot2,plot3), nrow = 3)
+```
+
+```{r, eval=T, echo=F}
+
+plot.reduced.dim(object = marrow_A, 
+                          reduction = 'PCA_UMAP', 
+                          assay = 'SCT', 
+                          clust.method = 'PCA_NN:LOUVAIN', 
+                          column = 'res_0.8', pt.size = 0.1) + 
+  ggplot2::ggtitle('SCT') + 
+  ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5))
+
+```
+```{r, eval=T, echo=F}
+
+plot.reduced.dim(object = marrow_A, 
+                          reduction = 'PCA_UMAP', 
+                          assay = 'SCRAN', 
+                          clust.method = 'PCA_NN:LOUVAIN', 
+                          column = 'res_0.8', pt.size = 0.1) + 
+  ggplot2::ggtitle('SCRAN') + 
+  ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5))
+
+```
+```{r, eval=T, echo=F}
+
+plot.reduced.dim(object = marrow_A, 
+                          reduction = 'PCA_UMAP', 
+                          assay = 'SCANPY', 
+                          clust.method = 'PCA_NN:LOUVAIN', 
+                          column = 'res_0.8', pt.size = 0.1) + 
+  ggplot2::ggtitle('SCANPY') + 
+  ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5))
 
 ```
 
