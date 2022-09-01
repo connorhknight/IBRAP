@@ -152,7 +152,7 @@ marrow_A <- filter_IBRAP(object = marrow_A, RAW_total.features < 3000 & RAW_perc
 
 To accommodate downstream analyses, we must promote a normal distribution and numerical scaling in our data. We included four separate [normalisation](https://connorhknight.github.io/IBRAP/articles/data_transform.html) methods that are applied as such:
 
-```{r, include=T}
+```{r, include=F}
 
 marrow_A <- perform.sct(object = marrow_A, 
                         vars.to.regress = 'RAW_percent.mt')
@@ -189,7 +189,7 @@ Since IBRAP incorporated multiple pipelines, some pipelines begin to vary at thi
 
 In some instances, certain genes require omission from the highly variable genes. This can be achieved with the following function: 
 
-```{r, include=T}
+```{r, include=F}
 
 # This function finds all ribosomal genes and removes them from the HVG list of the three assays
 unwanted <- as.character(rownames(marrow_A)[grepl("^RPL" ,x=rownames(marrow_A))])
@@ -204,7 +204,7 @@ marrow_A <- remove.hvgs(object = marrow_A, assay = c('SCT', 'SCRAN', 'SCANPY'),
 
 Now that our data has been appropriately transformed our data and highly variable genes have been identified we can reduce the number of dimensions using Principal Component Analysis (PCA). Reduction methods summarise as much information from the higher dimensions into lower dimensions as possible. Therefore, these lower dimensions facilitate a faster computing time and require less computational resources. 
 
-```{r, include=T}
+```{r, include=F}
 
 marrow_A <- perform.pca(object = marrow_A, 
                         assay = c('SCT', 'SCRAN', 'SCANPY'), 
@@ -230,7 +230,7 @@ For these assays, the elbow point is around 10-15 PCs.
 
 Prior to clustering it is important to ascertain the relationship and closeness of our cells. As a pre-requisite to clustering we are going to produce a k-nearest neghbour graphs. SCT, SCRAN, and SCANPY use one algorithm whilst SCANPY uses its own version. This is produced by applying the following function: 
 
-```{r, include=T}
+```{r, include=F}
 # here we generate the neighbour graph for PCA and produce a diffusion map from the PCA-neighbour graph
 
 marrow_A <- perform.nn(object = marrow_A, 
@@ -250,7 +250,7 @@ Finally, using our neighbourhood graph we must cluster close networks together t
 
 These methods can be adjusted using thre res parameter in the function typically ranging between 0.1-1.5. A higher resolution finds more communities in a sample, whereas a lower value produces the opposite. The default option for this function is to use the following resolutions:  c(0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1, 1.1, 1.2, 1.3, 1.4, 1.5). However, feel free to adjsut this to your requirement. 
 
-```{r, include=T}
+```{r, include=F}
 
 marrow_A <- perform.graph.cluster(object = marrow_A, 
                                   assay = c('SCT', 'SCRAN', 'SCANPY'), 
@@ -320,7 +320,7 @@ We can visualise the comparison within a clustering method dataframe using the f
 ```{r, include=T}
 
 plot.cluster.benchmarking(object = marrow_A, assay = 'SCT', 
-                          clustering = 'PCA_NN:LOUVAIN')
+                          clustering = 'PCA_NN:LOUVAIN_benchmarked')
 
 ```
 
@@ -334,7 +334,7 @@ Since we have 3 different normalisation method it is beneficial to observe the d
 
 The main challenge with the plotting function in IBRAP is isolating the correct labelling. In general, plotting functions will ask for the assay which is contained within object@methods, the clust.method that is contained withing @cluster_assignments, and the column which would be contained with in that cluster assignment. One thing to note, is that if you wish to access columns that are contained within object@sample_metadata.
 
-```{r, include=T, out.width="200%", out.height="300%"}
+```{r, include=T, out.width="200%", out.height="600%"}
 
 plot1 <- plot.reduced.dim(object = marrow_A, 
                           reduction = 'PCA_UMAP', 
@@ -374,7 +374,7 @@ To understand the biology driving the clustering we can tackle it in two ways: d
 
 Differential expression analyses can be performed either 1 cluster compared against all other cells or 1 cluster against 1 other cluster. In this tutorial we will use the 1 v all function. 
 
-```{r, eval=T, echo=F}
+```{r, include=F}
 
 DE_res <- perform.diffexp.all(object = marrow_A, 
                               assay = 'SCT', 
@@ -396,7 +396,7 @@ These results will produce a table with key columns: the gene names, pct.1 and p
 
 In this case, we can use feature plots:
 
-```{r, eval=F, echo=T, out.width="150%", out.height="150%"}
+```{r, include=T, out.width="150%", out.height="150%"}
 
 plot.features(object = marrow_A, assay = 'SCT', reduction = 'PCA_UMAP', 
               features = c('JCHAIN','MS4A1','MME','IRF8','HLA-DRA','LYZ',
