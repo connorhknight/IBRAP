@@ -282,7 +282,11 @@ perform.bbknn <- function(object,
       
       if(dims == 0) {
         
+        if(isTRUE(verbose)) {
+        
         cat(crayon::cyan(paste0(Sys.time(), ': npcs calculated\n')))
+          
+        }
         
         dims <- ncol(object@methods[[p]]@computational_reductions[[reduction[count]]])
         
@@ -290,7 +294,11 @@ perform.bbknn <- function(object,
       
       if(is.null(trim)) {
         
+        if(isTRUE(verbose)) {
+          
         cat(crayon::cyan(paste0(Sys.time(), ': initialising BBKNN for assay: ', p,  ', reduction: ', r, '\n')))
+          
+        }
         
         sc$external$pp$bbknn(scobj,
                              batch_key = reticulate::r_to_py(as.character(batch)),
@@ -303,11 +311,19 @@ perform.bbknn <- function(object,
                              set_op_mix_ratio = set_op_mix_ratio,
                              local_connectivity = local_connectivity)
         
+        if(isTRUE(verbose)) {
+        
         cat(crayon::cyan(paste0(Sys.time(), ': BBKNN complete \n')))
+          
+        }
         
       } else if (!is.null(trim)) {
         
+        if(isTRUE(verbose)) {
+          
         cat(crayon::cyan(paste0(Sys.time(), ': initialising BBKNN for assay: ', p,  ', reduction: ', r, '\n')))
+          
+        }
         
         sc$external$pp$bbknn(scobj,
                              batch_key= reticulate::r_to_py(as.character(batch)),
@@ -327,11 +343,19 @@ perform.bbknn <- function(object,
       
       if(isTRUE(generate.diffmap)) {
         
+        if(isTRUE(verbose)) {
+          
         cat(crayon::cyan(paste0(Sys.time(), ': calcualting diffusion map\n')))
+          
+        }
         
         sc$tl$diffmap(adata = scobj, n_comps = as.integer(n_comps))
         
+        if(isTRUE(verbose)) {
+          
         cat(crayon::cyan(paste0(Sys.time(), ': diffusion map calculated\n')))
+          
+        }
         
         diffmap <- as.matrix(scobj$obsm[['X_diffmap']])
         
@@ -369,7 +393,11 @@ perform.bbknn <- function(object,
       
       if('_' %in% unlist(x = strsplit(graph.name.suffix, split = ''))) {
         
+        if(isTRUE(verbose)) {
+          
         cat(crayon::cyan(paste0(Sys.time(), ': _ cannot be used in graph.name.suffix, replacing with -\n')))
+          
+        }
         
         graph.name.suffix <- sub(pattern = '_', replacement = '-', x = diffmap.name.suffix)
         
@@ -377,13 +405,21 @@ perform.bbknn <- function(object,
       
       object@methods[[p]]@neighbours[[paste0(r, '_BBKNN_BBKNN', graph.name.suffix[count])]] <- graph.list
       
+      if(isTRUE(verbose)) {
+        
       cat(crayon::cyan(paste0(Sys.time(), ': bbknn results added to IBRAP object\n')))
+        
+      }
       
       if(isTRUE(generate.diffmap)) {
         
         if('_' %in% (strsplit(x = diffmap.name.suffix, split = ''))) {
           
+          if(isTRUE(verbose)) {
+            
           cat(crayon::cyan(paste0(Sys.time(), ': _ cannot be used in diffmap.name.suffix, replacing with -\n')))
+            
+          }
           
           diffmap.name.suffix <- sub(pattern = '_', replacement = '-', x = diffmap.name.suffix)
           
