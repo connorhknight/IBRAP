@@ -10,7 +10,8 @@ benchmark.integration(
   assays,
   reduction,
   result.names,
-  n.components = 2
+  n.components = 2,
+  threads = 1
 )
 }
 \arguments{
