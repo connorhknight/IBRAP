@@ -9,8 +9,6 @@
 #' @param replacement.item Supply the item to replace the item with. 
 #' 
 #' @return Prints out the contents of the supplied assays
-#' 
-#' @examples 
 #'
 #' @export replaceResults
 

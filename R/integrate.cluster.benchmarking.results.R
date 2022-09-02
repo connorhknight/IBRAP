@@ -1,11 +1,12 @@
 #' @name integrate.cluster.benchmarking.results
 #' @aliases integrate.cluster.benchmarking.results
 #' 
+#' @title Integrates all cluster benchmarking into a single dataframe
+#' 
 #' @param object IBRAP S4 class object
 #' 
 #' @return data frame of all clustering results separated by pipeline
 #' 
-#'
 #' @export integrate.cluster.benchmarking.results
 
 integrate.cluster.benchmarking.results <- function(object) {

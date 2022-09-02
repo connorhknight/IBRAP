@@ -8,8 +8,6 @@
 #' 
 #' @return Prints out the contents of the supplied assays
 #' 
-#' @examples 
-#'
 #' @export showObjectContents
 
 showObjectContents <- function(object, assay) {
