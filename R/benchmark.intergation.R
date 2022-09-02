@@ -137,7 +137,7 @@ benchmark.integration <- function(object, batch, assays, reduction, result.names
       
       dist <- parallelDist::parDist(reduction.list[[t]][, seq_len(n.components)], threads = threads)
       
-      if(isTRUE(anyNA(as.numeric(object@sample_metadata[,batch])))) {
+      if(isTRUE(anyNA(object@sample_metadata[,batch]))) {
         
         count <- 1
         

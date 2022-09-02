@@ -239,7 +239,7 @@ perform.graph.cluster <- function(object,
               
               tmp_row <- tmp[which(tmp$normalisation_method==p & tmp$integration_method==int_meth),]
               
-              if(is.na(tmp_row[,'clustering_method'])) {
+              if(NA %in% tmp_row[,'clustering_method']) {
                 
                 tmp <- tmp[-roww,]
                 

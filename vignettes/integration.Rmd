@@ -510,14 +510,13 @@ With these datasets, we also have ground truth labels which enbales us to identi
 # computationally demanding, therefore we included the ability to spread the computations across different cores using the threads parameter.  
 
 pancreas <- benchmark.clustering(object = pancreas, 
-                                 batch = 'original.project', 
                                  assay = c('SCT','SCRAN','SCANPY'), 
                                  reduction = c('PCA_HARMONY_UMAP', 'SCANORAMA_UMAP', 
                                                'CCA_UMAP', 'PCA_BBKNN_BBKNN:UMAP'), 
                                  clustering = c('PCA_HARMONY_NN:LOUVAIN', 'SCANORAMA_NN:LOUVAIN', 
                                                 'CCA_NN:LOUVAIN', 'PCA_BBKNN_BBKNN:LOUVAIN'), 
                                  n.dims = 2, 
-                                 ground.truth.column = 'celltypes', 
+                                 ground.truth.column = 'celltype', 
                                  threads = 2)
 
 # Here we will compare pipeline performance compared to the ground truth, we will focus on ARI where the highest value is the closest to match
@@ -527,7 +526,7 @@ benchmark_results <- integrate.cluster.benchmarking.results(object = pancreas)
 
 # We then order the results to haev the highest ARI scores at the top 
 
-benchmarking_result <- tmp[order(decreasing = T, tmp$ARI),]
+benchmarking_result <- benchmark_results[order(decreasing = T, benchmark_results$ARI),]
 
 # And then we check the top 10 results
 
