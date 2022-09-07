@@ -137,27 +137,25 @@ benchmark.integration <- function(object, batch, assays, reduction, result.names
       
       dist <- parallelDist::parDist(reduction.list[[t]][, seq_len(n.components)], threads = threads)
       
-      if(isTRUE(anyNA(object@sample_metadata[,batch]))) {
+      count <- 1
+      
+      batch_tmp <- object@sample_metadata[,batch]
+      
+      for(d in unique(object@sample_metadata[,batch])) {
         
-        count <- 1
+        batch_tmp[batch_tmp==d] <- count
         
-        batch_tmp <- object@sample_metadata[,batch]
-        
-        for(d in unique(object@sample_metadata[,batch])) {
-          
-          batch_tmp[batch_tmp==d] <- count
-          
-          count <- count + 1
-          
-        }
-        
-        batch_tmp <- as.numeric(batch_tmp)
-        
-      } else {
-        
-        batch_tmp <- as.numeric(object@sample_metadata[,batch])
+        count <- count + 1
         
       }
+      
+      batch_tmp <- as.numeric(batch_tmp)
+      
+      if(isTRUE(anyNA(object@sample_metadata[,batch]))) {
+        
+        cat(crayon::cyan(paste0(Sys.time(), ': There are NAs present in the batches \n')))
+
+      } 
       
       object@methods[[p]]@benchmark_results[['integration']][[paste0(p, '_', result.names[counter])]] <- summary(cluster::silhouette(as.numeric(batch_tmp), dist))$avg.width
 
