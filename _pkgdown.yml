@@ -17,6 +17,8 @@ navbar:
         href: articles/Installation_linux.html
       - text: Installation (macos)
         href: articles/installation_macos.html
+      - text: Using Docker/Singularity
+        href: articles/dockers.html
       - text: Getting Started
         href: articles/using_IBRAP.html
       - text: Data Integration
@@ -137,6 +139,7 @@ articles:
   contents:
   - '`installation_macos`'
   - '`Installation_linux`'
+  - '`dockers`'
   - '`using_IBRAP`'
   - '`data_transform`'
   - '`clustering_method`'
