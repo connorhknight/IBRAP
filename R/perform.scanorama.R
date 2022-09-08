@@ -174,7 +174,7 @@ perform.scanorama <- function(object,
     
   }
   
-  scanorama <- reticulate::import('scanorama', convert = FALSE)
+  scanorama <- reticulate::import('scanorama')
   
   if(isTRUE(verbose)) {
     
@@ -296,8 +296,8 @@ perform.scanorama <- function(object,
     
     if(isTRUE(verbose)) {
       
-      integrated.corrected.data <- scanorama$correct(datasets_full = reticulate::r_to_py(list.matrix), 
-                                                     genes_list = reticulate::r_to_py(gene.list), 
+      integrated.corrected.data <- scanorama$correct(datasets_full = list.matrix, 
+                                                     genes_list = gene.list, 
                                                      dimred = as.integer(n.dims), 
                                                      return_dimred=TRUE, 
                                                      return_dense=FALSE, 
@@ -313,9 +313,9 @@ perform.scanorama <- function(object,
     }
     
     if(isFALSE(verbose)) {
-      
-      integrated.corrected.data <- scanorama$correct(datasets_full = reticulate::r_to_py(list.matrix), 
-                                                     genes_list = reticulate::r_to_py(gene.list), 
+
+      integrated.corrected.data <- scanorama$correct(datasets_full = list.matrix, 
+                                                     genes_list = gene.list, 
                                                      dimred = as.integer(n.dims), 
                                                      return_dimred=TRUE, 
                                                      return_dense=FALSE, 
@@ -347,7 +347,7 @@ perform.scanorama <- function(object,
     dim.names <- unlist(dim.names)
     
     for(x in 1:length(sep)) {
-      transposed <- t(reticulate::py_to_r(integrated.corrected.data)[[1]][[x]])
+      transposed <- t(integrated.corrected.data[[1]][[x]])
       colnames(transposed) <- column.names[[x]]
       rownames(transposed) <- dim.names
       dims[[x]] <- transposed
