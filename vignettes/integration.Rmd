@@ -62,7 +62,7 @@ smartseq2 <- createIBRAPobject(counts = smartseq2_items$counts,
 
 ```
 
-```{r, eval=F, echo=T, message=F, warnings=F}
+```{r, eval=F, echo=F, message=F, warnings=F}
 
 # Here we set the maximum amount of RAM R may use, for this we have allowed 4GB
 
@@ -91,7 +91,7 @@ smartseq2 <- createIBRAPobject(counts = smartseq2_items$counts,
 
 Datasets are then merged together. WARNING: Datasets can only be merged straight after their creation with no downstream results.
 
-```{r, eval=T, echo=T, message=F, warnings=F}
+```{r, eval=T, echo=F, message=F, warnings=F}
 
 pancreas <- merge(x = celseq2, y = smartseq2)
 
@@ -101,28 +101,34 @@ pancreas <- merge(x = celseq2, y = smartseq2)
 
 We then continue our analysis as normal up until PCA reduction:
 
-```{r, eval=T, echo=T, message=F, warnings=F}
+```{r, eval=T, echo=F, message=F, warnings=F}
 
 pancreas <- perform.sct(object = pancreas, 
                         assay = 'RAW', 
-                        slot = 'counts')
+                        slot = 'counts', 
+                         verbose = T)
 
 pancreas <- perform.scran(object = pancreas, 
                           assay = 'RAW', 
                           slot = 'counts', 
-                          vars.to.regress = 'RAW_total.counts')
+                          vars.to.regress = 'RAW_total.counts', 
+                          verbose = T)
 
 pancreas <- perform.scanpy(object = pancreas, 
-                           vars.to.regress = 'RAW_total.counts')
+                           vars.to.regress = 'RAW_total.counts', 
+                           verbose = T)
 
 pancreas <- perform.pca(object = pancreas, 
                         assay = c('SCT', 'SCRAN', 'SCANPY'), 
-                        n.pcs = 50, reduction.save = 'PCA')
+                        n.pcs = 50, 
+                        reduction.save = 'PCA', 
+                        verbose = T)
 
 pancreas <- perform.umap(object = pancreas, 
                          assay = c('SCT', 'SCRAN', 'SCANPY'), 
                          reduction = c('PCA'), 
-                         n_components = 2)
+                         n_components = 2, 
+                         verbose = T)
 
 ```
 
@@ -201,14 +207,15 @@ Some integration methods either correct the normalised counts matrices or the re
 
 ## Using Harmony, Scanorama, and Seurat CCA
 
-```{r, eval=T, echo=T, message=F, warnings=F}
+```{r, eval=F, echo=T, message=F, warnings=F}
 
 pancreas <- perform.harmony(object = pancreas, 
                             assay = c('SCRAN', 'SCT', 'SCANPY'), 
                             batch = 'original.project', 
                             reduction = c('PCA'),  
                             max.iter.harmony = 100,
-                            dims.use = list(20))
+                            dims.use = list(20), 
+                            verbose = T)
 
 # Here we are performing Harmony on all PCA reductions derived from SCT, SCRAN, and SCANPY normalised 
 # matrices. We have set the dims.use to 20 which means to use only 20 PCs from the PCA. We also 
@@ -218,12 +225,13 @@ pancreas <- perform.harmony(object = pancreas,
 
 Harmony accepts reduced embeddings and produces a new reduced embedding called harmony reductions. These reductions can then be used to produce nearest neighbourhood graphs, any clustering method, and any reduction method. Harmony functions well since you can adjust the aggressiveness of the correction per co-variate that you specify using the theta parameter.
 
-```{r, eval=T, echo=T, message=F, warnings=F}
+```{r, eval=F, echo=T, message=F, warnings=F}
 
 pancreas <- perform.scanorama(object = pancreas, 
                               assay = c('SCT', 'SCRAN', 'SCANPY'), 
                               slot = 'norm.scaled', 
-                              batch = 'original.project')
+                              batch = 'original.project', 
+                              verbose = T)
 
 # For this tutorial we used Scanoramas default parameters and applied to the normalisation using the
 # normalised and scaled matrix which is recommended by the developers, however you may use any of the # matrices for your sample if you wish, 
@@ -234,26 +242,38 @@ pancreas <- perform.scanorama(object = pancreas,
 
 Rather than functioning on reduced embeddings, scanorama uses whole data or featured-subsetted data matrices and stitches together the batches in order of similarity. Scanorama produces a reduced embedding that can be used for nearest neighbourhood graph generation, any clustering method, and non-linear reduction method. 
 
-```{r, eval=T, echo=T, message=F, warnings=F}
+```{r, eval=F, echo=T, message=F, warnings=F}
 
-pancreas_split <- splitIBRAP(object = pancreas, split.by = 'original.project')
+pancreas_split <- splitIBRAP(object = pancreas, 
+                             split.by = 'original.project')
 
 for(x in seq_along(pancreas_split)) {
   
-  pancreas_split[[x]] <- perform.sct(object = pancreas_split[[x]])
-  pancreas_split[[x]] <- perform.scran(object = pancreas_split[[x]], vars.to.regress = c('RAW_total.counts'))
-  pancreas_split[[x]] <- perform.scanpy(object = pancreas_split[[x]], vars.to.regress = c('RAW_total.counts'))
+  pancreas_split[[x]] <- perform.sct(object = pancreas_split[[x]], 
+                                     verbose = T)
+  pancreas_split[[x]] <- perform.scran(object = pancreas_split[[x]], 
+                                       vars.to.regress = c('RAW_total.counts'), 
+                                       verbose = T)
+  pancreas_split[[x]] <- perform.scanpy(object = pancreas_split[[x]], 
+                                        vars.to.regress = c('RAW_total.counts'), 
+                                        verbose = T)
   
 }
 
-pancreas <- perform.seurat.integration(object = pancreas, object.list = pancreas_split, assay = c('SCT','SCRAN','SCANPY'))
+pancreas <- perform.seurat.integration(object = pancreas, 
+                                       object.list = pancreas_split, 
+                                       assay = c('SCT','SCRAN','SCANPY'), 
+                                       verbose = T)
 
-plot.variance(object = pancreas, assay = c('SCT', 'SCRAN', 'SCANPY'), reduction = 'CCA')
+plot.variance(object = pancreas, 
+              assay = c('SCT', 'SCRAN', 'SCANPY'), 
+              reduction = 'CCA', 
+              verbose = T)
 
 ```
 We next used Seurats CCA integration analysis to integrate our data. This method finds feature anchors as the basis of the integration. This method requires our batches to be separated and normalised individually prior to integration. This is performed using the splitIBRAP function and then looping through the batches and normalising them. The corrected matrix is the reduced with a PCA and is stored under integration_reductions as CCA however, this name can be changed in the parameters.
 
-```{r, eval=T, echo=T, message=F, warnings=F}
+```{r, eval=F, echo=T, message=F, warnings=F}
 
 # Here we have listed the n.dims in the same order as they are presented in the reduction parameter, remember 0 is equal to all dimensions and
 # that each reduction may require different parameters. For example, we can see that the variance explained in the PCs is reduced to prior to 10
@@ -281,7 +301,7 @@ pancreas <- perform.graph.cluster(object = pancreas,
 
 BBKNN functions differently to the others, it does not produce a reduced dimension but produces nearest neighbour graph and thus must be treated slighlty differently downstream.
 
-```{r, eval=T, echo=T, message=F, warnings=F}
+```{r, eval=F, echo=T, message=F, warnings=F}
 
 pancreas <- perform.bbknn(object = pancreas, 
                           assay = c('SCT', 'SCRAN', 'SCANPY'), 
@@ -472,14 +492,14 @@ Our benchmarking involves the same methodology proposed in the SCONE. An Average
 
 previously we calcualted the UMAP reductions for the uncorrected PCA and the corrected: harmony and scanorama data. We can use the UMAP reductions to assess the effectiveness of the data using the benchmarking function. Remember we can see the contents of our object using:
 
-```{r, eval=T, echo=T, message=F, warnings=F}
+```{r, eval=F, echo=T, message=F, warnings=F}
 
 showObjectContents(object = pancreas, assay = c('SCT','SCRAN','SCANPY'))
 
 ```
 
 
-```{r, eval=T, echo=T, message=F, warnings=F}
+```{r, eval=F, echo=T, message=F, warnings=F}
 
 # Here we are benchmarking how effective the correction methods were at removing batch effects. Producing the necessary distance matrices can be
 # computationally demanding, therefore we included the ability to spread the computations across different cores using the threads parameter.  

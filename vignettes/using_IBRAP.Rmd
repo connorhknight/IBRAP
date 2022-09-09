@@ -54,7 +54,7 @@ marrow_A <- readRDS('~/path/to/marrow_A.rds')
 
 Droplet-based datasets present unique confounding effects, including: doublets and ambient RNA contamination. To remove them we have enlisted scrublet and decontX, respectively. Thus far, there is no consensus on the order of application. However, we prefer scrublet followed by decontX. 
 
-```{r, eval=T, echo=T, message=F, warnings=F}
+```{r, eval=F, echo=T, message=F, warnings=F}
 
 # We simply supply our generated count matrix to both functions
 
@@ -62,6 +62,8 @@ marrow_A <- perform.scrublet(counts = marrow_A, print.plot = T)
 
 
 ```
+
+
 
 Scrublet functions by simulating multiplets from out datasets (by integrating similar cells); we can see these simulated cells with high doublet scores. For this example, we can see a minimal number of cells in our observed cells with high doublet scores. Cells that are above a certain doublet score threshold are omitted from the dataset.
 
@@ -72,7 +74,7 @@ Now that we have removed these confounding effects from our dataset we can conti
 
 Lets start by initiating our IBRAP class object ready for downstream analyses. You can see the structure and a manual for these in our reference section. 
 
-```{r, eval=T, echo=T, message=F, warnings=F}
+```{r, eval=F, echo=T, message=F, warnings=F}
 
 # whilst creating the object we begin filtering the cells and genes using min.cells and min.features
 marrow_A <- createIBRAPobject(counts = marrow_A,
@@ -98,7 +100,7 @@ knitr::kable(df)
 
 As previously mentioned we already generated total count and total genes whilst creating our IBRAP object. However, percentage mitochondrial genes requires a second function since mitochondrial genes have a varying prefix in datasets:
 
-```{r, eval=T, echo=T, message=F, warnings=F}
+```{r, eval=F, echo=T, message=F, warnings=F}
 
 marrow_A <- find_percentage_genes(object = marrow_A, pattern = '^MT-',
                                   assay = 'RAW', 
@@ -140,7 +142,7 @@ Now that we have eye-balled our data we can proceed to filtration.
 
 We clean our data further by applyng filtration cut-offs. We remove cells with a high number of features since this will remove any doublets that were missed by scrublet (two cells in a droplet will display a disproportionately higher number of features). Then, we remove cells with a certain fraction of mitochondrial counts - we do this to remove cells with damaged cell membrane. The percentage cut-off for mitochondrial genes is set at a case-by-case basis and no single value is applicable to all samples. 
 
-```{r, eval=T, echo=T, message=F, warnings=F}
+```{r, eval=F, echo=T, message=F, warnings=F}
 
 marrow_A <- filter_IBRAP(object = marrow_A, RAW_total.features < 3000 & RAW_percent.mt < 8)
 
@@ -152,7 +154,7 @@ marrow_A <- filter_IBRAP(object = marrow_A, RAW_total.features < 3000 & RAW_perc
 
 To accommodate downstream analyses, we must promote a normal distribution and numerical scaling in our data. We included four separate [normalisation](https://connorhknight.github.io/IBRAP/articles/data_transform.html) methods that are applied as such:
 
-```{r, eval=T, echo=T, message=F, warnings=F}
+```{r, eval=F, echo=T, message=F, warnings=F}
 
 marrow_A <- perform.sct(object = marrow_A, 
                         vars.to.regress = 'RAW_percent.mt')
@@ -191,7 +193,7 @@ Since IBRAP incorporated multiple pipelines, some pipelines begin to vary at thi
 
 Now that our data has been appropriately transformed our data and highly variable genes have been identified we can reduce the number of dimensions using Principal Component Analysis (PCA). Reduction methods summarise as much information from the higher dimensions into lower dimensions as possible. Therefore, these lower dimensions facilitate a faster computing time and require less computational resources. 
 
-```{r, eval=T, echo=T, message=F, warnings=F}
+```{r, eval=F, echo=T, message=F, warnings=F}
 
 marrow_A <- perform.pca(object = marrow_A, 
                         assay = c('SCT', 'SCRAN', 'SCANPY'), 
@@ -217,7 +219,7 @@ For these assays, the elbow point is around 10-15 PCs.
 
 Prior to clustering it is important to ascertain the relationship and closeness of our cells. As a pre-requisite to clustering we are going to produce a k-nearest neghbour graphs. SCT, SCRAN, and SCANPY use one algorithm whilst SCANPY uses its own version. This is produced by applying the following function: 
 
-```{r, eval=T, echo=T, message=F, warnings=F}
+```{r, eval=F, echo=T, message=F, warnings=F}
 # here we generate the neighbour graph for PCA and produce a diffusion map from the PCA-neighbour graph
 
 marrow_A <- perform.nn(object = marrow_A, 
@@ -237,7 +239,7 @@ Finally, using our neighbourhood graph we must cluster close networks together t
 
 These methods can be adjusted using thre res parameter in the function typically ranging between 0.1-1.5. A higher resolution finds more communities in a sample, whereas a lower value produces the opposite. The default option for this function is to use the following resolutions:  c(0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1, 1.1, 1.2, 1.3, 1.4, 1.5). However, feel free to adjsut this to your requirement. 
 
-```{r, eval=T, echo=T, message=F, warnings=F}
+```{r, eval=F, echo=T, message=F, warnings=F}
 
 marrow_A <- perform.graph.cluster(object = marrow_A, 
                                   assay = c('SCT', 'SCRAN', 'SCANPY'), 
@@ -259,7 +261,7 @@ IBRAP integrated the ability to perform 3 methods:
 
 For this tutorial we will focus on UMAP. 
 
-```{r, eval=T, echo=T, message=F, warnings=F}
+```{r, eval=F, echo=T, message=F, warnings=F}
 
 marrow_A <- perform.umap(object = marrow_A, 
                          assay = c('SCT', 'SCRAN', 'SCANPY'), 
@@ -292,7 +294,7 @@ showObjectContents(marrow_A, c('SCT','SCRAN','SCANPY'))
 
 To set up the function, supply the names you want to benchmark from cluster_assignments. Next, include the corresponding reductions for them, normally this will be a umap reduction using 1:2 dimensions. For example, if clustering and the umap were calculated using PCA these should be paired, likewise if they were calculated using an integration method we would do the same.
 
-```{r, eval=T, echo=T, message=F, warnings=F}
+```{r, eval=F, echo=T, message=F, warnings=F}
 
 marrow_A <- benchmark.clustering(object = marrow_A, 
                                  assay = c('SCT', 'SCRAN', 'SCANPY'), 
@@ -395,11 +397,10 @@ To understand the biology driving the clustering we can tackle it in two ways: d
 
 Differential expression analyses can be performed either 1 cluster compared against all other cells or 1 cluster against 1 other cluster. In this tutorial we will use the 1 v all function. 
 
-```{r, eval=T, echo=T, message=F, warnings=F}
+```{r, eval=F, echo=T, message=F, warnings=F}
 
 DE_res <- perform.diffexp.all(object = marrow_A, 
                               assay = 'SCT', 
-                              test = 'MAST', 
                               clust.method = 'PCA_NN:LOUVAIN', 
                               column = 'res_0.8')
 
