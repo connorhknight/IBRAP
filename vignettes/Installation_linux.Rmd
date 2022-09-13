@@ -25,50 +25,6 @@ df <- data.frame(`Software` = c('R version >=4.0.0', 'python version >=3.8', 'Xc
 knitr::kable(df)
 ```
 
-## Installing OS IBRAP dependencies
-## WARNING: only perform these if these dependencies are not alredy installed on your system
-
-### Installing GCC and ImageMagick
-
-Linux users already have a software that is able to install essential software such as comilers. To install GCC, this can be performed using the following apt fuctions. After we install GCC we can install ImageMagick. 
-
-```{bash, eval=F, echo=T}
-
-sudo apt update
-
-sudo apt install build-essential
-
-# The previous command has installed a bunch of essential packages for your system, including GCC.
-
-# Now that we have installed GCC lets proceed to install ImageMagick. 
-
-wget https://www.imagemagick.org/download/ImageMagick.tar.gz
-
-tar xvzf ImageMagick.tar.gz
-
-cd ImageMagick-7.0.8-26/
-
-./configure 
-
-make
-
-sudo make install 
-
-sudo ldconfig /usr/local/lib
-
-```
-
-Now that we have installed these, we can check that they installed correctly with the following commands:
-
-```{bash, eval=F, echo=T}
-
-gcc --version
-magick --version
-
-```
-
-Hopefully, this has done the trick and GCC and ImageMagick are installed in your system, however if you require further help the internet is full of forums for troubleshooting, but if you are really stuck feel free to leave a comment on the issues page of our GitHub. 
-
 ## Installing IBRAP
 
 IBRAP installation and its dependencies R-based dependencies is fully automated and can be performed using the following command in R:
@@ -120,9 +76,9 @@ reticulate::install_miniconda()
 Once we have install miniconda, we must produce a virtual enviornment to install our python packages, as shown in the dependencies table we require the python version to be at least 3.8. Therefore, we can install an environment that is specific for IBRAP and contains the correct python package with the following command in R:
 
 ```{r, eval=F, echo=T}
-system('curl -LJO https://github.com/connorhknight/IBRAP/blob/main/data/IBRAP.yml')
+system('curl -LJO https://github.com/connorhknight/IBRAP/blob/main/data/IBRAP.yaml')
 
-reticulate::conda_create(envname = "IBRAP", environment = "IBRAP.yml")
+reticulate::conda_create(envname = "IBRAP", environment = "IBRAP.yaml")
 
 ```
 
@@ -144,12 +100,7 @@ nano ~/.Rprofile
 
 ```
 
-Then you can close the editor using ctrl + x and then enter to save. Now, R will always source our version of python. Next, we must install the dependencies in our version of python. We actually constructed a script that will automate the installation process and install the correct packages for you! You can execute the following command and let the rest take care of itself. 
-
-```{r, eval=F, echo=T}
-IBRAP::prepare.reticulate()
-
-```
+Then you can close the editor using ctrl + x and then enter to save. Now, R will always source our version of python. 
 
 In total, 15 python packages are installed and their dependencies. You can  repeat this command and it will tell you whether you have the correct versions installed or if any are missing, if it is unable to install the package itself it will tell which packages require manual installation. 
 

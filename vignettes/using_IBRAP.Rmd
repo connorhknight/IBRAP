@@ -36,7 +36,7 @@ Marrow_A is a bone marrow sample from a set of 25. It contains 2994 cells, seque
 
 library(IBRAP)
 
-marrow_A <- readRDS('~/Documents/GitHub/IBRAP/data/marrow_A.rds')
+load('~/work/Results/scRNA-seq/IBRAP_tutorials/Objects/marrow_A.RData')
   
 ```
 

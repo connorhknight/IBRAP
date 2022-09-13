@@ -171,74 +171,11 @@ language</td>
 </table>
 </div>
 <div class="section level2">
-<h2 id="installing-os-ibrap-dependencies">Installing OS IBRAP dependencies<a class="anchor" aria-label="anchor" href="#installing-os-ibrap-dependencies"></a>
-</h2>
-</div>
-<div class="section level2">
-<h2 id="warning-only-perform-these-if-these-dependencies-are-not-alredy-installed-on-your-system">WARNING: only perform these if these dependencies are not alredy
-installed on your system<a class="anchor" aria-label="anchor" href="#warning-only-perform-these-if-these-dependencies-are-not-alredy-installed-on-your-system"></a>
-</h2>
-<div class="section level3">
-<h3 id="xcode-option-just-gcc">XCode option (just GCC)<a class="anchor" aria-label="anchor" href="#xcode-option-just-gcc"></a>
-</h3>
-<p>XCode is a requirment for R for installing packages and running some
-code, it is fast and provides many useful software you didn’t even
-realise were required. You can use it to install GCC with the following
-command in your bash terminal:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">xcode-select</span> <span class="at">--install</span></span></code></pre></div>
-<p>However, if this does not seem to insall GCC you can install it with
-homebrew.</p>
-</div>
-<div class="section level3">
-<h3 id="homebrew-option-gcc-and-imagemagick">Homebrew option (GCC and ImageMagick)<a class="anchor" aria-label="anchor" href="#homebrew-option-gcc-and-imagemagick"></a>
-</h3>
-<p>MacOS users can usually install operating system software using
-HomeBrew, which is an source software stuff that simply installs
-different packages for you with a single command (unless troubleshooting
-is required). If you do not have Homebrew, you can install it with the
-following command in your bash terminal:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="ex">ruby</span> <span class="at">-e</span> <span class="st">"</span><span class="va">$(</span><span class="ex">curl</span> <span class="at">-fsSL</span> https://raw.githubusercontent.com/Homebrew/install/master/install<span class="va">)</span><span class="st">"</span></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co"># if the previous command does not work try this one: </span></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="ex">/bin/bash</span> <span class="at">-c</span> <span class="st">"</span><span class="va">$(</span><span class="ex">curl</span> <span class="at">-fsSL</span> https://raw.githubusercontent.com/Homebrew/install/master/install.sh<span class="va">)</span><span class="st">"</span></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="co"># once homebrew is install, you must run this next command to configure brew and ensure all dependencies and directories are as they should be:</span></span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="ex">brew</span> doctor</span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="ex">brew</span> update</span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="co"># you can then install our dependent packages using the following commands: </span></span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a><span class="co"># installs GCC</span></span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a><span class="ex">brew</span> install gcc</span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a><span class="co">#installs ImageMagick and its required dependencies</span></span>
-<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a><span class="ex">brew</span> install php</span>
-<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a><span class="ex">brew</span> install imagemagick</span>
-<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a><span class="ex">brew</span> install pkg-config</span>
-<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a><span class="ex">pecl</span> install imagick</span></code></pre></div>
-<p>Now that we have installed these, we can check that they installed
-correctly with the following commands:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">gcc</span> <span class="at">--version</span></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="ex">magick</span> <span class="at">--version</span></span></code></pre></div>
-<p>Hopefully, either homebrew or xcode installed GCC For you, and
-homebrew installed ImageMagick, if you require further help the internet
-is full of forums for troubleshooting, but if you are really stuck feel
-free to leave a comment on the issues page of our GitHub.</p>
-</div>
-</div>
-<div class="section level2">
 <h2 id="installing-ibrap">Installing IBRAP<a class="anchor" aria-label="anchor" href="#installing-ibrap"></a>
 </h2>
 <p>IBRAP installation and its dependencies R-based dependencies is fully
 automated and can be performed using the following command in R:</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">'devtools'</span><span class="op">)</span></span>
 <span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">'connorhknight/IBRAP'</span><span class="op">)</span></span></code></pre></div>
@@ -255,7 +192,7 @@ within R. We now need to install the dependencies for Python.</p>
 <p>To access diffusion maps, we must install celda, a package that is
 tricky to install automatically, thus it is easier for the user to
 install it directly using the following command in the R-terminal:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BiocManager/man/install.html" class="external-link">install</a></span><span class="op">(</span><span class="st">"destiny"</span><span class="op">)</span></span></code></pre></div>
 <p>This should have successfully installed destiny into R. Next, we
@@ -265,7 +202,7 @@ in installing, hence we did not list it as a dependency. Please note
 that if you could not install ImageMagick do not install celda since it
 will not work. However, if you were successful you can install it
 manually in the R-terminal:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BiocManager/man/install.html" class="external-link">install</a></span><span class="op">(</span><span class="st">"celda"</span><span class="op">)</span></span></code></pre></div>
 <p>There is a second package</p>
@@ -281,7 +218,7 @@ dependencies. Reticulate uses a bash-based software called miniconda,
 which enables a user to access python in a virtual environment from
 within the R terminal. Indeed, we can install miniconda from our R
 terminal using the following command in R:</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># this command may ask to create a directory, which you can agree to and perhaps note where the package is being installed to. </span></span>
 <span></span>
 <span><span class="fu">reticulate</span><span class="fu">::</span><span class="fu"><a href="https://rstudio.github.io/reticulate/reference/install_miniconda.html" class="external-link">install_miniconda</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
@@ -290,10 +227,10 @@ to install our python packages, as shown in the dependencies table we
 require the python version to be at least 3.8. We generated a file which
 automatically installs these dependencies correctly, it can be
 downloaded using the link prior to conda_create.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/system.html" class="external-link">system</a></span><span class="op">(</span><span class="st">'curl -LJO https://github.com/connorhknight/IBRAP/blob/main/data/IBRAP.yml'</span><span class="op">)</span></span>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/system.html" class="external-link">system</a></span><span class="op">(</span><span class="st">'curl -LJO https://github.com/connorhknight/IBRAP/blob/main/data/IBRAP.yaml'</span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu">reticulate</span><span class="fu">::</span><span class="fu"><a href="https://rstudio.github.io/reticulate/reference/conda-tools.html" class="external-link">conda_create</a></span><span class="op">(</span>envname <span class="op">=</span> <span class="st">"IBRAP"</span>, environment <span class="op">=</span> <span class="st">"IBRAP.yml"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">reticulate</span><span class="fu">::</span><span class="fu"><a href="https://rstudio.github.io/reticulate/reference/conda-tools.html" class="external-link">conda_create</a></span><span class="op">(</span>envname <span class="op">=</span> <span class="st">"IBRAP"</span>, environment <span class="op">=</span> <span class="st">"IBRAP.yaml"</span><span class="op">)</span></span></code></pre></div>
 <p>This will install a fresh virtual environment for us to use.
 Normally, R will source the general operating systems python or a python
 package you installed to your system and will not automatically use our
@@ -304,7 +241,7 @@ requires us to specify the directory lcoation. When you created the
 virtual environment the pathway where python was installed is usually
 printed last on your R terminal. However, if you missed it we included a
 default saving location for MacOS.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="fu">reticulate</span><span class="fu">::</span><span class="fu"><a href="https://rstudio.github.io/reticulate/reference/use_python.html" class="external-link">use_python</a></span><span class="op">(</span><span class="st">'~/Library/r-miniconda/envs/IBRAP/bin/python'</span>,required <span class="op">=</span> <span class="cn">T</span><span class="op">)</span></span>
 <span></span>
@@ -318,16 +255,10 @@ called .Rprofile which is contained in your home directory (~) (note
 than some users may not have this file, it is completely okay for you to
 create your own using Nano). To do this, perform the following in
 bash:</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">nano</span> ~/.Rprofile</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="co">#copy and paste the previous reticulate::use_python command</span></span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">nano</span> ~/.Rprofile</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="co">#copy and paste the previous reticulate::use_python command</span></span></code></pre></div>
 <p>Then you can close the editor using ctrl + x and then enter to save.
-Now, R will always source our version of python. Next, we must install
-the dependencies in our version of python. We actually constructed a
-script that will automate the installation process and install the
-correct packages for you! You can execute the following command and let
-the rest take care of itself.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">IBRAP</span><span class="fu">::</span><span class="fu"><a href="../reference/prepare.reticulate.html">prepare.reticulate</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+Now, R will always source our version of python.</p>
 <p>In total, 15 python packages are installed and their dependencies.
 You can repeat this command and it will tell you whether you have the
 correct versions installed or if any are missing, if it is unable to
