@@ -3,29 +3,29 @@ channels:
   - conda-forge
   - defaults
 dependencies:
-  - _libgcc_mutex=0.1=conda_forge
-  - _openmp_mutex=4.5=2_gnu
-  - bzip2=1.0.8=h7f98852_4
-  - ca-certificates=2022.5.18.1=ha878542_0
-  - ld_impl_linux-64=2.36.1=hea4e1c9_2
-  - libffi=3.4.2=h7f98852_5
-  - libgcc-ng=12.1.0=h8d9b700_16
-  - libgomp=12.1.0=h8d9b700_16
-  - libnsl=2.0.0=h7f98852_0
-  - libuuid=2.32.1=h7f98852_1000
-  - libzlib=1.2.11=h166bdaf_1014
-  - ncurses=6.3=h27087fc_1
-  - openssl=3.0.3=h166bdaf_0
-  - pip=22.1.1=pyhd8ed1ab_0
-  - python=3.8.13=ha86cf86_0_cpython
-  - python_abi=3.8=2_cp38
-  - readline=8.1=h46c0cb4_0
-  - setuptools=62.3.2=py38h578d9bd_0
-  - sqlite=3.38.5=h4ff8645_0
-  - tk=8.6.12=h27826a3_0
-  - wheel=0.37.1=pyhd8ed1ab_0
-  - xz=5.2.5=h516909a_1
-  - zlib=1.2.11=h166bdaf_1014
+  - _libgcc_mutex=0.1
+  - _openmp_mutex=4.5
+  - bzip2=1.0.8
+  - ca-certificates=2022.5.18.1
+  - ld_impl_linux-64=2.36.1
+  - libffi=3.4.2
+  - libgcc-ng=12.1.0
+  - libgomp=12.1.0
+  - libnsl=2.0.0
+  - libuuid=2.32.1
+  - libzlib=1.2.11
+  - ncurses=6.3
+  - openssl=3.0.3
+  - pip=22.1.1
+  - python=3.8.13
+  - python_abi=3.8
+  - readline=8.1
+  - setuptools=62.3.2
+  - sqlite=3.38.5
+  - tk=8.6.12
+  - wheel=0.37.1
+  - xz=5.2.5
+  - zlib=1.2.11
   - pip:
     - anndata==0.8.0
     - annoy==1.16.0
@@ -86,5 +86,4 @@ dependencies:
     - tqdm==4.64.0
     - umap-learn==0.5.1
     - urllib3==1.26.9
-prefix: /data/home/hfx742/.conda/envs/IBRAP
-
+prefix: /data/home/hfx742/.local/share/r-miniconda/envs/IBRAP
