@@ -60,23 +60,23 @@ Imports:
     biomaRt (>= 2.46.3),
     parallelDist (>= 0.2.6),
     shinydashboard (>= 1.7.2)
-    Config/reticulate:
-      list(
-        packages = list(
-          list(package = "'scrublet", version="0.2.3", pip = TRUE)
-          list(package = "'scanpy", version="1.8.1", pip = TRUE)
-          list(package = "'bbknn", version="1.5.1", pip = TRUE)
-          list(package = "'scanorama", version="1.7.1", pip = TRUE)
-          list(package = "'louvain", version="0.7.1", pip = TRUE)
-          list(package = "'leiden", version="1.0.1", pip = TRUE)
-          list(package = "'leidenalg", version="0.8.8", pip = TRUE)
-          list(package = "'annoy", version="1.16.0", pip = TRUE)
-          list(package = "'umap-learn", version="0.5.1", pip = TRUE)
-          list(package = "'pandas", version="1.1.5", pip = TRUE)
-          list(package = "'numba", version="0.53.1", pip = TRUE)
-          list(package = "'numpy", version="1.21.0", pip = TRUE)
-          list(package = "'matplotlib", version="3.4.2", pip = TRUE)
-          list(package = "'scipy", version="1.7.0", pip = TRUE)
-          list(package = "'scikit-learn", version="0.24.2", pip = TRUE)
-        )
-      )
+Config/reticulate:
+  list(
+    packages = list(
+      list(package = "'scrublet", version="0.2.3", pip = TRUE)
+      list(package = "'scanpy", version="1.8.1", pip = TRUE)
+      list(package = "'bbknn", version="1.5.1", pip = TRUE)
+      list(package = "'scanorama", version="1.7.1", pip = TRUE)
+      list(package = "'louvain", version="0.7.1", pip = TRUE)
+      list(package = "'leiden", version="1.0.1", pip = TRUE)
+      list(package = "'leidenalg", version="0.8.8", pip = TRUE)
+      list(package = "'annoy", version="1.16.0", pip = TRUE)
+      list(package = "'umap-learn", version="0.5.1", pip = TRUE)
+      list(package = "'pandas", version="1.1.5", pip = TRUE)
+      list(package = "'numba", version="0.53.1", pip = TRUE)
+      list(package = "'numpy", version="1.21.0", pip = TRUE)
+      list(package = "'matplotlib", version="3.4.2", pip = TRUE)
+      list(package = "'scipy", version="1.7.0", pip = TRUE)
+      list(package = "'scikit-learn", version="0.24.2", pip = TRUE)
+    )
+  )
