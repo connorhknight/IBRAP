@@ -10,6 +10,8 @@
   
   reticulate::install_miniconda(force = T)
   
+  reticulate::py_config()
+  
   reticulate::py_install('scrublet', pip = T)
   
   if(isFALSE(reticulate::py_module_available('scrublet'))) {
