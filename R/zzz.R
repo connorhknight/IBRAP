@@ -80,7 +80,7 @@
   
   ####################################################
   
-  reticulate::py_install('leiden', pip = F)
+  reticulate::py_install('leiden', pip = T)
   
   if(isFALSE(reticulate::py_module_available('leiden'))) {
     
