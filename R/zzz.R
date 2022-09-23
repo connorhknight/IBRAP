@@ -64,7 +64,7 @@
   
   ####################################################
   
-  reticulate::py_install('louvain==0.7.1', pip = F)
+  reticulate::py_install('louvain', pip = F)
   
   if(isFALSE(reticulate::py_module_available('louvain'))) {
     
