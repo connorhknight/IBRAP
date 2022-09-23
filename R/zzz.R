@@ -6,6 +6,8 @@
 
 .onLoad <- function(libname, pkgname) {
   
+  packageStartupMessage("Welcome to IBRAP")
+  
   reticulate::py_install('scrublet==0.2.3', pip = T)
   
   if(isFALSE(reticulate::py_module_available('scrublet'))) {
