@@ -6,9 +6,9 @@
 
 .onLoad <- function(libname, pkgname) {
   
-  packageStartupMessage("Welcome to IBRAP")
+  #packageStartupMessage("Welcome to IBRAP")
   
-  reticulate::py_config()
+  #reticulate::py_config()
   
   if(isFALSE(reticulate::py_module_available('scrublet'))) {
     
