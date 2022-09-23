@@ -177,7 +177,7 @@ prepare.reticulate <- function() {
   
   ####################################################
   
-  reticulate::py_install('matplotlib', pip = T)
+  reticulate::py_install('matplotlib==3.4.2', pip = T)
   
   if(isFALSE(reticulate::py_module_available('matplotlib'))) {
     
