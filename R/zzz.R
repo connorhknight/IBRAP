@@ -7,9 +7,7 @@
 .onLoad <- function(libname, pkgname) {
   
   packageStartupMessage("Welcome to IBRAP")
-  
-  reticulate::install_miniconda(force = T)
-  
+
   reticulate::py_config()
   
   reticulate::py_install('scrublet', pip = T)
