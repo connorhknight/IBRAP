@@ -7,10 +7,14 @@
 .onLoad <- function(libname, pkgname) {
   
   packageStartupMessage("Welcome to IBRAP")
-
+  
   reticulate::py_config()
   
-  reticulate::py_install('scrublet', pip = T)
+  if(isFALSE(reticulate::py_module_available('scrublet'))) {
+    
+    reticulate::py_install('scrublet', pip = T)
+    
+  }
   
   if(isFALSE(reticulate::py_module_available('scrublet'))) {
     
@@ -24,7 +28,11 @@
   
   ####################################################
   
-  reticulate::py_install('scanpy', pip=T)
+  if(isFALSE(reticulate::py_module_available('scanpy'))) {
+    
+    reticulate::py_install('scanpy', pip=T)
+    
+  }
   
   if(isFALSE(reticulate::py_module_available('scanpy'))) {
     
@@ -38,7 +46,11 @@
   
   ####################################################
   
-  reticulate::py_install('bbknn', pip = T)
+  if(isFALSE(reticulate::py_module_available('bbknn'))) {
+    
+    reticulate::py_install('bbknn', pip = T)
+    
+  }
   
   if(isFALSE(reticulate::py_module_available('bbknn'))) {
     
@@ -52,7 +64,11 @@
   
   ####################################################
   
-  reticulate::py_install('scanorama', pip = T)
+  if(isFALSE(reticulate::py_module_available('scanorama'))) {
+    
+    reticulate::py_install('scanorama', pip = T)
+    
+  }
   
   if(isFALSE(reticulate::py_module_available('scanorama'))) {
     
@@ -66,7 +82,11 @@
   
   ####################################################
   
-  reticulate::py_install('louvain', pip = F)
+  if(isFALSE(reticulate::py_module_available('louvain'))) {
+    
+    reticulate::py_install('louvain', pip = F)
+    
+  }
   
   if(isFALSE(reticulate::py_module_available('louvain'))) {
     
@@ -94,7 +114,11 @@
   
   ####################################################
   
-  reticulate::py_install('leidenalg', pip = T)
+  if(isFALSE(reticulate::py_module_available('leidenalg'))) {
+    
+    reticulate::py_install('leidenalg', pip = T)
+    
+  }
   
   if(isFALSE(reticulate::py_module_available('leidenalg'))) {
     
@@ -108,7 +132,11 @@
   
   ####################################################
   
-  reticulate::py_install('annoy', pip = T)
+  if(isFALSE(reticulate::py_module_available('annoy'))) {
+    
+    reticulate::py_install('annoy', pip = T)
+    
+  }
   
   if(isFALSE(reticulate::py_module_available('annoy'))) {
     
@@ -122,7 +150,11 @@
   
   ####################################################
   
-  reticulate::py_install('umap-learn==0.5.1', pip = T)
+  if(isFALSE(reticulate::py_module_available('umap'))) {
+    
+    reticulate::py_install('umap-learn==0.5.1', pip = T)
+    
+  }
   
   if(isFALSE(reticulate::py_module_available('umap'))) {
     
@@ -136,7 +168,11 @@
   
   ####################################################
   
-  reticulate::py_install('pandas', pip = T)
+  if(isFALSE(reticulate::py_module_available('pandas'))) {
+    
+    reticulate::py_install('pandas', pip = T)
+    
+  }
   
   if(isFALSE(reticulate::py_module_available('pandas'))) {
     
@@ -150,7 +186,11 @@
   
   ####################################################
   
-  reticulate::py_install('numba', pip = T)
+  if(isFALSE(reticulate::py_module_available('numba'))) {
+    
+    reticulate::py_install('numba', pip = T)
+    
+  }
   
   if(isFALSE(reticulate::py_module_available('numba'))) {
     
@@ -164,7 +204,11 @@
   
   ####################################################
   
-  reticulate::py_install('numpy', pip = T)
+  if(isFALSE(reticulate::py_module_available('numpy'))) {
+    
+    reticulate::py_install('numpy', pip = T)
+    
+  }
   
   if(isFALSE(reticulate::py_module_available('numpy'))) {
     
@@ -178,7 +222,11 @@
   
   ####################################################
   
-  reticulate::py_install('matplotlib', pip = T)
+  if(isFALSE(reticulate::py_module_available('matplotlib'))) {
+    
+    reticulate::py_install('matplotlib', pip = T)
+    
+  }
   
   if(isFALSE(reticulate::py_module_available('matplotlib'))) {
     
@@ -192,7 +240,11 @@
   
   ####################################################
   
-  reticulate::py_install('scipy', pip = T)
+  if(isFALSE(reticulate::py_module_available('scipy'))) {
+    
+    reticulate::py_install('scipy', pip = T)
+    
+  }
   
   if(isFALSE(reticulate::py_module_available('scipy'))) {
     
@@ -206,7 +258,11 @@
   
   ####################################################
   
-  reticulate::py_install('scikit-learn', pip = T)
+  if(isFALSE(reticulate::py_module_available('sklearn'))) {
+    
+    reticulate::py_install('scikit-learn', pip = T)
+    
+  }
   
   if(isFALSE(reticulate::py_module_available('sklearn'))) {
     
