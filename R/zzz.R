@@ -8,7 +8,7 @@
   
   packageStartupMessage("Welcome to IBRAP")
   
-  reticulate::install_miniconda()
+  reticulate::miniconda_update()
   
   reticulate::py_install('scrublet', pip = T)
   
