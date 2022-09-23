@@ -8,7 +8,9 @@
   
   packageStartupMessage("Welcome to IBRAP")
   
-  reticulate::py_install('scrublet==0.2.3', pip = T)
+  reticulate::install_miniconda()
+  
+  reticulate::py_install('scrublet', pip = T)
   
   if(isFALSE(reticulate::py_module_available('scrublet'))) {
     
@@ -36,7 +38,7 @@
   
   ####################################################
   
-  reticulate::py_install('bbknn==1.5.1', pip = T)
+  reticulate::py_install('bbknn', pip = T)
   
   if(isFALSE(reticulate::py_module_available('bbknn'))) {
     
@@ -50,7 +52,7 @@
   
   ####################################################
   
-  reticulate::py_install('scanorama==1.7.1', pip = T)
+  reticulate::py_install('scanorama', pip = T)
   
   if(isFALSE(reticulate::py_module_available('scanorama'))) {
     
@@ -78,7 +80,7 @@
   
   ####################################################
   
-  reticulate::py_install('leiden==1.0.1', pip = T)
+  reticulate::py_install('leiden', pip = T)
   
   if(isFALSE(reticulate::py_module_available('leiden'))) {
     
@@ -92,7 +94,7 @@
   
   ####################################################
   
-  reticulate::py_install('leidenalg==0.8.8', pip = T)
+  reticulate::py_install('leidenalg', pip = T)
   
   if(isFALSE(reticulate::py_module_available('leidenalg'))) {
     
@@ -106,7 +108,7 @@
   
   ####################################################
   
-  reticulate::py_install('annoy==1.16.0', pip = T)
+  reticulate::py_install('annoy', pip = T)
   
   if(isFALSE(reticulate::py_module_available('annoy'))) {
     
@@ -134,7 +136,7 @@
   
   ####################################################
   
-  reticulate::py_install('pandas==1.1.5', pip = T)
+  reticulate::py_install('pandas', pip = T)
   
   if(isFALSE(reticulate::py_module_available('pandas'))) {
     
@@ -148,11 +150,11 @@
   
   ####################################################
   
-  reticulate::py_install('numba==0.53.1', pip = T)
+  reticulate::py_install('numba', pip = T)
   
   if(isFALSE(reticulate::py_module_available('numba'))) {
     
-    cat(crayon::cyan('numba is not install, please try manually: numba==0.53.1 \n'))
+    cat(crayon::cyan('numba is not install, please try manually: numba \n'))
     
   } else {
     
@@ -204,7 +206,7 @@
   
   ####################################################
   
-  reticulate::py_install('scikit-learn==0.24.2', pip = T)
+  reticulate::py_install('scikit-learn', pip = T)
   
   if(isFALSE(reticulate::py_module_available('sklearn'))) {
     
