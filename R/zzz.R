@@ -22,7 +22,7 @@
   
   ####################################################
   
-  reticulate::py_install('scanpy==1.8.1', pip=T)
+  reticulate::py_install('scanpy==1.7.2', pip=T)
   
   if(isFALSE(reticulate::py_module_available('scanpy'))) {
     
