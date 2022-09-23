@@ -22,11 +22,11 @@
   
   ####################################################
   
-  reticulate::py_install('scanpy==1.7.2', pip=T)
+  reticulate::py_install('scanpy', pip=T)
   
   if(isFALSE(reticulate::py_module_available('scanpy'))) {
     
-    cat(crayon::cyan('scanpy is not install, please try manually: scanpy==1.8.1\n'))
+    cat(crayon::cyan('scanpy is not install, please try manually: scanpy\n'))
     
   } else {
     
@@ -190,11 +190,11 @@
   
   ####################################################
   
-  reticulate::py_install('scipy==1.7.0', pip = T)
+  reticulate::py_install('scipy', pip = T)
   
   if(isFALSE(reticulate::py_module_available('scipy'))) {
     
-    cat(crayon::cyan('scipy is not install, please try manually: scipy==1.7.0 \n'))
+    cat(crayon::cyan('scipy is not install, please try manually: scipy \n'))
     
   } else {
     
