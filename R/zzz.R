@@ -162,11 +162,11 @@
   
   ####################################################
   
-  reticulate::py_install('numpy==1.21.0', pip = T)
+  reticulate::py_install('numpy', pip = T)
   
   if(isFALSE(reticulate::py_module_available('numpy'))) {
     
-    cat(crayon::cyan('numpy is not install, please try manually: numpy==1.21.0 \n'))
+    cat(crayon::cyan('numpy is not install, please try manually: numpy \n'))
     
   } else {
     
