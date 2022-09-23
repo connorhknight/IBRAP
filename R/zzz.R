@@ -176,11 +176,11 @@
   
   ####################################################
   
-  reticulate::py_install('matplotlib==3.4.2', pip = T)
+  reticulate::py_install('matplotlib', pip = T)
   
   if(isFALSE(reticulate::py_module_available('matplotlib'))) {
     
-    cat(crayon::cyan('matplotlib is not install, please try manually: matplotlib==3.4.2 \n'))
+    cat(crayon::cyan('matplotlib is not install, please try manually: matplotlib \n'))
     
   } else {
     
