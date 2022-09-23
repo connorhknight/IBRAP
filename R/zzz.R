@@ -80,17 +80,17 @@
   
   ####################################################
   
-  reticulate::py_install('leiden', pip = T)
-  
-  if(isFALSE(reticulate::py_module_available('leiden'))) {
-    
-    cat(crayon::cyan('leiden is not install, please try manually: leiden\n'))
-    
-  } else {
-    
-    cat(crayon::cyan('louvain installed.\n'))
-    
-  }
+  # reticulate::py_install('leiden', pip = F)
+  # 
+  # if(isFALSE(reticulate::py_module_available('leiden'))) {
+  #   
+  #   cat(crayon::cyan('leiden is not install, please try manually: leiden\n'))
+  #   
+  # } else {
+  #   
+  #   cat(crayon::cyan('louvain installed.\n'))
+  #   
+  # }
   
   ####################################################
   
