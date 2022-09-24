@@ -76,9 +76,13 @@ reticulate::install_miniconda()
 Once we have install miniconda, we must produce a virtual enviornment to install our python packages, as shown in the dependencies table we require the python version to be at least 3.8. We generated a file which automatically installs these dependencies correctly, it can be downloaded using the link prior to conda_create.
 
 ```{r, eval=F, echo=T}
+# Use this link and command for Intel CPU mac hardware
 system('curl -LJO https://github.com/connorhknight/IBRAP/blob/main/data/IBRAP.yaml')
-
 reticulate::conda_create(envname = "IBRAP", environment = "IBRAP.yaml")
+
+# Use this link and command for M1 Chip CPU mac hardware
+system('curl -LJO https://github.com/connorhknight/IBRAP/blob/main/data/IBRAP_M1chip.yaml')
+reticulate::conda_create(envname = "IBRAP", environment = "IBRAP_M1chip.yaml")
 
 ```
 
