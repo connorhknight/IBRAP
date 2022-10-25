@@ -261,7 +261,7 @@ plot.reduced.dim <- function(object,
     
   }
 
-  return(p + guides(fill=guide_legend(title=column)))
+  return(p + ggplot2::guides(fill=guide_legend(title=column)))
   
 }
   

@@ -121,7 +121,7 @@ plot.features <- function(object,
       ggplot2::scale_color_gradient2(low = colours[1], high = colours[2]) + 
       ggplot2::theme_classic() + ggplot2::labs(title=x, x=orig.colnames[1], y=orig.colnames[2]) + 
       ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5, face = 'bold', size = 20)) + 
-      guides(fill=guide_legend(title="expression"))
+      ggplot2::guides(fill=guide_legend(title="expression"))
 
   }
   
