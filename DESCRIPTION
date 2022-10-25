@@ -60,7 +60,6 @@ Imports:
     biomaRt (>= 2.46.3),
     parallelDist (>= 0.2.6),
     shinydashboard (>= 1.7.2)
-    
 Config/reticulate:
   list(
     packages = list(

@@ -13,7 +13,8 @@
   order = TRUE,
   percentile = c(0, 1),
   pt_size = 0.5,
-  cells = NULL
+  cells = NULL,
+  colours = c("#C0C0C0", "#4169E1")
 )
 }
 \arguments{
@@ -32,6 +33,8 @@
 \item{pt_size}{Numeric. what size should the inidividual plot sizes be}
 
 \item{cells}{Numeric. Which cells should be subset for plotting, Default = NULL}
+
+\item{colours}{Vector. The first value will represent the lower values and the second the highest}
 
 \item{percentile.}{Numerical. What percentile of datapoint expression should be plotted. Default = c(0.1,0.9)}
 }

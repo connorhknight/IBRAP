@@ -12,6 +12,7 @@
 #' @param pt_size Numeric. what size should the inidividual plot sizes be
 #' @param percentile. Numerical. What percentile of datapoint expression should be plotted. Default = c(0.1,0.9)
 #' @param cells Numeric. Which cells should be subset for plotting, Default = NULL
+#' @param colours Vector. The first value will represent the lower values and the second the highest
 #' 
 #' @return A plot of reduced dimensions annotated with assignments
 #'
@@ -25,7 +26,8 @@ plot.features <- function(object,
                           order = TRUE,
                           percentile = c(0,1),
                           pt_size = 0.5,
-                          cells = NULL) {
+                          cells = NULL,
+                          colours= c('#C0C0C0', '#4169E1')) {
   
   if(!is(object = object, class2 = 'IBRAP')) {
     
@@ -77,7 +79,7 @@ plot.features <- function(object,
       
       iso <- object@methods[[assay]][[slot]][x,]
       
-    } if else (object@sample_metada[,x]) {
+    } else if (object@methods[[1]]@counts[x,]) {
       
       cat(crayon::cyan(paste0(Sys.time(), ': feature ', x, ' was not present in the defined assay, resorting to counts matrix', '\n')))
       
@@ -116,7 +118,7 @@ plot.features <- function(object,
     plot.list[[x]] <- ggplot2::ggplot(data = results[order(results$feature),], 
                                       ggplot2::aes(x = red_1, y = red_2)) + 
       ggplot2::geom_point(ggplot2::aes(color=feature), size = pt_size)+ 
-      ggplot2::scale_color_gradient2(low = '#C0C0C0', high = '#4169E1') + 
+      ggplot2::scale_color_gradient2(low = colours[1], high = colours[2]) + 
       ggplot2::theme_classic() + ggplot2::labs(title=x, x=orig.colnames[1], y=orig.colnames[2]) + 
       ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5, face = 'bold', size = 20)) + 
       guides(fill=guide_legend(title="expression"))

@@ -10,6 +10,7 @@
 #' @param column Character. Which column to access within the supplied clust.column
 #' @param pt.size Numeric. What should the point size be
 #' @param cells Numeric. Which cells should be subset for plotting, Default = NULL
+#' @param colours Vector. The first value will represent the lower value, the second the middle and the third the highest
 #' 
 #' @return A plot of reduced dimensions annotated with assignments
 #'

@@ -14,7 +14,8 @@
   pt.size = 0.5,
   add.label = TRUE,
   label.size = NULL,
-  cells = NULL
+  cells = NULL,
+  colours = c("Red", "Yellow", "Blue")
 )
 }
 \arguments{
@@ -31,6 +32,8 @@
 \item{pt.size}{Numeric. What should the point size be}
 
 \item{cells}{Numeric. Which cells should be subset for plotting, Default = NULL}
+
+\item{colours}{Vector. The first value will represent the lower value, the second the middle and the third the highest}
 }
 \value{
 A plot of reduced dimensions annotated with assignments
