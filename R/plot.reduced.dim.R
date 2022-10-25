@@ -25,6 +25,7 @@ plot.reduced.dim <- function(object,
                              add.label = TRUE,
                              label.size = NULL,
                              cells = NULL,
+                             order = NULL,
                              colours = c('Red','Yellow','Blue')) {
   
   if(!is(object = object, class2 = 'IBRAP')) {
@@ -144,7 +145,7 @@ plot.reduced.dim <- function(object,
     
     results <- cbind(results, project.met[,column])
     
-    colnames(results) <- c(orig.names, 'variable')
+    colnames(results) <- c(orig.names, column)
     
     rownames(results) <- colnames(object)
     
@@ -166,7 +167,7 @@ plot.reduced.dim <- function(object,
     
     results <- cbind(results, assay.met[,column])
 
-    colnames(results) <- c(orig.names, 'variable')
+    colnames(results) <- c(orig.names, column)
     
     rownames(results) <- colnames(object)
 
@@ -182,11 +183,22 @@ plot.reduced.dim <- function(object,
   
   if(is.numeric(results[[3]])) {
     
+    if(isTRUE(order)) {
+      
+      results <- results[order(results[,3]),]
+      
+    } else if (isFALSE(order)) {
+      
+      results <- results[order(results[,3], decreasing = T),]
+      
+    }
+    
     p <- ggplot2::ggplot(data = results, 
                          mapping = ggplot2::aes_string(x = colnames(results)[1], 
                                                        y = colnames(results)[2], 
                                                        col = colnames(results)[3])) +
       ggplot2::geom_point(size = pt.size) + 
+      ggplot2::guides(fill=ggplot2::guide_legend(title=column)) + 
       ggplot2::scale_color_gradient2(low = colours[1], mid = colours[2], high = colours[3]) + 
       ggplot2::theme_classic() + 
       ggplot2::theme(legend.title.align=0.5) + 
@@ -196,17 +208,17 @@ plot.reduced.dim <- function(object,
     
     if(isTRUE(add.label)) {
       
-      clust_centres <- data.frame(clusters = unique(results$variable))
+      clust_centres <- data.frame(clusters = unique(results[,3]))
       
       centre_1 <- list()
       centre_2 <- list()
       
       count <- 1
       
-      for(x in unique(results$variable)) {
+      for(x in unique(results[,3])) {
         
-        centre_1[[count]] <- mean(results[results[,'variable'] == x,][,orig.names[1]])
-        centre_2[[count]] <- mean(results[results[,'variable'] == x,][,orig.names[2]])
+        centre_1[[count]] <- mean(results[results[,3] == x,][,orig.names[1]])
+        centre_2[[count]] <- mean(results[results[,3] == x,][,orig.names[2]])
         
         count <- count + 1
         
@@ -214,7 +226,7 @@ plot.reduced.dim <- function(object,
       
       clust_centres[,orig.names[1]] <- unlist(centre_1)
       clust_centres[,orig.names[2]] <- unlist(centre_2)
-      clust_centres$variable <- unique(results$variable)
+      clust_centres[,3] <- unique(results[,3])
       
     }
     
@@ -223,8 +235,9 @@ plot.reduced.dim <- function(object,
                                                        y = colnames(results)[2], 
                                                        col = colnames(results)[3])) +
       ggplot2::geom_point(size = pt.size) + 
-      ggplot2::scale_color_manual(values = scales::hue_pal()(length(unique(results[,'variable'])))) + 
+      ggplot2::scale_color_manual(values = scales::hue_pal()(length(unique(results[,3])))) + 
       ggplot2::theme_classic() + 
+      ggplot2::guides(fill=ggplot2::guide_legend(title=column)) + 
       ggplot2::theme(legend.title.align=0.5) + 
       ggplot2::guides(colour = ggplot2::guide_legend(override.aes = list(size=2))) +
       ggplot2::geom_point(size = pt.size)
@@ -237,7 +250,7 @@ plot.reduced.dim <- function(object,
           ggrepel::geom_label_repel(data = clust_centres, mapping = 
                                       ggplot2::aes_string(x = colnames(results)[1], 
                                                           y = colnames(results)[2], 
-                                                          label = 'variable', fontface = 2), 
+                                                          label = column, fontface = 2), 
                                     color = 'black', label.size = NA, fill = NA, 
                                     box.padding = grid::unit(0.5, "lines")) + 
           
@@ -249,7 +262,7 @@ plot.reduced.dim <- function(object,
           ggrepel::geom_label_repel(data = clust_centres, mapping = 
                                       ggplot2::aes_string(x = colnames(results)[1], 
                                                           y = colnames(results)[2], 
-                                                          label = 'variable', fontface = 2), 
+                                                          label = column, fontface = 2), 
                                     color = 'black', label.size = NA, fill = NA, size = label.size,
                                     box.padding = grid::unit(0.5, "lines")) + 
           
@@ -261,7 +274,7 @@ plot.reduced.dim <- function(object,
     
   }
 
-  return(p + ggplot2::guides(fill=ggplot2::guide_legend(title=column)))
+  return(p)
   
 }
   
