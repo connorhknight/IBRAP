@@ -75,13 +75,17 @@ plot.features <- function(object,
 
     if(is.null(object@methods[[assay]][[slot]][x,])) {
       
+      iso <- object@methods[[assay]][[slot]][x,]
+      
+    } if else (object@sample_metada[,x]) {
+      
       cat(crayon::cyan(paste0(Sys.time(), ': feature ', x, ' was not present in the defined assay, resorting to counts matrix', '\n')))
-
+      
       iso <- object@methods[[1]]@counts[x,]
       
     } else {
       
-      iso <- object@methods[[assay]][[slot]][x,]
+      stop(paste0('could not find feature: ', x))
       
     }
     
@@ -114,7 +118,8 @@ plot.features <- function(object,
       ggplot2::geom_point(ggplot2::aes(color=feature), size = pt_size)+ 
       ggplot2::scale_color_gradient2(low = '#C0C0C0', high = '#4169E1') + 
       ggplot2::theme_classic() + ggplot2::labs(title=x, x=orig.colnames[1], y=orig.colnames[2]) + 
-      ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5, face = 'bold', size = 20))
+      ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5, face = 'bold', size = 20)) + 
+      guides(fill=guide_legend(title="expression"))
 
   }
   

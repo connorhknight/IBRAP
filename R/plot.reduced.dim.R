@@ -23,7 +23,8 @@ plot.reduced.dim <- function(object,
                              pt.size=0.5, 
                              add.label = TRUE,
                              label.size = NULL,
-                             cells = NULL) {
+                             cells = NULL,
+                             colours = c('Red','Yellow','Blue')) {
   
   if(!is(object = object, class2 = 'IBRAP')) {
     
@@ -176,71 +177,90 @@ plot.reduced.dim <- function(object,
     
   }
   
-  if(isTRUE(add.label)) {
+
+  
+  if(is.numeric(results[[3]])) {
     
-    clust_centres <- data.frame(clusters = unique(results$variable))
+    p <- ggplot2::ggplot(data = results, 
+                         mapping = ggplot2::aes_string(x = colnames(results)[1], 
+                                                       y = colnames(results)[2], 
+                                                       col = colnames(results)[3])) +
+      ggplot2::geom_point(size = pt.size) + 
+      ggplot2::scale_color_gradient2(low = colours[1], mid = colours[2], high = colours[3]) + 
+      ggplot2::theme_classic() + 
+      ggplot2::theme(legend.title.align=0.5) + 
+      ggplot2::guides(colour = ggplot2::guide_legend(override.aes = list(size=2)))
     
-    centre_1 <- list()
-    centre_2 <- list()
+  } else {
     
-    count <- 1
-    
-    for(x in unique(results$variable)) {
+    if(isTRUE(add.label)) {
       
-      centre_1[[count]] <- mean(results[results[,'variable'] == x,][,orig.names[1]])
-      centre_2[[count]] <- mean(results[results[,'variable'] == x,][,orig.names[2]])
+      clust_centres <- data.frame(clusters = unique(results$variable))
       
-      count <- count + 1
+      centre_1 <- list()
+      centre_2 <- list()
+      
+      count <- 1
+      
+      for(x in unique(results$variable)) {
+        
+        centre_1[[count]] <- mean(results[results[,'variable'] == x,][,orig.names[1]])
+        centre_2[[count]] <- mean(results[results[,'variable'] == x,][,orig.names[2]])
+        
+        count <- count + 1
+        
+      }
+      
+      clust_centres[,orig.names[1]] <- unlist(centre_1)
+      clust_centres[,orig.names[2]] <- unlist(centre_2)
+      clust_centres$variable <- unique(results$variable)
       
     }
     
-    clust_centres[,orig.names[1]] <- unlist(centre_1)
-    clust_centres[,orig.names[2]] <- unlist(centre_2)
-    clust_centres$variable <- unique(results$variable)
+    p <- ggplot2::ggplot(data = results, 
+                         mapping = ggplot2::aes_string(x = colnames(results)[1], 
+                                                       y = colnames(results)[2], 
+                                                       col = colnames(results)[3])) +
+      ggplot2::geom_point(size = pt.size) + 
+      ggplot2::scale_color_manual(values = scales::hue_pal()(length(unique(results[,'variable'])))) + 
+      ggplot2::theme_classic() + 
+      ggplot2::theme(legend.title.align=0.5) + 
+      ggplot2::guides(colour = ggplot2::guide_legend(override.aes = list(size=2))) +
+      ggplot2::geom_point(size = pt.size)
+    
+    if(isTRUE(add.label)) {
+      
+      if(is.null(label.size)) {
+        
+        p <- p + 
+          ggrepel::geom_label_repel(data = clust_centres, mapping = 
+                                      ggplot2::aes_string(x = colnames(results)[1], 
+                                                          y = colnames(results)[2], 
+                                                          label = 'variable', fontface = 2), 
+                                    color = 'black', label.size = NA, fill = NA, 
+                                    box.padding = grid::unit(0.5, "lines")) + 
+          
+          ggplot2::theme(legend.position = "none")
+        
+      } else {
+        
+        p <- p + 
+          ggrepel::geom_label_repel(data = clust_centres, mapping = 
+                                      ggplot2::aes_string(x = colnames(results)[1], 
+                                                          y = colnames(results)[2], 
+                                                          label = 'variable', fontface = 2), 
+                                    color = 'black', label.size = NA, fill = NA, size = label.size,
+                                    box.padding = grid::unit(0.5, "lines")) + 
+          
+          ggplot2::theme(legend.position = "none")
+        
+      }
+      
+    }
     
   }
 
-  p <- ggplot2::ggplot(data = results, 
-                       mapping = ggplot2::aes_string(x = colnames(results)[1], 
-                                                     y = colnames(results)[2], 
-                                                     col = colnames(results)[3])) +
-    ggplot2::geom_point(size = pt.size) + 
-    ggplot2::scale_color_manual(values = scales::hue_pal()(length(unique(results[,'variable'])))) + 
-    ggplot2::theme_classic() + 
-    ggplot2::theme(legend.title.align=0.5) + 
-    ggplot2::guides(colour = ggplot2::guide_legend(override.aes = list(size=2)))
-  
-  if(isTRUE(add.label)) {
-    
-    if(is.null(label.size)) {
-      
-      p <- p + 
-        ggrepel::geom_label_repel(data = clust_centres, mapping = 
-                                    ggplot2::aes_string(x = colnames(results)[1], 
-                                                        y = colnames(results)[2], 
-                                                        label = 'variable', fontface = 2), 
-                                  color = 'black', label.size = NA, fill = NA, 
-                                  box.padding = grid::unit(0.5, "lines")) + 
-        
-        ggplot2::theme(legend.position = "none")
-      
-    } else {
-      
-      p <- p + 
-        ggrepel::geom_label_repel(data = clust_centres, mapping = 
-                                    ggplot2::aes_string(x = colnames(results)[1], 
-                                                        y = colnames(results)[2], 
-                                                        label = 'variable', fontface = 2), 
-                                  color = 'black', label.size = NA, fill = NA, size = label.size,
-                                  box.padding = grid::unit(0.5, "lines")) + 
-        
-        ggplot2::theme(legend.position = "none")
-      
-    }
-    
-  }
-  
-  return(p)
+  return(p + guides(fill=guide_legend(title=column)))
   
 }
   
