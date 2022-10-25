@@ -75,11 +75,11 @@ plot.features <- function(object,
     
     orig.colnames <- colnames(object@methods[[assay]]@visualisation_reductions[[reduction]][,1:2])
 
-    if(is.null(object@methods[[assay]][[slot]][x,])) {
+    if(!is.null(object@methods[[assay]][[slot]][x,])) {
       
       iso <- object@methods[[assay]][[slot]][x,]
       
-    } else if (object@methods[[1]]@counts[x,]) {
+    } else if (!is.null(object@methods[[1]]@counts[x,])) {
       
       cat(crayon::cyan(paste0(Sys.time(), ': feature ', x, ' was not present in the defined assay, resorting to counts matrix', '\n')))
       
@@ -114,15 +114,15 @@ plot.features <- function(object,
     
     results$feature[which(results$feature >= upper)] <- 1
     results$feature[which(results$feature <= lower)] <- 1
- 
+    
     plot.list[[x]] <- ggplot2::ggplot(data = results[order(results$feature),], 
                                       ggplot2::aes(x = red_1, y = red_2)) + 
       ggplot2::geom_point(ggplot2::aes(color=feature), size = pt_size)+ 
       ggplot2::scale_color_gradient2(low = colours[1], high = colours[2]) + 
       ggplot2::theme_classic() + ggplot2::labs(title=x, x=orig.colnames[1], y=orig.colnames[2]) + 
       ggplot2::theme(plot.title = ggplot2::element_text(hjust = 0.5, face = 'bold', size = 20)) + 
-      ggplot2::guides(fill=guide_legend(title="expression"))
-
+      ggplot2::guides(fill=ggplot2::guide_legend(title="expression"))
+    
   }
   
   is.even <- function(x) {
@@ -146,17 +146,17 @@ plot.features <- function(object,
   }
   
   if(length(plot.list) > 1){
-
+    
     if(length(plot.list) <3) {
-
+      
       do.call('ggarrange.tmp', c(plots = plot.list, ncol = 1, nrow = 2))
       
     } else if(length(plot.list) <5) {
-
+      
       do.call('ggarrange.tmp', c(plots = plot.list, ncol = 2, nrow = 2))
       
     } else if(length(plot.list) <7) {
-
+      
       do.call('ggarrange.tmp', c(plots = plot.list, ncol = 3, nrow = 2))
       
     } else {
@@ -166,7 +166,7 @@ plot.features <- function(object,
     }
     
   } else {
-
+    
     plot.list[1]
     
   }
