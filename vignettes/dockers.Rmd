@@ -19,11 +19,11 @@ klippy::klippy(tooltip_message = 'Click to copy', tooltip_success = 'Done', posi
 
 # Using IBRAP in containers
 
-IBRAP is dependent on many packages across multiple languages, this can be easily troublshooted on a local machine with sudo rights, but not simply on HPCs where sudo rights are typically reserved. Therefore, we created a docker image that installs the correct dependencies for a computer in essentially a virutal machines. This allows for a smooth and consistent installation of IBRAP and generated results. Here we focus on singularity which is commonly used in HPC environments and Linux, and Docker which is used across all mainstream operating systems. 
+IBRAP is dependent on many packages across multiple languages, the installaton can be easily troublshooted on a local machine with sudo rights, howver when you are in an HPC environment without sudo rights it may be troublesome. Therefore, we created a docker image that installs the correct dependencies and versions for IBRAP in essentially a virutal machines. This allows for a smooth installatio of IBRAP and consistent results. Here we focus on singularity which is commonly used in HPC environments and unique to Linux, and Docker (which can be used in Windows and Linux) which is used across all mainstream operating systems. 
 
 ## Using IBRAP in Singularity 
 
-Singularity sould be available to users, however if this is not installed then ask the maintainer of the HPC to install it for you since yu require sudo rights. Once it is installed, you can continue to 
+Singularity sould be available to users, however if this is not installed then ask the maintainer of the HPC to install it for you since you require sudo rights. Once it is installed, you can continue to download the  
 
 ```{bash, eval=F, echo=T}
 
@@ -35,137 +35,26 @@ singularity pull docker://knight05/ibrap:v1
 
 ```
 
-Next, to use access the miniconda environment that was created to 
-
-Next, you must specify your Rsessions 
-
-## WARNING: only perform these if these dependencies are not alredy installed on your system
-
-### Installing GCC and ImageMagick
-
-Linux users already have a software that is able to install essential software such as comilers. To install GCC, this can be performed using the following apt fuctions. After we install GCC we can install ImageMagick. 
+Now they we have downloaded IBRAPs docker container you will have an ibrap.sif in the directory the command was performed You can now use this interactively or you can  submit non-interactive R scripts.IBRAP has also installed a new miniconda environment, you must configure the R session to use this environment using the following: 
 
 ```{bash, eval=F, echo=T}
 
-sudo apt update
-
-sudo apt install build-essential
-
-# The previous command has installed a bunch of essential packages for your system, including GCC.
-
-# Now that we have installed GCC lets proceed to install ImageMagick. 
-
-wget https://www.imagemagick.org/download/ImageMagick.tar.gz
-
-tar xvzf ImageMagick.tar.gz
-
-cd ImageMagick-7.0.8-26/
-
-./configure 
-
-make
-
-sudo make install 
-
-sudo ldconfig /usr/local/lib
-
-```
-
-Now that we have installed these, we can check that they installed correctly with the following commands:
-
-```{bash, eval=F, echo=T}
-
-gcc --version
-magick --version
-
-```
-
-Hopefully, this has done the trick and GCC and ImageMagick are installed in your system, however if you require further help the internet is full of forums for troubleshooting, but if you are really stuck feel free to leave a comment on the issues page of our GitHub. 
-
-## Installing IBRAP
-
-IBRAP installation and its dependencies R-based dependencies is fully automated and can be performed using the following command in R:
-
-```{r, eval=F, echo=T}
-
-install.packages('devtools')
-devtools::install_github('connorhknight/IBRAP')
-
-```
-
-IBRAP automatically installs 44 R-based packages and their dependencies, hence a long installation time is to be expected. This could be anywhere between 30 minutes to to more than 2 hours according to the computational resources available and internet speed. 
-
-Now, we have installed the dependencies for IBRAP external to and within R. We now need to install the dependencies for Python. 
-
-## Installing destiny and celda
-
-To access diffusion maps, we must install celda, a package that is tricky to install automatically, thus it is easier for the user to install it directly using the following command in the R-terminal:
-
-```{r, eval=F, echo=T}
-
-BiocManager::install("destiny")
-
-```
-
-This should have successfully installed destiny into R. Next, we focus on celda.
-
-Celda requires ImageMagick which some users may experience difficulty in installing, hence we did not list it as a dependency. Please note that if you could not install ImageMagick do not install celda since it will not work. However, if you were successful you can install it manually in the R-terminal:
-
-```{r, eval=F, echo=T}
-
-BiocManager::install("celda")
-
-```
-
-There is a second package
-
-## Installing miniconda
-
-IBRAP not only uses scRNA-seq analytical packages contained in the R programming language, but also packages available in Python. Therefore, we are required to install a package that enables us to access python from within R. For this purpose, we installed Reticulate as one of our dependencies. Reticulate uses a bash-based software called miniconda, which enables a user to access python in a virtual environment from within the R terminal. Indeed, we can install miniconda from our R terminal using the following command in R: 
-
-```{r, eval=F, echo=T}
-# this command may ask to create a directory, which you can agree to and perhaps note where the package is being installed to. 
-
-reticulate::install_miniconda()
-
-```
-
-Once we have install miniconda, we must produce a virtual enviornment to install our python packages, as shown in the dependencies table we require the python version to be at least 3.8. Therefore, we can install an environment that is specific for IBRAP and contains the correct python package with the following command in R:
-
-```{r, eval=F, echo=T}
-system('curl -LJO https://github.com/connorhknight/IBRAP/blob/main/data/IBRAP.yml')
-
-reticulate::conda_create(envname = "IBRAP", environment = "IBRAP.yml")
-
-```
-
-This will install a fresh virtual environment for us to use. Normally, R will source the general operating systems python or a python package you installed to your system and will not automatically use our python version from our IBRAP environment, therefore we must tell it where to find OUR version of python. Below, we displayed the correct command to tell python where to find our version of Python, whcih requires us to specify the directory lcoation. When you created the virtual environment the pathway where python was installed is usually printed last on your R terminal. However, if you missed it we included a default saving location for Linux.
-
-```{r, eval=F, echo=T}
-
-reticulate::use_python('~/share/r-miniconda/envs/IBRAP/lib/python',required = T)
-
-# note that his may not always be the pathway for your specific computer if there some configuration have happened. Therefore, it is always best to check. 
-
-```
-
-Please note, this command will only work in the current session you are using and R will revert back to the original python when you next use R. You can overcome this by forcing R to use this version of python every time you open R. When R is first initiated it can be told to run a set of commands prior to you using it. These commands are  within a file called .Rprofile which is contained in your home directory (~) (note than some users may not have this file, it is completely okay for you to create your own using Nano). To do this, perform the following in bash:
-
-```{bash, eval=F, echo=T}
 nano ~/.Rprofile
-#copy and paste the previous reticulate::use_python command
+
+# then type into the file
+
+reticulate::use_condaenv('IBRAP', required = T)
+
+# Then close and save the file and the correct file will be used throughout
 
 ```
 
-Then you can close the editor using ctrl + x and then enter to save. Now, R will always source our version of python. Next, we must install the dependencies in our version of python. We actually constructed a script that will automate the installation process and install the correct packages for you! You can execute the following command and let the rest take care of itself. 
+To use ibrap.sif interactively you can execute the following command:
 
-```{r, eval=F, echo=T}
-IBRAP::prepare.reticulate()
+```{bash, eval=F, echo=T}
+
+singularity shell ~/IBRAP_container/ibrap.sif
 
 ```
 
-In total, 15 python packages are installed and their dependencies. You can  repeat this command and it will tell you whether you have the correct versions installed or if any are missing, if it is unable to install the package itself it will tell which packages require manual installation. 
-
-Well done for installing IBRAP, that may have been a slightly long progress, but you have now installed a wide range of IBRAP dependencies (61 directly installed packages and their own dependencies) for scRNA-seq analytics that you can not only use in IBRAP, but outside of IBRAP too! Next, you must get to grips with how IBRAP functions, for this we have included some tutorials to explain the process. For example, we have one dedicted to generally using IBRAP with a single sample in [getting started](https://connorhknight.github.io/IBRAP/articles/using_IBRAP.html) tutorial, when the need arises for using multiple samples and integrating them, we have you covered in our [integration](https://connorhknight.github.io/IBRAP/articles/integration.html). 
-
-Good luck! And if you need any help, please feel free to leave a comment in our issues page on our GitHub.
+From here you can move around your HPC as you would normally and activate an R session, the 

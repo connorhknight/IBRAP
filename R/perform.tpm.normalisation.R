@@ -252,19 +252,19 @@ perform.tpm <- function(object,
     seuobj <- Seurat::ScaleData(object = seuobj, do.scale=do.scale, do.center=do.center, verbose = verbose, ...)
     
   }
-  
+ 
   .norm.scaled <- seuobj@assays$RNA@scale.data
   
-  feat.meta <- feature_metadata(assay = .counts, col.prefix = paste0('SCRAN', new.assay.suffix))
-  
-  object@sample_metadata <- cbind(object@sample_metadata, cell_metadata(assay = as_matrix(.normalised), col.prefix = paste0('TPM', new.assay.suffix)))
-  
+  feat.meta <- feature_metadata(assay = .counts, col.prefix = paste0('TPM', new.assay.suffix))
+ 
+  object@sample_metadata <- cbind(object@sample_metadata, cell_metadata(assay = .normalised, col.prefix = paste0('TPM', new.assay.suffix)))
+ 
   .counts <- object@methods[[assay]][[slot]]
-  
+
   object@methods[[paste0('TPM', new.assay.suffix)]] <- new(Class = 'methods',
                                                            counts = Matrix::Matrix(.counts, sparse = T), 
                                                            normalised = Matrix::Matrix(.normalised, sparse = T), 
-                                                           norm.scaled = as_matrix(.norm.scaled),
+                                                           norm.scaled = .norm.scaled,
                                                            highly.variable.genes = .highly.variable.genes,
                                                            feature_metadata = feat.meta)
   
@@ -279,15 +279,15 @@ perform.tpm <- function(object,
   function_time <- end_time - start_time
   
   if(!'normalisation_method' %in% colnames(object@pipelines)) {
-    
+  
     object@pipelines <- data.frame(normalisation_method=paste0('TPM', new.assay.suffix), normalisation_time=function_time)
     
   } else if (paste0('TPM', new.assay.suffix) %in% object@pipelines[,'normalisation_method']) {
-    
+   
     object@pipelines[which(object@pipelines[,'normalisation_method']==paste0('TPM', new.assay.suffix)),] <- data.frame(normalisation_method=paste0('TPM', new.assay.suffix), normalisation_time=function_time)
     
   } else {
-    
+
     object@pipelines <- rbind(object@pipelines, data.frame(normalisation_method=paste0('TPM', new.assay.suffix), normalisation_time=function_time))
     
   }
