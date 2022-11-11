@@ -76,7 +76,8 @@ reticulate::install_miniconda()
 Once we have install miniconda, we must produce a virtual enviornment to install our python packages, as shown in the dependencies table we require the python version to be at least 3.8. Therefore, we can install an environment that is specific for IBRAP and contains the correct python package with the following command in R:
 
 ```{r, eval=F, echo=T}
-system('curl -LJO https://github.com/connorhknight/IBRAP/blob/main/data/IBRAP.yaml')
+
+system('curl -LJO https://raw.githubusercontent.com/connorhknight/IBRAP/main/data/IBRAP.yaml')
 
 reticulate::conda_create(envname = "IBRAP", environment = "IBRAP.yaml")
 
