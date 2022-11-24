@@ -111,7 +111,7 @@ createIBRAPobject <- function(counts,
     rownames(counts) <- gsub(pattern='_', replacement='-', rownames(seuobj@assays$RNA@data))
     
   }
-  
+
   meta <- as.data.frame(replicate(n = length(colnames(counts)), expr = original.project))
   
   colnames(meta) <- as.character('original.project')
