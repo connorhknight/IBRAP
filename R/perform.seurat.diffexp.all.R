@@ -129,9 +129,17 @@ perform.diffexp.all <- function(object,
       
       stop('Latent.vars must be character(s)\n')
       
-    } else if(!latent.vars %in% names(object@sample_metadata)) {
+    } else {
       
-      stop('Latent.vars do not exist in object@sample_metadata \n')
+      for(x in latent.vars) {
+        
+        if(!x %in% names(object@sample_metadata)) {
+          
+          stop('Latent.vars do not exist in object@sample_metadata \n')
+          
+        }
+        
+      }
       
     }
     

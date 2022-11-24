@@ -152,19 +152,19 @@ perform.sct <- function(object,
   
   function_time <- end_time - start_time
   
-  if(!'normalisation_method' %in% colnames(object@pipelines)) {
-    
-    object@pipelines <- data.frame(normalisation_method=paste0('SCT', new.assay.suffix), normalisation_time=function_time)
-    
-  } else if (paste0('SCT', new.assay.suffix) %in% object@pipelines[,'normalisation_method']) {
-    
-    object@pipelines[which(object@pipelines[,'normalisation_method']==paste0('SCT', new.assay.suffix)),] <- data.frame(normalisation_method=paste0('SCT', new.assay.suffix), normalisation_time=function_time)
-    
-  } else {
-    
-    object@pipelines <- rbind(object@pipelines, data.frame(normalisation_method=paste0('SCT', new.assay.suffix), normalisation_time=function_time))
-    
-  }
+  # if(!'normalisation_method' %in% colnames(object@pipelines)) {
+  #   
+  #   object@pipelines <- data.frame(normalisation_method=paste0('SCT', new.assay.suffix), normalisation_time=function_time)
+  #   
+  # } else if (paste0('SCT', new.assay.suffix) %in% object@pipelines[,'normalisation_method']) {
+  #   
+  #   object@pipelines[which(object@pipelines[,'normalisation_method']==paste0('SCT', new.assay.suffix)),] <- data.frame(normalisation_method=paste0('SCT', new.assay.suffix), normalisation_time=function_time)
+  #   
+  # } else {
+  #   
+  #   object@pipelines <- rbind(object@pipelines, data.frame(normalisation_method=paste0('SCT', new.assay.suffix), normalisation_time=function_time))
+  #   
+  # }
   
   return(object)
   

@@ -195,12 +195,16 @@ perform.scran <- function(object,
     colnames(vars.to.regress.df) <- vars.to.regress
     rownames(vars.to.regress.df) <- colnames(object)
     
-    vars.to.regress.df <- vars.to.regress.df[match(rownames(seuobj@meta.data), rownames(vars.to.regress.df)),]
+    vars.to.regress.df <- as.data.frame(vars.to.regress.df[match(rownames(seuobj@meta.data), rownames(vars.to.regress.df)),])
+    colnames(vars.to.regress.df) <- vars.to.regress
+    rownames(vars.to.regress.df) <- colnames(seuobj)
+    
     seuobj@meta.data <- cbind(seuobj@meta.data,vars.to.regress.df)
     
-    colnames(seuobj@meta.data) <- c(names(seuobj@meta.data)[1:sum(length(names(seuobj@meta.data))-length(vars.to.regress))], vars.to.regress)
-    
+     print(top.hvgs)
     seuobj@assays$RNA@data <- as(.normalised, 'dgCMatrix')[top.hvgs,]
+
+    print(seuobj@assays$RNA@data)
     seuobj <- Seurat::ScaleData(object = seuobj, vars.to.regress=vars.to.regress, do.scale=do.scale, do.center=do.center, verbose = verbose, ...)
     
   } else {
@@ -210,6 +214,8 @@ perform.scran <- function(object,
   }
   
   object@sample_metadata <- cbind(object@sample_metadata, cell_metadata(assay = .normalised, col.prefix = paste0('SCRAN', new.assay.suffix)))
+  
+  print(seuobj@assays$RNA@scale.data)
   
   .norm.scaled <- seuobj@assays$RNA@scale.data
   
