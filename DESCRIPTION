@@ -21,7 +21,7 @@ Authors@R: c(
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.2.1
+RoxygenNote: 7.2.2
 biocViews:
 Imports: 
     crayon (>= 1.4.1),

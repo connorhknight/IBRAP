@@ -15,6 +15,7 @@
   add.label = TRUE,
   label.size = NULL,
   cells = NULL,
+  order = NULL,
   colours = c("Red", "Yellow", "Blue")
 )
 }
