@@ -108,7 +108,7 @@ createIBRAPobject <- function(counts,
     
     cat(crayon::cyan(paste0(Sys.time(), ': cannot have _ in gene names, replacing with - ')))
     
-    rownames(counts) <- gsub(pattern='_', replacement='-', rownames(seuobj@assays$RNA@data))
+    rownames(counts) <- gsub(pattern='_', replacement='-', rownames(counts))
     
   }
   
