@@ -104,14 +104,14 @@ createIBRAPobject <- function(counts,
     
   }
   
-  if(isTRUE(any(stringr::str_detect(string = rownames(counts), pattern='_'))) {
+  if(isTRUE(any(stringr::str_detect(string = rownames(counts), pattern='_')))) {
     
     cat(crayon::cyan(paste0(Sys.time(), ': cannot have _ in gene names, replacing with - ')))
     
     rownames(counts) <- gsub(pattern='_', replacement='-', rownames(seuobj@assays$RNA@data))
     
   }
-
+  
   meta <- as.data.frame(replicate(n = length(colnames(counts)), expr = original.project))
   
   colnames(meta) <- as.character('original.project')
