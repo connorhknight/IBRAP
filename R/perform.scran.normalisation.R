@@ -212,9 +212,7 @@ perform.scran <- function(object,
   }
   
   object@sample_metadata <- cbind(object@sample_metadata, cell_metadata(assay = .normalised, col.prefix = paste0('SCRAN', new.assay.suffix)))
-  
-  print(seuobj@assays$RNA@scale.data)
-  
+
   .norm.scaled <- seuobj@assays$RNA@scale.data
   
   if('_' %in% unlist(strsplit(x = new.assay.suffix, split = ''))) {
