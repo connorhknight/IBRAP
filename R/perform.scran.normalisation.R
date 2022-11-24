@@ -201,11 +201,9 @@ perform.scran <- function(object,
     
     seuobj@meta.data <- cbind(seuobj@meta.data,vars.to.regress.df)
     
-     print(top.hvgs)
     seuobj@assays$RNA@data <- as(.normalised, 'dgCMatrix')[top.hvgs,]
-
-    print(seuobj@assays$RNA@data)
-    seuobj <- Seurat::ScaleData(object = seuobj, vars.to.regress=vars.to.regress, do.scale=do.scale, do.center=do.center, verbose = verbose, ...)
+    seuobj@assays$RNA@var.features <- top.hvgs
+    seuobj <- Seurat::ScaleData(object = seuobj, vars.to.regress=vars.to.regress, do.scale=do.scale, do.center=do.center, verbose = verbose, features=top.hvgs, ...)
     
   } else {
     
