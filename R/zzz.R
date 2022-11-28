@@ -8,10 +8,9 @@
 
 .onLoad <- function(libname, pkgname) {
   
-  for(pkg in pkglist)
-    if(!suppressWarnings(suppressPackageStartupMessages(require('celltalker', quietly=TRUE,character.only=TRUE)))){
-      devtools::install_github("arc85/celltalker")
-      suppressPackageStartupMessages(library('celltalker',character.only=TRUE))
-    }
+  if(!suppressWarnings(suppressPackageStartupMessages(require('celltalker', quietly=TRUE,character.only=TRUE)))){
+    devtools::install_github("arc85/celltalker")
+    suppressPackageStartupMessages(library('celltalker',character.only=TRUE))
+  }
   
 }
