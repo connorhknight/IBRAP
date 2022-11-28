@@ -61,5 +61,4 @@ Imports:
     parallelDist (>= 0.2.6),
     shinydashboard (>= 1.7.2),
     escape (>= 1.4.0)
-Remotes:
-    arc85/celltalker
+Remotes: rc85/celltalker
