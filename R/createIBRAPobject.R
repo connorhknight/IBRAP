@@ -106,7 +106,7 @@ createIBRAPobject <- function(counts,
   
   if(isTRUE(any(stringr::str_detect(string = rownames(counts), pattern='_')))) {
     
-    cat(crayon::cyan(paste0(Sys.time(), ': cannot have _ in gene names, replacing with - ')))
+    cat(crayon::cyan(paste0(Sys.time(), ': cannot have _ in gene names, replacing with - \n')))
     
     rownames(counts) <- gsub(pattern='_', replacement='-', rownames(counts))
     
