@@ -75,7 +75,7 @@ perform.gsea <- function(object, assay='RAW', slot='counts', gene.sets=escape::g
   
   cat(crayon::cyan(paste0(Sys.time(), ': initiating gene set enrichment analysis \n')))
 
-  enriched <- enrichIt(obj = as_matrix(object@methods[[1]]@counts), gene.sets = gene.sets, groups = groups, cores = cores)
+  enriched <- escape::enrichIt(obj = as_matrix(object@methods[[1]]@counts), gene.sets = gene.sets, groups = groups, cores = cores)
   
   if(isTRUE(return_object)) {
     
