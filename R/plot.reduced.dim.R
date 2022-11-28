@@ -226,7 +226,7 @@ plot.reduced.dim <- function(object,
       
       clust_centres[,orig.names[1]] <- unlist(centre_1)
       clust_centres[,orig.names[2]] <- unlist(centre_2)
-      clust_centres[,3] <- unique(results[,3])
+      clust_centres[,column] <- unique(results[,3])
       
     }
     
