@@ -22,6 +22,7 @@ License: GPL-3
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.2.2
+Remotes: arc85/celltalker
 biocViews:
 Imports: 
     crayon (>= 1.4.1),
@@ -61,4 +62,3 @@ Imports:
     parallelDist (>= 0.2.6),
     shinydashboard (>= 1.7.2),
     escape (>= 1.4.0)
-Remotes: arc85/celltalker
