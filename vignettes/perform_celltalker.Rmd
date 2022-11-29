@@ -1,0 +1,90 @@
+---
+title: "Celltalker"
+author: "Connor H Knight"
+date: "11/08/2021"
+output: 
+    html_document:
+    toc: true
+    toc_depth: 3
+    theme: united
+vignette: >
+  %\VignetteIndexEntry{The RShiny application}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r klippy, echo=FALSE, include=TRUE}
+klippy::klippy(tooltip_message = 'Click to copy', tooltip_success = 'Done', position = c('bottom', 'right'))
+```
+
+# Cell-cell communicaiton with celltalker
+
+## Installing celltalker
+
+```{r, eval=F, echo=T}
+
+devtools::install_github("arc85/celltalker")
+
+```
+
+## Running CellTalker
+
+Celltalker is a simple tool for extracting cell-cell ligadn-receptor communication. In this tutorial we will show you how to run celltalker and produce a simple circos plot to visualise communication. 
+
+This command is simple loading in some example data and inserting it into an IBRAP object.
+
+```{r, eval=F, echo=T}
+
+library(IBRAP)
+
+system('curl -LJO https://raw.githubusercontent.com/connorhknight/IBRAP/main/data/celseq2.rds')
+
+celseq2 <- readRDS('celseq2.rds')
+
+obj <- createIBRAPobject(counts = celseq2$counts, original.project = 'celseq2', meta.data = celseq2$metadata) 
+
+```
+
+Here we are going to apply celltalker to our selected object. We can select counts and log-normalise the counts interally in the function. However, you also have the option to use already normalised counts. 
+
+```{r, eval=F, echo=T}
+
+results <- perform.celltalker(object = obj, assay = 'RAW', slot = 'counts', clust.method = 'metadata', column = 'celltype')
+
+```
+
+## Visualisations
+
+Now this is complete, we can filter the results by FDR-adjusted p-values to retain only the significant interactions. Next we can plot the interactions in a circos plot. 
+
+```{r, eval=F, echo=T}
+
+library(tidyverse)
+
+top_stats <- results$results %>%
+  mutate(fdr=p.adjust(p_val,method="fdr")) %>%
+  filter(fdr<0.05) %>%
+  group_by(cell_type1) %>%
+  top_n(3,interact_ratio) %>%
+  ungroup()
+
+colors_use <- scales::hue_pal()(length(unique(obj[['celltype']])))
+
+celltalker::circos_plot(ligand_receptor_frame=top_stats,
+                        cell_group_colors=colors_use,
+                        ligand_color="blue",
+                        receptor_color="red",
+                        cex_outer=0.5,
+                        cex_inner=0.4)
+
+```
+
+Further information for celltalker can be found directly on their website: https://arc85.github.io/celltalker/index.html
+

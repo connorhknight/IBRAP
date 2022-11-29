@@ -34,7 +34,7 @@
 
 perform.celltalker <- function(object, assay='RAW', slot='counts', clust.method, column,
                                number_cells_required = 100, min_expression = 1000,
-                               max_expression = 20000, scramble_times = 10) {
+                               max_expression = 20000, scramble_times = 10, verbose=F) {
   
   if(!is(object = object, class2 = 'IBRAP')) {
     
@@ -95,6 +95,11 @@ perform.celltalker <- function(object, assay='RAW', slot='counts', clust.method,
     stop('specified column not contained in the supplied clusters_assignment \n')
     
   }
+  if(!is.logical(verbose)) {
+    
+    stop('verbose must be logical: TRUE/FALSE \n')
+    
+  }
   
   if(clust.method == 'metadata') {
     
@@ -112,7 +117,15 @@ perform.celltalker <- function(object, assay='RAW', slot='counts', clust.method,
   
   if(slot == 'counts') {
     
-    seuobj@assays$RNA@data <- Seurat::LogNormalize(data = seuobj@assays$RNA@counts)
+    if(isTRUE(verbose)) {
+      
+      seuobj@assays$RNA@data <- Seurat::LogNormalize(data = seuobj@assays$RNA@counts, verbose = T)
+      
+    } else if (isFALSE(verbose)) {
+      
+      seuobj@assays$RNA@data <- Seurat::LogNormalize(data = seuobj@assays$RNA@counts, verbose = F)
+      
+    }
     
   } else {
     
@@ -124,6 +137,6 @@ perform.celltalker <- function(object, assay='RAW', slot='counts', clust.method,
                                   number_cells_required = number_cells_required, min_expression = min_expression, max_expression = max_expression, 
                                   scramble_times = scramble_times)
   
-  return(results)
+  return(list(seuobj=seuobj, results=results))
   
 }

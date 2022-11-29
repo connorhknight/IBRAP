@@ -17,7 +17,7 @@
 #'
 #' @export
 
-perform.gsea <- function(object, assay='RAW', slot='counts', gene.sets=escape::getGeneSets(library = 'H'), groups = 1000, cores = 1, return_object=T) {
+perform.gsea <- function(object, assay='RAW', slot='counts', gene.sets=escape::getGeneSets(library = 'H'), groups = 1000, cores = 1, return_object=F, verbose=F) {
   
   if(!is(object = object, class2 = 'IBRAP')) {
     
@@ -43,9 +43,9 @@ perform.gsea <- function(object, assay='RAW', slot='counts', gene.sets=escape::g
     
   }
   
-  if(!assay %in% c('counts','normalised','norm.scaled')) {
+  if(!slot %in% c('counts','normalised','norm.scaled')) {
     
-    stop('Slot must either be: counts, normalised or norm.scaled. However, counts is highly recommended! \n')
+    stop('Slot must either be: counts, normalised or norm.scaled. However, counts is highly recommended \n')
     
   }
   
@@ -69,11 +69,21 @@ perform.gsea <- function(object, assay='RAW', slot='counts', gene.sets=escape::g
   
   if(!is.logical(return_object)) {
     
-    stop('return_object must be a logical value \n')
+    stop('return_object must be logical: TRUE/FALSE \n')
     
   }
   
-  cat(crayon::cyan(paste0(Sys.time(), ': initiating gene set enrichment analysis \n')))
+  if(!is.logical(verbose)) {
+    
+    stop('verbose should be logical: TRUE/FALSE \n')
+    
+  }
+  
+  if(isTRUE(verbose)) {
+    
+    cat(crayon::cyan(paste0(Sys.time(), ': initiating gene set enrichment analysis \n')))
+    
+  }
 
   enriched <- escape::enrichIt(obj = as_matrix(object@methods[[1]]@counts), gene.sets = gene.sets, groups = groups, cores = cores)
   
@@ -97,7 +107,11 @@ perform.gsea <- function(object, assay='RAW', slot='counts', gene.sets=escape::g
     
     object@sample_metadata <- cbind(object@sample_metadata, enriched)
     
-    cat(crayon::cyan(paste0(Sys.time(), ': gene set enrichment analysis complete \n')))
+    if(isTRUE(verbose)) {
+      
+      cat(crayon::cyan(paste0(Sys.time(), ': gene set enrichment analysis complete \n')))
+      
+    }
     
     return(object)
     

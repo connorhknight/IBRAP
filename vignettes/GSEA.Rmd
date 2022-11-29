@@ -1,0 +1,113 @@
+---
+title: "GSEA"
+author: "Connor H Knight"
+date: "11/08/2021"
+output: 
+    html_document:
+    toc: true
+    toc_depth: 3
+    theme: united
+vignette: >
+  %\VignetteIndexEntry{The RShiny application}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r klippy, echo=FALSE, include=TRUE}
+klippy::klippy(tooltip_message = 'Click to copy', tooltip_success = 'Done', position = c('bottom', 'right'))
+```
+
+# Perfoming gene set enricvhment with ssGSEA
+
+Gene Set Enrichment Analysis enables us to determine if a defined set of genes shows a statistically difference between biological states. Here we apply this on single-cell RNA-seq data. In this tutorial, we show you how to enrich certain pathways in your single-cell data.
+
+## Running GSEA
+
+We begin by loading some test data:
+This command is simple loading in some example data and inserting it into an IBRAP object.
+
+```{r, eval=T, echo=T}
+
+library(IBRAP)
+
+system('curl -LJO https://raw.githubusercontent.com/connorhknight/IBRAP/main/data/celseq2.rds')
+
+celseq2 <- readRDS('celseq2.rds')
+
+obj <- createIBRAPobject(counts = celseq2$counts, original.project = 'celseq2', meta.data = celseq2$metadata) 
+
+obj <- perform.sct(object = obj)
+obj <- perform.pca(object = obj, assay = 'SCT')
+obj <- perform.umap(object = obj, assay = 'SCT', reduction = 'PCA', dims.use = list(20))
+
+```
+
+We next next need to gather gene sets:
+
+There are a couple of ways to do this: (1) get the gene sets from the escape package or (2) define your own. 
+
+```{r, eval=T, echo=T}
+
+# Option 1
+
+gene.sets <- escape::getGeneSets(library = 'H', species = 'Homo Sapiens')
+
+# Option 2
+
+gene.sets <- list(Tcell_signature = c("CD2","CD3E","CD3D"),
+                  Myeloid_signature = c("SPI1","FCER1G","CSF1R"))
+
+```
+
+```{r, eval=T, echo=T}
+
+gene.sets <- escape::getGeneSets(library = 'H', species = 'Homo sapiens')
+
+# You can adjust the number of computing cores to dedicate to the calculations throguh the core parameter.
+
+results <- perform.gsea(object = obj, gene.sets = gene.sets, return_object = F)
+
+# We can then bind the results into our IBRAP object metadata.
+
+obj@sample_metadata <- cbind(obj@sample_metadata, results)
+
+```
+
+## Visualisations
+
+Here we can utilise the DittoSeq package to easily visualise our metaprogrammes. 
+
+## Heatmaps
+
+Firstly, we convert our IBRAP object into a SCE object to be compatible with dittoseq. 
+
+```{r, eval=T, echo=T}
+
+library(dittoSeq)
+
+dittoseq_obj <- prepare.for.dittoSeq(object = obj, assay = 'SCT', slot = 'normalised', reduction = 'PCA_UMAP', clust.method = 'metadata')
+
+```
+
+Then, we plot our metaprogrammes in a heatmap.
+
+```{r, eval=T, echo=T}
+
+dittoHeatmap(dittoseq_obj, genes = NULL, metas = names(results), 
+             annot.by = "celltype", 
+             fontsize = 7)
+
+```
+
+There are many other plots that can be performed on enrichment analysis which can be found in the following tutorial: http://www.bioconductor.org/packages/release/bioc/vignettes/escape/inst/doc/vignette.html
+
+
+
+
