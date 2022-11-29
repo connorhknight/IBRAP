@@ -46,6 +46,8 @@ library(IBRAP)
 
 system('curl -LJO https://raw.githubusercontent.com/connorhknight/IBRAP/main/data/celseq2.rds')
 
+x <- RCurl::getURL('https://raw.githubusercontent.com/connorhknight/IBRAP/main/data/ScTypeDB.rds')
+
 celseq2 <- readRDS('celseq2.rds')
 
 obj <- createIBRAPobject(counts = celseq2$counts, original.project = 'celseq2', meta.data = celseq2$metadata) 
