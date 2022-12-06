@@ -1,33 +1,15 @@
-#' @name perform.scanorama
-#' @aliases perform.scanorama
+#' @name perform.sctype
+#' @aliases perform.sctype
 #' 
-#' @title Performs Scanorama integration
-#'
-#' @description Performs Scanorama integration on defined method-assays and reductions contained within. This is performed on reductions. 
+#' @title Performs sctype 
 #' 
 #' @param object IBRAP S4 class object
 #' @param assay Character. String containing indicating which assay to use
 #' @param slot Character. String defining which slot in the assay to supply to Scanorama. Default = NULL
-#' @param batch Character. indicating the metadata column containing the batch to split the assay by. 
-#' @param n.dims Numerical. The number of Scanorama dimensions to be produced. Default = 50
-#' @param reduction.save.suffix Character. Should a suffix be added to the end of scanorama, This cannot include underscores.
-#' @param batch_size Numerical. The batch size used in the alignment vector computation. Useful when integrating large datasets. Default = 5000
-#' @param approx Boolean. Use appoximate nearest neighbours within python, speeds up runtime. Default = TRUE
-#' @param sigma Numerical. Correction smoothing parameter on Gaussian kernel. Default = 15
-#' @param alpha Numerical. Alignment score minimum cutoff. Default = 0.1
-#' @param knn Numerical. Number of nearest neighbors to use for matching. Default = 20
-#' @param verbose Logical Should function messages be printed?
-#' @param seed Numerical What seed should be set. Default = 1234
+#' @param db Character. String indicating where to collect database from. So far we only use the standard scType reference.
+#' @param tissue Character.String which tissue to subset.
 #' 
-#' @return Scanorama reduction saved in the supplied method-assays
-#' 
-#' @examples 
-#' 
-#' object <- perform.scanorama(object = object, 
-#'                             assay = c('SCT', 'SCRAN', 'SCANPY'), 
-#'                             slot = 'norm.scaled', 
-#'                             batch = 'original.project', 
-#'                             n.dims = 50)
+#' @return cell type annotation in relation to the clusterign categories that were provided
 #'
 #' @export
 
