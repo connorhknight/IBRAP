@@ -1,0 +1,105 @@
+---
+title: "ScType"
+author: "Connor H Knight"
+date: "11/08/2021"
+output: 
+    html_document:
+    toc: true
+    toc_depth: 3
+    theme: united
+vignette: >
+  %\VignetteIndexEntry{The RShiny application}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r klippy, echo=FALSE, include=TRUE}
+klippy::klippy(tooltip_message = 'Click to copy', tooltip_success = 'Done', position = c('bottom', 'right'))
+```
+
+# Perfoming ScType annotation
+
+scType is an automated cell type identification method using a panel of markers. Here we should you how to perform this on your IBRAP data and object. 
+
+```{r, eval=T, echo=F}
+
+library(IBRAP)
+
+obj <- saveRDS("/Users/knight05/work/Results/scRNA-seq/IBRAP_tutorials/scType_tutorial/scType_tutorial.rds")
+
+```
+
+## Preparing your IBRAP object
+
+```{r, eval=F, echo=T}
+
+library(IBRAP)
+
+system('curl -LJO https://raw.githubusercontent.com/connorhknight/IBRAP/main/data/celseq2.rds')
+
+celseq2 <- readRDS('celseq2.rds')
+
+obj <- createIBRAPobject(counts = celseq2$counts, original.project = 'celseq2', meta.data = celseq2$metadata) 
+
+obj <- perform.sct(object = obj)
+obj <- perform.pca(object = obj, assay = 'SCT')
+obj <- perform.nn(object = obj, assay = 'SCT', reduction = 'PCA', dims.use = list(20))
+obj <- perform.graph.cluster(object = obj, assay = 'SCT', neighbours = 'PCA_NN')
+obj <- perform.umap(object = obj, assay = 'SCT', reduction = 'PCA', dims.use = list(20))
+
+```
+
+We next next need to gather gene sets:
+
+There are a couple of ways to do this: (1) get the gene sets from the escape package or (2) define your own. 
+
+```{r, eval=F, echo=T}
+
+obj <- perform.sctype(object = obj, assay = 'SCT', tissue = 'Pancreas')
+
+```
+
+```{r, eval=T, echo=T}
+
+plot.reduced.dim(object = obj, reduction = 'PCA_UMAP', assay = 'SCT', clust.method = 'metadata', column = 'scType_SCT_norm.scaled')
+
+```
+
+## Visualisations
+
+Here we can utilise the DittoSeq package to easily visualise our metaprogrammes. 
+
+## Heatmaps
+
+Firstly, we convert our IBRAP object into a SCE object to be compatible with dittoseq. 
+
+```{r, eval=T, echo=T}
+
+library(dittoSeq)
+
+dittoseq_obj <- prepare.for.dittoSeq(object = obj, assay = 'SCT', slot = 'normalised', reduction = 'PCA_UMAP', clust.method = 'metadata')
+
+```
+
+Then, we plot our metaprogrammes in a heatmap.
+
+```{r, eval=T, echo=T}
+
+dittoHeatmap(dittoseq_obj, genes = NULL, metas = names(results), 
+             annot.by = "celltype", 
+             fontsize = 7)
+
+```
+
+There are many other plots that can be performed on enrichment analysis which can be found in the following tutorial: http://www.bioconductor.org/packages/release/bioc/vignettes/escape/inst/doc/vignette.html
+
+
+
+
