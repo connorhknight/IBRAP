@@ -13,7 +13,7 @@
 #'
 #' @export
 
-perform.sctype <- function(object, assay='RAW', slot='counts', 
+perform.sctype <- function(object, assay='RAW', slot='counts', clust.method, column, scaled=T,
                            db="https://raw.githubusercontent.com/IanevskiAleksandr/sc-type/master/ScTypeDB_full.xlsx", 
                            tissue) {
   
@@ -176,7 +176,7 @@ perform.sctype <- function(object, assay='RAW', slot='counts',
     clusters <- object[[column]]
     
   }
-  
+
   gs_list = gene_sets_prepare(path_to_db_file = db, cell_type = tissue)
 
   if(isTRUE(scaled)) {
@@ -190,9 +190,10 @@ perform.sctype <- function(object, assay='RAW', slot='counts',
   }
 
   cL_resutls = do.call("rbind", lapply(unique(clusters), function(cl){
-    print(cl)
+    
     es.max.cl = sort(rowSums(es.max[,rownames(object@sample_metadata[clusters==cl,])]),decreasing=!0)
     head(data.frame(cluster = cl, type = names(es.max.cl), scores = es.max.cl, ncells = sum(clusters==cl)), 10)
+    
   }))
   
   sctype_scores = cL_resutls %>% group_by(cluster) %>% top_n(n = 1, wt = scores)  
@@ -202,8 +203,10 @@ perform.sctype <- function(object, assay='RAW', slot='counts',
   object@sample_metadata[,paste0('scType_', assay, '_', slot)] = ""
   
   for(j in unique(sctype_scores$cluster)){
+    
     cl_type = sctype_scores[sctype_scores$cluster==j,]; 
     object@sample_metadata[,paste0('scType_', assay, '_', slot)][clusters == j] = as.character(cl_type$type[1])
+    
   }
   
   return(object)

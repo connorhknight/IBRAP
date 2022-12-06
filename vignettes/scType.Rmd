@@ -32,7 +32,7 @@ scType is an automated cell type identification method using a panel of markers.
 
 library(IBRAP)
 
-obj <- saveRDS("/Users/knight05/work/Results/scRNA-seq/IBRAP_tutorials/scType_tutorial/scType_tutorial.rds")
+obj <- readRDS("/Users/knight05/work/Results/scRNA-seq/IBRAP_tutorials/scType_tutorial/scType_tutorial.rds")
 
 ```
 
