@@ -277,37 +277,37 @@ perform.harmony <- function(object,
       
       function_time <- end_time - start_time
       
-      if(!'integration_method' %in% colnames(object@pipelines)) {
-        
-        tmp[which(x = tmp$normalisation_method==p),'integration_method'] <- paste0('HARMONY', reduction.save.suffix)
-        
-        tmp[which(x = tmp$normalisation_method==p),'integration_time'] <- as.difftime(function_time, units = 'secs')
-        
-      }
-      
-      if('integration_method' %in% colnames(object@pipelines)) {
-        
-        if(paste0('HARMONY', reduction.save.suffix) %in% tmp$integration_method) {
-          
-          tmp[which(tmp$normalisation_method==p & tmp$integration_method==paste0('HARMONY', reduction.save.suffix)),] <- c(tmp[which(tmp$normalisation_method==p & tmp$integration_method==paste0('HARMONY', reduction.save.suffix)),c('normalisation_method','normalisation_time')], paste0('HARMONY', reduction.save.suffix), as.difftime(function_time, units = 'secs'))  
-          
-        }
-        
-        if(!paste0('HARMONY', reduction.save.suffix) %in% object@pipelines$integration_method) {
-          
-          df <- tmp[which(tmp$normalisation_method==p),]
-          
-          df <- df[!duplicated(df$normalisation_method),]
-          
-          df[,'integration_method'] <- paste0('HARMONY', reduction.save.suffix)
-          
-          df[,'integration_time'] <- function_time
-          
-          tmp <- rbind(tmp, df)
-          
-        }
-        
-      }
+      # if(!'integration_method' %in% colnames(object@pipelines)) {
+      #   
+      #   tmp[which(x = tmp$normalisation_method==p),'integration_method'] <- paste0('HARMONY', reduction.save.suffix)
+      #   
+      #   tmp[which(x = tmp$normalisation_method==p),'integration_time'] <- as.difftime(function_time, units = 'secs')
+      #   
+      # }
+      # 
+      # if('integration_method' %in% colnames(object@pipelines)) {
+      #   
+      #   if(paste0('HARMONY', reduction.save.suffix) %in% tmp$integration_method) {
+      #     
+      #     tmp[which(tmp$normalisation_method==p & tmp$integration_method==paste0('HARMONY', reduction.save.suffix)),] <- c(tmp[which(tmp$normalisation_method==p & tmp$integration_method==paste0('HARMONY', reduction.save.suffix)),c('normalisation_method','normalisation_time')], paste0('HARMONY', reduction.save.suffix), as.difftime(function_time, units = 'secs'))  
+      #     
+      #   }
+      #   
+      #   if(!paste0('HARMONY', reduction.save.suffix) %in% object@pipelines$integration_method) {
+      #     
+      #     df <- tmp[which(tmp$normalisation_method==p),]
+      #     
+      #     df <- df[!duplicated(df$normalisation_method),]
+      #     
+      #     df[,'integration_method'] <- paste0('HARMONY', reduction.save.suffix)
+      #     
+      #     df[,'integration_time'] <- function_time
+      #     
+      #     tmp <- rbind(tmp, df)
+      #     
+      #   }
+      #   
+      # }
       
     }
     

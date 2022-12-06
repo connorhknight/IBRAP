@@ -61,4 +61,5 @@ Imports:
     biomaRt (>= 2.46.3),
     parallelDist (>= 0.2.6),
     shinydashboard (>= 1.7.2),
-    escape (>= 1.4.0)
+    escape (>= 1.4.0), 
+    HGNChelper (>= 0.8.1)

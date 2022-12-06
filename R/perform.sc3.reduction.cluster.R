@@ -146,23 +146,23 @@ perform.sc3.reduction.cluster <- function(object,
         dimen <- 1:dims[[count]]
         
       }
-      
+      print('.')
       temp.2 <- SingleCellExperiment::SingleCellExperiment(list('logcounts' = t(red)[dimen,]))
-      
+      print('.')
       SummarizedExperiment::rowData(temp.2)$feature_symbol <- rownames(temp.2)
- 
+      print('.')
       temp.2 <- temp.2[!duplicated(SummarizedExperiment::rowData(temp.2)$feature_symbol), ]
-
+      print('.')
       temp.2 <- SC3::sc3_prepare(temp.2, gene_filter = FALSE, n_cores = n.core)
-
+      print('.')
       temp.2 <- SC3::sc3_calc_dists(temp.2)
-
+      print('.')
       temp.2 <- SC3::sc3_calc_transfs(temp.2)
-
+      print('.')
       temp.2 <- SC3::sc3_kmeans(temp.2, ks = ks)
-
+      print('.')
       temp.2 <- SC3::sc3_calc_consens(temp.2)
-      
+      print('.')
       if(any(is.na(as.data.frame(SummarizedExperiment::colData(temp.2))))) {
         
         temp.2 <- SC3::sc3_run_svm(object = temp.2, ks = ks)

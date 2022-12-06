@@ -342,23 +342,23 @@ perform.graph.cluster <- function(object,
     }
     
   }
-  
-  tmp$clustering_time <- as.difftime(tim = tmp$clustering_time, units = 'secs')
-  
-  if('integration_method' %in% colnames(tmp) & 'normalisation_method' %in% colnames(tmp)) {
-    
-    tmp$clustering_time <- tmp$normalisation_time + tmp$integration_time + tmp$clustering_time
-    
-  } else if ('normalisation_method' %in% colnames(tmp) & !'integration_method' %in% colnames(tmp)) {
-    
-    tmp$clustering_time <- tmp$normalisation_time + tmp$clustering_time
-    
-  }
-
-  rownames(tmp) <- 1:nrow(tmp)
-  
-  object@pipelines <- tmp
-  
+  # 
+  # tmp$clustering_time <- as.difftime(tim = tmp$clustering_time, units = 'secs')
+  # 
+  # if('integration_method' %in% colnames(tmp) & 'normalisation_method' %in% colnames(tmp)) {
+  #   
+  #   tmp$clustering_time <- tmp$normalisation_time + tmp$integration_time + tmp$clustering_time
+  #   
+  # } else if ('normalisation_method' %in% colnames(tmp) & !'integration_method' %in% colnames(tmp)) {
+  #   
+  #   tmp$clustering_time <- tmp$normalisation_time + tmp$clustering_time
+  #   
+  # }
+  # 
+  # rownames(tmp) <- 1:nrow(tmp)
+  # 
+  # object@pipelines <- tmp
+  # 
   return(object)
   
 }

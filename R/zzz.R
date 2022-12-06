@@ -5,3 +5,9 @@
   packageStartupMessage("Welcome to IBRAP")
   
 }
+
+.onLoad <- function(libname, pkgname) {
+  
+  library(Matrix)
+  
+}

@@ -443,57 +443,57 @@ perform.seurat.integration <- function(object,
     
     function_time <- end_time - start_time
     
-    if(!'integration_method' %in% colnames(object@pipelines)) {
-      
-      tmp[which(x = tmp$normalisation_method==a),'integration_method'] <- paste0('CCA', reduction.save.suffix)
-      
-      tmp[which(x = tmp$normalisation_method==a),'integration_time'] <- as.difftime(function_time, units = 'secs')
-      
-    }
-    
-    if('integration_method' %in% colnames(object@pipelines)) {
-      
-      if(paste0('CCA', reduction.save.suffix) %in% tmp$integration_method) {
-        
-        tmp[which(tmp$normalisation_method==a & tmp$integration_method==paste0('CCA', reduction.save.suffix)),] <- c(tmp[which(tmp$normalisation_method==a & tmp$integration_method==paste0('CCA', reduction.save.suffix)),c('normalisation_method','normalisation_time')], paste0('CCA', reduction.save.suffix), as.difftime(function_time, units = 'secs'))  
-        
-      }
-      
-      if(!paste0('CCA', reduction.save.suffix) %in% object@pipelines$integration_method) {
-        
-        df <- tmp[which(tmp$normalisation_method==a),]
-        
-        df <- df[!duplicated(df$normalisation_method),]
-        
-        df[,'integration_method'] <- paste0('CCA', reduction.save.suffix)
-        
-        df[,'integration_time'] <- function_time
-        
-        tmp <- rbind(tmp, df)
-        
-      }
-      
-    }
+    # if(!'integration_method' %in% colnames(object@pipelines)) {
+    #   
+    #   tmp[which(x = tmp$normalisation_method==a),'integration_method'] <- paste0('CCA', reduction.save.suffix)
+    #   
+    #   tmp[which(x = tmp$normalisation_method==a),'integration_time'] <- as.difftime(function_time, units = 'secs')
+    #   
+    # }
+    # 
+    # if('integration_method' %in% colnames(object@pipelines)) {
+    #   
+    #   if(paste0('CCA', reduction.save.suffix) %in% tmp$integration_method) {
+    #     
+    #     tmp[which(tmp$normalisation_method==a & tmp$integration_method==paste0('CCA', reduction.save.suffix)),] <- c(tmp[which(tmp$normalisation_method==a & tmp$integration_method==paste0('CCA', reduction.save.suffix)),c('normalisation_method','normalisation_time')], paste0('CCA', reduction.save.suffix), as.difftime(function_time, units = 'secs'))  
+    #     
+    #   }
+    #   
+    #   if(!paste0('CCA', reduction.save.suffix) %in% object@pipelines$integration_method) {
+    #     
+    #     df <- tmp[which(tmp$normalisation_method==a),]
+    #     
+    #     df <- df[!duplicated(df$normalisation_method),]
+    #     
+    #     df[,'integration_method'] <- paste0('CCA', reduction.save.suffix)
+    #     
+    #     df[,'integration_time'] <- function_time
+    #     
+    #     tmp <- rbind(tmp, df)
+    #     
+    #   }
+    #   
+    # }
     
   }
   
-  if(!'integration_method' %in% colnames(object@pipelines)) {
-    
-    tmp$integration_time <- as.difftime(tim = tmp$integration_time, units = 'secs')
-    
-    rownames(tmp) <- 1:nrow(tmp)
-    
-    object@pipelines <- tmp
-    
-  } else if ('integration_method' %in% colnames(object@pipelines)) {
-    
-    tmp$integration_time <- as.difftime(tim = tmp$integration_time, units = 'secs')
-    
-    rownames(tmp) <- 1:nrow(tmp)
-    
-    object@pipelines <- tmp
-    
-  }
+  # if(!'integration_method' %in% colnames(object@pipelines)) {
+  #   
+  #   tmp$integration_time <- as.difftime(tim = tmp$integration_time, units = 'secs')
+  #   
+  #   rownames(tmp) <- 1:nrow(tmp)
+  #   
+  #   object@pipelines <- tmp
+  #   
+  # } else if ('integration_method' %in% colnames(object@pipelines)) {
+  #   
+  #   tmp$integration_time <- as.difftime(tim = tmp$integration_time, units = 'secs')
+  #   
+  #   rownames(tmp) <- 1:nrow(tmp)
+  #   
+  #   object@pipelines <- tmp
+  #   
+  # }
   
   return(object)
   

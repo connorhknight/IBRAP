@@ -1,8 +1,89 @@
-perform.sctype(object, assay='RAW', slot='counts', c, db_=db_, tissue=tissue)) {
+#' @name perform.scanorama
+#' @aliases perform.scanorama
+#' 
+#' @title Performs Scanorama integration
+#'
+#' @description Performs Scanorama integration on defined method-assays and reductions contained within. This is performed on reductions. 
+#' 
+#' @param object IBRAP S4 class object
+#' @param assay Character. String containing indicating which assay to use
+#' @param slot Character. String defining which slot in the assay to supply to Scanorama. Default = NULL
+#' @param batch Character. indicating the metadata column containing the batch to split the assay by. 
+#' @param n.dims Numerical. The number of Scanorama dimensions to be produced. Default = 50
+#' @param reduction.save.suffix Character. Should a suffix be added to the end of scanorama, This cannot include underscores.
+#' @param batch_size Numerical. The batch size used in the alignment vector computation. Useful when integrating large datasets. Default = 5000
+#' @param approx Boolean. Use appoximate nearest neighbours within python, speeds up runtime. Default = TRUE
+#' @param sigma Numerical. Correction smoothing parameter on Gaussian kernel. Default = 15
+#' @param alpha Numerical. Alignment score minimum cutoff. Default = 0.1
+#' @param knn Numerical. Number of nearest neighbors to use for matching. Default = 20
+#' @param verbose Logical Should function messages be printed?
+#' @param seed Numerical What seed should be set. Default = 1234
+#' 
+#' @return Scanorama reduction saved in the supplied method-assays
+#' 
+#' @examples 
+#' 
+#' object <- perform.scanorama(object = object, 
+#'                             assay = c('SCT', 'SCRAN', 'SCANPY'), 
+#'                             slot = 'norm.scaled', 
+#'                             batch = 'original.project', 
+#'                             n.dims = 50)
+#'
+#' @export
+
+perform.sctype <- function(object, assay='RAW', slot='counts', 
+                           db="https://raw.githubusercontent.com/IanevskiAleksandr/sc-type/master/ScTypeDB_full.xlsx", 
+                           tissue) {
+  
+  if(!is(object = object, class2 = 'IBRAP')) {
+    
+    stop('object must be of class IBRAP \n')
+    
+  }
+  
+  if(!is.character(assay)) {
+    
+    stop('assay must be character string\n')
+    
+  }
+  
+  for(x in assay) {
+    
+    if(!x %in% names(object@methods)) {
+      
+      stop(paste0('reduction: ', x, 'does not exist\n'))
+      
+    }
+    
+  }
+  
+  if(!is.character(slot)) {
+    
+    stop('slot must be a character string\n')
+    
+  }
+  
+  if(!slot %in% c('counts', 'normalised', 'norm.scaled')) {
+    
+    stop('slot does not exist\n')
+    
+  }
+  
+  if(!is.character(db)) {
+    
+    stop('db must be character string \n')
+    
+  }
+  
+  if(!is.character(tissue)) {
+    
+    stop('tissue must be character string \n')
+    
+  }
   
   gene_sets_prepare <- function(path_to_db_file, cell_type){
     
-    cell_markers <- 
+    cell_markers = openxlsx::read.xlsx(path_to_db_file)
     cell_markers = cell_markers[cell_markers$tissueType == cell_type,] 
     cell_markers$geneSymbolmore1 = gsub(" ","",cell_markers$geneSymbolmore1); cell_markers$geneSymbolmore2 = gsub(" ","",cell_markers$geneSymbolmore2)
     
@@ -14,7 +95,7 @@ perform.sctype(object, assay='RAW', slot='counts', c, db_=db_, tissue=tissue)) {
       markers_all = sort(markers_all)
       
       if(length(markers_all) > 0){
-        markers_all = unique(na.omit(checkGeneSymbols(markers_all)$Suggested.Symbol))
+        suppressMessages({markers_all = unique(na.omit(HGNChelper::checkGeneSymbols(markers_all)$Suggested.Symbol))})
         paste0(markers_all, collapse=",")
       } else {
         ""
@@ -29,7 +110,7 @@ perform.sctype(object, assay='RAW', slot='counts', c, db_=db_, tissue=tissue)) {
       markers_all = sort(markers_all)
       
       if(length(markers_all) > 0){
-        markers_all = unique(na.omit(checkGeneSymbols(markers_all)$Suggested.Symbol))
+        suppressMessages({markers_all = unique(na.omit(HGNChelper::checkGeneSymbols(markers_all)$Suggested.Symbol))})
         paste0(markers_all, collapse=",")
       } else {
         ""
@@ -45,7 +126,7 @@ perform.sctype(object, assay='RAW', slot='counts', c, db_=db_, tissue=tissue)) {
     list(gs_positive = gs, gs_negative = gs2)
   }
   
-  sctype_score <- function(scRNAseqData, scaled = !0, gs, gs2 = NULL, gene_names_to_uppercase = !0, ...){
+  sctype_score <- function(scRNAseqData, scaled = !0, gs, gs2 = NULL, gene_names_to_uppercase = !0){
     
     # check input matrix
     if(!is.matrix(scRNAseqData)){
@@ -104,30 +185,45 @@ perform.sctype(object, assay='RAW', slot='counts', c, db_=db_, tissue=tissue)) {
     es.max
   }
   
-  sc_type <- function(obj, clusters, db_=db_, tissue=tissue) {
+  if(clust.method != 'metadata') {
     
-    gs_list = gene_sets_prepare(path_to_db_file = , tissue)
+    clusters <- object[[assay]][[clust.method]][[column]]
     
-    es.max = sctype_score(scRNAseqData = obj@methods$SCRAN@norm.scaled, scaled = TRUE, gs = gs_list$gs_positive, gs2 = gs_list$gs_negative) 
+  } else {
     
-    cL_resutls = do.call("rbind", lapply(unique(obj@sample_metadata$clusters), function(cl){
-      print(cl)
-      es.max.cl = sort(rowSums(es.max[,rownames(obj@sample_metadata[obj@sample_metadata$clusters==cl,])]),decreasing=!0)
-      head(data.frame(cluster = cl, type = names(es.max.cl), scores = es.max.cl, ncells = sum(obj@sample_metadata$clusters==cl)), 10)
-    }))
+    clusters <- object[[column]]
     
-    sctype_scores = cL_resutls
-    sctype_scores = group_by(sctype_scores, cluster) 
-    top_n(sctype_scores, n = 1, wt = scores)  
-    
-    sctype_scores$type[as.numeric(as.character(sctype_scores$scores)) < sctype_scores$ncells/4] = "Unknown"
-    
-    obj@sample_metadata$customclassif = ""
-    for(j in unique(sctype_scores$cluster)){
-      cl_type = sctype_scores[sctype_scores$cluster==j,]; 
-      obj@sample_metadata$customclassif[obj@sample_metadata$clusters == j] = as.character(cl_type$type[1])
-    }
-    
-    return(obj)
+  }
+  
+  gs_list = gene_sets_prepare(path_to_db_file = db, cell_type = tissue)
 
+  if(isTRUE(scaled)) {
+
+    es.max = sctype_score(scRNAseqData = object[[assay]][[slot]], scaled = TRUE, gs = gs_list$gs_positive, gs2 = gs_list$gs_negative) 
+
+  } else if(isFALSE(scaled)) {
+    
+    es.max = sctype_score(scRNAseqData = object[[assay]][[slot]], scaled = F, gs = gs_list$gs_positive, gs2 = gs_list$gs_negative) 
+    
+  }
+
+  cL_resutls = do.call("rbind", lapply(unique(clusters), function(cl){
+    print(cl)
+    es.max.cl = sort(rowSums(es.max[,rownames(object@sample_metadata[clusters==cl,])]),decreasing=!0)
+    head(data.frame(cluster = cl, type = names(es.max.cl), scores = es.max.cl, ncells = sum(clusters==cl)), 10)
+  }))
+  
+  sctype_scores = cL_resutls %>% group_by(cluster) %>% top_n(n = 1, wt = scores)  
+  
+  sctype_scores$type[as.numeric(as.character(sctype_scores$scores)) < sctype_scores$ncells/4] = "Unknown"
+  
+  object@sample_metadata[,paste0('scType_', assay, '_', slot)] = ""
+  
+  for(j in unique(sctype_scores$cluster)){
+    cl_type = sctype_scores[sctype_scores$cluster==j,]; 
+    object@sample_metadata[,paste0('scType_', assay, '_', slot)][clusters == j] = as.character(cl_type$type[1])
+  }
+  
+  return(object)
+  
 }
