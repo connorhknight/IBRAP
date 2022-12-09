@@ -176,19 +176,19 @@ perform.sctype <- function(object, assay='RAW', slot='counts', clust.method, col
     clusters <- object[[column]]
     
   }
-
+  
   gs_list = gene_sets_prepare(path_to_db_file = db, cell_type = tissue)
-
+  print('done')
   if(isTRUE(scaled)) {
-
+    print('doing')
     es.max = sctype_score(scRNAseqData = object[[assay]][[slot]], scaled = TRUE, gs = gs_list$gs_positive, gs2 = gs_list$gs_negative) 
-
+    print('done')
   } else if(isFALSE(scaled)) {
     
     es.max = sctype_score(scRNAseqData = object[[assay]][[slot]], scaled = F, gs = gs_list$gs_positive, gs2 = gs_list$gs_negative) 
     
   }
-
+  
   cL_resutls = do.call("rbind", lapply(unique(clusters), function(cl){
     
     es.max.cl = sort(rowSums(es.max[,rownames(object@sample_metadata[clusters==cl,])]),decreasing=!0)

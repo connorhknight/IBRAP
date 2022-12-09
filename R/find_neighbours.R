@@ -243,15 +243,15 @@ perform.nn <- function(object,
   
   reticulate::py_set_seed(seed, disable_hash_randomization = TRUE)
   
-  if(!'integration_method' %in% colnames(object@pipelines)) {
-    
-    tmp <- tibble::add_column(.data = object@pipelines, integration_method=NA, integration_time=NA)
-    
-  } else {
-    
-    tmp <- object@pipelines
-    
-  }
+  # if(!'integration_method' %in% colnames(object@pipelines)) {
+  #   
+  #   tmp <- tibble::add_column(.data = object@pipelines, integration_method=NA, integration_time=NA)
+  #   
+  # } else {
+  #   
+  #   tmp <- object@pipelines
+  #   
+  # }
 
   for(p in assay) {
     

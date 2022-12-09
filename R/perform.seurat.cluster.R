@@ -171,16 +171,16 @@ perform.graph.cluster <- function(object,
   
   reticulate::py_set_seed(seed, disable_hash_randomization = TRUE)
   
-  if(!'clustering_method' %in% colnames(object@pipelines)) {
+  # if(!'clustering_method' %in% colnames(object@pipelines)) {
+  #   
+  #   tmp <- tibble::add_column(.data = object@pipelines, clustering_method=NA, clustering_time=NA)
+  #   
+  # } else {
+  #   
+  #   tmp <- object@pipelines
+  #   
+  # }
     
-    tmp <- tibble::add_column(.data = object@pipelines, clustering_method=NA, clustering_time=NA)
-    
-  } else {
-    
-    tmp <- object@pipelines
-    
-  }
-  
   for(p in assay) {
     
     for(t in neighbours) {
@@ -333,15 +333,15 @@ perform.graph.cluster <- function(object,
     
   }
   
-  for(p in assay) {
-    
-    if(any(is.na(tmp[which(tmp$normalisation_method==p),'clustering_method']))) {
-      
-      tmp <- tmp[-which(tmp$normalisation_method==p & is.na(tmp$clustering_method)),]
-      
-    }
-    
-  }
+  # for(p in assay) {
+  #   
+  #   if(any(is.na(tmp[which(tmp$normalisation_method==p),'clustering_method']))) {
+  #     
+  #     tmp <- tmp[-which(tmp$normalisation_method==p & is.na(tmp$clustering_method)),]
+  #     
+  #   }
+  #   
+  # }
   # 
   # tmp$clustering_time <- as.difftime(tim = tmp$clustering_time, units = 'secs')
   # 

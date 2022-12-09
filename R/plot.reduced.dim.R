@@ -159,6 +159,8 @@ plot.reduced.dim <- function(object,
     
     results <- as.data.frame(reduction.list[[reduction]])
     
+    results <- results[,1:2]
+    
     assay.met <- object@methods[[assay]]@cluster_assignments[[clust.method]]
 
     assay.met <- assay.met[match(rownames(results), rownames(assay.met)),]

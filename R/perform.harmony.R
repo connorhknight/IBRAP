@@ -154,15 +154,15 @@ perform.harmony <- function(object,
   
   set.seed(seed = seed, kind = "Mersenne-Twister", normal.kind = "Inversion")
   
-  if(!'integration_method' %in% colnames(object@pipelines)) {
-    
-    tmp <- tibble::add_column(.data = object@pipelines, integration_method=NA, integration_time=NA)
-    
-  } else {
-    
-    tmp <- object@pipelines
-    
-  }
+  # if(!'integration_method' %in% colnames(object@pipelines)) {
+  #   
+  #   tmp <- tibble::add_column(.data = object@pipelines, integration_method=NA, integration_time=NA)
+  #   
+  # } else {
+  #   
+  #   tmp <- object@pipelines
+  #   
+  # }
   
   for(p in assay) {
     
@@ -319,11 +319,11 @@ perform.harmony <- function(object,
     
   }
   
-  tmp$integration_time <- as.difftime(tim = tmp$integration_time, units = 'secs')
-  
-  rownames(tmp) <- 1:nrow(tmp)
-  
-  object@pipelines <- tmp
+  # tmp$integration_time <- as.difftime(tim = tmp$integration_time, units = 'secs')
+  # 
+  # rownames(tmp) <- 1:nrow(tmp)
+  # 
+  # object@pipelines <- tmp
   
   
   return(object)

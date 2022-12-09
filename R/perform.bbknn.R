@@ -226,16 +226,16 @@ perform.bbknn <- function(object,
   
   reticulate::py_set_seed(seed, disable_hash_randomization = TRUE)
   
-  if(!'integration_method' %in% colnames(object@pipelines)) {
-    
-    tmp <- tibble::add_column(.data = object@pipelines, integration_method=NA, integration_time=NA)
-    
-  } else {
-    
-    tmp <- object@pipelines
-    
-  }
-  
+  # if(!'integration_method' %in% colnames(object@pipelines)) {
+  #   
+  #   tmp <- tibble::add_column(.data = object@pipelines, integration_method=NA, integration_time=NA)
+  #   
+  # } else {
+  #   
+  #   tmp <- object@pipelines
+  #   
+  # }
+  # 
   for(p in assay) {
 
     start_time <- Sys.time()
@@ -471,13 +471,13 @@ perform.bbknn <- function(object,
 
   }
   
-  tmp$integration_time <- as.difftime(tim = tmp$integration_time, units = 'secs')
+  # tmp$integration_time <- as.difftime(tim = tmp$integration_time, units = 'secs')
+  # 
+  # rownames(tmp) <- 1:nrow(tmp)
   
-  rownames(tmp) <- 1:nrow(tmp)
-  
-  object@pipelines <- tmp
-
-  
+  # object@pipelines <- tmp
+  # 
+  # 
   return(object)
   
 }

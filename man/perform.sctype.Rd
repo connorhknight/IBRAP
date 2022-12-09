@@ -8,6 +8,9 @@ perform.sctype(
   object,
   assay = "RAW",
   slot = "counts",
+  clust.method,
+  column,
+  scaled = T,
   db =
     "https://raw.githubusercontent.com/IanevskiAleksandr/sc-type/master/ScTypeDB_full.xlsx",
   tissue
