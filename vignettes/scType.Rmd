@@ -31,6 +31,7 @@ scType is an automated cell type identification method using a panel of markers.
 ```{r, eval=T, echo=F}
 
 library(IBRAP)
+library(tidyverse)
 
 obj <- readRDS("/Users/knight05/work/Results/scRNA-seq/IBRAP_tutorials/scType_tutorial/scType_tutorial.rds")
 
@@ -41,6 +42,7 @@ obj <- readRDS("/Users/knight05/work/Results/scRNA-seq/IBRAP_tutorials/scType_tu
 ```{r, eval=F, echo=T}
 
 library(IBRAP)
+library(tidyverse)
 
 system('curl -LJO https://raw.githubusercontent.com/connorhknight/IBRAP/main/data/celseq2.rds')
 
@@ -62,7 +64,7 @@ There are a couple of ways to do this: (1) get the gene sets from the escape pac
 
 ```{r, eval=F, echo=T}
 
-obj <- perform.sctype(object = obj, assay = 'SCT', tissue = 'Pancreas')
+obj <- perform.sctype(object = obj, assay = 'SCT', tissue = 'Pancreas', clust.method = 'PCA_NN:LOUVAIN', column = 'res_0.8')
 
 ```
 

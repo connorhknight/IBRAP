@@ -57,7 +57,7 @@ There are a couple of ways to do this: (1) get the gene sets from the escape pac
 
 # Option 1
 
-gene.sets <- escape::getGeneSets(library = 'H', species = 'Homo Sapiens')
+gene.sets <- escape::getGeneSets(library = 'H', species = 'Homo sapiens')
 
 # Option 2
 

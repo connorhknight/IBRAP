@@ -177,7 +177,7 @@ perform.sctype <- function(object, assay='RAW', slot='counts', clust.method, col
     
   }
   
-  gs_list = gene_sets_prepare(path_to_db_file = db, cell_type = tissue)
+  gs_list = gene_sets_prepare(db_ = db, cell_type = tissue)
   print('done')
   if(isTRUE(scaled)) {
     print('doing')
