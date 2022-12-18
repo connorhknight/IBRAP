@@ -35,7 +35,7 @@ navbar:
         href: articles/clustering_method.html
       - text: HPC issues/solutions
         href: articles/HPC_issues.html
-      - text: Performing CellTalker
+      - text: performing CellTalker
         href: articles/perform_celltalker.html
       - text: performing GSEA
         href: articles/GSEA.html
