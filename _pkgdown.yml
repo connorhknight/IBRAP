@@ -35,7 +35,13 @@ navbar:
         href: articles/clustering_method.html
       - text: HPC issues/solutions
         href: articles/HPC_issues.html
-        
+      - text: Performing CellTalker
+        href: articles/perform_celltalker.html
+      - text: performing GSEA
+        href: articles/GSEA.html
+      - text: performing scType
+        href: articles/scType.html
+   
 reference:
 - title: Pre-processing Functions
   desc: Functions to be used to pre-process the data prior to normalisation
@@ -149,3 +155,5 @@ articles:
   - '`singleR_annotation`'
   - '`HPC_issues`'
   - '`perform_celltalker`'
+  - '`GSEA`'
+  - '`scType`'

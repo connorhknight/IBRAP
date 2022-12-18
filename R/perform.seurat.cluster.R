@@ -217,85 +217,85 @@ perform.graph.cluster <- function(object,
           
         }
         
-        end_time <- Sys.time()
-        
-        function_time <- end_time - start_time
-        
-        if('integration_method' %in% colnames(tmp) & 'normalisation_method' %in% colnames(tmp)) {
-          
-          if(nrow(tmp[which(tmp$normalisation_method==p & tmp$integration_method==unique(tmp$integration_method[which(tmp$integration_method %in% unlist(strsplit(x = toupper(t), split = '_')))]) & tmp$clustering_method==paste0(algo.name, '_(resolution=', x, ')', cluster.df.name.suffix)),])!=0) {
-            
-            tmp[which(tmp$normalisation_method==p & tmp$integration_method==unique(tmp$integration_method[which(tmp$integration_method %in% unlist(strsplit(x = toupper(t), split = '_')))]) & tmp$clustering_method==paste0(algo.name, '_(resolution=', x, ')', cluster.df.name.suffix)),'clustering_method'] <- paste0(algo.name, '_(resolution=', x, ')', cluster.df.name.suffix) 
-            
-            tmp[which(tmp$normalisation_method==p & tmp$integration_method==unique(tmp$integration_method[which(tmp$integration_method %in% unlist(strsplit(x = toupper(t), split = '_')))]) & tmp$clustering_method==paste0(algo.name, '_(resolution=', x, ')', cluster.df.name.suffix)),'clustering_time'] <- as.difftime(function_time, units = 'secs')
-            
-          } else {
-            
-            if(any(tmp$integration_method %in% unlist(strsplit(x = toupper(t), split = '_'))==TRUE)){
-              
-              int_meth <- unique(tmp$integration_method[which(tmp$integration_method %in% unlist(strsplit(x = toupper(t), split = '_')))])
-              
-              roww <- which(tmp$normalisation_method==p & tmp$integration_method==int_meth)
-              
-              tmp_row <- tmp[which(tmp$normalisation_method==p & tmp$integration_method==int_meth),]
-              
-              if(NA %in% tmp_row[,'clustering_method']) {
-                
-                tmp <- tmp[-roww,]
-                
-              }
-              
-              tmp_row <- tmp_row[1,]
-              
-              tmp_row[,'clustering_method'] <- paste0(algo.name, '_resolution(', x, ')', cluster.df.name.suffix)
-              
-              tmp_row[,'clustering_time'] <- as.difftime(function_time, units = 'secs')
-              
-              tmp <- rbind(tmp, tmp_row)
-              
-            }
-            
-            if(all(tmp$integration_method %in% unlist(strsplit(x = toupper(t), split = '_'))==FALSE)) {
-              
-              tmp_row <- tmp[which(x = tmp$normalisation_method==p),]
-              
-              tmp_row <- tmp_row[1,]
-              
-              tmp_row[,c('integration_method','integration_time')] <- NA
-              
-              tmp_row[,'clustering_method'] <- paste0(algo.name, '_(resolution=', x, ')', cluster.df.name.suffix)
-              
-              tmp_row[,'clustering_time'] <- as.difftime(function_time, units = 'secs')
-              
-              tmp <- rbind(tmp, tmp_row)
-              
-            } 
-            
-          }
-          
-        }  else if ('normalisation_method' %in% colnames(tmp) & !'integration_method' %in% colnames(tmp)) {
-          
-          tmp_sub <- tmp[tmp$normalisation_method==p,]
-          
-          if(paste0(algo.name, '_(resolution=', x, ')', cluster.df.name.suffix) %in% tmp_sub$clustering_method) {
-            
-            tmp[which(tmp$normalisation_method==p & tmp$clustering_method==paste0(algo.name, '_(resolution=', x, ')', cluster.df.name.suffix)),'clustering_method'] <- paste0(algo.name, '_(resolution=', x, ')', cluster.df.name.suffix) 
-            
-            tmp[which(tmp$normalisation_method==p & tmp$clustering_method==paste0(algo.name, '_(resolution=', x, ')', cluster.df.name.suffix)),'clustering_time'] <- as.difftime(function_time, units = 'secs')
-            
-          } else if(!paste0(algo.name, '_(resolution=', x, ')', cluster.df.name.suffix) %in% tmp_sub$clustering_method) {
-            
-            tmp_sub[1,'clustering_method'] <- paste0(algo.name, '_(resolution=', x, ')', cluster.df.name.suffix) 
-            
-            tmp_sub[1,'clustering_time'] <- as.difftime(function_time, units = 'secs')
-            
-            tmp <- rbind(tmp, tmp_sub)
-            
-            tmp <- tmp[!duplicated(tmp),]
-            
-          }
-          
-        }
+        # end_time <- Sys.time()
+        # 
+        # function_time <- end_time - start_time
+        # 
+        # if('integration_method' %in% colnames(tmp) & 'normalisation_method' %in% colnames(tmp)) {
+        #   
+        #   if(nrow(tmp[which(tmp$normalisation_method==p & tmp$integration_method==unique(tmp$integration_method[which(tmp$integration_method %in% unlist(strsplit(x = toupper(t), split = '_')))]) & tmp$clustering_method==paste0(algo.name, '_(resolution=', x, ')', cluster.df.name.suffix)),])!=0) {
+        #     
+        #     tmp[which(tmp$normalisation_method==p & tmp$integration_method==unique(tmp$integration_method[which(tmp$integration_method %in% unlist(strsplit(x = toupper(t), split = '_')))]) & tmp$clustering_method==paste0(algo.name, '_(resolution=', x, ')', cluster.df.name.suffix)),'clustering_method'] <- paste0(algo.name, '_(resolution=', x, ')', cluster.df.name.suffix) 
+        #     
+        #     tmp[which(tmp$normalisation_method==p & tmp$integration_method==unique(tmp$integration_method[which(tmp$integration_method %in% unlist(strsplit(x = toupper(t), split = '_')))]) & tmp$clustering_method==paste0(algo.name, '_(resolution=', x, ')', cluster.df.name.suffix)),'clustering_time'] <- as.difftime(function_time, units = 'secs')
+        #     
+        #   } else {
+        #     
+        #     if(any(tmp$integration_method %in% unlist(strsplit(x = toupper(t), split = '_'))==TRUE)){
+        #       
+        #       int_meth <- unique(tmp$integration_method[which(tmp$integration_method %in% unlist(strsplit(x = toupper(t), split = '_')))])
+        #       
+        #       roww <- which(tmp$normalisation_method==p & tmp$integration_method==int_meth)
+        #       
+        #       tmp_row <- tmp[which(tmp$normalisation_method==p & tmp$integration_method==int_meth),]
+        #       
+        #       if(NA %in% tmp_row[,'clustering_method']) {
+        #         
+        #         tmp <- tmp[-roww,]
+        #         
+        #       }
+        #       
+        #       tmp_row <- tmp_row[1,]
+        #       
+        #       tmp_row[,'clustering_method'] <- paste0(algo.name, '_resolution(', x, ')', cluster.df.name.suffix)
+        #       
+        #       tmp_row[,'clustering_time'] <- as.difftime(function_time, units = 'secs')
+        #       
+        #       tmp <- rbind(tmp, tmp_row)
+        #       
+        #     }
+        #     
+        #     if(all(tmp$integration_method %in% unlist(strsplit(x = toupper(t), split = '_'))==FALSE)) {
+        #       
+        #       tmp_row <- tmp[which(x = tmp$normalisation_method==p),]
+        #       
+        #       tmp_row <- tmp_row[1,]
+        #       
+        #       tmp_row[,c('integration_method','integration_time')] <- NA
+        #       
+        #       tmp_row[,'clustering_method'] <- paste0(algo.name, '_(resolution=', x, ')', cluster.df.name.suffix)
+        #       
+        #       tmp_row[,'clustering_time'] <- as.difftime(function_time, units = 'secs')
+        #       
+        #       tmp <- rbind(tmp, tmp_row)
+        #       
+        #     } 
+        #     
+        #   }
+        #   
+        # }  else if ('normalisation_method' %in% colnames(tmp) & !'integration_method' %in% colnames(tmp)) {
+        #   
+        #   tmp_sub <- tmp[tmp$normalisation_method==p,]
+        #   
+        #   if(paste0(algo.name, '_(resolution=', x, ')', cluster.df.name.suffix) %in% tmp_sub$clustering_method) {
+        #     
+        #     tmp[which(tmp$normalisation_method==p & tmp$clustering_method==paste0(algo.name, '_(resolution=', x, ')', cluster.df.name.suffix)),'clustering_method'] <- paste0(algo.name, '_(resolution=', x, ')', cluster.df.name.suffix) 
+        #     
+        #     tmp[which(tmp$normalisation_method==p & tmp$clustering_method==paste0(algo.name, '_(resolution=', x, ')', cluster.df.name.suffix)),'clustering_time'] <- as.difftime(function_time, units = 'secs')
+        #     
+        #   } else if(!paste0(algo.name, '_(resolution=', x, ')', cluster.df.name.suffix) %in% tmp_sub$clustering_method) {
+        #     
+        #     tmp_sub[1,'clustering_method'] <- paste0(algo.name, '_(resolution=', x, ')', cluster.df.name.suffix) 
+        #     
+        #     tmp_sub[1,'clustering_time'] <- as.difftime(function_time, units = 'secs')
+        #     
+        #     tmp <- rbind(tmp, tmp_sub)
+        #     
+        #     tmp <- tmp[!duplicated(tmp),]
+        #     
+        #   }
+        #   
+        # }
         
         if(isTRUE(verbose)) {
           
