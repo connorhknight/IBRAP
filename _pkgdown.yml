@@ -159,3 +159,6 @@ articles:
   - '`perform_celltalker`'
   - '`GSEA`'
   - '`scType`'
+  
+development:
+  mode: auto
