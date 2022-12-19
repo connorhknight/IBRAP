@@ -8,6 +8,6 @@ These tools are incorporated into the following pipeline:
 
 Our currently integrated tools are the following:
 
-<img src="new_tools_table.png" align="middle"/>
+<img src="list_of_tools.png" align="middle"/>
 
 Please observe our range of tutorials to gain a better understanding of IBRAP and how it functions! If you notice any problems, please notify us on our GitHub issues page.
